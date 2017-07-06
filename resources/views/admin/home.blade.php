@@ -49,6 +49,10 @@
                     <h1 class="page-header">Dinerscope</h1>
 
                     <h2 class="sub-header">Section title</h2>
+                    <?php
+                    $resto = DB::select('select * from establishments where 1=1 LIMIT 1');
+                    print_r($resto);
+                    ?>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
