@@ -9,3 +9,4 @@ require('./bootstrap');
 import dt from 'datatables.net';
 import 'datatables.net-bs';
 import 'datatables.net-dt/css/jquery.datatables.css';
+

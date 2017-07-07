@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://dinerscope'),
+    'url' => env('APP_URL', 'https://dinerscope'),
 
     /*
     |--------------------------------------------------------------------------
