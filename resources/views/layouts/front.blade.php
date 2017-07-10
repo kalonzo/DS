@@ -22,8 +22,8 @@
             <div class="container-fluid">
                 <div id="navbar" class="navbar-collapse collapse">
                     <form class="navbar-form navbar-left">
-                        <input type="text" class="form-control" placeholder="Tapez vos envies...">
-                        <input type="text" class="form-control" placeholder="Ville, adresse, NPA">
+                        <input type="text" class="form-control" placeholder="Tapez vos envies..." id="search_keywords">
+                        <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
                     </form>
                     <a class="navbar-brand navbar-left" href="/">
                         <img alt="dinerscope" src="img/LOGO-DINERSCOPE.svg"/>
@@ -59,6 +59,7 @@
         </footer>
         
         <script src="js/app.js"></script>
+        <script src="js/functions.js"></script>
         @yield('js_imports_footer')
     </body>
 </html>

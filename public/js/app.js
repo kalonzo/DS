@@ -26373,12 +26373,12 @@ __webpack_require__(30);
 
 
 Math.radians = function (degrees) {
-  return degrees * Math.PI / 180;
+    return degrees * Math.PI / 180;
 };
 
 // Converts from radians to degrees.
 Math.degrees = function (radians) {
-  return radians * 180 / Math.PI;
+    return radians * 180 / Math.PI;
 };
 
 /***/ }),

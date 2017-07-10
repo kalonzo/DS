@@ -19,7 +19,6 @@ body{
         width: 22px;
     }
     input[type=text]{
-        background-color: #5c5c5c;
         border: 0px;
         @include borderRadius(0px);
     }
@@ -31,4 +30,8 @@ body{
 
 .footer {
     background-color: $main-color;
+}
+
+.pac-container.pac-logo{
+    z-index: 1031 !important;
 }

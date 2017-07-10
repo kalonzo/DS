@@ -1,10 +1,41 @@
 var userPositionLat = null;
 var userPositionLng = null;
+var markerPosition = null;
+var map = null;
+
 
 function initMap() {
-    var map = new google.maps.Map(document.getElementById('map'), {
+    
+    $('#search_location').each(function () {
+        $(this).focus(function(){
+            console.log('focus');
+            $(this).select();
+        });
+        var autocomplete = new google.maps.places.Autocomplete(this, {
+            types: ['geocode']
+        });
+        autocomplete.addListener('place_changed', function(){
+            var place = autocomplete.getPlace();
+            relocateUserPosition(place.geometry.location.lat(), place.geometry.location.lng());
+        });
+    });
+
+    map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -34.397, lng: 150.644},
-        zoom: 13
+        zoom: 15,
+        streetViewControl: false,
+        styles: [{      
+            featureType: 'poi.business',
+                  stylers: [{
+                visibility: 'off'
+            }]     
+        },     {      
+            featureType: 'transit',
+                  elementType: 'labels.icon',
+                  stylers: [{
+                visibility: 'off'
+            }]     
+        }]
     });
     var infoWindow = new google.maps.InfoWindow({map: map});
 
@@ -14,14 +45,20 @@ function initMap() {
     var markerDestination = new google.maps.Marker({
         position: {lat: destinationLat, lng: destinationLng},
         map: map,
-        title: 'Migros Gland',
-        icon: iconDest
+        title: 'Destination',
+        icon: iconDest,
+        draggable:true
     });
     var markerInfoWindow = new google.maps.InfoWindow({
-        content: 'Migros Gland : (' + markerDestination.getPosition().lat() + ', ' + markerDestination.getPosition().lng() + ')'
+        content: getDestinationInfoLabel(markerDestination.getPosition().lat(), markerDestination.getPosition().lng())
     });
     markerDestination.addListener('click', function () {
         markerInfoWindow.open(map, markerDestination);
+    });
+    markerDestination.addListener('dragend', function () {
+        markerInfoWindow.open(map, markerDestination);
+        $('#inputLatitude').val(markerDestination.getPosition().lat());
+        $('#inputLongitude').val(markerDestination.getPosition().lng());
     });
     $('#inputLatitude').val(destinationLat);
     $('#inputLongitude').val(destinationLng);
@@ -35,17 +72,25 @@ function initMap() {
             };
             userPositionLat = position.coords.latitude * 1;
             userPositionLng = position.coords.longitude * 1;
+            
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(userPositionLat, userPositionLng);
+            geocoder.geocode({'latLng': latlng}, function (results, status) {
+                switch(status){
+                    case google.maps.GeocoderStatus.OK:
+                        var address = results[0].formatted_address;
+                        $('#search_location').val(address);
+                        break;
+                    default:
+                        console.log(status);
+                        break;
+                }
+            });
 
-            var markerPosition = new google.maps.Marker({
+            markerPosition = new google.maps.Marker({
                 position: {lat: userPositionLat, lng: userPositionLng},
                 map: map,
                 title: 'Ma position'
-            });
-            var markerInfoWindow = new google.maps.InfoWindow({
-                content: 'Ma position : (' + userPositionLat + ', ' + userPositionLng + ')'
-            });
-            markerPosition.addListener('click', function () {
-                markerInfoWindow.open(map, markerPosition);
             });
             map.setCenter(pos);
         }, function () {
@@ -57,9 +102,23 @@ function initMap() {
     }
 }
 
+function relocateUserPosition(lat, lng){
+    userPositionLat = lat;
+    userPositionLng = lng;
+    var latLng = new google.maps.LatLng(userPositionLat, userPositionLng);
+    markerPosition.setPosition(latLng);
+    if(!isEmpty(map)){
+        map.setCenter(latLng);
+    }
+}
+
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     infoWindow.setPosition(pos);
     infoWindow.setContent(browserHasGeolocation ?
             'Error: The Geolocation service failed.' :
             'Error: Your browser doesn\'t support geolocation.');
+}
+
+function getDestinationInfoLabel(lat, lng){
+    return 'Destination : (' + lat + ', ' + lng + ')';
 }
