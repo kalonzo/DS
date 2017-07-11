@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class FeedFlowTarget
@@ -11,7 +11,7 @@ class FeedFlowTarget extends Model
 {
     protected $table = 'feed_flow_targets';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_feed_flow',

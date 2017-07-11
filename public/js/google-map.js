@@ -8,7 +8,6 @@ function initMap() {
     
     $('#search_location').each(function () {
         $(this).focus(function(){
-            console.log('focus');
             $(this).select();
         });
         var autocomplete = new google.maps.places.Autocomplete(this, {
@@ -19,7 +18,6 @@ function initMap() {
             relocateUserPosition(place.geometry.location.lat(), place.geometry.location.lng());
         });
     });
-
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -34.397, lng: 150.644},
         zoom: 15,

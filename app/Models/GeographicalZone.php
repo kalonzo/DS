@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class GeographicalZone
@@ -11,7 +11,7 @@ class GeographicalZone extends Model
 {
     protected $table = 'geographical_zones';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'label',

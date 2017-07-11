@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class ChatRequest
@@ -11,7 +11,7 @@ class ChatRequest extends Model
 {
     protected $table = 'chat_requests';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'message',

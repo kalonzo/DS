@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Voucher
@@ -11,7 +11,7 @@ class Voucher extends Model
 {
     protected $table = 'vouchers';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'status',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class EstablishmentMedia
@@ -11,7 +11,7 @@ class EstablishmentMedia extends Model
 {
     protected $table = 'establishment_medias';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'type',

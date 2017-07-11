@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class BankingInfo
@@ -11,7 +11,7 @@ class BankingInfo extends Model
 {
     protected $table = 'banking_info';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'label',

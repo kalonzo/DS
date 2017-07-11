@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class ComputingSkill
@@ -11,7 +11,7 @@ class ComputingSkill extends Model
 {
     protected $table = 'computing_skills';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'name',

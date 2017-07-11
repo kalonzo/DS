@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class CartLine
@@ -11,7 +11,7 @@ class CartLine extends Model
 {
     protected $table = 'cart_lines';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'designation',

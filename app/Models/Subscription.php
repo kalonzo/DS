@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Subscription
@@ -11,7 +11,7 @@ class Subscription extends Model
 {
     protected $table = 'subscriptions';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'priceTTC',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Gallery
@@ -11,7 +11,7 @@ class Gallery extends Model
 {
     protected $table = 'galleries';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'status',

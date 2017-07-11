@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class BusinessType
@@ -11,7 +11,7 @@ class BusinessType extends Model
 {
     protected $table = 'business_types';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_media',

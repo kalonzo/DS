@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LocationIndex
@@ -11,7 +11,7 @@ class LocationIndex extends Model
 {
     protected $table = 'location_index';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'postal_code',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Hobby
@@ -11,7 +11,7 @@ class Hobby extends Model
 {
     protected $table = 'hobbies';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'label',

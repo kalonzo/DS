@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LinkUserInChargeOfEstablishment
@@ -11,7 +11,7 @@ class LinkUserInChargeOfEstablishment extends Model
 {
     protected $table = 'link_user_in_charge_of_establishment';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_user',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Employee
@@ -11,7 +11,7 @@ class Employee extends Model
 {
     protected $table = 'employees';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'lastname',

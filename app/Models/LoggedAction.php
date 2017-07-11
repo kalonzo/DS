@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LoggedAction
@@ -11,7 +11,7 @@ class LoggedAction extends Model
 {
     protected $table = 'logged_actions';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'action',

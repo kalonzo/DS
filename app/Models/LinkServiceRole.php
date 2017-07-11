@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LinkServiceRole
@@ -11,7 +11,7 @@ class LinkServiceRole extends Model
 {
     protected $table = 'link_service_role';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_role',

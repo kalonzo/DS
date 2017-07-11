@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class CvLang
@@ -13,7 +13,7 @@ class CvLang extends Model
 
     protected $primaryKey = 'id_cv_lang';
 
-	public $timestamps = false;
+	public $timestamps = true;
 
     protected $fillable = [
         'label',

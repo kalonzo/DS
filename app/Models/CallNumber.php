@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class CallNumber
@@ -11,7 +11,7 @@ class CallNumber extends Model
 {
     protected $table = 'call_numbers';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'label',

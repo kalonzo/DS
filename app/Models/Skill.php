@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Skill
@@ -11,7 +11,7 @@ class Skill extends Model
 {
     protected $table = 'skills';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'label',

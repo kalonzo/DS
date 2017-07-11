@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class CommercialStanding
@@ -11,7 +11,7 @@ class CommercialStanding extends Model
 {
     protected $table = 'commercial_standing';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'status',
