@@ -11,6 +11,7 @@ class Establishment extends Model
 {
     protected $table = 'establishments';
 
+    const TYPE_BUSINESS_RESTAURANT = 1;
     public $timestamps = true;
 
     protected $fillable = [
