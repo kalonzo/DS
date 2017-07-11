@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class BuyableItem
@@ -11,7 +11,7 @@ class BuyableItem extends Model
 {
     protected $table = 'buyable_items';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'designation',

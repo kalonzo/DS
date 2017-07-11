@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LinkCvLanguage
@@ -11,7 +11,7 @@ class LinkCvLanguage extends Model
 {
     protected $table = 'link_cv_language';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_cv',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class EstablishmentHistory
@@ -11,7 +11,7 @@ class EstablishmentHistory extends Model
 {
     protected $table = 'establishment_history';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'year',

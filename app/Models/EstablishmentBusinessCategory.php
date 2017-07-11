@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class EstablishmentBusinessCategory
@@ -11,7 +11,7 @@ class EstablishmentBusinessCategory extends Model
 {
     protected $table = 'establishment_business_categories';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_establishment',

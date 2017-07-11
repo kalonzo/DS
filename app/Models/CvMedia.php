@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class CvMedia
@@ -11,7 +11,7 @@ class CvMedia extends Model
 {
     protected $table = 'cv_media';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'type',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class RoleAction
@@ -11,7 +11,7 @@ class RoleAction extends Model
 {
     protected $table = 'role_actions';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'action',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Company
@@ -11,7 +11,7 @@ class Company extends Model
 {
     protected $table = 'companies';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_logo',

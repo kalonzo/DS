@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LinkCvComputingSkill
@@ -11,7 +11,7 @@ class LinkCvComputingSkill extends Model
 {
     protected $table = 'link_cv_computing_skill';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_computing_skill',

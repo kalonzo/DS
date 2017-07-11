@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class GeographicalZonesCoordinateBorder
@@ -11,7 +11,7 @@ class GeographicalZonesCoordinateBorder extends Model
 {
     protected $table = 'geographical_zones_coordinate_border';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'latitude',

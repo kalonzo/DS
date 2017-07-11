@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class LinkServiceUser
@@ -11,7 +11,7 @@ class LinkServiceUser extends Model
 {
     protected $table = 'link_service_user';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_service',

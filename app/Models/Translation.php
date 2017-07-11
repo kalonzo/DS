@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Translation
@@ -11,7 +11,7 @@ class Translation extends Model
 {
     protected $table = 'translations';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'content',

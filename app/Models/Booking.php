@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Booking
@@ -11,7 +11,7 @@ class Booking extends Model
 {
     protected $table = 'bookings';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'status',

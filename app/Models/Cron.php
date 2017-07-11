@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Cron
@@ -11,7 +11,7 @@ class Cron extends Model
 {
     protected $table = 'cron';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'type',

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Class ClosePeriod
  */
@@ -11,11 +9,11 @@ class ClosePeriod extends Model
 {
     protected $table = 'close_periods';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'label',
-        'start date',
+        'start_date',
         'end_date',
         'id_establishment'
     ];
@@ -34,7 +32,7 @@ class ClosePeriod extends Model
 	 * @return mixed
 	 */
 	public function getStartDate() {
-		return $this->start date;
+		return $this->start_date;
 	}
 
 	/**
@@ -67,7 +65,7 @@ class ClosePeriod extends Model
 	 * @return $this
 	 */
 	public function setStartDate($value) {
-		$this->start date = $value;
+		$this->start_date = $value;
 		return $this;
 	}
 

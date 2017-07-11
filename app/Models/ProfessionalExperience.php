@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class ProfessionalExperience
@@ -11,7 +11,7 @@ class ProfessionalExperience extends Model
 {
     protected $table = 'professional_experiences';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'company_name',

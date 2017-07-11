@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class SchoolExperience
@@ -11,7 +11,7 @@ class SchoolExperience extends Model
 {
     protected $table = 'school_experiences';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'name',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class InboxEmail
@@ -11,7 +11,7 @@ class InboxEmail extends Model
 {
     protected $table = 'inbox_emails';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'status',

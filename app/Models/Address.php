@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * Class Address
@@ -11,7 +11,7 @@ class Address extends Model
 {
     protected $table = 'address';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'street_number',
