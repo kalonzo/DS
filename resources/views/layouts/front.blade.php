@@ -10,9 +10,9 @@
         @yield('css_imports')
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-        <link href="css/app.css" rel="stylesheet">
-        <link href="css/sticky-footer.css" rel="stylesheet">
-        <link href="css/front.css" rel="stylesheet">
+        <link href="/css/app.css" rel="stylesheet">
+        <link href="/css/sticky-footer.css" rel="stylesheet">
+        <link href="/css/front.css" rel="stylesheet">
         @show
         
         @yield('js_imports_head')
@@ -26,12 +26,12 @@
                         <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
                     </form>
                     <a class="navbar-brand navbar-left" href="/">
-                        <img alt="dinerscope" src="img/LOGO-DINERSCOPE.svg"/>
+                        <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
                     </a>
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a href="#">
-                                <img alt="user" src="img/ICONS-MENU-USER.svg"/>
+                                <img alt="user" src="/img/ICONS-MENU-USER.svg"/>
                             </a>
                         </li>
                     </ul>
@@ -58,8 +58,8 @@
             </div>
         </footer>
         
-        <script src="js/app.js"></script>
-        <script src="js/functions.js"></script>
+        <script src="/js/app.js"></script>
+        <script src="/js/functions.js"></script>
         @yield('js_imports_footer')
     </body>
 </html>

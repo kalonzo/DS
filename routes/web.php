@@ -22,3 +22,10 @@ Route::get ( '/admin', function () {
 } );
 
 Route::get ( '/establishment/create', 'EstablishmentController@create' );
+
+
+
+Route::get('/establishment/create',
+		['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
+Route::post('/establishment/create',
+		['as' => 'establishment_store', 'uses' => 'EstablishmentController@create']);
