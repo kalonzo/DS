@@ -10,7 +10,8 @@
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "twbs/bootstrap": "^3.3",
-        "yajra/laravel-datatables-oracle": "7.5"
+        "yajra/laravel-datatables-oracle": "7.5",
+        "webpatser/laravel-uuid": "^2.0.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

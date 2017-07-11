@@ -7,7 +7,7 @@
 
         <title>Dinerscope</title>
 
-        <link href="css/app.css" rel="stylesheet">
+        <link href="/css/app.css" rel="stylesheet">
 
     </head>
     <body>
@@ -91,6 +91,6 @@
                         <p class="text-muted">Place sticky footer content here.</p>
                     </div>
                 </footer>-->
-        <script src="js/app.js"></script>
+        <script src="/js/app.js"></script>
     </body>
 </html>
