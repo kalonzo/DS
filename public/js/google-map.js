@@ -8,7 +8,6 @@ function initMap() {
     
     $('#search_location').each(function () {
         $(this).focus(function(){
-            console.log('focus');
             $(this).select();
         });
         var autocomplete = new google.maps.places.Autocomplete(this, {
