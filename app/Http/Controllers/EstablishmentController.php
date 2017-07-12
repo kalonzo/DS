@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\php;
+use App\Models;
 use Illuminate\Http\Request;
 
 class EstablishmentController extends Controller
@@ -26,16 +27,28 @@ class EstablishmentController extends Controller
     {
         return view('establishment.create');
     }
-
+    
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
-        dd(request()->all());
+        $this->validate($request, [
+
+            'name' => 'required',
+            'email' => 'required|email'
+     ]);
+
+                var_dump($request);
+                die();
+                \App\Models\Establishment::create($request->all());
+
+                
+        return back()->with('success', 'Thanks');
+
     }
 
     /**
@@ -69,15 +82,6 @@ class EstablishmentController extends Controller
      */
     public function update(Request $request, php $php)
     {
-                $this->validate($request, [
-
-        		'name' => 'required',
-
-        		'email' => 'required|email',
-
-        		'message' => 'required'
-
-        	]);
     }
 
     /**

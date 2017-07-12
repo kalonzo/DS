@@ -32,4 +32,4 @@ Route::get ( '/admin', function () {
 Route::get('/establishment/create',
 		['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
 Route::post('/establishment',
-		['as' => 'establishment_store', 'uses' => 'EstablishmentController@store']);
+		['as' => 'establishment.store', 'uses' => 'EstablishmentController@store']);

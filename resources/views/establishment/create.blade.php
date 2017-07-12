@@ -5,168 +5,53 @@
 
 @section('content')
 
-<div class="col-xs-12">
+	{!! Form::open(['route'=>'establishment.store']) !!} 
+        {!! Form::hidden('id_address', 0) !!}
+        {!! Form::hidden('id_logo', 0) !!}
+        
+        {!! Form::hidden('id_user_owner', 0) !!}
+        {!! Form::hidden('id_business_type', 0) !!}
 
-{!! Form::open(array('route' => 'establishment', 'create' => 'form')) !!}
+		<div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
 
-<div class ="form-name">
-    {!! Form::label('Société') !!}
-    {!! Form::radio('société', 'value') !!}
-    </div>
-<div>
-    {!! Form::label('Madame') !!}
-    {!! Form::radio('madame', 'value') !!}
-    </div>
-<div>
-    {!! Form::label('Monsieur') !!}
-    {!! Form::radio('monsieur', 'value') !!}
-</div>
-   	 
-<div class ="form-establishment">
-    
- {!! Form::label('*Société / Etablissement') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    
-</div>
+			{!! Form::label('Name:') !!}
 
-<div>
-    
-    {!! Form::label('*Prénom') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-              </div>
-<div>
-    {!! Form::label('*Nom') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'Your name')) !!}
-</div>
-    
-<div>
-    {!! Form::label('*Rue') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-              </div>
-<div>
-    {!! Form::label('*Numéro') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-</div>
-    
-<div>
-    {!! Form::label('*P.O. BOX') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-</div>
-    
-<div>
-    {!! Form::label('*NPA') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-              </div>
-<div>
-     {!! Form::label('*Localité') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-</div>
-    
-<div>
-    {!! Form::label('*Pays') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
+			{!! Form::text('name', old('name'), ['class'=>'form-control', 'placeholder'=>'Enter Name']) !!}
 
-</div>
-    
-<div>
-    {!! Form::label('*Téléphone') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-              
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::label('*Téléphone professionnel') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-</div> 
-<div>
-    
+			<span class="text-danger">{{ $errors->first('name') }}</span>
 
-    {!! Form::label('*FAX') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::label('*Mobile') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
-    
-</div>
-<div>
-    
-        {!! Form::label('*Pays') !!}
-    {!! Form::text('name', null, 
-        array( 
-              'class'=>'form-control', 
-              'placeholder'=>'')) !!}
+		</div>
 
-</div>
 
-{{ Form::submit() }}
-{!! Form::close() !!}
-</div>
+		<div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+
+			{!! Form::label('Email:') !!}
+
+			{!! Form::text('email', old('email'), ['class'=>'form-control', 'placeholder'=>'Enter Email']) !!}
+
+			<span class="text-danger">{{ $errors->first('email') }}</span>
+
+		</div>
+
+
+		<div class="form-group {{ $errors->has('message') ? 'has-error' : '' }}">
+
+			{!! Form::label('Message:') !!}
+
+			{!! Form::textarea('message', old('message'), ['class'=>'form-control', 'placeholder'=>'Enter Message']) !!}
+
+			<span class="text-danger">{{ $errors->first('message') }}</span>
+
+		</div>
+
+
+		<div class="form-group">
+
+			<button class="btn btn-success">Contact US!</button>
+
+		</div>
+
+
+	{!! Form::close() !!}
 
 @endsection @section('js_imports_footer') @endsection
