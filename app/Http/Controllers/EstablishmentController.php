@@ -33,9 +33,9 @@ class EstablishmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        dd(request()->all());
     }
 
     /**
@@ -69,7 +69,15 @@ class EstablishmentController extends Controller
      */
     public function update(Request $request, php $php)
     {
-        //
+                $this->validate($request, [
+
+        		'name' => 'required',
+
+        		'email' => 'required|email',
+
+        		'message' => 'required'
+
+        	]);
     }
 
     /**

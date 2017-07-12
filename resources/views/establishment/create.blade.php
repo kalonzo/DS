@@ -4,93 +4,169 @@
 @endsection
 
 @section('content')
-<div class="main row">
-	<div class="col-xs-12">
 
-
-
-			
-			<h1>Contact TODOParrot</h1>
-			
-
+<div class="col-xs-12">
 
 {!! Form::open(array('route' => 'establishment', 'create' => 'form')) !!}
 
-
-
-
-
-
-
-{!! Form::label('id', 'Description') !!}
-{!! Form::label('id', 'Description', array('class' => 'foo')) !!}
-{!! Form::text('name') !!}
-
-
-
-
-
-
-
-<table border ='3'>
-<tr>
-	<td>{!! Form::radio('soci�t�', 'value') !!}</td>
-	<td>{!! Form::radio('madame', 'value') !!}</td>
-	<td>{!! Form::radio('monsieur', 'value') !!}</td> 
-</tr>
-<tr>
-<td> {!! Form::label('Soci�t� / Etablissement') !!}
+<div class ="form-name">
+    {!! Form::label('Société') !!}
+    {!! Form::radio('société', 'value') !!}
+    </div>
+<div>
+    {!! Form::label('Madame') !!}
+    {!! Form::radio('madame', 'value') !!}
+    </div>
+<div>
+    {!! Form::label('Monsieur') !!}
+    {!! Form::radio('monsieur', 'value') !!}
+</div>
+   	 
+<div class ="form-establishment">
+    
+ {!! Form::label('*Société / Etablissement') !!}
     {!! Form::text('name', null, 
-        array('required', 
+        array( 
               'class'=>'form-control', 
-              'placeholder'=>'Your name')) !!}</td>
-</tr>
+              'placeholder'=>'')) !!}
+    
+</div>
 
-</table>
-
-
-
-
-
-
-
-
-
-
-<div class="form-group">
-    {!! Form::label('Your Name') !!}
+<div>
+    
+    {!! Form::label('*Prénom') !!}
     {!! Form::text('name', null, 
-        array('required', 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+              </div>
+<div>
+    {!! Form::label('*Nom') !!}
+    {!! Form::text('name', null, 
+        array( 
               'class'=>'form-control', 
               'placeholder'=>'Your name')) !!}
 </div>
-
-<div class="form-group">
-    {!! Form::label('Your E-mail Address') !!}
-    {!! Form::text('email', null, 
-        array('required', 
+    
+<div>
+    {!! Form::label('*Rue') !!}
+    {!! Form::text('name', null, 
+        array( 
               'class'=>'form-control', 
-              'placeholder'=>'Your e-mail address')) !!}
-</div>
-
-<div class="form-group">
-    {!! Form::label('Your Message') !!}
-    {!! Form::textarea('message', null, 
-        array('required', 
+              'placeholder'=>'')) !!}
+              </div>
+<div>
+    {!! Form::label('*Numéro') !!}
+    {!! Form::text('name', null, 
+        array( 
               'class'=>'form-control', 
-              'placeholder'=>'Your message')) !!}
+              'placeholder'=>'')) !!}
+</div>
+    
+<div>
+    {!! Form::label('*P.O. BOX') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+</div>
+    
+<div>
+    {!! Form::label('*NPA') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+              </div>
+<div>
+     {!! Form::label('*Localité') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+</div>
+    
+<div>
+    {!! Form::label('*Pays') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+
+</div>
+    
+<div>
+    {!! Form::label('*Téléphone') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+              
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::label('*Téléphone professionnel') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+</div> 
+<div>
+    
+
+    {!! Form::label('*FAX') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::label('*Mobile') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+    
+</div>
+<div>
+    
+        {!! Form::label('*Pays') !!}
+    {!! Form::text('name', null, 
+        array( 
+              'class'=>'form-control', 
+              'placeholder'=>'')) !!}
+
 </div>
 
-<div class="form-group">
-    {!! Form::submit('Contact Us!', 
-      array('class'=>'btn btn-primary')) !!}
-</div>
+{{ Form::submit() }}
 {!! Form::close() !!}
-			
-			
-	
-	
-	</div>
 </div>
 
 @endsection @section('js_imports_footer') @endsection
