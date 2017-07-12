@@ -35,6 +35,16 @@ body{
 .pac-container.pac-logo, .searchKeywordDropdown{
     z-index: 1031 !important;
 }
+.pac-container.pac-logo{
+    background-color: $main-dark-color;
+    color: $font-color-dark-bg;
+    .pac-item, .pac-item-query{
+        color: inherit;
+    }
+    &:after{
+        display: none;
+    }
+}
 
 .searchKeywordDropdown.ui-autocomplete{
     background-color: $main-dark-color;
