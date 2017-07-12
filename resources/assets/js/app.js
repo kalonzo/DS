@@ -7,6 +7,7 @@
 require('./bootstrap');
 
 import 'jquery-ui';
+import 'jquery-ui-bundle/jquery-ui.min.css';
 import 'jquery-ui/ui/widgets/autocomplete';
 import dt from 'datatables.net';
 import 'datatables.net-bs';
