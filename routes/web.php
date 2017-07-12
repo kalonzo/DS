@@ -51,11 +51,9 @@ Route::get('/search-autocomplete', function () {
     echo json_encode($results);
 });
 
-Route::get ( '/establishment/create', 'EstablishmentController@create' );
-
 
 
 Route::get('/establishment/create',
 		['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
-Route::post('/establishment/create',
-		['as' => 'establishment_store', 'uses' => 'EstablishmentController@create']);
+Route::post('/establishment',
+		['as' => 'establishment_store', 'uses' => 'EstablishmentController@store']);
