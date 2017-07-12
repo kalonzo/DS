@@ -10,7 +10,6 @@
         {!! Form::hidden('id_logo', 0) !!}
         
         {!! Form::hidden('id_user_owner', 0) !!}
-        {!! Form::hidden('id_business_type', 0) !!}
 
 		<div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
 
