@@ -12,10 +12,16 @@ use Illuminate\Support\Facades\Route;
  * | contains the "web" middleware group. Now create something great!
  * |
  */
-
+function String2Hex($string){
+    $hex='';
+    for ($i=0; $i < strlen($string); $i++){
+        $hex .= dechex(ord($string[$i]));
+    }
+    return $hex;
+}
 
 Route::get ( '/', function () {
-	return view ( 'front.home' );
+    return view ( 'front.home' );
 } );
 Route::get ( '/admin', function () {
 	return view ( 'admin.home' );
