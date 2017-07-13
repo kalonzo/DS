@@ -32,21 +32,30 @@ class EstablishmentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email'
+    
+
+        $request->merge([
+            'id_business_type' => \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT,
+            'id_user_owner' => 1,
+            'id_address' => 1,
+            'id_logo' => 1,
+            'id_location_index' => 1
         ]);
-
-
-        $request->merge(['id_business_type' => \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT]);
-        var_dump($request);
-
+        //var_dump($request->all());
+        //die();
         \App\Models\Establishment::create($request->all());
-
+        \App\Models\Address::create($request->all());
+        \App\Models\Company::create($request->all());
+        \App\Models\CallNumber::create($request->all());
+        
+        
+        
 
         return back()->with('success', 'Thanks');
     }
 
+
+    
     /**
      * Display the specified resource.
      *

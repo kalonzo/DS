@@ -54,4 +54,21 @@ class Model extends \Illuminate\Database\Eloquent\Model {
     public static function getTableName(){
         return ((new static)->getTable());
     }
+    
+    protected static function create($attributes = array()) {
+        $findme ='@';
+        
+        
+        
+        foreach ($attributes as $val){
+            //echo $val.   '<br>';
+            $pos = strpos($val, $findme);
+            if($pos == true) {
+                echo $val . '<br>' ;
+            }
+        }
+     
+        die();
+        return parent::create();
+    }
 }
