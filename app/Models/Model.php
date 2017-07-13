@@ -56,19 +56,19 @@ class Model extends \Illuminate\Database\Eloquent\Model {
     }
     
     protected static function create($attributes = array()) {
-        $findme ='@';
+        $targetPrefix = self::getTableName().'@';
+        $targetAttributes = array();
         
-        
-        
-        foreach ($attributes as $val){
-            //echo $val.   '<br>';
-            $pos = strpos($val, $findme);
-            if($pos == true) {
-                echo $val . '<br>' ;
+        foreach ($attributes as $attribute){
+            if(strpos($attribute, '@') !== false){
+                if(strpos($attribute, '@') === 0){
+                    $targetAttributes[] = $attribute;
+                }
+            } else {
+                $targetAttributes[] = $attribute;
             }
         }
      
-        die();
-        return parent::create();
+        return parent::create($targetAttributes);
     }
 }
