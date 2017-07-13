@@ -6,18 +6,29 @@ function initGoogleAPI(){
 }
 
 function initGeolocation(){
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            userPositionLat = position.coords.latitude * 1;
-            userPositionLng = position.coords.longitude * 1;
-            $(document).trigger('googleGeolocReady');
-            
-            }, function () {
-                console.log("Erreur lors de la géolocalisation");
-            }
-        );
+    var cookiePositionLat = dsGetCookie('userLat');
+    var cookiePositionLng = dsGetCookie('userLng');
+    
+    if(isEmpty(cookiePositionLat) || isEmpty(cookiePositionLng)){
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                userPositionLat = position.coords.latitude * 1;
+                userPositionLng = position.coords.longitude * 1;
+
+                $(document).trigger('googleGeolocReady');
+                saveNewPosition(userPositionLat, userPositionLng);
+
+                }, function () {
+                    console.log("Erreur lors de la géolocalisation");
+                }
+            );
+        } else {
+            console.log("Browser doesn't support Geolocation");
+        }
     } else {
-        console.log("Browser doesn't support Geolocation");
+        userPositionLat = cookiePositionLat * 1;
+        userPositionLng = cookiePositionLng * 1;
+        $(document).trigger('googleGeolocReady');
     }
 }
 
@@ -61,4 +72,15 @@ function relocateUserPosition(lat, lng){
         markerPosition.setPosition(latLng);
         map.setCenter(latLng);
     }
+    saveNewPosition(userPositionLat, userPositionLng);
+}
+
+function saveNewPosition(lat, lng){
+    $.ajax({
+        url: '/ajax/save_position',
+        data: {'lat': lat, 'lng': lng}
+    })
+    .done(function( data ) {
+
+    });
 }

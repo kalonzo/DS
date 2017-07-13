@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -21,33 +23,8 @@ Route::get('/admin', function(){
 });
 
 Route::get('/search-autocomplete', function () {
-    $terms = \Illuminate\Support\Facades\Request::get('term');
-    $results = array(
-                    array(
-                        'label' => 'resto1',
-                        'section' => 'Top Résultats',
-                    ),
-                    array(
-                        'label' => 'resto2',
-                        'section' => 'Top Résultats',
-                    ),
-                    array(
-                        'label' => 'resto3',
-                        'section' => 'Top Résultats',
-                    ),
-                    array(
-                        'label' => 'resto2',
-                        'section' => 'Nom',
-                    ),
-                    array(
-                        'label' => 'resto3',
-                        'section' => 'Nom',
-                    ),
-                    array(
-                        'label' => 'Cuisine X',
-                        'section' => 'Type de Cuisine',
-                    ),
-                );
+    $terms = Request::get('term');
+    $results = App\Http\Controllers\SearchController::quickSearch($terms);
     echo json_encode($results);
 });
 
@@ -55,3 +32,28 @@ Route::get('/establishment/create',
 		['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
 Route::post('/establishment',
 		['as' => 'establishment_store', 'uses' => 'EstablishmentController@store']);
+
+Route::get('/ajax/{action}', function($action){
+    $jsonResponse = array('success' => 0);
+    $response = response();
+    $cookies = array();
+    switch($action){
+        case 'save_position':
+            $userLat = Request::get('lat');
+            $userLng = Request::get('lng');
+            if(!empty($userLat) && !empty($userLng)){
+                App\Http\Controllers\SessionController::getInstance()->setUserLng($userLng);
+                App\Http\Controllers\SessionController::getInstance()->setUserLat($userLat);
+                $cookies[] = cookie('userLat', $userLat, 60*12, null, null, null, false);
+                $cookies[] = cookie('userLng', $userLng, 60*12, null, null, null, false);
+                $jsonResponse['success'] = 1;
+            }
+            break;
+    }
+    
+    $responsePrepared = $response->json($jsonResponse);
+    foreach($cookies as $cookie){
+        $responsePrepared->withCookie($cookie);
+    }
+    return $responsePrepared;
+});

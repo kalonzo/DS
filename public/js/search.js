@@ -25,10 +25,8 @@ $(function () {
     };
     $("#search_keywords").focus(function(){
         var autocomplete = $(this).autocomplete("instance");
-        $(autocomplete.menu.element).show();
+        if(!isEmpty(autocomplete)){
+            $(autocomplete.menu.element).show();
+        }
     });
-});
-
-$(document).ready(function () {
-
 });
