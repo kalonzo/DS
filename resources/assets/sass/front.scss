@@ -32,6 +32,52 @@ body{
     background-color: $main-color;
 }
 
-.pac-container.pac-logo{
+.pac-container.pac-logo, .searchKeywordDropdown{
     z-index: 1031 !important;
+}
+.pac-container.pac-logo{
+    background-color: $main-dark-color;
+    color: $font-color-dark-bg;
+    .pac-item, .pac-item-query{
+        color: inherit;
+    }
+    &:after{
+        display: none;
+    }
+}
+
+.searchKeywordDropdown.ui-autocomplete{
+    background-color: $main-dark-color;
+    color: $font-color-dark-bg;
+    padding: 0.6em 0.4em;
+    > .ui-menu-item{
+        margin: 0.2em 0px;
+        &:not(.ui-autocomplete-category){
+            background-color: $main-color;
+        }
+    }
+    > .ui-autocomplete-category{
+        font-weight: bold;
+        margin: 0.4em 0px;
+        > .category-label{
+            font-size: 1.1em;
+        }
+        > .category-opener{
+            float: right;
+            @include borderRadius(100%);
+            background: $main-color;
+            font-size: 1.2em;
+            line-height: 1.5em;
+            padding: 0em 0.4em 0em 0.4em;
+        }
+        > .ui-state-active{
+            border: initial;
+            background: initial;
+            font-weight: bold;
+            margin: initial;
+            &.category-opener{
+                background: $main-color;
+            }
+        }
+    }
 }
