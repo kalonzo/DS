@@ -10,6 +10,9 @@ namespace App\Models;
 class BusinessCategory extends Model
 {
     protected $table = 'business_categories';
+    const TABLENAME = 'business_categories';
+    
+    const TYPE_COOKING_TYPE = 1;
 
     public $timestamps = true;
 

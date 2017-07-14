@@ -13,7 +13,14 @@ $(function () {
         var currentCategory = "";
         $.each(items, function (index, item) {
             if (item.section != currentCategory) {
-                ul.append("<li class='ui-autocomplete-category'><span class='category-label'>" + item.section + "</span><span class='category-opener'>+</span></li>");
+                ul.append("<li class='ui-autocomplete-category' onclick=\"document.location.href='/search?section="+ item.section_id +"'\">"
+//                            + "<a href='/search?section="+ item.section_id +"'>" 
+                                + "<span class='category-label'>" 
+                                    + item.section 
+                                + "</span>"
+                                + "<span class='category-opener'>+</span>"
+//                            + "</a>"
+                        + "</li>");
                 currentCategory = item.section;
             }
             var li;
