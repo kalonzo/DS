@@ -33,6 +33,14 @@ class Establishment extends Model {
     ];
     protected $guarded = [];
 
+    private $latLng = null;
+    public function getLatLng($lazy = true){
+        if($this->latLng === null || !$lazy){
+            $this->latLng = new Utilities\LatLng($this->getLatitude(), $this->getLongitude());
+        }
+        return $this->latLng;
+    }
+    
     /**
      * @return mixed
      */
@@ -150,6 +158,20 @@ class Establishment extends Model {
      */
     public function getIdBusinessType() {
         return $this->id_business_type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLongitude() {
+        return $this->longitude;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLatitude() {
+        return $this->latitude;
     }
 
     /**
@@ -302,6 +324,24 @@ class Establishment extends Model {
      */
     public function setIdBusinessType($value) {
         $this->id_business_type = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setLatitude($value) {
+        $this->latitude = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setLongitude($value) {
+        $this->longitude = $value;
         return $this;
     }
 

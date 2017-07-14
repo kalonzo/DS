@@ -30,6 +30,7 @@ function initGeolocation(){
         userPositionLng = cookiePositionLng * 1;
         $(document).trigger('googleGeolocReady');
     }
+//    saveNewPosition(userPositionLat, userPositionLng);
 }
 
 $(document).on('googleGeolocReady', function(){
@@ -81,6 +82,6 @@ function saveNewPosition(lat, lng){
         data: {'lat': lat, 'lng': lng}
     })
     .done(function( data ) {
-
+        
     });
 }
