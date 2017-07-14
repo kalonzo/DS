@@ -25,10 +25,9 @@ class CreateBillsTable extends Migration {
 			$table->dateTime('start_date')->nullable();
 			$table->string('phone_number', 20)->nullable();
 			$table->string('email', 90)->nullable();
-			$table->integer('id_condition')->nullable();
-			$table->integer('id_user')->index('fk_bills_users1_idx');
-			$table->integer('id_cart')->index('fk_bills_carts1_idx');
-			$table->integer('id_contract')->index('fk_bills_contracts1_idx');
+			$table->binary('id_user', 16)->index('fk_bills_users1_idx');
+			$table->binary('id_cart', 16)->index('fk_bills_carts1_idx');
+			$table->binary('id_contract', 16)->index('fk_bills_contracts1_idx');
 		});
 	}
 

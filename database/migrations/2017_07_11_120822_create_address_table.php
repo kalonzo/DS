@@ -28,8 +28,8 @@ class CreateAddressTable extends Migration {
 			$table->string('label')->nullable();
 			$table->string('firstname')->nullable();
 			$table->string('lastname')->nullable();
-			$table->integer('id_location_index')->index('fk_address_cities1_idx');
-			$table->integer('id_object_related')->nullable();
+			$table->binary('id_location_index', 16)->index('fk_address_cities1_idx');
+			$table->binary('id_object_related', 16)->nullable();
 			$table->integer('type_object_related')->nullable();
 		});
 	}

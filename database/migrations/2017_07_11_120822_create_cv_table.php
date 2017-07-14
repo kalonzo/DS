@@ -19,7 +19,7 @@ class CreateCvTable extends Migration {
 			$table->integer('status')->nullable();
 			$table->integer('civil_status')->nullable();
 			$table->string('target_job')->nullable();
-			$table->integer('id_user')->index('fk_cv_users1_idx');
+			$table->binary('id_user', 16)->index('fk_cv_users1_idx');
 		});
 	}
 

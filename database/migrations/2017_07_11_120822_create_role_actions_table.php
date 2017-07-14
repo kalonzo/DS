@@ -17,7 +17,7 @@ class CreateRoleActionsTable extends Migration {
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
 			$table->integer('action')->nullable();
-			$table->integer('id_role')->index('fk_role_actions_role1_idx');
+			$table->binary('id_role', 16)->index('fk_role_actions_role1_idx');
 		});
 	}
 

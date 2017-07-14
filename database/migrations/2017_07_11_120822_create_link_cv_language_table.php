@@ -16,8 +16,8 @@ class CreateLinkCvLanguageTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
-			$table->integer('id_cv')->index('fk_cv_has_languages_cv1_idx');
-			$table->integer('id_language')->index('fk_cv_has_languages_languages1_idx');
+			$table->binary('id_cv', 16)->index('fk_cv_has_languages_cv1_idx');
+			$table->binary('id_language', 16)->index('fk_cv_has_languages_languages1_idx');
 			$table->integer('level')->nullable();
 		});
 	}

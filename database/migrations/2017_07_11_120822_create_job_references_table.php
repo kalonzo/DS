@@ -22,7 +22,7 @@ class CreateJobReferencesTable extends Migration {
 			$table->string('phone_prefix', 5)->nullable();
 			$table->string('phone_number', 20)->nullable();
 			$table->integer('position')->nullable();
-			$table->integer('cv_id')->index('fk_job_references_cv1_idx');
+			$table->binary('id_cv', 16)->index('fk_job_references_cv1_idx');
 		});
 	}
 

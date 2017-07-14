@@ -20,9 +20,9 @@ class CreateEstablishmentsTable extends Migration {
 			$table->string('name')->nullable();
 			$table->string('profile_condition', 45)->nullable();
 			$table->string('email')->nullable();
-			$table->integer('id_address');
+			$table->binary('id_address', 16);
 			$table->float('DS_ranking', 10, 0)->nullable();
-			$table->integer('id_logo')->index('fk_establishments_establishment_medias1_idx');
+			$table->binary('id_logo', 16)->index('fk_establishments_establishment_medias1_idx');
 			$table->float('star', 10, 0)->nullable();
 			$table->integer('nb_last_week_visits')->nullable();
 			$table->boolean('accept_voucher')->nullable();
@@ -30,8 +30,8 @@ class CreateEstablishmentsTable extends Migration {
 			$table->text('description', 65535)->nullable();
 			$table->float('average_price_min', 10, 0)->nullable();
 			$table->float('average_price_max', 10, 0)->nullable();
-			$table->integer('id_banking_info')->nullable();
-			$table->integer('id_user_owner')->index('fk_establishments_users1_idx');
+			$table->binary('id_banking_info', 16)->nullable();
+			$table->binary('id_user_owner', 16)->index('fk_establishments_users1_idx');
 			$table->integer('id_business_type')->index('fk_establishments_business_types1_idx');
 		});
 	}

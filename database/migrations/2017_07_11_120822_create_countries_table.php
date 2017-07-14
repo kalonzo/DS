@@ -18,7 +18,7 @@ class CreateCountriesTable extends Migration {
                         $table->timestamps();
 			$table->string('iso', 3)->nullable();
 			$table->string('label')->nullable();
-			$table->integer('id_currency')->index('fk_countries_currencies1_idx');
+			$table->binary('id_currency', 16)->index('fk_countries_currencies1_idx');
 		});
 	}
 

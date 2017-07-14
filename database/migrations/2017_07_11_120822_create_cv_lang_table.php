@@ -14,7 +14,7 @@ class CreateCvLangTable extends Migration {
 	{
 		Schema::create('cv_lang', function(Blueprint $table)
 		{
-			$table->integer('id_cv_lang', true);
+			$table->binary('id', 16)->primary();
 			$table->string('label')->nullable();
 			$table->string('niveau', 45)->nullable();
 		});

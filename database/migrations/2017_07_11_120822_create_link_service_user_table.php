@@ -16,8 +16,8 @@ class CreateLinkServiceUserTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
-			$table->integer('id_service')->index('fk_link_service_user_services1_idx');
-			$table->integer('id_user')->index('fk_link_service_user_users1_idx');
+			$table->binary('id_service', 16)->index('fk_link_service_user_services1_idx');
+			$table->binary('id_user', 16)->index('fk_link_service_user_users1_idx');
 		});
 	}
 

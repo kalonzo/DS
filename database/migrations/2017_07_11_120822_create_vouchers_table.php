@@ -19,11 +19,11 @@ class CreateVouchersTable extends Migration {
 			$table->integer('status')->nullable();
 			$table->float('priceTTC', 10, 0)->nullable();
 			$table->date('end_date')->nullable();
-			$table->integer('id_establishment')->index('fk_vouchers_establishments1_idx');
-			$table->integer('id_buyable_item')->index('fk_vouchers_buyable_items1_idx');
-			$table->integer('id_bill')->index('fk_vouchers_bills1_idx');
-			$table->integer('id_user')->index('fk_vouchers_users1_idx');
-			$table->integer('id_currency')->index('fk_vouchers_currencies1_idx');
+			$table->binary('id_establishment', 16)->index('fk_vouchers_establishments1_idx');
+			$table->binary('id_buyable_item', 16)->index('fk_vouchers_buyable_items1_idx');
+			$table->binary('id_bill', 16)->index('fk_vouchers_bills1_idx');
+			$table->binary('id_user', 16)->index('fk_vouchers_users1_idx');
+			$table->binary('id_currency', 16)->index('fk_vouchers_currencies1_idx');
 		});
 	}
 

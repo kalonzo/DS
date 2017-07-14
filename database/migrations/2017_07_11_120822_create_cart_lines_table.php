@@ -26,8 +26,8 @@ class CreateCartLinesTable extends Migration {
 			$table->float('discount_amount', 10, 0)->nullable();
 			$table->float('discount_percent', 10, 0)->nullable();
 			$table->float('net_price', 10, 0)->nullable();
-			$table->integer('id_cart')->index('fk_cart_lines_carts1_idx');
-			$table->integer('id_buyable_item')->index('fk_cart_lines_buyable_item1_idx');
+			$table->binary('id_cart', 16)->index('fk_cart_lines_carts1_idx');
+			$table->binary('id_buyable_item', 16)->index('fk_cart_lines_buyable_item1_idx');
 		});
 	}
 

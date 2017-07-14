@@ -24,7 +24,7 @@ class CreateCvMediaTable extends Migration {
 			$table->integer('height')->nullable();
 			$table->string('local_path')->nullable();
 			$table->integer('position')->nullable();
-			$table->integer('id_cv')->index('fk_cv_media_cv1_idx');
+			$table->binary('id_cv', 16)->index('fk_cv_media_cv1_idx');
 		});
 	}
 

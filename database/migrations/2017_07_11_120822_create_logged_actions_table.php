@@ -18,8 +18,8 @@ class CreateLoggedActionsTable extends Migration {
                         $table->timestamps();
 			$table->integer('action')->nullable();
 			$table->integer('type_object_related')->nullable();
-			$table->integer('id_object_related')->nullable();
-			$table->integer('id_user')->index('fk_logged_actions_users1_idx');
+			$table->binary('id_object_related', 16)->nullable();
+			$table->binary('id_user', 16)->index('fk_logged_actions_users1_idx');
 		});
 	}
 

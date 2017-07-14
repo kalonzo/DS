@@ -18,8 +18,8 @@ class CreateChatMessagesTable extends Migration {
                         $table->timestamps();
 			$table->integer('status')->nullable();
 			$table->text('message', 65535)->nullable();
-			$table->integer('id_user_sender')->index('fk_chat_messages_users1_idx');
-			$table->integer('id_user_receiver')->index('fk_chat_messages_users2_idx');
+			$table->binary('id_user_sender', 16)->index('fk_chat_messages_users1_idx');
+			$table->binary('id_user_receiver', 16)->index('fk_chat_messages_users2_idx');
 		});
 	}
 

@@ -20,10 +20,10 @@ class CreateSubscriptionsTable extends Migration {
 			$table->date('start_date')->nullable();
 			$table->date('end_date')->nullable();
 			$table->date('close_date')->nullable();
-			$table->integer('id_establishment')->index('fk_subscription_establishments1_idx');
-			$table->integer('id_user')->index('fk_subscription_users1_idx');
-			$table->integer('id_bill')->index('fk_subscriptions_bills1_idx');
-			$table->integer('id_buyable_item')->index('fk_subscriptions_buyable_item1_idx');
+			$table->binary('id_establishment', 16)->index('fk_subscription_establishments1_idx');
+			$table->binary('id_user', 16)->index('fk_subscription_users1_idx');
+			$table->binary('id_bill', 16)->index('fk_subscriptions_bills1_idx');
+			$table->binary('id_buyable_item', 16)->index('fk_subscriptions_buyable_item1_idx');
 		});
 	}
 

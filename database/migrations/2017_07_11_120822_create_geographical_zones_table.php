@@ -17,7 +17,7 @@ class CreateGeographicalZonesTable extends Migration {
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
 			$table->string('label')->nullable();
-			$table->integer('id_country')->index('fk_geographical_zones_countries1_idx');
+			$table->binary('id_country', 16)->index('fk_geographical_zones_countries1_idx');
 		});
 	}
 

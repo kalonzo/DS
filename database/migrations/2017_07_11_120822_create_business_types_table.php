@@ -14,9 +14,9 @@ class CreateBusinessTypesTable extends Migration {
 	{
 		Schema::create('business_types', function(Blueprint $table)
 		{
-			$table->binary('id', 16)->primary();
+			$table->integer('id', true)->primary();
                         $table->timestamps();
-			$table->integer('id_media');
+			$table->binary('id_media', 16);
 			$table->string('label', 90)->nullable();
 		});
 	}

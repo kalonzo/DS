@@ -16,8 +16,8 @@ class CreateLinkCvComputingSkillTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
-			$table->integer('id_computing_skill')->index('fk_computing_skills_has_cv_computing_skills1_idx');
-			$table->integer('id_cv')->index('fk_computing_skills_has_cv_cv1_idx');
+			$table->binary('id_computing_skill', 16)->index('fk_computing_skills_has_cv_computing_skills1_idx');
+			$table->binary('id_cv', 16)->index('fk_computing_skills_has_cv_cv1_idx');
 		});
 	}
 

@@ -19,7 +19,7 @@ class CreateGalleriesTable extends Migration {
 			$table->boolean('status')->nullable();
 			$table->string('name')->nullable();
 			$table->integer('type')->nullable();
-			$table->integer('id_establishment')->index('fk_Gallery_establishment1_idx');
+			$table->binary('id_establishment', 16)->index('fk_Gallery_establishment1_idx');
 		});
 	}
 

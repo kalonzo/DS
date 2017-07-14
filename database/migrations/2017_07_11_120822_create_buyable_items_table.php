@@ -27,13 +27,13 @@ class CreateBuyableItemsTable extends Migration {
 			$table->float('discount_amount', 10, 0)->nullable();
 			$table->float('discount_percent', 10, 0)->nullable();
 			$table->float('net_price', 10, 0)->nullable();
-			$table->integer('id_object')->nullable();
+			$table->binary('id_object', 16)->nullable();
 			$table->integer('type_object')->nullable();
 			$table->text('description', 65535)->nullable();
 			$table->date('start_date')->nullable();
 			$table->date('end_date')->nullable();
 			$table->integer('id_business_type')->nullable()->index('fk_buyable_item_business_types1_idx');
-			$table->integer('id_geographical_zone')->nullable()->index('fk_buyable_items_geographical_zones1_idx');
+			$table->binary('id_geographical_zone', 16)->nullable()->index('fk_buyable_items_geographical_zones1_idx');
 		});
 	}
 

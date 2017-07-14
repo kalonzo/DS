@@ -22,7 +22,7 @@ class CreateCommercialStandingTable extends Migration {
 			$table->dateTime('start_date')->nullable();
 			$table->dateTime('end_date')->nullable();
 			$table->integer('position')->nullable();
-			$table->integer('id_establishment')->index('fk_commercial_standing_establishments1_idx');
+			$table->binary('id_establishment', 16)->index('fk_commercial_standing_establishments1_idx');
 		});
 	}
 

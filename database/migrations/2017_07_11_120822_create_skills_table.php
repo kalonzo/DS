@@ -17,7 +17,7 @@ class CreateSkillsTable extends Migration {
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
 			$table->string('label')->nullable();
-			$table->integer('id_cv')->index('fk_hobbies_cv1_idx');
+			$table->binary('id_cv', 16)->index('fk_hobbies_cv1_idx');
 		});
 	}
 

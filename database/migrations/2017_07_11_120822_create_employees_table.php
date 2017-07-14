@@ -19,10 +19,10 @@ class CreateEmployeesTable extends Migration {
 			$table->string('lastname', 45)->nullable();
 			$table->string('firstname', 45)->nullable();
 			$table->integer('status')->nullable();
-			$table->integer('id_photo')->nullable();
+			$table->binary('id_photo', 16)->nullable();
 			$table->string('position', 45)->nullable();
-			$table->integer('id_establishment')->index('fk_employees_establishments1_idx');
-			$table->integer('id_job_type')->nullable()->index('fk_employees_job1_idx');
+			$table->binary('id_establishment', 16)->index('fk_employees_establishments1_idx');
+			$table->binary('id_job_type', 16)->nullable()->index('fk_employees_job1_idx');
 		});
 	}
 

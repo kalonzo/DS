@@ -20,7 +20,7 @@ class CreateLocationIndexTable extends Migration {
 			$table->string('city', 45)->nullable();
 			$table->float('latitude', 10, 0)->nullable();
 			$table->float('longitude', 10, 0)->nullable();
-			$table->integer('id_country')->index('fk_locality_address_country1_idx');
+			$table->binary('id_country', 16)->index('fk_locality_address_country1_idx');
 		});
 	}
 

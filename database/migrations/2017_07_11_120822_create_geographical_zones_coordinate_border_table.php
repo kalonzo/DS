@@ -18,7 +18,7 @@ class CreateGeographicalZonesCoordinateBorderTable extends Migration {
                         $table->timestamps();
 			$table->float('latitude', 10, 0)->nullable();
 			$table->float('longitude', 10, 0)->nullable();
-			$table->integer('id_geographical_zone')->index('fk_geographical_zones_coordinate_border_geographical_zones1_idx');
+			$table->binary('id_geographical_zone', 16)->index('fk_geographical_zones_coordinate_border_geographical_zones1_idx');
 		});
 	}
 

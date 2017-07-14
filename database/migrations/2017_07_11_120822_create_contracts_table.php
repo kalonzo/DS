@@ -19,9 +19,9 @@ class CreateContractsTable extends Migration {
 			$table->string('number', 100)->nullable();
 			$table->dateTime('start_date')->nullable();
 			$table->dateTime('end_date')->nullable();
-			$table->integer('id_user_in_charge')->index('fk_contracts_users1_idx');
-			$table->integer('id_establishment_customer')->index('fk_contracts_establishments1_idx');
-			$table->integer('id_user_customer')->index('fk_contracts_users2_idx');
+			$table->binary('id_user_in_charge', 16)->index('fk_contracts_users1_idx');
+			$table->binary('id_establishment_customer', 16)->index('fk_contracts_establishments1_idx');
+			$table->binary('id_user_customer', 16)->index('fk_contracts_users2_idx');
 		});
 	}
 

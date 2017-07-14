@@ -18,9 +18,9 @@ class CreateChatRequestsTable extends Migration {
                         $table->timestamps();
 			$table->text('message', 65535)->nullable();
 			$table->integer('status')->nullable();
-			$table->integer('id_user_sender')->index('fk_chat_requests_users1_idx');
-			$table->integer('id_service_target')->nullable()->index('fk_chat_requests_services1_idx');
-			$table->integer('id_user_target')->nullable()->index('fk_chat_requests_users2_idx');
+			$table->binary('id_user_sender', 16)->index('fk_chat_requests_users1_idx');
+			$table->binary('id_service_target', 16)->nullable()->index('fk_chat_requests_services1_idx');
+			$table->binary('id_user_target', 16)->nullable()->index('fk_chat_requests_users2_idx');
 		});
 	}
 

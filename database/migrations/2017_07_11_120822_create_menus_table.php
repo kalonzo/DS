@@ -22,8 +22,8 @@ class CreateMenusTable extends Migration {
 			$table->date('start_date')->nullable();
 			$table->date('end_date')->nullable();
 			$table->integer('position')->nullable();
-			$table->integer('id_establishment')->index('fk_menus_establishments1_idx');
-			$table->integer('id_file')->index('fk_menus_medias1_idx');
+			$table->binary('id_establishment', 16)->index('fk_menus_establishments1_idx');
+			$table->binary('id_file', 16)->index('fk_menus_medias1_idx');
 		});
 	}
 

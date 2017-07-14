@@ -17,7 +17,7 @@ class CreateTranslationsTable extends Migration {
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
 			$table->text('content', 65535)->nullable();
-			$table->integer('id_language')->index('fk_translations_languages1_idx');
+			$table->binary('id_language', 16)->index('fk_translations_languages1_idx');
 		});
 	}
 

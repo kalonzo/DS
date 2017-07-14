@@ -19,7 +19,7 @@ class CreateEstablishmentHistoryTable extends Migration {
 			$table->integer('year')->nullable();
 			$table->string('title')->nullable();
 			$table->string('content', 180)->nullable();
-			$table->integer('id_photo')->nullable()->index('fk_establishment_history_establishment_medias1_idx');
+			$table->binary('id_photo', 16)->nullable()->index('fk_establishment_history_establishment_medias1_idx');
 		});
 	}
 

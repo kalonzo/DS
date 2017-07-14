@@ -20,7 +20,7 @@ class CreateProfessionalExperiencesTable extends Migration {
 			$table->string('job')->nullable();
 			$table->date('start_date')->nullable();
 			$table->date('end_date');
-			$table->integer('id_cv')->index('fk_professional_experience_cv1_idx');
+			$table->binary('id_cv', 16)->index('fk_professional_experience_cv1_idx');
 		});
 	}
 

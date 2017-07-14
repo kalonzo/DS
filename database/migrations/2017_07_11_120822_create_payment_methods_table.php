@@ -18,7 +18,7 @@ class CreatePaymentMethodsTable extends Migration {
                         $table->timestamps();
 			$table->string('name')->nullable();
 			$table->integer('status')->nullable();
-			$table->integer('id_logo')->nullable();
+			$table->binary('id_logo', 16)->nullable();
 		});
 	}
 

@@ -21,7 +21,7 @@ class CreateOpeningHoursTable extends Migration {
 			$table->time('end_time')->nullable();
 			$table->date('start_date')->nullable();
 			$table->date('end_date')->nullable();
-			$table->integer('id_establishment')->index('fk_opening_hours_establishments1_idx');
+			$table->binary('id_establishment', 16)->index('fk_opening_hours_establishments1_idx');
 		});
 	}
 

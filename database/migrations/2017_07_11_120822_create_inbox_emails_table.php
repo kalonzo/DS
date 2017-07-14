@@ -20,8 +20,8 @@ class CreateInboxEmailsTable extends Migration {
 			$table->string('subject')->nullable();
 			$table->text('content', 65535)->nullable();
 			$table->binary('conversation_identifier', 16)->nullable();
-			$table->integer('id_user_sender')->index('fk_inbox_email_users1_idx');
-			$table->integer('id_user_recipient')->index('fk_inbox_email_users2_idx');
+			$table->binary('id_user_sender', 16)->index('fk_inbox_email_users1_idx');
+			$table->binary('id_user_recipient', 16)->index('fk_inbox_email_users2_idx');
 		});
 	}
 

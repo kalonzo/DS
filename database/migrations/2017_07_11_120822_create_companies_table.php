@@ -16,7 +16,7 @@ class CreateCompaniesTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
-			$table->integer('id_logo');
+			$table->binary('id_logo', 16);
 			$table->string('name', 45)->nullable();
 		});
 	}

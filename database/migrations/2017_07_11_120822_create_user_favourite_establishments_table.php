@@ -16,8 +16,8 @@ class CreateUserFavouriteEstablishmentsTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
-			$table->integer('id_user')->index('fk_users_has_establishments_users2_idx');
-			$table->integer('id_establishment')->index('fk_users_has_establishments_establishments2_idx');
+			$table->binary('id_user', 16)->index('fk_users_has_establishments_users2_idx');
+			$table->binary('id_establishment', 16)->index('fk_users_has_establishments_establishments2_idx');
 		});
 	}
 

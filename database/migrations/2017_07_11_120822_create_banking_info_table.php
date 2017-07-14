@@ -21,10 +21,10 @@ class CreateBankingInfoTable extends Migration {
 			$table->string('bic', 45)->nullable();
 			$table->string('swift', 45)->nullable();
 			$table->string('bank_name', 45)->nullable();
-			$table->integer('id_address_bank')->nullable();
+			$table->binary('id_address_bank', 16)->nullable();
 			$table->string('account_owner_lastname', 75)->nullable();
 			$table->string('account_owner_firstname', 45)->nullable();
-			$table->integer('id_establishment')->index('fk_banking_info_establishments1_idx');
+			$table->binary('id_establishment', 16)->index('fk_banking_info_establishments1_idx');
 		});
 	}
 

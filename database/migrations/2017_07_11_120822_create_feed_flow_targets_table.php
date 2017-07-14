@@ -16,9 +16,9 @@ class CreateFeedFlowTargetsTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
-			$table->integer('id_feed_flow')->index('fk_feed_flow_targets_feed_flows1_idx');
-			$table->integer('id_user')->nullable()->index('fk_feed_flow_targets_users1_idx');
-			$table->integer('id_service')->nullable()->index('fk_feed_flow_targets_services1_idx');
+			$table->binary('id_feed_flow', 16)->index('fk_feed_flow_targets_feed_flows1_idx');
+			$table->binary('id_user', 16)->nullable()->index('fk_feed_flow_targets_users1_idx');
+			$table->binary('id_service', 16)->nullable()->index('fk_feed_flow_targets_services1_idx');
 		});
 	}
 

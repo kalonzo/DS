@@ -27,8 +27,8 @@ class CreateBookingsTable extends Migration {
 			$table->integer('nb_children')->nullable();
 			$table->float('latitude', 10, 0)->nullable();
 			$table->float('longitude', 10, 0)->nullable();
-			$table->integer('id_user')->index('fk_bookings_users1_idx');
-			$table->integer('id_establishment')->index('fk_bookings_establishments1_idx');
+			$table->binary('id_user', 16)->index('fk_bookings_users1_idx');
+			$table->binary('id_establishment', 16)->index('fk_bookings_establishments1_idx');
 		});
 	}
 
