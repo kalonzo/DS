@@ -41,8 +41,8 @@ class EstablishmentController extends Controller {
             'id_logo' => 1,
             'id_location_index' => 1
         ]);
-        //var_dump($request->all());
-        //die();
+        var_dump($request->all());
+        die();
         \App\Models\Establishment::create($request->all());
         \App\Models\Address::create($request->all());
         \App\Models\Company::create($request->all());
