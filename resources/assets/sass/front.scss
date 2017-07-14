@@ -38,6 +38,8 @@ body{
 .pac-container.pac-logo{
     background-color: $main-dark-color;
     color: $font-color-dark-bg;
+    left: 30px;
+    width: $quickSearchFieldWidth;
     .pac-item, .pac-item-query{
         color: inherit;
     }
@@ -50,6 +52,8 @@ body{
     background-color: $main-dark-color;
     color: $font-color-dark-bg;
     padding: 0.6em 0.4em;
+    width: $quickSearchFieldWidth;
+    box-sizing: border-box;
     > .ui-menu-item{
         margin: 0.2em 0px;
         &:not(.ui-autocomplete-category){

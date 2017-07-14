@@ -82,6 +82,6 @@ function saveNewPosition(lat, lng){
         data: {'lat': lat, 'lng': lng}
     })
     .done(function( data ) {
-        
+        $(document).trigger('positionSaved');
     });
 }

@@ -13,7 +13,7 @@ class Model extends \Illuminate\Database\Eloquent\Model {
     
     public function save(array $options = array()) {
         if(!isset($this->id) || empty($this->id)){
-            $this->id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+            $this->id = \App\Utilities\UuidTools::generateUuid();
         }
         return parent::save($options);
     }
@@ -23,7 +23,7 @@ class Model extends \Illuminate\Database\Eloquent\Model {
     }
     
     function getUuid(){
-        return bin2hex($this->getId());
+        return \App\Utilities\UuidTools::getUuid($this->getId());
     }
     
     /**

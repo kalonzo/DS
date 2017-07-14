@@ -58,6 +58,31 @@ $(document).on('googleGeolocReady', function(){
         });
         map.setCenter(pos);
     }
+    var locationMarkers = new Array();
+    $(map).on('locationsUpdated', function(event, data){
+        $.each(locationMarkers, function (index, marker) {
+            marker.setMap(null);
+        });
+        if(!isEmpty(data.items)){
+            $.each(data.items, function (index, item) {
+                var lat = item.lat*1;
+                var lng = item.lng*1;
+                var markerEts = new google.maps.Marker({
+                    position: {lat: lat, lng: lng},
+                    map: map,
+                    title: item.label,
+//                    icon: iconDest,
+                });
+                var etsInfoWindow = new google.maps.InfoWindow({
+                    content: item.label
+                });
+                markerEts.addListener('click', function () {
+                    etsInfoWindow.open(map, markerEts);
+                });
+                locationMarkers.push(markerEts);
+            });
+        }
+    });
 });
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  * @author Nico
  */
 class SearchController {
-    const NB_QUICK_RESULTS_PER_TYPE = 1;
+    const NB_QUICK_RESULTS_PER_TYPE = 5;
     
     const QUICK_SEARCH_SECTION_DISTANCE = 1;
     const QUICK_SEARCH_SECTION_NAME = 2;
@@ -26,6 +26,7 @@ class SearchController {
         $userLat = SessionController::getInstance()->getUserLat();
         $userLng = SessionController::getInstance()->getUserLng();
         $userLatLng = new LatLng($userLat, $userLng);
+
         if(!empty($terms) && $userLatLng->isValid()){
             // Search by proximity
             $squareCoordinates = GeolocTools::getSquareCoordinates($userLatLng);
@@ -48,11 +49,10 @@ class SearchController {
                     $maxLng = $squareCoordinate->getLng();
                 }
             }
-            
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $rawDistanceRestaurantsQuery = Restaurant::where('name', 'LIKE', "%$terms%")
-                                        ->whereBetween('latitude', array($minLat, $maxLat))
-                                        ->whereBetween('longitude', array($minLng, $maxLng))
+//                                        ->whereBetween('latitude', array($minLat, $maxLat))
+//                                        ->whereBetween('longitude', array($minLng, $maxLng))
                                         ;
                 $rawDistanceList = array();
                 $rawDistanceRestaurants = $rawDistanceRestaurantsQuery->get();
@@ -60,14 +60,16 @@ class SearchController {
                     $rawDistance = GeolocTools::calculateRawDistance($userLatLng, $rawDistanceRestaurant->getLatLng());
                     $rawDistanceList[$rawDistance] = $rawDistanceRestaurant;
                 }
-                asort($rawDistanceList);
+                ksort($rawDistanceList);
                 foreach($rawDistanceList as $distance => $restaurant){
                     $results [] = array(
-                            'id' => $restaurant->getId(),
-                            'label' => $restaurant->getName(),
+                            'id' => $restaurant->getUuid(),
+                            'label' => $restaurant->getName().' ('.($distance / 1000).'km)',
+                            'value' => $restaurant->getName(),
                             'section' => 'Top Résultats',
                             'section_id' => self::QUICK_SEARCH_SECTION_DISTANCE,
-                            'distance' => $distance
+                            'lat' => $restaurant->getLatitude(),
+                            'lng' => $restaurant->getLongitude()
                         );
                 }
 
@@ -75,8 +77,9 @@ class SearchController {
                 $alphabetRestaurants = $rawDistanceRestaurantsQuery->orderBy('name')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
                 foreach($alphabetRestaurants as $distance => $restaurant){
                     $results [] = array(
-                            'id' => $restaurant->getId(),
+                            'id' => $restaurant->getUuid(),
                             'label' => $restaurant->getName(),
+                            'value' => $restaurant->getName(),
                             'section' => 'Nom',
                             'section_id' => self::QUICK_SEARCH_SECTION_NAME
                         );
@@ -96,18 +99,14 @@ class SearchController {
                     ;
                 foreach($cookingTypesResults as $result){
                     $results [] = array(
-                            'id' => $result->id_business_category,
+                            'id' => \App\Utilities\UuidTools::getUuid($result->id_business_category),
                             'label' => $result->name.' ('.$result->nb_establishment.')',
+                            'value' => $result->name,
                             'section' => 'Type de cuisine',
                             'section_id' => self::QUICK_SEARCH_SECTION_COOKING_TYPE
                         );
                 }
                 
-                $results [] = array(
-                            'id' => 0,
-                            'label' => "Resto test",
-                            'section' => 'Test'
-                        );
             }
         }
         
