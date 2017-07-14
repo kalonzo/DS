@@ -22,6 +22,15 @@ body{
         border: 0px;
         @include borderRadius(0px);
     }
+    .geolocMeIcon{
+        font-size: 1.5em;
+    }
+    .locationInputGroup{
+        @include borderRadius(0px);
+        .input-group-addon{
+            padding: 6px 9px;
+        }
+    }
 }
 
 .main {

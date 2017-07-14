@@ -1,5 +1,6 @@
 var userPositionLat = null;
 var userPositionLng = null;
+var autoCompleteGoogle = null;
 
 function initGoogleAPI(){
     initGeolocation();
@@ -34,8 +35,27 @@ function initGeolocation(){
 }
 
 $(document).on('googleGeolocReady', function(){
+    fillUserAddress(userPositionLat, userPositionLng);
+    
+    var locationAutoCompleteInput = $('#search_location').get(0);
+    if(!isEmpty(locationAutoCompleteInput)){
+        autoCompleteGoogle = new google.maps.places.Autocomplete(locationAutoCompleteInput, {
+            types: ['geocode']
+        });
+        autoCompleteGoogle.addListener('place_changed', function () {
+            var place = autoCompleteGoogle.getPlace();
+            relocateUserPosition(place.geometry.location.lat(), place.geometry.location.lng());
+        });
+    }
+});
+
+$('#search_location').focus(function () {
+    $(this).select();
+});
+    
+function fillUserAddress(lat, lng){
     var geocoder = new google.maps.Geocoder();
-    var latlng = new google.maps.LatLng(userPositionLat, userPositionLng);
+    var latlng = new google.maps.LatLng(lat, lng);
     geocoder.geocode({'latLng': latlng}, function (results, status) {
         switch(status){
             case google.maps.GeocoderStatus.OK:
@@ -47,23 +67,7 @@ $(document).on('googleGeolocReady', function(){
                 break;
         }
     });
-    
-    var locationAutoCompleteInput = $('#search_location').get(0);
-    if(!isEmpty(locationAutoCompleteInput)){
-        var autocomplete = new google.maps.places.Autocomplete(locationAutoCompleteInput, {
-            types: ['geocode']
-        });
-        autocomplete.addListener('place_changed', function () {
-            var place = autocomplete.getPlace();
-            relocateUserPosition(place.geometry.location.lat(), place.geometry.location.lng());
-        });
-    }
-});
-
-$('#search_location').focus(function () {
-    $(this).select();
-});
-    
+}
 
 function relocateUserPosition(lat, lng){
     userPositionLat = lat;
@@ -84,4 +88,21 @@ function saveNewPosition(lat, lng){
     .done(function( data ) {
         $(document).trigger('positionSaved');
     });
+}
+
+function geolocateMe(){
+    if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                userPositionLat = position.coords.latitude * 1;
+                userPositionLng = position.coords.longitude * 1;
+
+                fillUserAddress(userPositionLat, userPositionLng);
+                relocateUserPosition(userPositionLat, userPositionLng)
+            }, function () {
+                console.log("Erreur lors de la géolocalisation");
+            }
+        );
+    } else {
+        console.log("Browser doesn't support Geolocation");
+    }
 }

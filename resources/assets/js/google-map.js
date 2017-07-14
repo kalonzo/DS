@@ -19,6 +19,7 @@ $(document).on('googleGeolocReady', function(){
             }]     
         }]
     });
+    /*
     var infoWindow = new google.maps.InfoWindow({map: map});
 
     var destinationLat = 46.417087;
@@ -44,6 +45,7 @@ $(document).on('googleGeolocReady', function(){
     });
     $('#inputLatitude').val(destinationLat);
     $('#inputLongitude').val(destinationLng);
+    */
 
     if (!isEmpty(userPositionLat) && !isEmpty(userPositionLng)) {
         var pos = {
@@ -54,10 +56,12 @@ $(document).on('googleGeolocReady', function(){
         markerPosition = new google.maps.Marker({
             position: {lat: userPositionLat, lng: userPositionLng},
             map: map,
-            title: 'Ma position'
+            title: 'Ma position',
+            icon: '/img/you_are_here.png',
         });
         map.setCenter(pos);
     }
+    
     var locationMarkers = new Array();
     $(map).on('locationsUpdated', function(event, data){
         $.each(locationMarkers, function (index, marker) {
@@ -71,7 +75,7 @@ $(document).on('googleGeolocReady', function(){
                     position: {lat: lat, lng: lng},
                     map: map,
                     title: item.label,
-//                    icon: iconDest,
+                    icon: '/img/marker_ds.png',
                 });
                 var etsInfoWindow = new google.maps.InfoWindow({
                     content: item.label
