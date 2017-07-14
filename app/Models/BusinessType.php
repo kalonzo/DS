@@ -10,6 +10,7 @@ namespace App\Models;
 class BusinessType extends Model
 {
     protected $table = 'business_types';
+    const TABLENAME = 'business_types';
 
     public $timestamps = true;
 

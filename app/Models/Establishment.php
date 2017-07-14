@@ -8,6 +8,7 @@ namespace App\Models;
 class Establishment extends Model {
 
     protected $table = 'establishments';
+    const TABLENAME = 'establishments';
 
     const TYPE_BUSINESS_RESTAURANT = 1;
 
