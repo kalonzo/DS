@@ -19,6 +19,7 @@
 
         <div class="content">
             <div class="form-inline row">
+                <!--
                 <div class="col-sm-6">
                     <div class="form-group">
                         <input type="text" class="form-control" id="inputLatitude" placeholder="Latitude">
@@ -38,6 +39,7 @@
                         <input type="text" class="form-control" id="distanceRouteOutput" placeholder="Distance" readonly>
                     </div>
                 </div>
+                -->
             </div>
             <br/>
             <div id="map" style="width: 100%; height: 500px;"> </div>

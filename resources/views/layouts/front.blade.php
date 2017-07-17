@@ -24,8 +24,16 @@
                 <div id="navbar" class="navbar-collapse collapse">
                     <form class="navbar-form navbar-left">
                         <input type="text" class="form-control" placeholder="Tapez vos envies..." id="search_keywords">
-                        <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
+                        <div class="input-group locationInputGroup">
+                            <span class="input-group-addon clickable" onclick="geolocateMe();">
+                                <span class="geolocMeIcon glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
+                        </div>
                     </form>
+                    <div class="navbar-left">
+                        
+                    </div>
                     <a class="navbar-brand navbar-left" href="/">
                         <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
                     </a>
