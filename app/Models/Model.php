@@ -55,7 +55,7 @@ class Model extends \Illuminate\Database\Eloquent\Model {
         return ((new static)->getTable());
     }
     
-    protected static function create($attributes = array()) {
+   /** protected static function create($attributes = array()) {
         $targetPrefix = self::getTableName().'@';
         $targetAttributes = array();
         
@@ -70,5 +70,5 @@ class Model extends \Illuminate\Database\Eloquent\Model {
         }
      
         return parent::create($targetAttributes);
-    }
+    }**/
 }
