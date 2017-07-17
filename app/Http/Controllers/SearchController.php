@@ -112,4 +112,17 @@ class SearchController {
         
         return $results;
     }
+    
+    public static function search(){
+        $section = Request::get('section');
+        switch($section){
+            
+        }
+        
+        // Paginate results
+        $resultsPagination = new LengthAwarePaginator($productsInfo, $totalProducts, $nbElementPerPage);
+        $resultsPagination->setPath(Request2::url());
+        
+        return View::make('front.search')->with('results', $resultsPagination);//->with('status', $statusValues);
+    }
 }

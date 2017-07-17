@@ -57,10 +57,9 @@
                 </div>
             </div>
         </nav>
-        <div class="container-fluid">
-            @yield('content')
-        </div>
         
+        @yield('content')
+                
         <footer class="footer">
             <div class="container text-center">
                 <p class="">DinerScope by TREND-ON-LINE, Avenue du Mont-Blanc 38, 1196 Gland, Suisse</p>

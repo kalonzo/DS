@@ -28,7 +28,7 @@ Route::get('/search-autocomplete', function () {
 });
 
 Route::get('/search', function () {
-    $section = Request::get('section');
+    return view('front.search');
 });
 
 Route::get('/establishment/create', ['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
