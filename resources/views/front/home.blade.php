@@ -4,6 +4,8 @@
 @endsection
 
 @section('content')
+<div id="map" style="width: 100%; height: 500px;"> </div>
+
 <div class="container-fluid">
     <div class="main row">
         <div class="col-xs-12">
@@ -43,7 +45,6 @@
                     -->
                 </div>
                 <br/>
-                <div id="map" style="width: 100%; height: 500px;"> </div>
 
                 <div class="links">
                     <a href="/admin">Admin</a>

@@ -1,6 +1,6 @@
 
 // Body
-$body-bg: #f5f8fa;
+$body-bg: #050508;
 $main-dark-color: #050508;
 $main-color: #303030;
 $font-color-dark-bg: white;
@@ -24,6 +24,7 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 $font-family-sans-serif: "Raleway", sans-serif;
 $font-size-base: 12px;
 $line-height-base: 1.6;
+$line-height-base-px: $font-size-base * $line-height-base;
 $text-color: #636b6f;
 
 // Navbar
@@ -40,4 +41,7 @@ $input-color-placeholder: lighten($text-color, 30%);
 // Panels
 $panel-default-heading-bg: #fff;
 
-$quickSearchFieldWidth: 315px;
+$quickSearchFieldWidth: 352px;
+
+// Bootstrap
+/*$grid-gutter-width: 0px;*/

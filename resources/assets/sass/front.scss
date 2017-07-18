@@ -94,3 +94,36 @@ body{
         }
     }
 }
+
+#search-container{
+    #search-results{
+        .search-thumbnail{
+            background: white;
+            color: $main-dark-color;
+            float: left;
+            width: 18%;
+            margin-right: 2%;
+            margin-bottom: 2em;
+            &:nth-child(5n){
+                margin-right: 0px;
+            }
+            &:nth-child(5n+1){
+                clear: both;
+            }
+            .thumbnail-text{
+                padding: 0.4em 0px;
+                .thumbnail-label{
+                    text-transform: uppercase;
+                    height: 2*$line-height-base-px;
+                    overflow: hidden;
+                    font-weight: bold;
+                }
+                .thumbnail-info{
+                    font-size: 0.8em;
+                    height: $line-height-base-px*0.8;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+}

@@ -11,6 +11,7 @@ class SessionController {
     
     private $userLng = null;
     private $userLat = null;
+    private $typeEts = null;
     
     function getUserLng() {
         return \Illuminate\Support\Facades\Request::session()->get('user.lng');
@@ -28,6 +29,17 @@ class SessionController {
         \Illuminate\Support\Facades\Request::session()->put('user.lat', $userLat);
     }
 
+    function getUserTypeEts() {
+        $this->typeEts = \Illuminate\Support\Facades\Request::session()->get('user.type_ets');
+        if($this->typeEts === null || empty($this->typeEts)){
+            $this->typeEts = \App\Models\Establishment::TYPE_BUSINESS_RESTAURANT;
+        }
+        return $this->typeEts;
+    }
+
+    function setUserTypeEts($userTypeEts) {
+        \Illuminate\Support\Facades\Request::session()->put('user.type_ets', $userTypeEts);
+    }
         
     /******************* SINGLETON MANAGEMENT *********************************/
     
