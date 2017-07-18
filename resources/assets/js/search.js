@@ -45,4 +45,29 @@ $(function () {
     $(document).on('positionSaved', function(){
         $("#search_keywords").autocomplete("search");
     });
+    
+    $('#distance-slider:not(.sliderProcessed)').on('ready ajax-complete', function(){
+        $(this).addClass('sliderProcessed');
+        $(this).slider({
+            range: true,
+            min: 0,
+            max: 20,
+            step: 5,
+            values: [0, 5],
+            slide: function( event, ui ) {
+                var value = ui.value;
+                $('#distance-slider-max').html(value);
+            },
+            stop: function( event, ui ) {
+                var value = ui.value;
+                $.ajax({
+                    url: '/reload-search',
+                    data: {'distance': value}
+                })
+                .done(function( data ) {
+                    $('#search-container').empty().html(data);
+                });
+            }
+        });
+    });
 });

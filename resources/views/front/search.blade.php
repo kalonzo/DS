@@ -7,24 +7,9 @@
 <div id="map" style="width: 100%; height: 400px;"> </div>
 
 <div id="search-container" class="container">
-    <div class="main row">
-        <div class="col-xs-12" id="search-results">
-            @foreach($establishments as $establishment)
-                <div class="no-gutter search-thumbnail">
-                    <img class="col-xs-12 no-gutter" src="{{ $establishment['img'] }}" alt="Establishment picture"/>
-                    <div class="thumbnail-text col-xs-12">
-                        <div class="thumbnail-label col-xs-12">
-                            {{ $establishment['name'] }}
-                        </div>
-                        <div class="thumbnail-info col-xs-12">
-                            {{$establishment['type_category']}}, {{$establishment['city']}} - {{$establishment['country']}}
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-        {{ $establishments->links() }}
-    </div>
+    @component('components.search_results', ['establishments' => $establishments])
+
+    @endcomponent
 </div>
 @endsection
 

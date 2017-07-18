@@ -52,11 +52,6 @@ class Establishment extends Model {
     public function getStatus() {
         return $this->status;
     }
-    
-    public function getAddress(){
-       return $this->hasOne('App\Address');
-    }
-    
 
     /**
      * @return mixed
