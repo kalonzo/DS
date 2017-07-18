@@ -13,6 +13,8 @@ class BusinessCategory extends Model
     const TABLENAME = 'business_categories';
     
     const TYPE_COOKING_TYPE = 1;
+    const TYPE_FOOD_SPECIALITY = 2;
+    const TYPE_RESTAURANT_ATMOSPHERE = 3;
 
     public $timestamps = true;
 

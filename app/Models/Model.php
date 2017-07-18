@@ -69,6 +69,12 @@ class Model extends \Illuminate\Database\Eloquent\Model {
         return $classObject;
     }
     
+    
+    public function deliveries(){
+        return $this->hasMany('\App\Models\Address');
+    }
+    
+    
     public static function getClass(){
         return get_class(new static);
     }

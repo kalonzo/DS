@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
-
+const TYPE_PHONE_NUMBER_RESERVATION = 1;
+const TYPE_FAX = 2;
+const TYPE_MOBILE = 3;
+const TYPE_PHONE_CONTACT = 4;
 
 /**
  * Class CallNumber
