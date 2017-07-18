@@ -26,19 +26,15 @@ class Model extends \Illuminate\Database\Eloquent\Model {
         return \App\Utilities\UuidTools::getUuid($this->getId());
     }
     
-//    public static function join($t){
-//        return new Buil
-//    }
-    
     /**
      * Create a new Eloquent query builder for the model.
      *
      * @param  \Illuminate\Database\Query\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder|static
      */
-    public function newEloquentBuilder($query){
-        return new \App\Database\Eloquent\Builder($query);
-    }
+//    public function newEloquentBuilder($query){
+//        return new \App\Database\Eloquent\Builder($query);
+//    }
 
     /**
      * Get a new query builder instance for the connection.

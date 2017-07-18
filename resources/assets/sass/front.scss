@@ -101,14 +101,49 @@ body{
             background: white;
             color: $main-dark-color;
             float: left;
-            width: 18%;
-            margin-right: 2%;
             margin-bottom: 2em;
-            &:nth-child(5n){
-                margin-right: 0px;
+            @media (max-width: 768px) {
+                width: 49%;
+                margin-right: 2%;
+                &:nth-child(2n){
+                    margin-right: 0px;
+                }
+                &:nth-child(2n+1){
+                    clear: both;
+                }
             }
-            &:nth-child(5n+1){
-                clear: both;
+            @media (min-width: 768px) and (max-width: 991px) {
+                width: 32%;
+                margin-right: 2%;
+                clear: none;
+                &:nth-child(3n){
+                    margin-right: 0px;
+                }
+                &:nth-child(3n+1){
+                    clear: both;
+                }
+            }
+            @media (min-width: 992px) and (max-width: 1199px) {
+                width: 18%;
+                margin-right: 2%;
+                clear: none;
+                &:nth-child(5n){
+                    margin-right: 0px;
+                }
+                &:nth-child(5n+1){
+                    clear: both;
+                }
+            }
+            @media (min-width: 1200px) {
+                width: 15%;
+                margin-right: 2%;
+                clear: none;
+                &:nth-child(6n){
+                    margin-right: 0px;
+                }
+                &:nth-child(6n+1){
+                    clear: both;
+                }
             }
             .thumbnail-text{
                 padding: 0.4em 0px;

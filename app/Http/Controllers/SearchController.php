@@ -61,7 +61,7 @@ class SearchController {
             }
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $rawDistanceRestaurantsQuery = Restaurant::where('name', 'LIKE', "%$terms%")
-                                        ->where('id_business_type', '=', $typeEts)
+//                                        ->where('id_business_type', '=', $typeEts)
 //                                        ->whereBetween('latitude', array($minLat, $maxLat))
 //                                        ->whereBetween('longitude', array($minLng, $maxLng))
                                         ;
@@ -89,7 +89,6 @@ class SearchController {
                         break;
                     }
                 }
-
                 // Search by alphabetic
                 $alphabetRestaurants = $rawDistanceRestaurantsQuery->orderBy('name')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
                 foreach($alphabetRestaurants as $distance => $restaurant){
@@ -98,7 +97,9 @@ class SearchController {
                             'label' => $restaurant->getName(),
                             'value' => $restaurant->getName(),
                             'section' => 'Nom',
-                            'section_id' => self::QUICK_SEARCH_SECTION_NAME
+                            'section_id' => self::QUICK_SEARCH_SECTION_NAME,
+                            'lat' => $restaurant->getLatitude(),
+                            'lng' => $restaurant->getLongitude()
                         );
                 }
                 
