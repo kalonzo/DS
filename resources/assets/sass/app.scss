@@ -8,6 +8,15 @@
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
+@import "_mixins";
+
+@for $i from 0 through $grid-columns {
+    @include custom-calc-grid-column(($i + 0.5), xs, $i + '_5')
+    @include custom-calc-grid-column(($i + 0.5), sm, $i + '_5')
+    @include custom-calc-grid-column(($i + 0.5), md, $i + '_5')
+    @include custom-calc-grid-column(($i + 0.5), lg, $i + '_5')
+}
+
 .clickable{
     cursor: pointer;
     @at-root tr#{&}{
@@ -19,4 +28,9 @@
 
 .cleaner{
     clear: both;
+}
+
+.no-gutter{
+    padding-left: 0px;
+    padding-right: 0px;
 }

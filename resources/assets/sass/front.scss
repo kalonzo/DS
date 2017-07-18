@@ -28,7 +28,7 @@ body{
     .locationInputGroup{
         @include borderRadius(0px);
         .input-group-addon{
-            padding: 6px 9px;
+            padding: 5px 9px;
         }
     }
 }
@@ -90,6 +90,74 @@ body{
             margin: initial;
             &.category-opener{
                 background: $main-color;
+            }
+        }
+    }
+}
+
+#search-container{
+    #search-results{
+        .search-thumbnail{
+            background: white;
+            color: $main-dark-color;
+            float: left;
+            margin-bottom: 2em;
+            @media (max-width: 768px) {
+                width: 49%;
+                margin-right: 2%;
+                &:nth-child(2n){
+                    margin-right: 0px;
+                }
+                &:nth-child(2n+1){
+                    clear: both;
+                }
+            }
+            @media (min-width: 768px) and (max-width: 991px) {
+                width: 32%;
+                margin-right: 2%;
+                clear: none;
+                &:nth-child(3n){
+                    margin-right: 0px;
+                }
+                &:nth-child(3n+1){
+                    clear: both;
+                }
+            }
+            @media (min-width: 992px) and (max-width: 1199px) {
+                width: 18%;
+                margin-right: 2%;
+                clear: none;
+                &:nth-child(5n){
+                    margin-right: 0px;
+                }
+                &:nth-child(5n+1){
+                    clear: both;
+                }
+            }
+            @media (min-width: 1200px) {
+                width: 15%;
+                margin-right: 2%;
+                clear: none;
+                &:nth-child(6n){
+                    margin-right: 0px;
+                }
+                &:nth-child(6n+1){
+                    clear: both;
+                }
+            }
+            .thumbnail-text{
+                padding: 0.4em 0px;
+                .thumbnail-label{
+                    text-transform: uppercase;
+                    height: 2*$line-height-base-px;
+                    overflow: hidden;
+                    font-weight: bold;
+                }
+                .thumbnail-info{
+                    font-size: 0.8em;
+                    height: $line-height-base-px*0.8;
+                    overflow: hidden;
+                }
             }
         }
     }

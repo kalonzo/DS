@@ -10,6 +10,7 @@ namespace App\Models;
 class Address extends Model
 {
     protected $table = 'address';
+    const TABLENAME = 'address';
 
     public $timestamps = true;
 

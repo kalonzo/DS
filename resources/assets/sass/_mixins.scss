@@ -3,3 +3,16 @@
     -webkit-border-radius: $radius;
     -moz-border-radius: $radius;
 }
+
+@mixin custom-calc-grid-column($index, $class, $index-label) {
+    
+    @if ($index > 0) {
+        .col-#{$class}-#{$index-label} {
+            float: left;
+            width: percentage(($index / $grid-columns));
+        }
+        .col-#{$class}-offset-#{$index-label} {
+            margin-left: percentage(($index / $grid-columns));
+        }
+    }
+}

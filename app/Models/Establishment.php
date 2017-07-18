@@ -42,6 +42,10 @@ class Establishment extends Model {
         return $this->latLng;
     }
     
+    public function getAddress(){
+        return $this->hasOne(Address::class, 'id_address');
+    }
+    
     /**
      * @return mixed
      */

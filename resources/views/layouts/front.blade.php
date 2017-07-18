@@ -23,7 +23,12 @@
             <div class="container-fluid">
                 <div id="navbar" class="navbar-collapse collapse">
                     <form class="navbar-form navbar-left">
-                        <input type="text" class="form-control" placeholder="Tapez vos envies..." id="search_keywords">
+                        <div class="input-group locationInputGroup">
+                            <span class="input-group-addon clickable" onclick="document.location.href='/search'">
+                                <span class="geolocMeIcon glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Recherche..." id="search_keywords">
+                        </div>
                         <div class="input-group locationInputGroup">
                             <span class="input-group-addon clickable" onclick="geolocateMe();">
                                 <span class="geolocMeIcon glyphicon glyphicon-map-marker" aria-hidden="true"></span>
@@ -57,10 +62,9 @@
                 </div>
             </div>
         </nav>
-        <div class="container-fluid">
-            @yield('content')
-        </div>
         
+        @yield('content')
+                
         <footer class="footer">
             <div class="container text-center">
                 <p class="">DinerScope by TREND-ON-LINE, Avenue du Mont-Blanc 38, 1196 Gland, Suisse</p>

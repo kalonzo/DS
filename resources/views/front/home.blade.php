@@ -4,48 +4,51 @@
 @endsection
 
 @section('content')
-<div class="main row">
-    <div class="col-xs-12">
-        @if (Route::has('login'))
-        <div class="top-right links">
-            @if (Auth::check())
-            <a href="{{ url('/admin') }}">Home</a>
-            @else
-            <a href="{{ url('/login') }}">Login</a>
-            <a href="{{ url('/register') }}">Register</a>
-            @endif
-        </div>
-        @endif
+<div id="map" style="width: 100%; height: 500px;"> </div>
 
-        <div class="content">
-            <div class="form-inline row">
-                <!--
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="inputLatitude" placeholder="Latitude">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="inputLongitude" placeholder="Longitude">
-                    </div>
-                    <button type="submit" class="btn btn-default" onclick="calculateDistance(); calculateRouteDistance();">Valider</button>
-                </div>
-                <div class=" col-sm-6 text-right">
-                    <div class="form-group">
-                        <label for="distanceOutput" class="control-label">Distance brute</label>
-                        <input type="text" class="form-control" id="distanceOutput" placeholder="Distance" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="distanceRouteOutput" class="control-label">Distance route</label>
-                        <input type="text" class="form-control" id="distanceRouteOutput" placeholder="Distance" readonly>
-                    </div>
-                </div>
-                -->
+<div class="container-fluid">
+    <div class="main row">
+        <div class="col-xs-12">
+            @if (Route::has('login'))
+            <div class="top-right links">
+                @if (Auth::check())
+                <a href="{{ url('/admin') }}">Home</a>
+                @else
+                <a href="{{ url('/login') }}">Login</a>
+                <a href="{{ url('/register') }}">Register</a>
+                @endif
             </div>
-            <br/>
-            <div id="map" style="width: 100%; height: 500px;"> </div>
+            @endif
 
-            <div class="links">
-                <a href="/admin">Admin</a>
+            <div class="content">
+                <div class="form-inline row">
+                    <!--
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="inputLatitude" placeholder="Latitude">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="inputLongitude" placeholder="Longitude">
+                        </div>
+                        <button type="submit" class="btn btn-default" onclick="calculateDistance(); calculateRouteDistance();">Valider</button>
+                    </div>
+                    <div class=" col-sm-6 text-right">
+                        <div class="form-group">
+                            <label for="distanceOutput" class="control-label">Distance brute</label>
+                            <input type="text" class="form-control" id="distanceOutput" placeholder="Distance" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="distanceRouteOutput" class="control-label">Distance route</label>
+                            <input type="text" class="form-control" id="distanceRouteOutput" placeholder="Distance" readonly>
+                        </div>
+                    </div>
+                    -->
+                </div>
+                <br/>
+
+                <div class="links">
+                    <a href="/admin">Admin</a>
+                </div>
             </div>
         </div>
     </div>
