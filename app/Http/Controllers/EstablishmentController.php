@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\php;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
 
 class EstablishmentController extends Controller {
 
@@ -32,26 +32,36 @@ class EstablishmentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-    
-
-        $request->merge([
-            'id_business_type' => \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT,
-            'id_user_owner' => 1,
-            'id_address' => 1,
-            'id_logo' => 1,
-            'id_location_index' => 1
+             $request->merge([
+            'id_location_index' => 0
         ]);
-        var_dump($request->all());
-        die();
-        \App\Models\Establishment::create($request->all());
-        \App\Models\Address::create($request->all());
-        \App\Models\Company::create($request->all());
-        \App\Models\CallNumber::create($request->all());
-        
-        
-        
-
-        return back()->with('success', 'Thanks');
+           
+         $address = \App\Models\Address::create($request->all()); 
+         
+         
+         
+         $id = $address->country;
+         
+         var_dump($id);
+         
+         
+         die();
+         
+        /**  
+          $name = $address->city;
+         $id_address = $address->getUuid();
+         var_dump($name);
+             $request->merge([
+            'id_location_index' => 0,
+                 'id_logo'=> 0,
+                 'id_user_owner' => 0,
+                 'id_business_type' =>0
+        ]);         
+             
+        \App\Models\Establishment::create($request->all()); 
+         die();3**/
+         
+        return back();
     }
 
 
@@ -95,6 +105,25 @@ class EstablishmentController extends Controller {
      */
     public function destroy(php $php) {
         //
+    }
+    
+    public function store_address(Request $request,$id_address){
+
+        $request->merge([
+            'id' => $id_address,
+            'id_location_index' => 0
+        ]);
+             
+         $address = \App\Models\Address::create($request->all());
+         
+         
+        $id =  $id_address;
+        var_dump($id);
+         
+        
+        
+      return $id;  
+        
     }
 
 }
