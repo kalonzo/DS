@@ -79,7 +79,7 @@ class SearchController {
                                 'id' => $restaurant->getUuid(),
                                 'label' => $restaurant->getName().' ('.($distance / 1000).'km)',
                                 'value' => $restaurant->getName(),
-                                'section' => 'Top Résultats',
+                                'section' => 'Localité',
                                 'section_id' => self::QUICK_SEARCH_SECTION_DISTANCE,
                                 'lat' => $restaurant->getLatitude(),
                                 'lng' => $restaurant->getLongitude()
@@ -134,19 +134,46 @@ class SearchController {
     
     public static function search(){
         $view = null;
-        $establishments = array();
+        $establishmentsQuery = self::buildSearchQuery();
+        
+        if(!empty($establishmentsQuery)){
+            $resultsPagination = self::buildSearchResults($establishmentsQuery);
+            if(!empty($resultsPagination)){
+                $view = View::make('front.search')->with('establishments', $resultsPagination);
+            }
+        }
+        return $view;
+    }
+    
+    public static function searchReload(){
+        $view = null;
+        $establishmentsQuery = self::buildSearchQuery();
+        
+        if(!empty($establishmentsQuery)){
+            $filterValues = array();
+            $resultsPagination = self::buildSearchResults($establishmentsQuery);
+            if(!empty($resultsPagination)){
+                $view = View::make('components.search_results')->with('establishments', $resultsPagination)->with('filter_values', $filterValues);
+            }
+        }
+        return $view;
+    }
+    
+    /**
+     * 
+     * @return \Eloquent
+     */
+    public static function buildSearchQuery(){
+        $establishmentsQuery = null;
         $userLat = SessionController::getInstance()->getUserLat();
         $userLng = SessionController::getInstance()->getUserLng();
         $userLatLng = new LatLng($userLat, $userLng);
         
         $terms = Request::get('term');
+        $distance = Request::get('distance');
         $typeEts = SessionController::getInstance()->getUserTypeEts();
         
         if($userLatLng->isValid()){
-            // Build list
-            $nbElementPerPage = 10;
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
-            $sliceStart = ($currentPage - 1) * $nbElementPerPage;
             
             $section = Request::get('section');
             switch($section){
@@ -161,7 +188,7 @@ class SearchController {
             }
             
             // Search by proximity
-            $squareCoordinates = GeolocTools::getSquareCoordinates($userLatLng);
+            $squareCoordinates = GeolocTools::getSquareCoordinates($userLatLng, $distance);
             
             $minLat = 0.0;
             $minLng = 0.0;
@@ -182,7 +209,7 @@ class SearchController {
                 }
             }
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
-                $establishmentsQuery = DB::table(Restaurant::TABLENAME)
+                $establishmentsQuery = DB::table(Establishment::TABLENAME)
                             ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.*, '.BusinessCategory::TABLENAME.'.name as type_category'))
                             ->join(Address::TABLENAME, Address::TABLENAME.'.id', '=', Establishment::TABLENAME.'.id_address')
                             ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_establishment')
@@ -204,29 +231,42 @@ class SearchController {
                         $establishmentsQuery->orderBy('name');
                         break;
                 }
-                
-                // Query pagination management
-                $nbTotalResults = $establishmentsQuery->count();
-                $establishmentsQuery->offset($sliceStart)->limit($nbElementPerPage);
-                
-                $establishmentsData = $establishmentsQuery->get();
-                foreach($establishmentsData as $establishmentData){    
-                    $uuid = UuidTools::getUuid($establishmentData->id);
-                    $establishments[$uuid]['id'] = $uuid;
-                    $establishments[$uuid]['name'] = $establishmentData->name;
-                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-". rand(1, 20).".jpg";
-                    $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = $establishmentData->country;
-                    $establishments[$uuid]['type_category'] = $establishmentData->type_category;
-                }
             }
+        }
+        return $establishmentsQuery;
+    }
+    
+    /**
+     * 
+     * @param type $searchQuery
+     * @return LengthAwarePaginator
+     */
+    public static function buildSearchResults($searchQuery){
+        $establishments = array();
+        $resultsPagination = null;
+        if(!empty($searchQuery)){
+            // Query pagination management
+            $nbElementPerPage = 10;
+            $currentPage = LengthAwarePaginator::resolveCurrentPage();
+            $sliceStart = ($currentPage - 1) * $nbElementPerPage;
+            $nbTotalResults = $searchQuery->count();
+            $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
+
+            $establishmentsData = $searchQuery->get();
+            foreach($establishmentsData as $establishmentData){    
+                $uuid = UuidTools::getUuid($establishmentData->id);
+                $establishments[$uuid]['id'] = $uuid;
+                $establishments[$uuid]['name'] = $establishmentData->name;
+                $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+                $establishments[$uuid]['city'] = $establishmentData->city;
+                $establishments[$uuid]['country'] = $establishmentData->country;
+                $establishments[$uuid]['type_category'] = $establishmentData->type_category;
+            }
+            
             // Paginate results
             $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage);
             $resultsPagination->setPath(Request::url());
-            
-            $view = View::make('front.search')->with('establishments', $resultsPagination);//->with('status', $statusValues);
         }
-        
-        return $view;
+        return $resultsPagination;
     }
 }

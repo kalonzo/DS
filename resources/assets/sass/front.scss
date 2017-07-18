@@ -96,6 +96,13 @@ body{
 }
 
 #search-container{
+    #search-results-filters{
+        #distance-slider{
+            .ui-slider-handle:first-of-type{
+                display: none  !important;
+            }
+        }
+    }
     #search-results{
         .search-thumbnail{
             background: white;
@@ -146,7 +153,8 @@ body{
                 }
             }
             .thumbnail-text{
-                padding: 0.4em 0px;
+                padding-top: 0.4em;
+                padding-bottom: 0.4em;
                 .thumbnail-label{
                     text-transform: uppercase;
                     height: 2*$line-height-base-px;
