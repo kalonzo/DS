@@ -38,14 +38,10 @@ class EstablishmentController extends Controller {
            
          $address = \App\Models\Address::create($request->all()); 
          
-         
-         
-         $id = $address->country;
-         
-         var_dump($id);
-         
-         
-         die();
+//         var_dump($address->getUuid());
+//         
+//         
+//         die();
          
         /**  
           $name = $address->city;

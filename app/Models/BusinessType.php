@@ -13,7 +13,8 @@ class BusinessType extends Model
     const TABLENAME = 'business_types';
 
     public $timestamps = true;
-
+    public $incrementing = true;
+    
     protected $fillable = [
         'id_media',
         'label'

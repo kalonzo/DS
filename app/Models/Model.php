@@ -10,14 +10,23 @@ namespace App\Models;
 class Model extends \Illuminate\Database\Eloquent\Model {
 
     protected $guarded = [];
+    public $incrementing = false;
     
     public function save(array $options = array()) {
-        if(!isset($this->id) || empty($this->id)){
+//        if(!isset($this->id) || empty($this->id)){
+        if(!$this->exists){
             $this->id = \App\Utilities\UuidTools::generateUuid();
         }
         return parent::save($options);
     }
-
+    
+//    protected function insertAndSetId(\Illuminate\Database\Eloquent\Builder $query, $attributes){
+//        $keyName = $this->getKeyName();
+//        $id = \App\Utilities\UuidTools::generateUuid();
+//
+//        $this->setAttribute($keyName, $id);
+//    }
+    
     function getId() {
         return $this->attributes['id'];
     }
@@ -32,9 +41,9 @@ class Model extends \Illuminate\Database\Eloquent\Model {
      * @param  \Illuminate\Database\Query\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder|static
      */
-//    public function newEloquentBuilder($query){
-//        return new \App\Database\Eloquent\Builder($query);
-//    }
+    public function newEloquentBuilder($query){
+        return new \App\Database\Eloquent\Builder($query);
+    }
 
     /**
      * Get a new query builder instance for the connection.
@@ -69,10 +78,10 @@ class Model extends \Illuminate\Database\Eloquent\Model {
         return $classObject;
     }
     
-    
     public static function getClass(){
         return get_class(new static);
     }
+
     /**
      * 
      * @return string
@@ -81,20 +90,4 @@ class Model extends \Illuminate\Database\Eloquent\Model {
         return ((new static)->getTable());
     }
     
-    protected static function create($attributes = array()) {
-        $targetPrefix = self::getTableName().'@';
-        $targetAttributes = array();
-        
-        foreach ($attributes as $attribute){
-            if(strpos($attribute, '@') !== false){
-                if(strpos($attribute, '@') === 0){
-                    $targetAttributes[] = $attribute;
-                }
-            } else {
-                $targetAttributes[] = $attribute;
-            }
-        }
-     
-        return parent::create($targetAttributes);
-    }
 }
