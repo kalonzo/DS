@@ -29,7 +29,6 @@ Route::get('/search-autocomplete', function () {
 });
 
 Route::get('/search', 'SearchController@search');
-Route::get('/reload-search', 'SearchController@searchReload');
 
 Route::get('/establishment/create', ['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
 Route::post('/establishment', ['as' => 'establishment.store', 'uses' => 'EstablishmentController@store']);

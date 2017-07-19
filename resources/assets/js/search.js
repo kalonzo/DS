@@ -15,7 +15,7 @@ $(function () {
         var currentCategory = "";
         $.each(items, function (index, item) {
             if (item.section != currentCategory) {
-                var liSection = "<li class='ui-autocomplete-category' onclick=\"document.location.href='/search?section="+ item.section_id +"'\">"
+                var liSection = "<li class='ui-autocomplete-category' onclick=\"document.location.href='/search?order_by="+ item.order_by +"'\">"
 //                            + "<a href='/search?section="+ item.section_id +"'>" 
                                 + "<span class='category-label'>" 
                                     + item.section 
@@ -61,19 +61,31 @@ $(function () {
                     $('#distance-slider-max').html(value);
                 },
                 stop: function( event, ui ) {
-                    var value = ui.value;
-                    $.ajax({
-                        url: '/reload-search',
-                        data: {'distance': value}
-                    })
-                    .done(function( data ) {
-                        $('#search-container').empty().html(data);
-                    });
+                    reloadSearch('distance', ui.value);
                 }
             });
         });
     });
     
+    $('body').on('change', '.search-filter-input', function(){
+        var value = $(this).val();
+        var label = $(this).attr('name');
+        reloadSearch(label, value);
+    });
+    
+    function reloadSearch(filterName, value){
+        var ajaxParams = {};
+        ajaxParams['reload'] = true;
+        ajaxParams[filterName] = value;
+        
+        $.ajax({
+            url: '/search',
+            data: ajaxParams
+        })
+        .done(function( data ) {
+            $('#search-container').empty().html(data);
+        });
+    };
     
     /**************************************************************************/
     $(document).trigger('search-ready');

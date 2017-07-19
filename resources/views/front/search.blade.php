@@ -7,7 +7,7 @@
 <div id="map" style="width: 100%; height: 400px;"> </div>
 
 <div id="search-container" class="container">
-    @component('components.search_results', ['establishments' => $establishments, 'filter_values' => $filter_values])
+    @component('components.search_results', ['establishments' => $establishments, 'filter_values' => $filter_values, 'filter_labels' => $filter_labels])
 
     @endcomponent
 </div>
