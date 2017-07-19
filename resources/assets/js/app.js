@@ -14,3 +14,19 @@ import dt from 'datatables.net';
 import 'datatables.net-bs';
 import 'datatables.net-dt/css/jquery.datatables.css';
 
+var jsReadyEvent; // The custom event that will be created
+if (document.createEvent) {
+    jsReadyEvent = document.createEvent("HTMLEvents");
+    jsReadyEvent.initEvent("js-ready", true, true);
+} else {
+    jsReadyEvent = document.createEventObject();
+//    jsReadyEvent.eventType = "js-ready";
+}
+jsReadyEvent.eventName = "js-ready";
+
+if (document.createEvent) {
+    document.dispatchEvent(jsReadyEvent);
+} else {
+    document.fireEvent("on" + jsReadyEvent.eventType, jsReadyEvent);
+}
+//$(document).trigger('js-ready');

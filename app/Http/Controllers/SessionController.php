@@ -12,13 +12,20 @@ class SessionController {
     private $userLng = null;
     private $userLat = null;
     private $typeEts = null;
+    private $searchFilterValues = null;
     
     function getUserLng() {
-        return \Illuminate\Support\Facades\Request::session()->get('user.lng');
+        if($this->userLng === null){
+            $this->userLng = \Illuminate\Support\Facades\Request::session()->get('user.lng');
+        }
+        return $this->userLng;
     }
 
     function getUserLat() {
-        return \Illuminate\Support\Facades\Request::session()->get('user.lat');
+        if($this->userLat === null){
+            $this->userLat = \Illuminate\Support\Facades\Request::session()->get('user.lat');
+        }
+        return $this->userLat;
     }
 
     function setUserLng($userLng) {
@@ -30,15 +37,61 @@ class SessionController {
     }
 
     function getUserTypeEts() {
-        $this->typeEts = \Illuminate\Support\Facades\Request::session()->get('user.type_ets');
-        if($this->typeEts === null || empty($this->typeEts)){
-            $this->typeEts = \App\Models\Establishment::TYPE_BUSINESS_RESTAURANT;
+        if($this->typeEts === null){
+            $this->typeEts = \Illuminate\Support\Facades\Request::session()->get('user.type_ets');
+            if($this->typeEts === null || empty($this->typeEts)){
+                $this->typeEts = \App\Models\Establishment::TYPE_BUSINESS_RESTAURANT;
+            }
         }
         return $this->typeEts;
     }
 
     function setUserTypeEts($userTypeEts) {
         \Illuminate\Support\Facades\Request::session()->put('user.type_ets', $userTypeEts);
+    }
+    
+    function addSearchFilterValue($key, $value){
+        $this->loadSearchFilterValues();
+        $this->searchFilterValues[$key] = $value;
+        return $value;
+    }
+    
+    function getSearchFilterValue($key, $defaultValue = null, $autoset = true){
+        $this->loadSearchFilterValues();
+        $value = $defaultValue;
+        if(isset($this->searchFilterValues[$key])){
+            $value = $this->searchFilterValues[$key];
+        } else if($autoset){
+            $value = $this->addSearchFilterValue ($key, $defaultValue);
+        }
+        return $value;
+    }
+    
+    function removeSearchFilterValue($key){
+        $this->loadSearchFilterValues();
+        unset($this->searchFilterValues[$key]);
+    }
+    
+    function saveSearchFilterValues(){
+        $this->loadSearchFilterValues();
+        \Illuminate\Support\Facades\Request::session()->put('search', $this->searchFilterValues);
+    }
+    
+    function loadSearchFilterValues(){
+        if($this->searchFilterValues === null){
+            $this->searchFilterValues = \Illuminate\Support\Facades\Request::session()->get('search');
+            if($this->searchFilterValues === null){
+                $this->searchFilterValues = array();
+            }
+        }
+    }
+    
+    function getSearchFilterValues($sessionSave = true){
+        $this->loadSearchFilterValues();
+        if($sessionSave){
+            $this->saveSearchFilterValues();
+        }
+        return $this->searchFilterValues;
     }
         
     /******************* SINGLETON MANAGEMENT *********************************/

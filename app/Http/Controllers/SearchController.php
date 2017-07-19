@@ -22,6 +22,7 @@ use View;
  */
 class SearchController {
     const NB_QUICK_RESULTS_PER_TYPE = 5;
+    const DEFAULT_DISTANCE_KM_SEARCH = 5;
     
     const QUICK_SEARCH_SECTION_DISTANCE = 1;
     const QUICK_SEARCH_SECTION_NAME = 2;
@@ -61,9 +62,9 @@ class SearchController {
             }
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $rawDistanceRestaurantsQuery = Restaurant::where('name', 'LIKE', "%$terms%")
-//                                        ->where('id_business_type', '=', $typeEts)
-//                                        ->whereBetween('latitude', array($minLat, $maxLat))
-//                                        ->whereBetween('longitude', array($minLng, $maxLng))
+                                        ->where('id_business_type', '=', $typeEts)
+                                        ->whereBetween('latitude', array($minLat, $maxLat))
+                                        ->whereBetween('longitude', array($minLng, $maxLng))
                                         ;
                 $rawDistanceList = array();
                 $rawDistanceRestaurants = $rawDistanceRestaurantsQuery->get();
@@ -138,8 +139,9 @@ class SearchController {
         
         if(!empty($establishmentsQuery)){
             $resultsPagination = self::buildSearchResults($establishmentsQuery);
+            $filterValues = SessionController::getInstance()->getSearchFilterValues();
             if(!empty($resultsPagination)){
-                $view = View::make('front.search')->with('establishments', $resultsPagination);
+                $view = View::make('front.search')->with('establishments', $resultsPagination)->with('filter_values', $filterValues);
             }
         }
         return $view;
@@ -150,8 +152,8 @@ class SearchController {
         $establishmentsQuery = self::buildSearchQuery();
         
         if(!empty($establishmentsQuery)){
-            $filterValues = array();
             $resultsPagination = self::buildSearchResults($establishmentsQuery);
+            $filterValues = SessionController::getInstance()->getSearchFilterValues();
             if(!empty($resultsPagination)){
                 $view = View::make('components.search_results')->with('establishments', $resultsPagination)->with('filter_values', $filterValues);
             }
@@ -165,16 +167,15 @@ class SearchController {
      */
     public static function buildSearchQuery(){
         $establishmentsQuery = null;
+        $typeEts = SessionController::getInstance()->getUserTypeEts();
         $userLat = SessionController::getInstance()->getUserLat();
         $userLng = SessionController::getInstance()->getUserLng();
         $userLatLng = new LatLng($userLat, $userLng);
         
         $terms = Request::get('term');
-        $distance = Request::get('distance');
-        $typeEts = SessionController::getInstance()->getUserTypeEts();
+        $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
         
         if($userLatLng->isValid()){
-            
             $section = Request::get('section');
             switch($section){
 
@@ -188,7 +189,7 @@ class SearchController {
             }
             
             // Search by proximity
-            $squareCoordinates = GeolocTools::getSquareCoordinates($userLatLng, $distance);
+            $squareCoordinates = GeolocTools::getSquareCoordinates($userLatLng, $distance*1000);
             
             $minLat = 0.0;
             $minLng = 0.0;
@@ -216,6 +217,8 @@ class SearchController {
                             ->join(BusinessCategory::TABLENAME, BusinessCategory::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_business_category')
                             ->where(Establishment::TABLENAME.'.name', 'LIKE', "%$terms%")
                             ->where(Establishment::TABLENAME.'.id_business_type', '=', $typeEts)
+                            ->whereBetween(Establishment::TABLENAME.'.latitude', array($minLat, $maxLat))
+                            ->whereBetween(Establishment::TABLENAME.'.longitude', array($minLng, $maxLng))
                             ;
                 if(!empty($businessCategoryType)){
                     $establishmentsQuery->where(BusinessCategory::TABLENAME.'.type', '=', $businessCategoryType);
@@ -268,5 +271,19 @@ class SearchController {
             $resultsPagination->setPath(Request::url());
         }
         return $resultsPagination;
+    }
+    
+    public static function setFilterValues($key, $value){
+        SessionController::getInstance()->addSearchFilterValue($key, $value);
+    }
+    
+    public static function getFilterValues($key, $defaultValue = null){
+        if(Request::exists($key)){
+            $value = Request::get($key);
+            SessionController::getInstance()->addSearchFilterValue($key, $value);
+        } else {
+            $value = SessionController::getInstance()->getSearchFilterValue($key, $defaultValue);
+        }
+        return $value;
     }
 }

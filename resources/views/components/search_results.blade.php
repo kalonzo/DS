@@ -5,9 +5,9 @@
              <div class="col-md-3">
                 <div class="form-group">
                     <label>Rayon de recherche</label>
-                    <div class="slider" id="distance-slider"></div>
+                    <div class="slider" id="distance-slider" data-value="{{ $filter_values['distance'] }}"></div>
                     <div class="text-right">
-                        Distance de 0 à <span id="distance-slider-max">5</span> km
+                        Distance de 0 à <span id="distance-slider-max">{{ $filter_values['distance'] }}</span> km
                     </div>
                 </div>
             </div>
