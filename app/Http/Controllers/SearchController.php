@@ -27,7 +27,7 @@ use View;
 class SearchController {
     const NB_QUICK_RESULTS_PER_TYPE = 5;
     const DEFAULT_DISTANCE_KM_SEARCH = 5;
-    const DEFAULT_DISPLAY_BY = 12;
+    const DEFAULT_DISPLAY_BY = 24;
     
     const QUICK_SEARCH_SECTION_DISTANCE = 1;
     const QUICK_SEARCH_SECTION_NAME = 2;
@@ -37,7 +37,7 @@ class SearchController {
     const SEARCH_ORDER_BY_NAME = 2;
     const SEARCH_ORDER_BY_COOKING_TYPE = 3;
     
-    public static $nbElementsPerPageChoices = array(6, 12, 24);
+    public static $nbElementsPerPageChoices = array(8, 24, 48, 96);
     
     public static function quickSearch($terms){
         $results = array();

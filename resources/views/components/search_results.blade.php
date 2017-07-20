@@ -5,6 +5,7 @@
                 <div class="col-xs-12 col-sm-4 col-md-6">
                     Filtres
                 </div>
+                <!-- NB RESULTS DISPLAYED FILTER -->
                 <div class="form-group col-xs-6 col-sm-4 col-md-3 text-right">
                     <label>Afficher</label>
                     <select class="form-control search-filter-input" name='display_by'>                     
@@ -15,6 +16,7 @@
                         @endforeach
                     </select>
                 </div>
+                <!-- ORDER BY FILTER -->
                 <div class="form-group col-xs-6 col-sm-4 col-md-3 text-right">
                     <label>Trier par</label>
                     <select class="form-control search-filter-input" name='order_by'>                     
@@ -29,6 +31,7 @@
         </div>
         <div class="panel-body">
              <div class="col-md-3">
+                 <!-- DISTANCE FILTER -->
                 <div class="form-group">
                     <label>Rayon de recherche</label>
                     <div class="slider" id="distance-slider" data-value="{{ $filter_values['distance'] }}"></div>
@@ -36,6 +39,7 @@
                         Distance de 0 à <span id="distance-slider-max">{{ $filter_values['distance'] }}</span> km
                     </div>
                 </div>
+                 <!-- LOCATION FILTER -->
                 <div class="form-group">
                     <label>Localité</label>
                     @foreach($filter_labels['location_index'] as $id_location => $location_info)
