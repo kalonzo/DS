@@ -5,30 +5,47 @@
 
 @section('content')
 
+@if (Session::has('message'))
+<div class="alert alert-info">{{ Session::get('message') }}</div>
+@endif
+
+@if(count($errors))
+
+<div class="alert alert-danger">
+    <strong>Erreur!</strong> Les informations saisies ne sont pas correct.
+    <br/>
+    <ul>
+        @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+
+@endif
 
 <input type="hidden" name="_token" value="{{ csrf_token() }}">
+{!! Form::open(['route'=>'establishment.store']) !!} 
+<div class="heading">  
+    <nav class="nav-wrapper-clone">
+        <div class="col-md-6 {{ $errors->has('name') ? 'has-error' : '' }}">
+            <img id="preview" src="placeholder.png" height="100px" width="100px" />
 
+            {!! Form::text('name', old('name'), [
+            'class'=>'form-control',
+            'placeholder'=>'Restaurant Nom de  votre restaurant',
+            'id'=>'logo'
+            ]) !!}
+
+            {!! Form::file('id_logo', array(
+            'class' => 'name',
+            'onchange' => 'previewImage(this)'
+            )) !!}       
+        </div>
+    </nav>
+</div>    
 <div class="accordion" id="accordionid">
     <div class="accordion-group">
-        {!! Form::open(['route'=>'establishment.store']) !!} 
-        <div class="heading">  
-            <nav class="nav-wrapper-clone">
-                <div class="col-md-6">
-                    <img id="preview" src="placeholder.png" height="100px" width="100px" />
 
-                    {!! Form::text('name', old('name'), [
-                    'class'=>'form-control',
-                    'placeholder'=>'Restaurant Nom de  votre restaurant',
-                    'id'=>'logo'
-                    ]) !!}
-
-                    {!! Form::file('id_logo', array(
-                    'class' => 'name',
-                    'onchange' => 'previewImage(this)'
-                    )) !!}       
-                </div>
-            </nav>
-        </div>      
 
         <div class="accordion-heading">
             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#one">
@@ -41,7 +58,7 @@
                 <!-- Saisie de l'adresse de l'établissemntnt-->
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Addresse') !!}	
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('street') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                         {!! Form::text('street', old('street'), [
                         'class'=>'form-control',
@@ -66,7 +83,7 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* N° Rue') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('street_number') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                         {!! Form::text('street_number', old('street_number'), ['class'=>
                         'form-control', 
@@ -80,7 +97,7 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Code postal') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('postal_code') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
                         {!! Form::text('postal_code', old('postal_code'), [
                         'class'=>'form-control', 
@@ -93,7 +110,7 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Ville') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('city') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                         {!! Form::text('city', old('city'), ['class'=>
                         'form-control',
@@ -106,7 +123,7 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Pays') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('country') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                         {!! Form::text('country', old('country'), [
                         'class'=>'form-control', 
@@ -120,7 +137,7 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Latitude') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('latitude') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                         {!! Form::text('latitude', old('latitude'), [
                         'class'=>'form-control',
@@ -133,9 +150,9 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Longitude') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('longitude') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
-                        {!! Form::text('lng', old('longitude'), ['class'=>
+                        {!! Form::text('longitude', old('longitude'), ['class'=>
                         'form-control', 'placeholder'=>'',
                         'id'=>'lng'
                         ]) !!}
@@ -160,8 +177,13 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Téléphone pour réservation') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('number') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
+                        {!! Form::text('prefix', old('prefix'), [
+                        'class'=>'form-control', 
+                        'placeholder'=>'',
+                        'id'=>'number'
+                        ]) !!}
                         {!! Form::text('number', old('number'), [
                         'class'=>'form-control', 
                         'placeholder'=>'',
@@ -173,12 +195,12 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Téléphone de contact') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('number') ? 'has-error' : '' }} " >
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
-                        {!! Form::text('number', old('number'), ['class'=>
+                        {!! Form::text('phone', old('number'), ['class'=>
                         'form-control',
                         'placeholder'=>'',
-                        'id'=>'number'
+                        'id'=>'phone'
                         ]) !!}
                     </div>
 
@@ -186,12 +208,12 @@
                 <div class="form-group  accordion-inner">
                     {!! Form::label('* Fax') !!}
 
-                    <div class="input-group">
+                    <div class="input-group ">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
-                        {!! Form::text('number', old('number'), [
+                        {!! Form::text('fax', old('fax'), [
                         'class'=>'form-control', 
                         'placeholder'=>'',
-                        'id'=>'number'
+                        'id'=>'fax'
                         ]) !!}
 
                     </div>
@@ -202,10 +224,10 @@
 
                     <div class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
-                        {!! Form::text('number', old('number'), [
+                        {!! Form::text('mobile', old('mobile'), [
                         'class'=>'form-control',
                         'placeholder'=>'',
-                        'id'=> 'number'
+                        'id'=> 'mobile'
                         ]) !!}
                     </div>
                 </div>           
@@ -222,7 +244,7 @@
                 <div class="accordion-inner">
                     {!! Form::label('* e-mail') !!}
 
-                    <div class="input-group">
+                    <div class="input-group {{ $errors->has('email') ? 'has-error' : '' }}">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>  
                         {!! Form::text('email', old('email'), [
                         'class'=>'form-control', 
@@ -291,10 +313,10 @@
 
                     <div class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
-                        {!! Form::text('postal_code', old('postal_code'), [
+                        {!! Form::text('specialiter', old('specialiter'), [
                         'class'=>'form-control', 
                         'placeholder'=>'',
-                        'id'=>'postal_code'
+                        'id'=>'specialiter'
                         ]) !!}<input type="button" class="btn" id="btnLeft" value="Enregistrer"/>
                     </div>
 
