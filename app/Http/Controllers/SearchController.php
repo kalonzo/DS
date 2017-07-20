@@ -264,6 +264,8 @@ class SearchController {
                     $establishments[$uuid]['country'] = $establishmentData->country;
                     $establishments[$uuid]['type_category'] = $establishmentData->type_category;
                     $establishments[$uuid]['raw_distance'] = \App\Utilities\StringTools::displayCleanDistance($establishmentData->rawDistance);
+                    $establishments[$uuid]['latitude'] = $establishmentData->latitude;
+                    $establishments[$uuid]['longitude'] = $establishmentData->longitude;
                 }
             }
             

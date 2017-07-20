@@ -20,34 +20,8 @@ $(document).on('googleGeolocReady', function(){
             }]     
         }]
     });
-    /*
-    var infoWindow = new google.maps.InfoWindow({map: map});
-
-    var destinationLat = 46.417087;
-    var destinationLng = 6.276002;
-    var iconDest = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
-    var markerDestination = new google.maps.Marker({
-        position: {lat: destinationLat, lng: destinationLng},
-        map: map,
-        title: 'Destination',
-        icon: iconDest,
-        draggable:true
-    });
-    var markerInfoWindow = new google.maps.InfoWindow({
-        content: getDestinationInfoLabel(markerDestination.getPosition().lat(), markerDestination.getPosition().lng())
-    });
-    markerDestination.addListener('click', function () {
-        markerInfoWindow.open(map, markerDestination);
-    });
-    markerDestination.addListener('dragend', function () {
-        markerInfoWindow.open(map, markerDestination);
-        $('#inputLatitude').val(markerDestination.getPosition().lat());
-        $('#inputLongitude').val(markerDestination.getPosition().lng());
-    });
-    $('#inputLatitude').val(destinationLat);
-    $('#inputLongitude').val(destinationLng);
-    */
-
+    $(document).trigger('googleMapReady');
+    
     if (!isEmpty(userPositionLat) && !isEmpty(userPositionLng)) {
         var pos = {
             lat: userPositionLat,
@@ -90,6 +64,33 @@ $(document).on('googleGeolocReady', function(){
     });
 });
 
+var resultMarkers = new Array();
+$(document).on('searchUpdated googleMapReady', function(event, data){
+    $.each(resultMarkers, function (index, marker) {
+        marker.setMap(null);
+    });
+    $('#search-results').find('.search-thumbnail').each(function(){
+        var name = $(this).attr('data-name');
+        var lat = $(this).attr('data-lat')*1;
+        var lng = $(this).attr('data-lng')*1;
+
+        var markerEts = new google.maps.Marker({
+            position: {lat: lat, lng: lng},
+            map: map,
+            title: name,
+            icon: '/img/marker_ds.png',
+        });
+        var etsInfoWindow = new google.maps.InfoWindow({
+            content: name
+        });
+        markerEts.addListener('click', function () {
+            etsInfoWindow.open(map, markerEts);
+        });
+        resultMarkers.push(markerEts);
+    });
+});
+
+    
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     infoWindow.setPosition(pos);
     infoWindow.setContent(browserHasGeolocation ?

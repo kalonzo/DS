@@ -84,6 +84,7 @@ $(function () {
         })
         .done(function( data ) {
             $('#search-container').empty().html(data);
+            $(document).trigger('searchUpdated');
         });
     };
     

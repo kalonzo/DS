@@ -41,7 +41,8 @@
     </div>
     <div class="col-xs-12 no-gutter" id="search-results">
         @foreach($establishments as $establishment)
-            <div class="no-gutter search-thumbnail">
+            <div class="no-gutter search-thumbnail" 
+                 data-lat='{{ $establishment['latitude'] }}' data-lng='{{ $establishment['longitude'] }}' data-name="{{ $establishment['name'] }}">
                 <div class="thumbnail-top col-xs-12 no-gutter">
                     <img class="col-xs-12 no-gutter" src="{{ $establishment['img'] }}" alt="Establishment picture"/>
                     <div class="thumbnail-distance">
