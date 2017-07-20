@@ -5,16 +5,23 @@ namespace App\Models;
 
 
 /**
- * Class User
+ * Class Usere
  */
 class User extends Model
 {
     protected $table = 'users';
 
     public $timestamps = true;
+    
+    const TYPE_USER_ADMIN_PRO = 1;
+    const TYPE_USER = 2;
+    const TYPE_GENDER_WOMAN = 3;
+    const TYPE_GENDER_MAN = 4;
+    const TYPE_GENDER_SOCITY = 5;
 
     protected $fillable = [
         'status',
+        'name',
         'type',
         'gender',
         'lastname',
@@ -27,7 +34,7 @@ class User extends Model
         'longitude',
         'latitude',
         'id_photo',
-        'company_id'
+        'id_company'
     ];
 
     protected $guarded = [];
@@ -39,6 +46,13 @@ class User extends Model
 	public function getStatus() {
 		return $this->status;
 	}
+      
+	/**
+	 * @return mixed
+	 */
+	public function getName() {
+		return $this->name;
+	} 
 
 	/**
 	 * @return mixed
@@ -127,12 +141,11 @@ class User extends Model
 	/**
 	 * @return mixed
 	 */
-	public function getCompanyId() {
-		return $this->company_id;
-	}
-
-
+	public function getIdCompany() {
+		return $this->id_company;
+	}       
     
+        
 	/**
 	 * @param $value
 	 * @return $this
@@ -141,6 +154,15 @@ class User extends Model
 		$this->status = $value;
 		return $this;
 	}
+        
+	/**
+	 * @param $value
+	 * @return $this
+	 */
+	public function setName($value) {
+		$this->name = $value;
+		return $this;
+	} 
 
 	/**
 	 * @param $value
@@ -254,8 +276,8 @@ class User extends Model
 	 * @param $value
 	 * @return $this
 	 */
-	public function setCompanyId($value) {
-		$this->company_id = $value;
+	public function setIdCompany($value) {
+		$this->id_company = $value;
 		return $this;
 	}
 
