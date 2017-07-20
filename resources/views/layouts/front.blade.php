@@ -72,6 +72,8 @@
         </footer>
         
         <script src="/js/app.js"></script>
+        <script src="/js/kernelFunctions.js"></script>
+        <script src="/js/extendMethods.js"></script>
         <script src="/js/functions.js"></script>
         @yield('js_imports_footer')
     </body>

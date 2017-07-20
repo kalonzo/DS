@@ -1,14 +1,3 @@
-
-Math.radians = function (degrees) {
-    return degrees * Math.PI / 180;
-};
-
-// Converts from radians to degrees.
-Math.degrees = function (radians) {
-    return radians * 180 / Math.PI;
-};
-
-
 dsSetCookie = function(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
@@ -44,11 +33,3 @@ function readCookie(name) {
     return null;
 }
 
-
-isEmpty = function(myVar){
-    var empty = true;
-    if(myVar !== '' && myVar !== null && myVar !== undefined && myVar != null){
-        empty = false;
-    }
-    return empty;
-};

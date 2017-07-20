@@ -21,4 +21,15 @@ class UuidTools {
     public static function generateUuid(){
         return hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
     }
+    
+    public static function getId($hexId){
+        return hex2bin($hexId);
+    }
+    
+    public static function convertArrayOfUuid($uuidArray){
+        foreach($uuidArray as $key => $uuid){
+            $uuidArray[$key] = self::getId($uuid);
+        }
+        return $uuidArray;
+    }
 }

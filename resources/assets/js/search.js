@@ -68,9 +68,41 @@ $(function () {
     });
     
     $('body').on('change', '.search-filter-input', function(){
-        var value = $(this).val();
-        var label = $(this).attr('name');
-        reloadSearch(label, value);
+        var filterLabel = $(this).attr('name');
+        var filterValue = $(this).val();
+        switch(this.tagName){
+            case 'INPUT':
+                switch($(this).attr('type')){
+                    case 'checkbox':
+                        var inputLabel = $(this).attr('name');
+                        if(filterLabel.indexOf('[]') !== -1){
+                            var formGroup = $(this).parentsInclude('.form-group');
+                            filterLabel = filterLabel.replace('[]', '');
+                            var $siblings = $(formGroup).find('.search-filter-input[name="'+inputLabel+'"]:checked');
+                            $siblings.add(this);
+                            filterValue = $.map($siblings, function(c){return c.value; });
+                            if(isEmptyArray(filterValue)){
+                                filterValue = null;
+                            }
+                        }
+                        break;
+                }
+                break;
+//            case 'SELECT':
+//                filterLabel = inputLabel;
+//                break;
+//            case 'DIV':
+//                
+//                break;
+        }
+        
+        reloadSearch(filterLabel, filterValue);
+    });
+    
+    $('#filterModal').on('show.bs.modal', function(e){
+        var triggerElement = e.relatedTarget;
+        var formGroup = $(triggerElement).parentsInclude('.form-group').clone();
+        $(this).find('.modal-body').empty().append(formGroup);
     });
     
     function reloadSearch(filterName, value){
@@ -80,7 +112,8 @@ $(function () {
         
         $.ajax({
             url: '/search',
-            data: ajaxParams
+            data: ajaxParams,
+//            method: 'POST'
         })
         .done(function( data ) {
             $('#search-container').empty().html(data);

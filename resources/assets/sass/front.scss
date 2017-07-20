@@ -106,6 +106,14 @@ body{
                 display: none  !important;
             }
         }
+        .checkbox{
+            > label{
+                width: 100%;
+            }
+        }
+        .item-overflow{
+            display: none;
+        }
     }
     #search-results{
         .search-thumbnail{
@@ -185,4 +193,14 @@ body{
             }
         }
     }
+}
+
+#filterModal{
+    .filter-list-see-more{
+        display: none;
+    }
+}
+
+.checkbox > label{
+    line-height: 1.85;
 }

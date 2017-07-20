@@ -36,6 +36,23 @@
                         Distance de 0 à <span id="distance-slider-max">{{ $filter_values['distance'] }}</span> km
                     </div>
                 </div>
+                <div class="form-group">
+                    <label>Localité</label>
+                    @foreach($filter_labels['location_index'] as $id_location => $location_info)
+                    <div class="checkbox @if( $loop->iteration > 4) item-overflow @endif">
+                        <label>
+                            <input type="checkbox" name="location_index[]" value="{{ $id_location }}" class="search-filter-input"
+                                    @if(is_array($filter_values['location_index']) && in_array($id_location, $filter_values['location_index'])) checked @endif />
+                            {{ $location_info['city'] }}
+                            <span class="pull-right">({{ $location_info['count'] }})</span>
+                        </label>
+                    </div>
+                    @endforeach
+                    <a class="filter-list-see-more clickable @if( count($filter_labels['location_index']) <= 4) hidden @endif"
+                       data-toggle="modal" data-target="#filterModal">
+                        (+ de localités)
+                    </a>
+                </div>
             </div>
         </div>
     </div>

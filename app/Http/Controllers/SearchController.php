@@ -8,8 +8,12 @@ use App\Models\Establishment;
 use App\Models\EstablishmentBusinessCategory;
 use App\Models\Restaurant;
 use App\Models\Utilities\LatLng;
+use App\Utilities\DbQueryTools;
 use App\Utilities\GeolocTools;
+use App\Utilities\StorageHelper;
+use App\Utilities\StringTools;
 use App\Utilities\UuidTools;
+use Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -23,7 +27,7 @@ use View;
 class SearchController {
     const NB_QUICK_RESULTS_PER_TYPE = 5;
     const DEFAULT_DISTANCE_KM_SEARCH = 5;
-    const DEFAULT_DISPLAY_BY = 25;
+    const DEFAULT_DISPLAY_BY = 12;
     
     const QUICK_SEARCH_SECTION_DISTANCE = 1;
     const QUICK_SEARCH_SECTION_NAME = 2;
@@ -145,7 +149,7 @@ class SearchController {
         if(!empty($establishmentsQuery)){
             $resultsPagination = self::buildSearchResults($establishmentsQuery);
             $filterValues = SessionController::getInstance()->getSearchFilterValues();
-            $filterLabels = \App\Utilities\StorageHelper::getInstance()->get('search.filter_data');
+            $filterLabels = StorageHelper::getInstance()->get('search.filter_data');
             if(!empty($resultsPagination)){
                 $reload = Request::get('reload');
                 $viewName = null;
@@ -163,7 +167,7 @@ class SearchController {
     
     /**
      * 
-     * @return \Eloquent
+     * @return Eloquent
      */
     public static function buildSearchQuery(){
         $establishmentsQuery = null;
@@ -175,6 +179,7 @@ class SearchController {
         $terms = Request::get('term');
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
         $orderBy = self::getFilterValues('order_by', self::SEARCH_ORDER_BY_PROXIMITY);
+        $ids_location_index = self::getFilterValues('location_index');
         
         if($userLatLng->isValid()){
             $businessCategoryType = null;
@@ -208,7 +213,7 @@ class SearchController {
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
                             ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.*, '.BusinessCategory::TABLENAME.'.name as type_category'
-                                    .','.GeolocTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
+                                    .','. DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
                             ->join(Address::TABLENAME, Address::TABLENAME.'.id', '=', Establishment::TABLENAME.'.id_address')
                             ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_establishment')
                             ->join(BusinessCategory::TABLENAME, BusinessCategory::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_business_category')
@@ -218,6 +223,9 @@ class SearchController {
                             ->whereBetween(Establishment::TABLENAME.'.latitude', array($minLat, $maxLat))
                             ->whereBetween(Establishment::TABLENAME.'.longitude', array($minLng, $maxLng))
                             ;
+                if(!empty($ids_location_index)){
+                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(Address::TABLENAME, 'id_location_index', $ids_location_index));
+                }
                 if(!empty($businessCategoryType)){
                     $establishmentsQuery->where(BusinessCategory::TABLENAME.'.type', '=', $businessCategoryType);
                 }
@@ -252,6 +260,8 @@ class SearchController {
             $nbTotalResults = $searchQuery->count();
             $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
             
+            $locationIndexes = array();
+            
             $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
             $establishmentsData = $searchQuery->get();
             foreach($establishmentsData as $establishmentData){    
@@ -263,11 +273,21 @@ class SearchController {
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = $establishmentData->country;
                     $establishments[$uuid]['type_category'] = $establishmentData->type_category;
-                    $establishments[$uuid]['raw_distance'] = \App\Utilities\StringTools::displayCleanDistance($establishmentData->rawDistance);
+                    $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;
                     $establishments[$uuid]['longitude'] = $establishmentData->longitude;
+                    
+                    $uuidLocationIndex = UuidTools::getUuid($establishmentData->id_location_index);
+                    if(!isset($locationIndexes[$uuidLocationIndex])){
+                        $locationIndexes[$uuidLocationIndex] = array('city' => $establishmentData->city, 'count' => 1);
+                    } else {
+                        $locationIndexes[$uuidLocationIndex]['count']++;
+                    }
                 }
             }
+            
+            // Manage filter related to results list
+            StorageHelper::getInstance()->add('search.filter_data.location_index', $locationIndexes);
             
             // Paginate results
             $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage);
@@ -282,8 +302,8 @@ class SearchController {
                         self:: SEARCH_ORDER_BY_NAME => "Nom"
                      );
         $displayBy = self::$nbElementsPerPageChoices;
-        \App\Utilities\StorageHelper::getInstance()->add('search.filter_data.order_by', $orderBy);
-        \App\Utilities\StorageHelper::getInstance()->add('search.filter_data.display_by', $displayBy);
+        StorageHelper::getInstance()->add('search.filter_data.order_by', $orderBy);
+        StorageHelper::getInstance()->add('search.filter_data.display_by', $displayBy);
     }
     
     public static function setFilterValues($key, $value){
