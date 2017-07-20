@@ -23,6 +23,7 @@ use View;
 class SearchController {
     const NB_QUICK_RESULTS_PER_TYPE = 5;
     const DEFAULT_DISTANCE_KM_SEARCH = 5;
+    const DEFAULT_DISPLAY_BY = 25;
     
     const QUICK_SEARCH_SECTION_DISTANCE = 1;
     const QUICK_SEARCH_SECTION_NAME = 2;
@@ -30,6 +31,9 @@ class SearchController {
     
     const SEARCH_ORDER_BY_PROXIMITY = 1;
     const SEARCH_ORDER_BY_NAME = 2;
+    const SEARCH_ORDER_BY_COOKING_TYPE = 3;
+    
+    public static $nbElementsPerPageChoices = array(6, 12, 24);
     
     public static function quickSearch($terms){
         $results = array();
@@ -81,7 +85,7 @@ class SearchController {
                                 'label' => $restaurant->getName().' ('.($distance / 1000).'km)',
                                 'value' => $restaurant->getName(),
                                 'section' => 'Localité',
-                                'section_id' => self::QUICK_SEARCH_SECTION_DISTANCE,
+                                'order_by' => self::SEARCH_ORDER_BY_PROXIMITY,
                                 'lat' => $restaurant->getLatitude(),
                                 'lng' => $restaurant->getLongitude()
                             );
@@ -98,7 +102,7 @@ class SearchController {
                             'label' => $restaurant->getName(),
                             'value' => $restaurant->getName(),
                             'section' => 'Nom',
-                            'section_id' => self::QUICK_SEARCH_SECTION_NAME,
+                            'order_by' => self::SEARCH_ORDER_BY_NAME,
                             'lat' => $restaurant->getLatitude(),
                             'lng' => $restaurant->getLongitude()
                         );
@@ -123,7 +127,7 @@ class SearchController {
                             'label' => $result->name.' ('.$result->nb_establishment.')',
                             'value' => $result->name,
                             'section' => 'Type de cuisine',
-                            'section_id' => self::QUICK_SEARCH_SECTION_COOKING_TYPE
+                            'order_by' => self::SEARCH_ORDER_BY_COOKING_TYPE
                         );
                 }
                 
@@ -135,27 +139,23 @@ class SearchController {
     
     public static function search(){
         $view = null;
+        self::buildFilterLabels();
         $establishmentsQuery = self::buildSearchQuery();
         
         if(!empty($establishmentsQuery)){
             $resultsPagination = self::buildSearchResults($establishmentsQuery);
             $filterValues = SessionController::getInstance()->getSearchFilterValues();
+            $filterLabels = \App\Utilities\StorageHelper::getInstance()->get('search.filter_data');
             if(!empty($resultsPagination)){
-                $view = View::make('front.search')->with('establishments', $resultsPagination)->with('filter_values', $filterValues);
-            }
-        }
-        return $view;
-    }
-    
-    public static function searchReload(){
-        $view = null;
-        $establishmentsQuery = self::buildSearchQuery();
-        
-        if(!empty($establishmentsQuery)){
-            $resultsPagination = self::buildSearchResults($establishmentsQuery);
-            $filterValues = SessionController::getInstance()->getSearchFilterValues();
-            if(!empty($resultsPagination)){
-                $view = View::make('components.search_results')->with('establishments', $resultsPagination)->with('filter_values', $filterValues);
+                $reload = Request::get('reload');
+                $viewName = null;
+                if($reload){
+                    $viewName = 'components.search_results';
+                } else {
+                    $viewName = 'front.search';
+                }
+                $view = View::make($viewName)->with('establishments', $resultsPagination)->with('filter_values', $filterValues)
+                                                                                        ->with('filter_labels', $filterLabels);
             }
         }
         return $view;
@@ -174,13 +174,9 @@ class SearchController {
         
         $terms = Request::get('term');
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
+        $orderBy = self::getFilterValues('order_by', self::SEARCH_ORDER_BY_PROXIMITY);
         
         if($userLatLng->isValid()){
-            $section = Request::get('section');
-            switch($section){
-
-            }
-            
             $businessCategoryType = null;
             switch($typeEts){
                 case Establishment::TYPE_BUSINESS_RESTAURANT:
@@ -211,12 +207,14 @@ class SearchController {
             }
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                            ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.*, '.BusinessCategory::TABLENAME.'.name as type_category'))
+                            ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.*, '.BusinessCategory::TABLENAME.'.name as type_category'
+                                    .','.GeolocTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
                             ->join(Address::TABLENAME, Address::TABLENAME.'.id', '=', Establishment::TABLENAME.'.id_address')
                             ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_establishment')
                             ->join(BusinessCategory::TABLENAME, BusinessCategory::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_business_category')
                             ->where(Establishment::TABLENAME.'.name', 'LIKE', "%$terms%")
                             ->where(Establishment::TABLENAME.'.id_business_type', '=', $typeEts)
+//                            ->having('rawDistance', '<=', ($distance*1000))
                             ->whereBetween(Establishment::TABLENAME.'.latitude', array($minLat, $maxLat))
                             ->whereBetween(Establishment::TABLENAME.'.longitude', array($minLng, $maxLng))
                             ;
@@ -224,11 +222,10 @@ class SearchController {
                     $establishmentsQuery->where(BusinessCategory::TABLENAME.'.type', '=', $businessCategoryType);
                 }
                 
-                $orderBy = Request::get('order_by');
                 switch($orderBy){
                     default :
                     case self::SEARCH_ORDER_BY_PROXIMITY:
-
+                        $establishmentsQuery->orderBy('rawDistance');
                         break;
                     case self::SEARCH_ORDER_BY_NAME:
                         $establishmentsQuery->orderBy('name');
@@ -249,21 +246,27 @@ class SearchController {
         $resultsPagination = null;
         if(!empty($searchQuery)){
             // Query pagination management
-            $nbElementPerPage = 10;
+            $nbElementPerPage = self::getFilterValues('display_by', self::DEFAULT_DISPLAY_BY);
             $currentPage = LengthAwarePaginator::resolveCurrentPage();
             $sliceStart = ($currentPage - 1) * $nbElementPerPage;
             $nbTotalResults = $searchQuery->count();
             $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
-
+            
+            $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
             $establishmentsData = $searchQuery->get();
             foreach($establishmentsData as $establishmentData){    
-                $uuid = UuidTools::getUuid($establishmentData->id);
-                $establishments[$uuid]['id'] = $uuid;
-                $establishments[$uuid]['name'] = $establishmentData->name;
-                $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
-                $establishments[$uuid]['city'] = $establishmentData->city;
-                $establishments[$uuid]['country'] = $establishmentData->country;
-                $establishments[$uuid]['type_category'] = $establishmentData->type_category;
+                if($establishmentData->rawDistance <= ($distance*1000)){
+                    $uuid = UuidTools::getUuid($establishmentData->id);
+                    $establishments[$uuid]['id'] = $uuid;
+                    $establishments[$uuid]['name'] = $establishmentData->name;
+                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+                    $establishments[$uuid]['city'] = $establishmentData->city;
+                    $establishments[$uuid]['country'] = $establishmentData->country;
+                    $establishments[$uuid]['type_category'] = $establishmentData->type_category;
+                    $establishments[$uuid]['raw_distance'] = \App\Utilities\StringTools::displayCleanDistance($establishmentData->rawDistance);
+                    $establishments[$uuid]['latitude'] = $establishmentData->latitude;
+                    $establishments[$uuid]['longitude'] = $establishmentData->longitude;
+                }
             }
             
             // Paginate results
@@ -271,6 +274,16 @@ class SearchController {
             $resultsPagination->setPath(Request::url());
         }
         return $resultsPagination;
+    }
+    
+    public static function buildFilterLabels(){
+        $orderBy =array(
+                        self:: SEARCH_ORDER_BY_PROXIMITY => "Proximité",
+                        self:: SEARCH_ORDER_BY_NAME => "Nom"
+                     );
+        $displayBy = self::$nbElementsPerPageChoices;
+        \App\Utilities\StorageHelper::getInstance()->add('search.filter_data.order_by', $orderBy);
+        \App\Utilities\StorageHelper::getInstance()->add('search.filter_data.display_by', $displayBy);
     }
     
     public static function setFilterValues($key, $value){
