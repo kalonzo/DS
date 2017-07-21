@@ -180,6 +180,7 @@ class SearchController {
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
         $orderBy = self::getFilterValues('order_by', self::SEARCH_ORDER_BY_PROXIMITY);
         $ids_location_index = self::getFilterValues('location_index');
+        $ids_cooking_type = self::getFilterValues('cooking_type');
         
         if($userLatLng->isValid()){
             $businessCategoryType = null;
@@ -212,22 +213,30 @@ class SearchController {
             }
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                            ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.*, '.BusinessCategory::TABLENAME.'.name as type_category'
+                            ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.* '
+                                    .','. BusinessCategory::TABLENAME.'.id as id_type_category, '.BusinessCategory::TABLENAME.'.name as type_category'
                                     .','. DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
                             ->join(Address::TABLENAME, Address::TABLENAME.'.id', '=', Establishment::TABLENAME.'.id_address')
                             ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_establishment')
                             ->join(BusinessCategory::TABLENAME, BusinessCategory::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_business_category')
                             ->where(Establishment::TABLENAME.'.name', 'LIKE', "%$terms%")
                             ->where(Establishment::TABLENAME.'.id_business_type', '=', $typeEts)
-//                            ->having('rawDistance', '<=', ($distance*1000))
                             ->whereBetween(Establishment::TABLENAME.'.latitude', array($minLat, $maxLat))
                             ->whereBetween(Establishment::TABLENAME.'.longitude', array($minLng, $maxLng))
+//                            ->having('rawDistance', '<=', ($distance*1000))
                             ;
+                if(!empty($businessCategoryType)){
+                    $establishmentsQuery->where(BusinessCategory::TABLENAME.'.type', '=', $businessCategoryType);
+                }
+                
+                
+                // Search by locations
                 if(!empty($ids_location_index)){
                     $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(Address::TABLENAME, 'id_location_index', $ids_location_index));
                 }
-                if(!empty($businessCategoryType)){
-                    $establishmentsQuery->where(BusinessCategory::TABLENAME.'.type', '=', $businessCategoryType);
+                // Search by cooking type
+                if(!empty($ids_cooking_type)){
+                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(BusinessCategory::TABLENAME, 'id', $ids_cooking_type));
                 }
                 
                 switch($orderBy){
@@ -260,13 +269,16 @@ class SearchController {
             $nbTotalResults = $searchQuery->count();
             $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
             
+            // Filter labels lists
             $locationIndexes = array();
+            $cookingTypes = array();
             
             $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
             $establishmentsData = $searchQuery->get();
             foreach($establishmentsData as $establishmentData){    
                 if($establishmentData->rawDistance <= ($distance*1000)){
                     $uuid = UuidTools::getUuid($establishmentData->id);
+                    // Search results list
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;
                     $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
@@ -277,17 +289,26 @@ class SearchController {
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;
                     $establishments[$uuid]['longitude'] = $establishmentData->longitude;
                     
+                    // Filter label for location
                     $uuidLocationIndex = UuidTools::getUuid($establishmentData->id_location_index);
                     if(!isset($locationIndexes[$uuidLocationIndex])){
                         $locationIndexes[$uuidLocationIndex] = array('city' => $establishmentData->city, 'count' => 1);
                     } else {
                         $locationIndexes[$uuidLocationIndex]['count']++;
                     }
+                    // Filter label for cooking type
+                    $uuidTypeCooking = UuidTools::getUuid($establishmentData->id_type_category);
+                    if(!isset($cookingTypes[$uuidTypeCooking])){
+                        $cookingTypes[$uuidTypeCooking] = array('type' => $establishmentData->type_category, 'count' => 1);
+                    } else {
+                        $cookingTypes[$uuidTypeCooking]['count']++;
+                    }
                 }
             }
             
-            // Manage filter related to results list
+            // Filter labels save
             StorageHelper::getInstance()->add('search.filter_data.location_index', $locationIndexes);
+            StorageHelper::getInstance()->add('search.filter_data.cooking_type', $cookingTypes);
             
             // Paginate results
             $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage);

@@ -58,6 +58,26 @@
                     </a>
                 </div>
             </div>
+            <div class="col-md-3">
+                <!-- COOKING TYPE FILTER -->
+                <div class="form-group">
+                    <label>Type de cuisine</label>
+                    @foreach($filter_labels['cooking_type'] as $id_type => $type_info)
+                    <div class="checkbox @if( $loop->iteration > 8) item-overflow @endif">
+                        <label>
+                            <input type="checkbox" name="cooking_type[]" value="{{ $id_type }}" class="search-filter-input"
+                                    @if(is_array($filter_values['cooking_type']) && in_array($id_type, $filter_values['cooking_type'])) checked @endif />
+                            {{ $type_info['type'] }}
+                            <span class="pull-right">({{ $type_info['count'] }})</span>
+                        </label>
+                    </div>
+                    @endforeach
+                    <a class="filter-list-see-more clickable @if( count($filter_labels['cooking_type']) <= 8) hidden @endif"
+                       data-toggle="modal" data-target="#filterModal">
+                        (+ de types de cuisine)
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-xs-12 no-gutter" id="search-results">
