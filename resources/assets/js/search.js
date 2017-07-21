@@ -65,6 +65,28 @@ $(function () {
                 }
             });
         });
+        $('#price-slider:not(.sliderProcessed)').each(function(){
+            $(this).addClass('sliderProcessed');
+            var filterValue = $(this).attr('data-value');
+            var maxValue = $(this).attr('data-max');
+            if(isEmpty(filterValue)){
+                filterValue = maxValue;
+            }
+            $(this).slider({
+                range: true,
+                min: 0,
+                max: maxValue,
+                step: 5,
+                values: [0, filterValue],
+                slide: function( event, ui ) {
+                    var value = ui.value;
+                    $('#price-slider-max').html(value);
+                },
+                stop: function( event, ui ) {
+                    reloadSearch('price', ui.value);
+                }
+            });
+        });
     });
     
     $('body').on('change', '.search-filter-input', function(){

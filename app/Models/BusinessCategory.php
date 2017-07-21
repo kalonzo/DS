@@ -15,6 +15,7 @@ class BusinessCategory extends Model
     const TYPE_COOKING_TYPE = 1;
     const TYPE_FOOD_SPECIALITY = 2;
     const TYPE_RESTAURANT_ATMOSPHERE = 3;
+    const TYPE_SERVICES = 4;
 
     public $timestamps = true;
 

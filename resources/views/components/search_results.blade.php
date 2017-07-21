@@ -62,20 +62,68 @@
                 <!-- COOKING TYPE FILTER -->
                 <div class="form-group">
                     <label>Type de cuisine</label>
-                    @foreach($filter_labels['cooking_type'] as $id_type => $type_info)
+                    @foreach($filter_labels['biz_category_1'] as $id_type => $type_info)
                     <div class="checkbox @if( $loop->iteration > 8) item-overflow @endif">
                         <label>
-                            <input type="checkbox" name="cooking_type[]" value="{{ $id_type }}" class="search-filter-input"
-                                    @if(is_array($filter_values['cooking_type']) && in_array($id_type, $filter_values['cooking_type'])) checked @endif />
+                            <input type="checkbox" name="biz_category_1[]" value="{{ $id_type }}" class="search-filter-input"
+                                    @if(is_array($filter_values['biz_category_1']) && in_array($id_type, $filter_values['biz_category_1'])) checked @endif />
                             {{ $type_info['type'] }}
                             <span class="pull-right">({{ $type_info['count'] }})</span>
                         </label>
                     </div>
                     @endforeach
-                    <a class="filter-list-see-more clickable @if( count($filter_labels['cooking_type']) <= 8) hidden @endif"
+                    <a class="filter-list-see-more clickable @if( count($filter_labels['biz_category_1']) <= 8) hidden @endif"
                        data-toggle="modal" data-target="#filterModal">
                         (+ de types de cuisine)
                     </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <!-- ATMOSPHERE FILTER -->
+                <div class="form-group">
+                    <label>Cadre et ambiance</label>
+                    @foreach($filter_labels['biz_category_2'] as $id_type => $type_info)
+                    <div class="checkbox @if( $loop->iteration > 8) item-overflow @endif">
+                        <label>
+                            <input type="checkbox" name="biz_category_2[]" value="{{ $id_type }}" class="search-filter-input"
+                                    @if(is_array($filter_values['biz_category_2']) && in_array($id_type, $filter_values['biz_category_2'])) checked @endif />
+                            {{ $type_info['type'] }}
+                            <span class="pull-right">({{ $type_info['count'] }})</span>
+                        </label>
+                    </div>
+                    @endforeach
+                    <a class="filter-list-see-more clickable @if( count($filter_labels['biz_category_2']) <= 8) hidden @endif"
+                       data-toggle="modal" data-target="#filterModal">
+                        (+ de types de cuisine)
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                 <!-- PROMO FILTER -->
+                <div class="form-group">
+                    <label>Promos</label>
+                    @foreach($filter_labels['promo_type'] as $id_promo_type => $promo_type_info)
+                    <div class="checkbox @if( $loop->iteration > 4) item-overflow @endif">
+                        <label>
+                            <input type="checkbox" name="promo_type[]" value="{{ $id_promo_type }}" class="search-filter-input"
+                                    @if(is_array($filter_values['promo_type']) && in_array($id_promo_type, $filter_values['promo_type'])) checked @endif />
+                            {{ $promo_type_info['type'] }}
+                            <span class="pull-right">({{ $promo_type_info['count'] }})</span>
+                        </label>
+                    </div>
+                    @endforeach
+                    <a class="filter-list-see-more clickable @if( count($filter_labels['promo_type']) <= 4) hidden @endif"
+                       data-toggle="modal" data-target="#filterModal">
+                        (+ de promos)
+                    </a>
+                </div>
+                 <!-- PRICE FILTER -->
+                <div class="form-group" @if( $filter_labels['max_price'] <= 0) hidden @endif>
+                    <label>Prix</label>
+                    <div class="slider" id="price-slider" data-value="{{ $filter_values['price'] }}" data-max="{{ $filter_labels['max_price'] }}"></div>
+                    <div class="text-right">
+                        De 0 à CHF <span id="price-slider-max">{{ $filter_values['price'] == 0 ? $filter_labels['max_price'] : $filter_values['price'] }}</span>.-
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,7 +143,7 @@
                         {{ $establishment['name'] }}
                     </div>
                     <div class="thumbnail-info col-xs-12 no-gutter">
-                        {{$establishment['type_category']}}, {{$establishment['city']}} - {{$establishment['country']}}
+                        {{$establishment['biz_category_1']}}, {{$establishment['city']}} - {{$establishment['country']}}
                     </div>
                 </div>
             </div>

@@ -10,6 +10,7 @@ namespace App\Models;
 class PromotionType extends Model
 {
     protected $table = 'promotion_types';
+    const TABLENAME = 'promotion_types';
 
     public $timestamps = true;
 

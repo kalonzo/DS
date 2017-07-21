@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Models\BusinessCategory;
 use App\Models\Establishment;
 use App\Models\EstablishmentBusinessCategory;
+use App\Models\Promotion;
 use App\Models\Restaurant;
 use App\Models\Utilities\LatLng;
 use App\Utilities\DbQueryTools;
@@ -27,6 +28,7 @@ use View;
 class SearchController {
     const NB_QUICK_RESULTS_PER_TYPE = 5;
     const DEFAULT_DISTANCE_KM_SEARCH = 5;
+    const DEFAULT_PRICE_CHF_SEARCH = 60;
     const DEFAULT_DISPLAY_BY = 24;
     
     const QUICK_SEARCH_SECTION_DISTANCE = 1;
@@ -178,15 +180,21 @@ class SearchController {
         
         $terms = Request::get('term');
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
+        $price = self::getFilterValues('price');
         $orderBy = self::getFilterValues('order_by', self::SEARCH_ORDER_BY_PROXIMITY);
         $ids_location_index = self::getFilterValues('location_index');
-        $ids_cooking_type = self::getFilterValues('cooking_type');
+        $ids_biz_category_1 = self::getFilterValues('biz_category_1');
+        $ids_biz_category_2 = self::getFilterValues('biz_category_2');
+        $ids_promos = self::getFilterValues('promo_type');
         
         if($userLatLng->isValid()){
-            $businessCategoryType = null;
+            // Business categories matching **********************************/
+            $businessCategoryType1 = null;
+            $businessCategoryType2 = null;
             switch($typeEts){
                 case Establishment::TYPE_BUSINESS_RESTAURANT:
-                    $businessCategoryType = BusinessCategory::TYPE_COOKING_TYPE;
+                    $businessCategoryType1 = BusinessCategory::TYPE_COOKING_TYPE;
+                    $businessCategoryType2 = BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE;
                     break;
             }
             
@@ -214,31 +222,70 @@ class SearchController {
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
                             ->select(DB::raw(Establishment::TABLENAME.'.*, '.Address::TABLENAME.'.* '
-                                    .','. BusinessCategory::TABLENAME.'.id as id_type_category, '.BusinessCategory::TABLENAME.'.name as type_category'
+                                    .', biz_category1.id as id_biz_category_1, biz_category1.name as name_biz_category_1'
                                     .','. DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
                             ->join(Address::TABLENAME, Address::TABLENAME.'.id', '=', Establishment::TABLENAME.'.id_address')
                             ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_establishment')
-                            ->join(BusinessCategory::TABLENAME, BusinessCategory::TABLENAME.'.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_business_category')
+                            ->join(BusinessCategory::TABLENAME.' AS biz_category1', 'biz_category1.id', '=', EstablishmentBusinessCategory::TABLENAME.'.id_business_category')
+                            ->leftJoin(Promotion::TABLENAME, Establishment::TABLENAME.'.id', '=', Promotion::TABLENAME.'.id_establishment')
                             ->where(Establishment::TABLENAME.'.name', 'LIKE', "%$terms%")
                             ->where(Establishment::TABLENAME.'.id_business_type', '=', $typeEts)
                             ->whereBetween(Establishment::TABLENAME.'.latitude', array($minLat, $maxLat))
                             ->whereBetween(Establishment::TABLENAME.'.longitude', array($minLng, $maxLng))
 //                            ->having('rawDistance', '<=', ($distance*1000))
                             ;
-                if(!empty($businessCategoryType)){
-                    $establishmentsQuery->where(BusinessCategory::TABLENAME.'.type', '=', $businessCategoryType);
+                // Link to main business category
+                if(!empty($businessCategoryType1)){
+                    $establishmentsQuery->where('biz_category1.type', '=', $businessCategoryType1);
+                }
+                // Prebuild extra business categories filters
+                $idsExtraBusinessCategories = array();
+                if(!empty($businessCategoryType2)){
+                    $businessCategory2Query = DB::table(BusinessCategory::TABLENAME)
+                                                ->select('id', 'name')
+                                                ->where('type', '=', $businessCategoryType2);
+                    if(!empty($ids_biz_category_2)){
+                        // Filter by extra business category
+                        $businessCategory2Query->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList('', 'id', $ids_biz_category_2));
+                        $idsExtraBusinessCategories = array_merge($idsExtraBusinessCategories, $ids_biz_category_2);
+                    }
+                    $businessCategories2 = array();
+                    $businessCategories2Data = $businessCategory2Query->get() ;
+                    foreach($businessCategories2Data as $businessCategory2Data){
+                        $uuidBusinessCategory2 = UuidTools::getUuid($businessCategory2Data->id);
+                        if(!isset($businessCategories2[$uuidBusinessCategory2])){
+                            $businessCategories2[$uuidBusinessCategory2] = array('type' => $businessCategory2Data->name, 'count' => 0);
+                        } else {
+                            $businessCategories2[$uuidBusinessCategory2]['count']++;
+                        }
+                    }
+                    StorageHelper::getInstance()->add('search.filter_data.biz_category_2', $businessCategories2);    
                 }
                 
+                // Search by extra business categories
+                if(!empty($idsExtraBusinessCategories)){
+                    $establishmentsQuery->join(EstablishmentBusinessCategory::TABLENAME.' AS ets_biz_categ', 
+                                                Establishment::TABLENAME.'.id', '=', 'ets_biz_categ.id_establishment');
+                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList('ets_biz_categ', 'id_business_category', $idsExtraBusinessCategories));
+                    $establishmentsQuery->addSelect('ets_biz_categ.id_business_category AS extra_business_category');
+                }
                 
                 // Search by locations
                 if(!empty($ids_location_index)){
                     $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(Address::TABLENAME, 'id_location_index', $ids_location_index));
                 }
                 // Search by cooking type
-                if(!empty($ids_cooking_type)){
-                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(BusinessCategory::TABLENAME, 'id', $ids_cooking_type));
+                if(!empty($ids_biz_category_1)){
+                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList('biz_category1', 'id', $ids_biz_category_1));
                 }
-                
+                // Search by promo type
+                if(!empty($ids_promos)){
+                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(Promotion::TABLENAME, 'id_promotion_type', $ids_promos));
+                }
+                // Search by price
+                if(!empty($price)){
+                    $establishmentsQuery->whereBetween(Establishment::TABLENAME.'.average_price_min', array(0, $price));
+                }
                 switch($orderBy){
                     default :
                     case self::SEARCH_ORDER_BY_PROXIMITY:
@@ -266,12 +313,15 @@ class SearchController {
             $nbElementPerPage = self::getFilterValues('display_by', self::DEFAULT_DISPLAY_BY);
             $currentPage = LengthAwarePaginator::resolveCurrentPage();
             $sliceStart = ($currentPage - 1) * $nbElementPerPage;
-            $nbTotalResults = $searchQuery->count();
+            $nbTotalResults = $searchQuery->count(Establishment::TABLENAME.'.id');
             $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
             
             // Filter labels lists
+            $maxPrice = 0;
             $locationIndexes = array();
-            $cookingTypes = array();
+            $businessCategory1 = array();
+            $businessCategory2 = StorageHelper::getInstance()->get('search.filter_data.biz_category_2');
+            $promoTypes = array();
             
             $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
             $establishmentsData = $searchQuery->get();
@@ -284,11 +334,15 @@ class SearchController {
                     $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = $establishmentData->country;
-                    $establishments[$uuid]['type_category'] = $establishmentData->type_category;
+                    $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
                     $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;
                     $establishments[$uuid]['longitude'] = $establishmentData->longitude;
                     
+                    // Filter label for price
+                    if($establishmentData->average_price_min > 0 && $establishmentData->average_price_min > $maxPrice){
+                        $maxPrice = $establishmentData->average_price_min;
+                    }
                     // Filter label for location
                     $uuidLocationIndex = UuidTools::getUuid($establishmentData->id_location_index);
                     if(!isset($locationIndexes[$uuidLocationIndex])){
@@ -296,19 +350,59 @@ class SearchController {
                     } else {
                         $locationIndexes[$uuidLocationIndex]['count']++;
                     }
-                    // Filter label for cooking type
-                    $uuidTypeCooking = UuidTools::getUuid($establishmentData->id_type_category);
-                    if(!isset($cookingTypes[$uuidTypeCooking])){
-                        $cookingTypes[$uuidTypeCooking] = array('type' => $establishmentData->type_category, 'count' => 1);
+                    // Filter label for business category 1 (cooking type, ...)
+                    $uuidBusinessCat1 = UuidTools::getUuid($establishmentData->id_biz_category_1);
+                    if(!isset($businessCategory1[$uuidBusinessCat1])){
+                        $businessCategory1[$uuidBusinessCat1] = array('type' => $establishmentData->name_biz_category_1, 'count' => 1);
                     } else {
-                        $cookingTypes[$uuidTypeCooking]['count']++;
+                        $businessCategory1[$uuidBusinessCat1]['count']++;
+                    }
+                    // Filter label for extra business category
+                    if(isset($establishmentData->extra_business_category)){
+                        $uuidBusinessCategory2 = UuidTools::getUuid($establishmentData->extra_business_category);
+                        if(isset($businessCategory2[$uuidBusinessCategory2])){
+                            $businessCategory2[$uuidBusinessCategory2]['count']++;
+                        }
+                    }
+                    // Filter label for promotion type
+                    if(isset($establishmentData->id_promotion_type)){
+                        $uuidPromotionType = UuidTools::getUuid($establishmentData->id_promotion_type);
+                        if(!isset($promoTypes[$uuidPromotionType])){
+                            $promoTypes[$uuidPromotionType] = array('type' => '', 'count' => 1);
+                        } else {
+                            $promoTypes[$uuidPromotionType]['count']++;
+                        }
                     }
                 }
             }
             
             // Filter labels save
             StorageHelper::getInstance()->add('search.filter_data.location_index', $locationIndexes);
-            StorageHelper::getInstance()->add('search.filter_data.cooking_type', $cookingTypes);
+            StorageHelper::getInstance()->add('search.filter_data.biz_category_1', $businessCategory1);
+            StorageHelper::getInstance()->add('search.filter_data.max_price', $maxPrice);
+            if(!empty($businessCategory2)){
+                foreach($businessCategory2 as $uuid => $bizCat2info){
+                    if($bizCat2info['count'] == 0){
+                        unset($businessCategory2[$uuid]);
+                    }
+                }
+                StorageHelper::getInstance()->add('search.filter_data.biz_category_2', $businessCategory2);
+            }
+            if(!empty($promoTypes)){
+                $promoTypeIds = array_keys($promoTypes);
+                $promoTypesData = DB::table(\App\Models\PromotionType::TABLENAME)
+                                                ->select('id', 'name')
+                                                ->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(PromotionType::TABLENAME, 'id', $promoTypeIds))
+                                                ->get();
+                foreach($promoTypesData as $promoTypeData){
+                    $uuidPromoType = UuidTools::getUuid($promoTypeData->id);
+                    if(isset($promoTypes[$uuidPromoType])){
+                        $promoTypes[$uuidPromoType]['type'] = $promoTypeData->name;
+                    }
+                }
+            }
+            StorageHelper::getInstance()->add('search.filter_data.promo_type', $promoTypes);
+            
             
             // Paginate results
             $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage);

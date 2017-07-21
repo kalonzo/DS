@@ -101,7 +101,7 @@ body{
             text-transform: uppercase;
             font-size: 1.4em;
         }
-        #distance-slider{
+        #distance-slider, #price-slider{
             .ui-slider-handle:first-of-type{
                 display: none  !important;
             }

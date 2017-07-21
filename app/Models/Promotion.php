@@ -10,6 +10,7 @@ namespace App\Models;
 class Promotion extends Model
 {
     protected $table = 'promotions';
+    const TABLENAME = 'promotions';
 
     public $timestamps = true;
 
