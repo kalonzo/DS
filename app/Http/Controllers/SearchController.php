@@ -311,12 +311,12 @@ class SearchController {
         if(!empty($searchQuery)){
             // Query pagination management
             $nbElementPerPage = self::getFilterValues('display_by', self::DEFAULT_DISPLAY_BY);
-            $currentPage = LengthAwarePaginator::resolveCurrentPage();
+            $currentPage = self::getFilterValues('page', 1); //LengthAwarePaginator::resolveCurrentPage(); 
             $sliceStart = ($currentPage - 1) * $nbElementPerPage;
             $nbTotalResults = $searchQuery->count(Establishment::TABLENAME.'.id');
-            $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
             
             // Filter labels lists
+            $minPrice = -1;
             $maxPrice = 0;
             $locationIndexes = array();
             $businessCategory1 = array();
@@ -324,49 +324,42 @@ class SearchController {
             $promoTypes = array();
             
             $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
-            $establishmentsData = $searchQuery->get();
-            foreach($establishmentsData as $establishmentData){    
-                if($establishmentData->rawDistance <= ($distance*1000)){
-                    $uuid = UuidTools::getUuid($establishmentData->id);
-                    // Search results list
-                    $establishments[$uuid]['id'] = $uuid;
-                    $establishments[$uuid]['name'] = $establishmentData->name;
-                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
-                    $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = $establishmentData->country;
-                    $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
-                    $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
-                    $establishments[$uuid]['latitude'] = $establishmentData->latitude;
-                    $establishments[$uuid]['longitude'] = $establishmentData->longitude;
-                    
+            $establishmentFiltersData = $searchQuery->get();
+            foreach($establishmentFiltersData as $establishmentFilterData){    
+                if($establishmentFilterData->rawDistance <= ($distance*1000)){
                     // Filter label for price
-                    if($establishmentData->average_price_min > 0 && $establishmentData->average_price_min > $maxPrice){
-                        $maxPrice = $establishmentData->average_price_min;
+                    if($establishmentFilterData->average_price_min > 0){
+                        if($establishmentFilterData->average_price_min > $maxPrice){
+                            $maxPrice = $establishmentFilterData->average_price_min;
+                        }
+                        if($minPrice < 0 || $establishmentFilterData->average_price_min < $minPrice){
+                            $minPrice = $establishmentFilterData->average_price_min;
+                        }
                     }
                     // Filter label for location
-                    $uuidLocationIndex = UuidTools::getUuid($establishmentData->id_location_index);
+                    $uuidLocationIndex = UuidTools::getUuid($establishmentFilterData->id_location_index);
                     if(!isset($locationIndexes[$uuidLocationIndex])){
-                        $locationIndexes[$uuidLocationIndex] = array('city' => $establishmentData->city, 'count' => 1);
+                        $locationIndexes[$uuidLocationIndex] = array('city' => $establishmentFilterData->city, 'count' => 1);
                     } else {
                         $locationIndexes[$uuidLocationIndex]['count']++;
                     }
                     // Filter label for business category 1 (cooking type, ...)
-                    $uuidBusinessCat1 = UuidTools::getUuid($establishmentData->id_biz_category_1);
+                    $uuidBusinessCat1 = UuidTools::getUuid($establishmentFilterData->id_biz_category_1);
                     if(!isset($businessCategory1[$uuidBusinessCat1])){
-                        $businessCategory1[$uuidBusinessCat1] = array('type' => $establishmentData->name_biz_category_1, 'count' => 1);
+                        $businessCategory1[$uuidBusinessCat1] = array('type' => $establishmentFilterData->name_biz_category_1, 'count' => 1);
                     } else {
                         $businessCategory1[$uuidBusinessCat1]['count']++;
                     }
                     // Filter label for extra business category
-                    if(isset($establishmentData->extra_business_category)){
-                        $uuidBusinessCategory2 = UuidTools::getUuid($establishmentData->extra_business_category);
+                    if(isset($establishmentFilterData->extra_business_category)){
+                        $uuidBusinessCategory2 = UuidTools::getUuid($establishmentFilterData->extra_business_category);
                         if(isset($businessCategory2[$uuidBusinessCategory2])){
                             $businessCategory2[$uuidBusinessCategory2]['count']++;
                         }
                     }
                     // Filter label for promotion type
-                    if(isset($establishmentData->id_promotion_type)){
-                        $uuidPromotionType = UuidTools::getUuid($establishmentData->id_promotion_type);
+                    if(isset($establishmentFilterData->id_promotion_type)){
+                        $uuidPromotionType = UuidTools::getUuid($establishmentFilterData->id_promotion_type);
                         if(!isset($promoTypes[$uuidPromotionType])){
                             $promoTypes[$uuidPromotionType] = array('type' => '', 'count' => 1);
                         } else {
@@ -379,6 +372,7 @@ class SearchController {
             // Filter labels save
             StorageHelper::getInstance()->add('search.filter_data.location_index', $locationIndexes);
             StorageHelper::getInstance()->add('search.filter_data.biz_category_1', $businessCategory1);
+            StorageHelper::getInstance()->add('search.filter_data.min_price', $minPrice);
             StorageHelper::getInstance()->add('search.filter_data.max_price', $maxPrice);
             if(!empty($businessCategory2)){
                 foreach($businessCategory2 as $uuid => $bizCat2info){
@@ -403,9 +397,26 @@ class SearchController {
             }
             StorageHelper::getInstance()->add('search.filter_data.promo_type', $promoTypes);
             
+            $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
+            $establishmentsData = $searchQuery->get();
+            foreach($establishmentsData as $establishmentData){    
+                if($establishmentData->rawDistance <= ($distance*1000)){
+                    $uuid = UuidTools::getUuid($establishmentData->id);
+                    // Search results list
+                    $establishments[$uuid]['id'] = $uuid;
+                    $establishments[$uuid]['name'] = $establishmentData->name;
+                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+                    $establishments[$uuid]['city'] = $establishmentData->city;
+                    $establishments[$uuid]['country'] = $establishmentData->country;
+                    $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
+                    $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
+                    $establishments[$uuid]['latitude'] = $establishmentData->latitude;
+                    $establishments[$uuid]['longitude'] = $establishmentData->longitude;
+                }
+            }
             
             // Paginate results
-            $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage);
+            $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage, $currentPage);
             $resultsPagination->setPath(Request::url());
         }
         return $resultsPagination;

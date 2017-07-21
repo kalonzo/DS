@@ -3,7 +3,9 @@
         <div class="panel-heading">
             <div class="row form-inline">
                 <div class="col-xs-12 col-sm-4 col-md-6">
-                    Filtres
+                    <a id="filter-collapse-control" data-toggle="collapse" href="#search-results-filters-body" aria-expanded="true" aria-controls="search-results-filters-body">
+                        Filtres
+                    </a>
                 </div>
                 <!-- NB RESULTS DISPLAYED FILTER -->
                 <div class="form-group col-xs-6 col-sm-4 col-md-3 text-right">
@@ -29,7 +31,7 @@
                 </div>
             </div>
         </div>
-        <div class="panel-body">
+        <div class="panel-body collapse @if (Cookie::get('searchFilterCollapsed') != 1) in @endif" id="search-results-filters-body">
              <div class="col-md-3">
                  <!-- DISTANCE FILTER -->
                 <div class="form-group">
@@ -43,7 +45,7 @@
                 <div class="form-group">
                     <label>Localité</label>
                     @foreach($filter_labels['location_index'] as $id_location => $location_info)
-                    <div class="checkbox @if( $loop->iteration > 4) item-overflow @endif">
+                    <div class="checkbox @if( $loop->iteration > 5) item-overflow @endif">
                         <label>
                             <input type="checkbox" name="location_index[]" value="{{ $id_location }}" class="search-filter-input"
                                     @if(is_array($filter_values['location_index']) && in_array($id_location, $filter_values['location_index'])) checked @endif />
@@ -52,7 +54,7 @@
                         </label>
                     </div>
                     @endforeach
-                    <a class="filter-list-see-more clickable @if( count($filter_labels['location_index']) <= 4) hidden @endif"
+                    <a class="filter-list-see-more clickable @if( count($filter_labels['location_index']) <= 5) hidden @endif"
                        data-toggle="modal" data-target="#filterModal">
                         (+ de localités)
                     </a>
@@ -120,7 +122,8 @@
                  <!-- PRICE FILTER -->
                 <div class="form-group" @if( $filter_labels['max_price'] <= 0) hidden @endif>
                     <label>Prix</label>
-                    <div class="slider" id="price-slider" data-value="{{ $filter_values['price'] }}" data-max="{{ $filter_labels['max_price'] }}"></div>
+                    <div class="slider" id="price-slider" data-value="{{ $filter_values['price'] }}" 
+                         data-min="{{ $filter_labels['min_price'] }}" data-max="{{ $filter_labels['max_price'] }}"></div>
                     <div class="text-right">
                         De 0 à CHF <span id="price-slider-max">{{ $filter_values['price'] == 0 ? $filter_labels['max_price'] : $filter_values['price'] }}</span>.-
                     </div>

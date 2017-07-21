@@ -68,6 +68,7 @@ $(function () {
         $('#price-slider:not(.sliderProcessed)').each(function(){
             $(this).addClass('sliderProcessed');
             var filterValue = $(this).attr('data-value');
+            var minValue = $(this).attr('data-min');
             var maxValue = $(this).attr('data-max');
             if(isEmpty(filterValue)){
                 filterValue = maxValue;
@@ -76,11 +77,16 @@ $(function () {
                 range: true,
                 min: 0,
                 max: maxValue,
-                step: 5,
+                step: 10,
                 values: [0, filterValue],
                 slide: function( event, ui ) {
                     var value = ui.value;
-                    $('#price-slider-max').html(value);
+                    if(value < minValue){
+                        event.stopPropagation();
+                        return false;
+                    } else {
+                        $('#price-slider-max').html(value);
+                    }
                 },
                 stop: function( event, ui ) {
                     reloadSearch('price', ui.value);
@@ -121,11 +127,36 @@ $(function () {
         reloadSearch(filterLabel, filterValue);
     });
     
+    $('body').on('hide.bs.collapse', '#search-results-filters-body', function(){
+        dsSetCookie('searchFilterCollapsed', 1, 1);
+    });
+    $('body').on('show.bs.collapse', '#search-results-filters-body', function(){
+        dsSetCookie('searchFilterCollapsed', 0, 1);
+    });
+    
     $('#filterModal').on('show.bs.modal', function(e){
         var triggerElement = e.relatedTarget;
         var formGroup = $(triggerElement).parentsInclude('.form-group').clone();
         $(this).find('.modal-body').empty().append(formGroup);
     });
+    
+    $(document).on('click', '.pagination a', function (e) {
+        var page = $(this).attr('href').split('page=')[1];
+        e.preventDefault();
+        reloadSearch('page', page);
+    });
+    /*
+    $(window).on('hashchange', function() {
+        if (window.location.hash) {
+            var page = window.location.hash.replace('#', '');
+            if (page == Number.NaN || page <= 0) {
+                return false;
+            } else {
+                reloadSearch('page', page);
+            }
+        }
+    });
+    */
     
     function reloadSearch(filterName, value){
         var ajaxParams = {};
@@ -139,6 +170,9 @@ $(function () {
         })
         .done(function( data ) {
             $('#search-container').empty().html(data);
+//            if(filterName === 'page'){
+//                location.hash = value;
+//            }
             $(document).trigger('searchUpdated');
         });
     };

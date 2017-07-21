@@ -96,25 +96,6 @@ body{
 }
 
 #search-container{
-    #search-results-filters{
-        .panel-heading{
-            text-transform: uppercase;
-            font-size: 1.4em;
-        }
-        #distance-slider, #price-slider{
-            .ui-slider-handle:first-of-type{
-                display: none  !important;
-            }
-        }
-        .checkbox{
-            > label{
-                width: 100%;
-            }
-        }
-        .item-overflow{
-            display: none;
-        }
-    }
     #search-results{
         .search-thumbnail{
             background: white;
@@ -181,6 +162,25 @@ body{
                 }
             }
         }
+    }
+}
+#search-results-filters, #filterModal{
+    .panel-heading{
+        text-transform: uppercase;
+        font-size: 1.4em;
+    }
+    #distance-slider, #price-slider{
+        .ui-slider-handle:first-of-type{
+            display: none  !important;
+        }
+    }
+    .checkbox{
+        > label{
+            width: 100%;
+        }
+    }
+    &:not(#filterModal) .item-overflow{
+        display: none;
     }
 }
 
