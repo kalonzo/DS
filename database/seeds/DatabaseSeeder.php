@@ -13,10 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     
     
-     function makeTestData($non_etab,$street,$street_number,$postal_code,$city,$country,$latitude,$longitude,$email,$site_url,$type_cuisine,$descn, $id_business_category){
+     function makeTestData($non_etab,$street,$street_number,$postal_code,$city,$country,$latitude,$longitude,$email,$site_url,$type_cuisine,$descn, $id_business_category, $id_location_index){
         
         $company_id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        $id_location_index = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        //$id_location_index = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
         $id_user_owner = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
         $id_business_type = \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT;
         $id_establishment = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
@@ -106,42 +106,91 @@ class DatabaseSeeder extends Seeder
 
            $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
         
-        DatabaseSeeder::makeTestData('Broadway Restaurant','chemin Malombré ',18,1202,'Genève','Suisse',46.1954749,6.1496726,'restaurantbroadway.com','','Restaurant Franconien ','descn',$id);
-        DatabaseSeeder::makeTestData('Restaurant Le Pradier','Rue Pradier',6,1201,'Genève','Suisse',46.1945955,6.1453122,'lepradier.com','','Restaurant Franconien ','descn',$id);
-        DatabaseSeeder::makeTestData('Restaurant Chausse-Coqs','Rue Micheli-du-Crest',18,1205,'Genève','Suisse',46.1945955,6.1453122,'chausse-coqs.ch','','Restaurant Franconien ','descn',$id);
+           
+           
+           
+             $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1202')->first();
+             
+             
+        DatabaseSeeder::makeTestData('Broadway Restaurant','chemin Malombré ',18,1202,'Genève','Suisse',46.1954749,6.1496726,'restaurantbroadway.com','','Restaurant Franconien ','descn',$id,$id_location->id);
+        $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1201')->first();
+        DatabaseSeeder::makeTestData('Restaurant Le Pradier','Rue Pradier',6,1201,'Genève','Suisse',46.1945955,6.1453122,'lepradier.com','','Restaurant Franconien ','descn',$id,$id_location->id);
+        
+           $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1205')->first();
+        
+        DatabaseSeeder::makeTestData('Restaurant Chausse-Coqs','Rue Micheli-du-Crest',18,1205,'Genève','Suisse',46.1945955,6.1453122,'chausse-coqs.ch','','Restaurant Franconien ','descn',$id,$id_location->id);
+        
+           $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1201')->first();
+           
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Pékin Palace','Rue des Alpes',22,1201,'Genève','Suisse',46.2109976,6.1425921,'pekin-palace.thefork.rest','','Restaurant Chinois ','descn',$id);
-        DatabaseSeeder::makeTestData('Restaurant Wang','Rue des Eaux-Vives',9,1207,'Genève','Suisse',46.2033257,6.1550633,'restaurant-wang.ch','','Restaurant Chinois ','descn',$id);
+        
+        
+        DatabaseSeeder::makeTestData('Pékin Palace','Rue des Alpes',22,1201,'Genève','Suisse',46.2109976,6.1425921,'pekin-palace.thefork.rest','','Restaurant Chinois ','descn',$id,$id_location->id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1207')->first();
+        DatabaseSeeder::makeTestData('Restaurant Wang','Rue des Eaux-Vives',9,1207,'Genève','Suisse',46.2033257,6.1550633,'restaurant-wang.ch','','Restaurant Chinois ','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Matsuri','Rue de la Confédération',8,1204,'Genève','Suisse',46.2035711,6.1424213,'matsuri.ch','','Restaurant Japonais ','descn',$id);
+        
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1204')->first();
+        DatabaseSeeder::makeTestData('Matsuri','Rue de la Confédération',8,1204,'Genève','Suisse',46.2035711,6.1424213,'matsuri.ch','','Restaurant Japonais ','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Gaùcho Churrascaria','Chemin Malombré ',1,1206,'Genève','Suisse',46.196326,6.15203,'churrascaria-gaucho.com','','Restaurant Brésilien ','descn',$id);
+        
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1206')->first();
+        DatabaseSeeder::makeTestData('Gaùcho Churrascaria','Chemin Malombré ',1,1206,'Genève','Suisse',46.196326,6.15203,'churrascaria-gaucho.com','','Restaurant Brésilien ','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Thaï tastes café & restaurant','Rue de la Servette',16,1201,'Genève','Suisse',46.2102704,6.1356,'thaitastes .ch','','Restaurant Thaïlandais ','descn',$id); 
+        
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1201')->first();
+        DatabaseSeeder::makeTestData('Thaï tastes café & restaurant','Rue de la Servette',16,1201,'Genève','Suisse',46.2102704,6.1356,'thaitastes .ch','','Restaurant Thaïlandais ','descn',$id,$id_location->id); 
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Contact - Bar et Restaurant','Rue du Prieuré',8,1202,'Genève','Suisse',46.2972433,6.1230715,'jimma.ch','','Restaurant Ethiopien ','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1202')->first();
+        DatabaseSeeder::makeTestData('Contact - Bar et Restaurant','Rue du Prieuré',8,1202,'Genève','Suisse',46.2972433,6.1230715,'jimma.ch','','Restaurant Ethiopien ','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Chez Sami','Rue de fribourg ',11,1201,'Genève','Suisse',46.3390482,6.2137802,'chezsami.ch','','Restaurant Libanais','descn',$id);
-        DatabaseSeeder::makeTestData('Restaurant Arabesque','Quai Wilson',47,1201,'Genève','Suisse',46.2148921,6.1488857,'','restaurantarabesque.com','Restaurant Libanais','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1201')->first();
+        DatabaseSeeder::makeTestData('Chez Sami','Rue de fribourg ',11,1201,'Genève','Suisse',46.3390482,6.2137802,'chezsami.ch','','Restaurant Libanais','descn',$id,$id_location->id);
+        DatabaseSeeder::makeTestData('Restaurant Arabesque','Quai Wilson',47,1201,'Genève','Suisse',46.2148921,6.1488857,'','restaurantarabesque.com','Restaurant Libanais','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Le Léman','Rue de Rive ',28,1260,'Nyon','Suisse',46.3803758,6.240229,'restorive-nyon.ch','','Restaurant Suisse','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1260')->first();
+        DatabaseSeeder::makeTestData('Le Léman','Rue de Rive ',28,1260,'Nyon','Suisse',46.3803758,6.240229,'restorive-nyon.ch','','Restaurant Suisse','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('L Auberge du Château','Place du Château',8,1260,'Nyon','Suisse',46.3819953,6.2385886,'aubergeduchateau.ch','','Restaurant Italien','descn',$id);
-        DatabaseSeeder::makeTestData('Le Grand Café - Hôtel Real','Place de Savoie ',1,1260,'Nyon','Suisse',46.3806361,6.2393026,'hotlerealnyon.ch','','Restaurant Italien','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1260')->first();
+        DatabaseSeeder::makeTestData('L Auberge du Château','Place du Château',8,1260,'Nyon','Suisse',46.3819953,6.2385886,'aubergeduchateau.ch','','Restaurant Italien','descn',$id,$id_location->id);
+        DatabaseSeeder::makeTestData('Le Grand Café - Hôtel Real','Place de Savoie ',1,1260,'Nyon','Suisse',46.3806361,6.2393026,'hotlerealnyon.ch','','Restaurant Italien','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Café du Raisin','Gran Rue',26,1268,'Begnins','Suisse',46.4153124,6.2117013,'','','Restaurant des Saisons','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1268')->first();
+        DatabaseSeeder::makeTestData('Café du Raisin','Gran Rue',26,1268,'Begnins','Suisse',46.4153124,6.2117013,'','','Restaurant des Saisons','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Khãnã Mandir','Place du Marché',1,1260,'Nyon','Suisse',46.381897,6.2363523,'khanamandir.ch','','Restaurant Indien','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1260')->first();
+        DatabaseSeeder::makeTestData('Khãnã Mandir','Place du Marché',1,1260,'Nyon','Suisse',46.381897,6.2363523,'khanamandir.ch','','Restaurant Indien','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Le Club House','Avenue du Mont-Blanc',38,1196,'Gland','Suisse',46.4139564,6.2736606,'leclubhouse.ch','','Bar Lounge','descn',$id);
-        DatabaseSeeder::makeTestData('Café des Moulins','Rue de la Colombière',12,1260,'Nyon','Suisse',46.3899031,6.2151437,'restorive-nyon.ch','','Bar Lounge','descn',$id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1196')->first();
+        DatabaseSeeder::makeTestData('Le Club House','Avenue du Mont-Blanc',38,1196,'Gland','Suisse',46.4139564,6.2736606,'leclubhouse.ch','','Bar Lounge','descn',$id,$id_location->id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1260')->first();
+        DatabaseSeeder::makeTestData('Café des Moulins','Rue de la Colombière',12,1260,'Nyon','Suisse',46.3899031,6.2151437,'restorive-nyon.ch','','Bar Lounge','descn',$id,$id_location->id);
+          $id_location = \Illuminate\Support\Facades\DB::table('location_index')
+                        ->where('postal_code', '1220')->first();
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Hôtel Restaurant La Truite','Grand-Rue',203,1220,'Divonnes-les-Bains','France',46.3296795,6.1153798,'','hotelrestaurantlatruite.com','Cuisine Traditionnelle','descn',$id);
+        
+        DatabaseSeeder::makeTestData('Hôtel Restaurant La Truite','Grand-Rue',203,1220,'Divonnes-les-Bains','France',46.3296795,6.1153798,'','hotelrestaurantlatruite.com','Cuisine Traditionnelle','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Linstant Restaurant ','Place Perdtemps',9,1220,'Divonnes-les-Bains','France',46.357373,6.117848,'','restaurantdivonne-les-bains.fr','Cuisine des Saisons','descn',$id);
+        DatabaseSeeder::makeTestData('Linstant Restaurant ','Place Perdtemps',9,1220,'Divonnes-les-Bains','France',46.357373,6.117848,'','restaurantdivonne-les-bains.fr','Cuisine des Saisons','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Château de Divonne','Rue des Bains',115,1220,'Divonnes-les-Bains','France',46.3563213,6.1317597,'','château-divonne.com','Cuisine Gastronomique','descn',$id);
+        DatabaseSeeder::makeTestData('Château de Divonne','Rue des Bains',115,1220,'Divonnes-les-Bains','France',46.3563213,6.1317597,'','château-divonne.com','Cuisine Gastronomique','descn',$id,$id_location->id);
         $id= hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        DatabaseSeeder::makeTestData('Restaurant Le Nabab ','Avenue de Genève ',252,1220,'Divonnes-les-Bains','France',46.3533643,6.1400721,'','lenabab-restaurant.fr','Cuisine Indienne','descn',$id);
+        DatabaseSeeder::makeTestData('Restaurant Le Nabab ','Avenue de Genève ',252,1220,'Divonnes-les-Bains','France',46.3533643,6.1400721,'','lenabab-restaurant.fr','Cuisine Indienne','descn',$id,$id_location->id);
     }
 }

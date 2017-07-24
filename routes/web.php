@@ -31,7 +31,7 @@ Route::get('/search-autocomplete', function () {
 Route::match(['get', 'post'], '/search', 'SearchController@search');
 
 Route::get('/establishment/create', ['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
-Route::post('/establishment', ['as' => 'establishment.store', 'uses' => 'EstablishmentController@store']);
+Route::post('/establishment/create', ['as' => 'establishment.store', 'uses' => 'EstablishmentController@store']);
 
 Route::get('/ajax/{action}', function($action){
     $jsonResponse = array('success' => 0);
