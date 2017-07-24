@@ -45,8 +45,8 @@
         <div class="col-md-8 {{ $errors->has('name') ? 'has-error' : '' }}">
             {!! Form::text('name', old('name'), [
             'class'=>'form-control',
-            'placeholder'=>'Restaurant Nom de  votre restaurant',
-            'id'=>'logo'
+            'placeholder'=>'Nom de votre restaurant',
+            'id'=>'resto_name'
             ]) !!}
 
         </div>
@@ -56,8 +56,8 @@
 
             <div class="row accordion-heading">
                 <div class="accordion-inner">	
-                            <img src="../../assets/images_form/position.png" alt=""/>
-                        </div>
+
+                </div>
                 <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#one">
                     <h5>Emplacement</h5>
                 </a>
@@ -202,7 +202,7 @@
                     <div class="row">
                         <div class="col-md-12">
 
-                            {!! Form::submit('Valiser votre position!', 
+                            {!! Form::submit('Valider votre emplacement !', 
                             array('class'=>'btn btn-primary')) !!}
                         </div>
 
@@ -216,7 +216,7 @@
                 </a>
             </div>
             <div id="two" class="row collapse">
-                <div class="row accordion-inner">
+                <div class="accordion-inner">
                     <div class="row">
                         <div class="col-md-6  accordion-inner">
                             {!! Form::label('* Téléphone pour réservation') !!}
@@ -276,9 +276,9 @@
                 </a>
             </div>
             <div id="three" class="row collapse">
-                <div class="col-md-12 accordion-inner">
+                <div class="accordion-inner">
                     <div class="row">
-                        <div class="accordion-inner">
+                        <div class="col-md-12 accordion-inner">
                             {!! Form::label('* e-mail') !!}
                             <div class="input-group {{ $errors->has('email') ? 'has-error' : '' }}">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>  
@@ -287,8 +287,6 @@
                                 'placeholder'=>''
                                 ]) !!}
                             </div>
-                        </div>          
-                        <div class="accordion-inner">
                             {!! Form::label('* Site web de l établissement') !!}
 
                             <div class="input-group">
@@ -309,7 +307,7 @@
                 </a>
             </div>
             <div id="fourth" class="row collapse">
-                <div class="col-md-12  accordion-inner">
+                <div class="accordion-inner">
                     <section class="container-fluid">
                         <div>
                             <select id="leftValues" size="5" multiple>
@@ -379,7 +377,7 @@
                 </a>
             </div>
             <div id="seven" class="row collapse">
-                <div class="row accordion-inner">
+                <div class="accordion-inner">
 
                     <section class="col-md-12 container-fluid">
                         <div>
@@ -430,16 +428,13 @@
 @endsection
 
 <script>
-    
-    function getCoords() {
 
+    function getCoords() {
         var city = $('#city').val();
         var street = $('#street').val();
         var street_number = $('#street_number').val();
         var postal_code = $('#postal_code').val();
         var lat, lng;
-
-
         var geocoder = new google.maps.Geocoder();
         address = street + ' ' + street_number + ', ' + postal_code + ' ' + city;
 
@@ -460,8 +455,6 @@
             });
         }
     }
-
-
     function geocodeLatLng(geocoder, lat, lng) {
         var adresse, lat1, lng1, adresse_location;
 
@@ -519,21 +512,6 @@
         });
 
     }
-
-    function previewImage(input) {
-        var preview = document.getElementById('preview');
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                preview.setAttribute('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.setAttribute('src', 'placeholder.png');
-        }
-    }
-
-
     function getLocationIndex(address) {
 
         var lat, lng;
@@ -560,15 +538,31 @@
         }
     }
 
+    function previewImage(input) {
+        var preview = document.getElementById('preview');
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                preview.setAttribute('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.setAttribute('src', 'placeholder.png');
+        }
+    }
+
 
 
 </script>
 <style type="text/css">    
-    #logo{
-        font-size: 30px;
+    #resto_name{
+
+        text-align:left;
+        width: 400px;
         height: 40px;
-        width: 100%;
-    }    
+        font-size: 30px;
+        margin-top: 35px;
+    }
 
     .heading{
         background-color:#fff;
