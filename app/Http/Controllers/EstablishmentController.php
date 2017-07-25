@@ -22,6 +22,8 @@ class EstablishmentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
+        // $establishment = new \App\Models\Establishment;
+        //return view('establishment.create', ['establishment' => $establishment]);
         return view('establishment.create');
     }
 
@@ -36,8 +38,8 @@ class EstablishmentController extends Controller {
             'country' => 'required|max:255',
             'latitude' => 'required',
             'longitude' => 'required',
-            //'number' => 'required|regex:/(01)[0-9]{9}/',
-            'email' => 'required|email|max:255'
+                //'number' => 'required|regex:/(01)[0-9]{9}/',
+                //'email' => 'required|email|max:255'
                 ], [
             'name.required' => ' Vous devez spécifier un nom pour votre établissement.',
             'name.min' => ' Le nom de votre restaurant dois contenir au minimum 2 caractères.',
@@ -50,11 +52,23 @@ class EstablishmentController extends Controller {
             'city.required' => ' Vous devez spécifiez une ville pour votre établissement.',
             'country.required' => ' Vous devez spécifiez le pays de votre établissement.',
             'email.required' => ' Un email de contact pour le restaurant est requis.',
-            'email.email' => 'Format d\'addresse mail incorrecte.',
+            //'email.email' => 'Format d\'addresse mail incorrecte.',
             'latitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
             'longitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
                 //'number.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.'
         ]);
+    }
+
+    public function retrieveIdLocation($postal_code) {
+        $id_location = \Illuminate\Support\Facades\DB::table('location_index')->where('postal_code', $postal_code)->first();
+        $id = $id_location->id;
+        return $id;
+    }
+
+    public function retrieveIdEstablishment($id) {
+        $id_establishment = \Illuminate\Support\Facades\DB::table('Establishment')->where('id', $id)->first();
+        $id = $establishment->id;
+        return $id;
     }
 
     /**
@@ -67,17 +81,17 @@ class EstablishmentController extends Controller {
 
         EstablishmentController::validateForm($request);
 
-        //on assigne le nom de l'utilisateur par défaut pour le restaurant 
-        $username = $request->get('name');
+        $id_location = EstablishmentController::retrieveIdLocation($request->get('postal_code'));
 
         $request->merge([
-            'id_location_index' => 0
+            'id_location_index' => $id_location
         ]);
+
+     
         $address = \App\Models\Address::create($request->all());
 
         $uuid_address = $address->getId();
 
-        //die($username);
         //on insére un utilisateur pour le restaurant
         $request->merge([
             'type' => \App\Models\User::TYPE_USER_ADMIN_PRO,
@@ -85,16 +99,15 @@ class EstablishmentController extends Controller {
             'id_address' => $uuid_address,
             'id_inbox' => 0,
             'id_company' => 0,
-                //'name' => $username
+                //'name' => $request->get('name')
         ]);
 
         $user = \App\Models\User::create($request->all());
-        //die($username . '-' . $request->get('name'));
-
+        
         $uuid_user = $user->getId();
 
         $request->merge([
-            'id_location_index' => 0,
+            'id_location_index' => $id_location,
             'id_user_owner' => $uuid_user,
             'id_address' => $uuid_address,
             'id_business_type' => \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT,
@@ -102,13 +115,13 @@ class EstablishmentController extends Controller {
         ]);
 
         $establishment = \App\Models\Establishment::create($request->all());
-        //$uuid_establishment = $establishment->getId();
-        // return back()->with('msg','error');
+        // var_dump($establishment);
+        //die();
 
         $msg = 'Veuillez passez à l\'étape de saisie des contact';
 
-        //Session::flash('message', "Special message goes here");
-        return back()->with('message', $msg);
+        //return back()->with('message', $msg);
+        return view('establishment.create', ['establishment' => $establishment]);
     }
 
     /**
