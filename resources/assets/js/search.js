@@ -32,7 +32,7 @@ $(function () {
                 li.attr("aria-label", item.section + " : " + item.label);
             }
         });
-        if(!isEmpty(map)){
+        if(typeof map !== 'undefined'){
             $(map).trigger('locationsUpdated', {items: items});
         }
     };

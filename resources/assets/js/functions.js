@@ -33,3 +33,52 @@ function readCookie(name) {
     return null;
 }
 
+/*
+    var searchRadius = 500;
+    function calculateDistance() {
+        var destinationPositionLat = $('#inputLatitude').val() * 1;
+        var destinationPositionLng = $('#inputLongitude').val() * 1;
+        if (userPositionLng !== null && userPositionLat !== null && destinationPositionLng !== null && destinationPositionLat !== null) {
+            var earth_radius = 6378137;   // Terre = sphère de 6378km de rayon
+            var rlo1 = Math.radians(userPositionLng);
+            var rla1 = Math.radians(userPositionLat);
+            var rlo2 = Math.radians(destinationPositionLng);
+            var rla2 = Math.radians(destinationPositionLat);
+            var dlo = (rlo2 - rlo1) / 2;
+            var dla = (rla2 - rla1) / 2;
+            var a = (Math.sin(dla) * Math.sin(dla)) + Math.cos(rla1) * Math.cos(rla2) * (Math.sin(dlo) * Math.sin(dlo));
+            var d = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var distance = earth_radius * d;
+
+            $('#distanceOutput').val(Math.round(distance));
+        }
+    }
+
+    function calculateRouteDistance() {
+        var service = new google.maps.DistanceMatrixService();
+        service.getDistanceMatrix({
+            origins: [userPositionLat + "," + userPositionLng],
+            destinations: [$('#inputLatitude').val() + "," + $('#inputLongitude').val()],
+            travelMode: google.maps.TravelMode.DRIVING,
+            avoidHighways: false,
+            avoidTolls: false
+        }, function (response, status) {
+            if (status != google.maps.DistanceMatrixStatus.OK) {
+                console.log(err);
+            } else {
+                var origin = response.originAddresses[0];
+                var destination = response.destinationAddresses[0];
+                if (response.rows[0].elements[0].status === "ZERO_RESULTS") {
+                    console.log("Better get on a plane. There are no roads between " + origin + " and " + destination);
+                } else {
+                    var distance = response.rows[0].elements[0].distance;
+                    var distance_value = distance.value;
+                    var distance_text = distance.text;
+                    var miles = distance_text.substring(0, distance_text.length - 3);
+                    $('#distanceRouteOutput').val(distance_value);
+                }
+            }
+        }
+        );
+    }
+*/
