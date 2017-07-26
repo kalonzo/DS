@@ -69,7 +69,7 @@ $(document).on('searchUpdated googleMapReady', function(event, data){
     $.each(resultMarkers, function (index, marker) {
         marker.setMap(null);
     });
-    $('#search-results').find('.search-thumbnail').each(function(){
+    $('#search-results').find('.ets-thumbnail').each(function(){
         var name = $(this).attr('data-name');
         var lat = $(this).attr('data-lat')*1;
         var lng = $(this).attr('data-lng')*1;
