@@ -133,7 +133,7 @@
     </div>
     <div class="col-xs-12 no-gutter" id="search-results">
         @foreach($establishments as $establishment)
-            @component('components.establishment_thumbnail', ['establishment' => $establishment)
+            @component('components.establishment_thumbnail', ['establishment' => $establishment])
 
             @endcomponent
         @endforeach

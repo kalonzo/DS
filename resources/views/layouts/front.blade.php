@@ -24,13 +24,13 @@
                 <div class="navbar-collapse collapse">
                     <form class="navbar-form navbar-left">
                         <div class="input-group locationInputGroup">
-                            <span class="input-group-addon clickable" onclick="document.location.href='/search'">
+                            <span class="input-group-addon clickable" onclick="document.location.href='/search'" title="Cliquer ici pour rechercher autour de moi">
                                 <span class="geolocMeIcon glyphicon glyphicon-search" aria-hidden="true"></span>
                             </span>
-                            <input type="text" class="form-control" placeholder="Recherche..." id="search_keywords">
+                            <input type="text" class="form-control" placeholder="Nom, type de cuisine" id="search_keywords">
                         </div>
                         <div class="input-group locationInputGroup">
-                            <span class="input-group-addon clickable" onclick="geolocateMe();">
+                            <span class="input-group-addon clickable" onclick="geolocateMe();" title="Cliquer ici pour me géolocaliser">
                                 <span class="geolocMeIcon glyphicon glyphicon-map-marker" aria-hidden="true"></span>
                             </span>
                             <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
