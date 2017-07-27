@@ -42,6 +42,14 @@ class Establishment extends Model {
         return $this->latLng;
     }
     
+    public function getDefaultPicture(){
+        return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+    }
+    
+    public function getDefaultBanner(){
+        return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+    }
+    
     public function getAddress(){
         return $this->hasOne(Address::class, 'id_address');
     }

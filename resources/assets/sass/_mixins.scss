@@ -5,7 +5,7 @@
 }
 
 @mixin custom-calc-grid-column($index, $class, $index-label) {
-    
+
     @if ($index > 0) {
         .col-#{$class}-#{$index-label} {
             float: left;
@@ -14,5 +14,90 @@
         .col-#{$class}-offset-#{$index-label} {
             margin-left: percentage(($index / $grid-columns));
         }
+    }
+}
+
+@function calculateRem($size) {
+    $remSize: $size / 16px;
+    @return $remSize * 1rem;
+}
+
+@mixin font-size($size) {
+    font-size: $size;
+    font-size: calculateRem($size);
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+}
+
+@mixin opacity($opacity) {
+    opacity: $opacity;
+    $opacity-ie: $opacity * 100;
+    filter: alpha(opacity=$opacity-ie); //IE8
+}
+%clearfix {
+    *zoom: 1;
+    &:before, &:after {
+        content: " ";
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+@mixin transform($transforms) {
+    -moz-transform: $transforms;
+    -o-transform: $transforms;
+    -ms-transform: $transforms;
+    -webkit-transform: $transforms;
+    transform: $transforms;
+}
+@mixin rotate ($deg) {
+    @include transform(rotate(#{$deg}deg));
+}
+@mixin scale($scale) {
+    @include transform(scale($scale));
+} 
+@mixin translate ($x, $y) {
+    @include transform(translate($x, $y));
+}
+@mixin skew ($x, $y) {
+    @include transform(skew(#{$x}deg, #{$y}deg));
+}
+@mixin transform-origin ($origin) {
+    moz-transform-origin: $origin;
+    -o-transform-origin: $origin;
+    -ms-transform-origin: $origin;
+    -webkit-transform-origin: $origin;
+    transform-origin: $origin;
+}
+
+@mixin bp-xs {
+    @media only screen and (max-width: 767px) {
+        @content;
+    }
+}
+
+@mixin bp-sm {
+    @media only screen and (min-width: 768px) {
+        @content;
+    }
+}
+
+@mixin bp-md {
+    @media only screen and (min-width: 992px) {
+        @content;
+    }
+}
+
+@mixin bp-lg {
+    @media only screen and (min-width: 1200px) {
+        @content;
     }
 }

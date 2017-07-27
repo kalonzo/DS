@@ -73,7 +73,7 @@ function relocateUserPosition(lat, lng){
     userPositionLat = lat;
     userPositionLng = lng;
     var latLng = new google.maps.LatLng(userPositionLat, userPositionLng);
-    if(!isEmpty(map)){
+    if(typeof map !== 'undefined'){
         markerPosition.setPosition(latLng);
         map.setCenter(latLng);
     }
