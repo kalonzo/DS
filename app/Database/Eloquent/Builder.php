@@ -16,8 +16,8 @@ class Builder extends \Illuminate\Database\Eloquent\Builder{
         $targetAttributes = array();
         
         foreach ($attributes as $label =>$attribute){
-            if(strpos($attribute, '@') !== false){
-                if(strpos($attribute, $targetPrefix) === 0){
+            if(strpos($label, '@') !== false){
+                if(strpos($label, $targetPrefix) === 0){
                     $label = str_replace($targetPrefix, '', $label);
                     $targetAttributes[$label] = $attribute;
                 }

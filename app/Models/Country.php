@@ -16,7 +16,9 @@ class Country extends Model
     protected $fillable = [
         'iso',
         'label',
-        'id_currency'
+        'id_currency',
+        'iso3',
+        'prefix'
     ];
 
     protected $guarded = [];
@@ -42,7 +44,20 @@ class Country extends Model
 	public function getIdCurrency() {
 		return $this->id_currency;
 	}
-
+        
+	/**
+	 * @return mixed
+	 */
+	public function getIso3() {
+		return $this->iso3;
+	}
+        
+	/**
+	 * @return mixed
+	 */
+	public function getPrefix() {
+		return $this->prefix;
+	}
 
     
 	/**
@@ -71,7 +86,23 @@ class Country extends Model
 		$this->id_currency = $value;
 		return $this;
 	}
+        
+ 	/**
+	 * @param $value
+	 * @return $this
+	 */
+	public function setIso3($value) {
+		$this->iso3 = $value;
+		return $this;
+	}
 
-
+ 	/**
+	 * @param $value
+	 * @return $this
+	 */
+	public function setPrefix($value) {
+		$this->prefix = $value;
+		return $this;
+	}
 
 }
