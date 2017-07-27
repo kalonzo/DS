@@ -77,6 +77,11 @@ class SessionController {
         \Illuminate\Support\Facades\Request::session()->put('search', $this->searchFilterValues);
     }
     
+    function resetSearchFilterValues(){
+        $this->searchFilterValues = array();
+        \Illuminate\Support\Facades\Request::session()->put('search', $this->searchFilterValues);
+    }
+    
     function loadSearchFilterValues(){
         if($this->searchFilterValues === null){
             $this->searchFilterValues = \Illuminate\Support\Facades\Request::session()->get('search');

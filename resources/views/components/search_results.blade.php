@@ -132,6 +132,11 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3 filterResetTrigger">
+                <a href="javascript:void(0);">
+                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Réinitialiser les filtres
+                </a>
+            </div>
         </div>
     </div>
     <div class="col-xs-12 no-gutter" id="search-results">

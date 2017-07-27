@@ -64,12 +64,13 @@ class SearchController {
                 $counter = 1;
                 foreach ($rawDistanceList as $distance => $restaurant) {
                     if ($counter <= self::NB_QUICK_RESULTS_PER_TYPE) {
+                        $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($distance));
                         $results [] = array(
                             'id' => $restaurant->getUuid(),
                             'label' => $restaurant->getName(),
                             'value' => $restaurant->getName(),
-                            'avatar_bg_color' => 'blue',
-                            'avatar_text' => StringTools::displayCleanDistance($distance),
+                            'avatar_bg_color' => \App\Utilities\StyleTools::genColorHexaForVisualGradient('0090ff', '00b33b', ($distance/20000)),
+                            'avatar_text' => $distanceDisplay,
                             'section' => 'Localité',
                             'order_by' => self::SEARCH_ORDER_BY_PROXIMITY,
                             'lat' => $restaurant->getLatitude(),
@@ -88,6 +89,7 @@ class SearchController {
                         'label' => $restaurant->getName(),
                         'value' => $restaurant->getName(),
                         'picture' => $restaurant->getDefaultPicture(),
+                        'avatar_bg_color' => 'none',
                         'section' => 'Nom',
                         'order_by' => self::SEARCH_ORDER_BY_NAME,
                         'lat' => $restaurant->getLatitude(),
@@ -113,7 +115,7 @@ class SearchController {
                         'id' => UuidTools::getUuid($result->id_business_category),
                         'label' => $result->name,
                         'value' => $result->name,
-                        'avatar_bg_color' => 'blue',
+                        'avatar_bg_color' => \App\Utilities\StyleTools::genRandomColorHexa(),
                         'avatar_text' => strtoupper($result->name[0]),
                         'text_right' => '(' . $result->nb_establishment . ')',
                         'section' => 'Type de cuisine',
@@ -128,6 +130,10 @@ class SearchController {
 
     public static function search() {
         $view = null;
+        $reset = Request::get('reset');
+        if($reset){
+            SessionController::getInstance()->resetSearchFilterValues();
+        }
         self::buildFilterLabels();
         $establishmentsQuery = self::buildSearchQuery();
 
