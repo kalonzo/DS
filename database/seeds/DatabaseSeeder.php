@@ -96,6 +96,7 @@ class DatabaseSeeder extends Seeder {
 
     public function run() {
 
+          //insertion de type de spécialité
         $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
 
         DB::table('business_categories')->insert([
@@ -118,6 +119,53 @@ class DatabaseSeeder extends Seeder {
             'id' => $id,
             'name' => 'Poulet Masalah',
             'type' => 2, //const type de cuisinne
+        ]);
+        
+         $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        
+        DB::table('business_categories')->insert([
+            'id' => $id,
+            'name' => 'Wifi',
+            'type' => 4, //const type de cuisinne
+        ]);
+
+        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+
+        DB::table('business_categories')->insert([
+            'id' => $id,
+            'name' => 'Animaux accépté',
+            'type' => 4, //const type de cuisinne
+        ]);
+
+        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+
+        DB::table('business_categories')->insert([
+            'id' => $id,
+            'name' => 'Accesibiité au personne à mobilité résuite',
+            'type' => 4, //const type de cuisinne
+        ]);
+        
+         $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        DB::table('business_categories')->insert([
+            'id' => $id,
+            'name' => 'Typique',
+            'type' => 3, //const type de cuisinne
+        ]);
+
+        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+
+        DB::table('business_categories')->insert([
+            'id' => $id,
+            'name' => 'Rustique',
+            'type' => 3, //const type de cuisinne
+        ]);
+
+        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+
+        DB::table('business_categories')->insert([
+            'id' => $id,
+            'name' => 'Animé',
+            'type' => 3, //const type de cuisinne
         ]);
 
 
