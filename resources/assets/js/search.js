@@ -9,12 +9,15 @@ $(function () {
             items: ".ui-menu-item:not(.ui-autocomplete-category)" 
         });
     };
-    $("#search_keywords").autocomplete("instance")._renderMenu = function (ul, items) {
+    $searckKeywordInstance = $("#search_keywords").autocomplete("instance");
+    $searckKeywordInstance._renderMenu = function (ul, items) {
         var that = this;
         $(ul).addClass('searchKeywordDropdown');
         var currentCategory = "";
+        var indexCategory = 0;
         $.each(items, function (index, item) {
             if (item.section != currentCategory) {
+                indexCategory++;
                 var liSection = "<li class='ui-autocomplete-category' onclick=\"document.location.href='/search?order_by="+ item.order_by +"'\">"
 //                            + "<a href='/search?section="+ item.section_id +"'>" 
                                 + "<span class='category-label'>" 
@@ -30,12 +33,47 @@ $(function () {
             li = that._renderItemData(ul, item);
             if (item.section) {
                 li.attr("aria-label", item.section + " : " + item.label);
+                li.attr("data-index", indexCategory);
             }
         });
         if(typeof map !== 'undefined'){
             $(map).trigger('locationsUpdated', {items: items});
         }
     };
+    
+    $searckKeywordInstance._renderItem = function( ul, item ) {
+        var that = this;
+        var li = $( "<li>" );
+        var wrapper = $("<div>", {title: item.label});
+        
+        if(!item.avatar_bg_color){
+            item.avatar_bg_color = '#FFF';
+        }
+        var avatar = "<div class='ui-menu-item-avatar' style='background-color: "+item.avatar_bg_color+";'>";
+        if(item.picture){
+            avatar += "<img class='ui-menu-item-picture' src='"+ item.picture+"' alt='Logo'/>";
+        }
+        if(item.avatar_text){
+            avatar += "<span class='ui-menu-item-avatar-text'>"+ item.avatar_text+"</span>";
+        }
+        avatar += "</div>";
+        wrapper.append(avatar);
+        
+        if ( item.label ) {
+                wrapper.append("<span class='ui-menu-item-text'>"+ item.label+"</span>");
+        } else {
+                wrapper.html( "&#160;" );
+        }
+        if ( item.text_right ) {
+                wrapper.append("<span class='ui-menu-item-text-right'>"+ item.text_right+"</span>");
+        }
+        if ( item.disabled ) {
+            that._addClass( li, null, "ui-state-disabled" );
+        }
+
+        return li.append( wrapper ).appendTo( ul );
+    };
+    
     $("#search_keywords").focus(function(){
         var autocomplete = $(this).autocomplete("instance");
         if(!isEmpty(autocomplete)){

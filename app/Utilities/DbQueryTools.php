@@ -38,12 +38,31 @@ class DbQueryTools {
         return $rawSql;
     }
     
-    public static function genRawSqlForWhereInUuidList($tableName, $tableField, $uuidArray){
+    /**
+     * Generate raw SQL to put in whereRaw() query builder function to make some restriction on a single UUID or an array of UUIDs
+     * @param string $tableField
+     * @param string|array $uuidRef
+     * @param string $tableName
+     * @return string
+     */
+    public static function genSqlForWhereRawUuidConstraint($tableField, $uuidRef, $tableName = ''){
         $rawSql = "";
-        if(!empty($uuidArray)){
-            $inValues = implode(',', $uuidArray);
-            $inValuesStringified = "'".str_replace(',',  "','", $inValues)."'";
-            $rawSql = ' HEX('.$tableName.'.'.$tableField.') IN ('.$inValuesStringified.') ';
+        if(!empty($uuidRef)){
+            if(is_array($uuidRef)){
+                $inValues = implode(',', $uuidRef);
+                $inValuesStringified = "'".str_replace(',',  "','", $inValues)."'";
+                $rawSql = ' HEX(';
+                if(!empty($tableName)){
+                    $rawSql .= $tableName.'.';
+                }
+                $rawSql .= $tableField.') IN ('.$inValuesStringified.') ';
+            } else {
+                $rawSql = ' HEX(';
+                if(!empty($tableName)){
+                    $rawSql .= $tableName.'.';
+                }
+                $rawSql .= $tableField.')  = "'.$uuidRef.'" ';
+            }
         }
         return $rawSql;
     }

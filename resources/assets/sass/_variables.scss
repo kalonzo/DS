@@ -23,12 +23,14 @@ $font-size-base: 12px;
 $line-height-base: 1.6;
 $line-height-base-px: $font-size-base * $line-height-base;
 $text-color: #636b6f;
+$main-text-color: white;
 
 // Colors 
 $main-dark-color: #050508;
 $main-color: #303030;
 $font-color-dark-bg: white;
 $highlight-color: #d31b4d;
+$alt-highlight-color: #dbb000;
 
 // Navbar
 $navbar-default-bg: #fff;
@@ -47,3 +49,4 @@ $panel-default-heading-bg: #fff;
 $quickSearchFieldMdWidth: 408px;
 $quickSearchFieldSmWidth: 389px;
 $navbarInnerPadding: 9px;
+$searchFilterPanelHeadingHeight: 53px;

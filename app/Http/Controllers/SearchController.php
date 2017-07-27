@@ -66,8 +66,10 @@ class SearchController {
                     if ($counter <= self::NB_QUICK_RESULTS_PER_TYPE) {
                         $results [] = array(
                             'id' => $restaurant->getUuid(),
-                            'label' => $restaurant->getName() . ' (' . ($distance / 1000) . 'km)',
+                            'label' => $restaurant->getName(),
                             'value' => $restaurant->getName(),
+                            'avatar_bg_color' => 'blue',
+                            'avatar_text' => StringTools::displayCleanDistance($distance),
                             'section' => 'Localité',
                             'order_by' => self::SEARCH_ORDER_BY_PROXIMITY,
                             'lat' => $restaurant->getLatitude(),
@@ -85,6 +87,7 @@ class SearchController {
                         'id' => $restaurant->getUuid(),
                         'label' => $restaurant->getName(),
                         'value' => $restaurant->getName(),
+                        'picture' => $restaurant->getDefaultPicture(),
                         'section' => 'Nom',
                         'order_by' => self::SEARCH_ORDER_BY_NAME,
                         'lat' => $restaurant->getLatitude(),
@@ -108,8 +111,11 @@ class SearchController {
                 foreach ($cookingTypesResults as $result) {
                     $results [] = array(
                         'id' => UuidTools::getUuid($result->id_business_category),
-                        'label' => $result->name . ' (' . $result->nb_establishment . ')',
+                        'label' => $result->name,
                         'value' => $result->name,
+                        'avatar_bg_color' => 'blue',
+                        'avatar_text' => strtoupper($result->name[0]),
+                        'text_right' => '(' . $result->nb_establishment . ')',
                         'section' => 'Type de cuisine',
                         'order_by' => self::SEARCH_ORDER_BY_COOKING_TYPE
                     );
@@ -202,7 +208,7 @@ class SearchController {
                             ->where('type', '=', $businessCategoryType2);
                     if (!empty($ids_biz_category_2)) {
                         // Filter by extra business category
-                        $businessCategory2Query->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList('', 'id', $ids_biz_category_2));
+                        $businessCategory2Query->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $ids_biz_category_2));
                         $idsExtraBusinessCategories = array_merge($idsExtraBusinessCategories, $ids_biz_category_2);
                     }
                     $businessCategories2 = array();
@@ -221,21 +227,21 @@ class SearchController {
                 // Search by extra business categories
                 if (!empty($idsExtraBusinessCategories)) {
                     $establishmentsQuery->join(EstablishmentBusinessCategory::TABLENAME . ' AS ets_biz_categ', Establishment::TABLENAME . '.id', '=', 'ets_biz_categ.id_establishment');
-                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList('ets_biz_categ', 'id_business_category', $idsExtraBusinessCategories));
+                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_business_category', $idsExtraBusinessCategories, 'ets_biz_categ'));
                     $establishmentsQuery->addSelect('ets_biz_categ.id_business_category AS extra_business_category');
                 }
 
                 // Search by locations
                 if (!empty($ids_location_index)) {
-                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(Address::TABLENAME, 'id_location_index', $ids_location_index));
+                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_location_index', $ids_location_index, Address::TABLENAME));
                 }
                 // Search by cooking type
                 if (!empty($ids_biz_category_1)) {
-                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList('biz_category1', 'id', $ids_biz_category_1));
+                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $ids_biz_category_1, 'biz_category1'));
                 }
                 // Search by promo type
                 if (!empty($ids_promos)) {
-                    $establishmentsQuery->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(Promotion::TABLENAME, 'id_promotion_type', $ids_promos));
+                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_promotion_type', $ids_promos, Promotion::TABLENAME));
                 }
                 // Search by price
                 if (!empty($price)) {
@@ -341,7 +347,7 @@ class SearchController {
                 $promoTypeIds = array_keys($promoTypes);
                 $promoTypesData = DB::table(\App\Models\PromotionType::TABLENAME)
                         ->select('id', 'name')
-                        ->whereRaw(DbQueryTools::genRawSqlForWhereInUuidList(PromotionType::TABLENAME, 'id', $promoTypeIds))
+                        ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $promoTypeIds, PromotionType::TABLENAME))
                         ->get();
                 foreach ($promoTypesData as $promoTypeData) {
                     $uuidPromoType = UuidTools::getUuid($promoTypeData->id);

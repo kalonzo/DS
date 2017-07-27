@@ -1,11 +1,14 @@
 <div class="main row">
     <div class="col-xs-12 no-gutter panel panel-default" id="search-results-filters">
         <div class="panel-heading">
-            <div class="row form-inline">
-                <div class="col-xs-12 col-sm-4 col-md-6">
-                    <a id="filter-collapse-control" data-toggle="collapse" href="#search-results-filters-body" aria-expanded="true" aria-controls="search-results-filters-body">
-                        Filtres
+            <div class="row no-margin form-inline">
+                <div class="col-xs-12 col-sm-4 col-md-6 no-gutter">
+                    <a id="filter-collapse-control" data-toggle="collapse" href="#search-results-filters-body" aria-expanded="true" 
+                       aria-controls="search-results-filters-body" class="@if (Cookie::get('searchFilterCollapsed') == 1) collapseEnabled @endif"
+                       title="Afficher/masquer les filtres" onclick="$(this).dsToggleClass('collapseEnabled');">
+                        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                     </a>
+                    Filtres
                 </div>
                 <!-- NB RESULTS DISPLAYED FILTER -->
                 <div class="form-group col-xs-6 col-sm-4 col-md-3 text-right">
@@ -37,7 +40,7 @@
                 <div class="form-group">
                     <label>Rayon de recherche</label>
                     <div class="slider" id="distance-slider" data-value="{{ $filter_values['distance'] }}"></div>
-                    <div class="text-right">
+                    <div class="text-right text-uppercase">
                         Distance de 0 à <span id="distance-slider-max">{{ $filter_values['distance'] }}</span> km
                     </div>
                 </div>
@@ -124,7 +127,7 @@
                     <label>Prix</label>
                     <div class="slider" id="price-slider" data-value="{{ $filter_values['price'] }}" 
                          data-min="{{ $filter_labels['min_price'] }}" data-max="{{ $filter_labels['max_price'] }}"></div>
-                    <div class="text-right">
+                    <div class="text-right text-uppercase">
                         De 0 à CHF <span id="price-slider-max">{{ $filter_values['price'] == 0 ? $filter_labels['max_price'] : $filter_values['price'] }}</span>.-
                     </div>
                 </div>

@@ -41,11 +41,11 @@
                     <h2>La sélection du <strong>DinerScope</strong></h2>
                     <div class="carousel-control-container">
                         <a class="carousel-control left" href="#dsSelectionCarousel" role="button" data-slide="prev">
-                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
                             <span class="sr-only">Précédent</span>
                         </a>
                         <a class="carousel-control right" href="#dsSelectionCarousel" role="button" data-slide="next">
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
                             <span class="sr-only">Suivant</span>
                         </a>
                     </div>
@@ -53,7 +53,7 @@
                 <div id="dsSelectionCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
                     <div class="carousel-inner" role="listbox">
                         @foreach($ds_selection as $establishment)
-                            @if( $loop->index % 4 == 0)
+                            @if( $loop->index % 6 == 0)
                             <div class="item @if( $loop->iteration == 1) active @endif">
                             @endif
 
@@ -61,7 +61,7 @@
 
                                 @endcomponent
 
-                            @if( $loop->iteration / 4 == 1 OR $loop->last)
+                            @if( $loop->iteration % 6 == 0 OR $loop->last)
                             </div>
                             @endif
                         @endforeach
@@ -77,11 +77,11 @@
                     <h2>Les <strong class="text-highlight">meilleures</strong> promotions</h2>
                     <div class="carousel-control-container">
                         <a class="carousel-control left" href="#bestPromoCarousel" role="button" data-slide="prev">
-                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
                             <span class="sr-only">Précédent</span>
                         </a>
                         <a class="carousel-control right" href="#bestPromoCarousel" role="button" data-slide="next">
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
                             <span class="sr-only">Suivant</span>
                         </a>
                     </div>
@@ -89,7 +89,7 @@
                 <div id="bestPromoCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
                     <div class="carousel-inner" role="listbox">
                         @foreach($ds_selection as $establishment)
-                            @if( $loop->index % 4 == 0)
+                            @if( $loop->index % 6 == 0)
                             <div class="item @if( $loop->iteration == 1) active @endif">
                             @endif
 
@@ -97,7 +97,7 @@
 
                                 @endcomponent
 
-                            @if( $loop->iteration / 4 == 1 OR $loop->last)
+                            @if( $loop->iteration % 6 == 0 OR $loop->last)
                             </div>
                             @endif
                         @endforeach
