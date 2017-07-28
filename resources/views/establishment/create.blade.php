@@ -22,22 +22,21 @@
 </div>
 
 @endif
-<div class="container">
 
-    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+<div class="container">
+    <input  type="hidden" name="_token" value="{{ csrf_token() }}">
 
     @if(isset($establishment))
-    {{ Form::model($establishment, ['route' => 'establishment']) }}
+    {{ Form::model($establishment, ['route' => 'establishment.update']) }}
     @else
     {!! Form::open(['route'=>'establishment.store']) !!}
     @endif
 
     <div class="row heading">  
-
         <div class="col-md-4">
             <img id="preview" src="placeholder.png" height="100px" width="100px" />
 
-            {!! Form::file('id_logo', array(
+            {!! Form::file('url', array(
             'class' => 'name',
             'onchange' => 'previewImage(this)'
             )) !!} 
@@ -50,7 +49,11 @@
             ]) !!}
 
         </div>
-    </div>    
+    </div>  
+    {!! Form::hidden('validationPhase', old('validationPhase'), [
+    'placeholder'=>'1',
+    'id'=>'validationPhase'
+    ]) !!}
     <div class="accordion" id="accordionid">
         <div class="accordion-group">
 
@@ -62,7 +65,7 @@
                     <h5>Emplacement</h5>
                 </a>
             </div>
-            <div id="one" class="row">
+            <div id="one" class="row collapse">
                 <div class="accordion-inner">
                     <!-- Saisie de l'adresse de l'établissemntnt-->
                     <div class="row">
@@ -96,7 +99,6 @@
                     <div class="row">
                         <div class="col-md-8  accordion-inner">
                             {!! Form::label('  Addresse 2') !!}
-
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                                 {!! Form::text('address_additional', old('address_additional'), [
@@ -105,23 +107,19 @@
                                 'id'=>'street'
                                 ]) !!}
                             </div>
-
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-4  accordion-inner">
                             {!! Form::label('* NPA') !!}
-
                             <div class="input-group {{ $errors->has('postal_code') ? 'has-error' : '' }}">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                                 {!! Form::text('postal_code', old('postal_code'), [
                                 'class'=>'form-control', 
                                 'placeholder'=>'',
                                 'id'=>'postal_code'
                                 ]) !!}
                             </div>
-
                         </div>
                         <div class="col-md-8  accordion-inner">
                             {!! Form::label('* Localité') !!}
@@ -142,7 +140,6 @@
                     <div class="row">
                         <div class="col-md-6  accordion-inner">
                             {!! Form::label('* Canton/Départements') !!}
-
                             <div class="input-group {{ $errors->has('country') ? 'has-error' : '' }}">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                                 {!! Form::text('canton', old('country'), [
@@ -151,9 +148,7 @@
                                 'id'=>'canton'
                                 ]) !!}
                             </div>
-
                         </div>
-
                         <div class="col-md-6  accordion-inner">
                             {!! Form::label('* Pays') !!}
 
@@ -199,14 +194,6 @@
                             </div> 
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            {!! Form::submit('Valider votre emplacement !', 
-                            array('class'=>'btn btn-primary')) !!}
-                        </div>
-
-                    </div>
                 </div>
             </div> 
 
@@ -220,9 +207,16 @@
                     <div class="row">
                         <div class="col-md-6  accordion-inner">
                             {!! Form::label('* Téléphone pour réservation') !!}
-                            <div class="input-group {{ $errors->has('number') ? 'has-error' : '' }}">
+                            <div class="input-group {{ $errors->has('numberReservation') ? 'has-error' : '' }}">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
-                                {!! Form::text('number', old('number'), [
+
+                                {!!  Form::select('callNumberPrefixIdsByNameReservation',$callNumberPrefixIdsByName, ['class'=>
+                                'form-control',
+                                'placeholder'=>'',
+                                'id'=>'callNumberPrefixIdsByNameReservation'
+                                ]) !!}
+
+                                {!! Form::text('numberReservation', old('number'), [
                                 'class'=>'form-control', 
                                 'placeholder'=>'',
                                 'id'=>'number'
@@ -232,9 +226,14 @@
                         <div class="col-md-6  accordion-inner">
                             {!! Form::label('* Téléphone de contact') !!}
 
-                            <div class="input-group {{ $errors->has('number') ? 'has-error' : '' }} " >
+                            <div class="input-group {{ $errors->has('contactNumber') ? 'has-error' : '' }} " >
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
-                                {!! Form::text('phone', old('number'), ['class'=>
+                                {!!  Form::select('callNumberPrefixIdsByNameContact',$callNumberPrefixIdsByName, ['class'=>
+                                'form-control',
+                                'placeholder'=>'',
+                                'id'=>'callNumberPrefixIdsByName'
+                                ]) !!}
+                                {!! Form::text('contactNumber', old('number'), ['class'=>
                                 'form-control',
                                 'placeholder'=>'',
                                 'id'=>'phone'
@@ -247,6 +246,11 @@
                             {!! Form::label('* Fax') !!}
                             <div class="input-group ">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                                {!!  Form::select('callNumberPrefixIdsByNameFax',$callNumberPrefixIdsByName, ['class'=>
+                                'form-control',
+                                'placeholder'=>'',
+                                'id'=>'callNumberPrefixIdsByName'
+                                ]) !!}
                                 {!! Form::text('fax', old('fax'), [
                                 'class'=>'form-control', 
                                 'placeholder'=>'',
@@ -260,6 +264,11 @@
 
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                                {!!  Form::select('callNumberPrefixIdsByNameMobile',$callNumberPrefixIdsByName, ['class'=>
+                                'form-control',
+                                'placeholder'=>'',
+                                'id'=>'callNumberPrefixIdsByName'
+                                ]) !!}
                                 {!! Form::text('mobile', old('mobile'), [
                                 'class'=>'form-control',
                                 'placeholder'=>'',
@@ -287,7 +296,7 @@
                                 'placeholder'=>''
                                 ]) !!}
                             </div>
-                            {!! Form::label('* Site web de l établissement') !!}
+                            {!! Form::label('* Site web de votre restaurant') !!}
 
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>  
@@ -298,7 +307,6 @@
 
                         </div>    
                     </div>
-
                 </div>
             </div>
             <div class="row accordion-heading">
@@ -308,28 +316,32 @@
             </div>
             <div id="fourth" class="row collapse">
                 <div class="accordion-inner">
-                    <section class="container-fluid">
-                        <div>
-                            <select id="leftValues" size="5" multiple>
-
-                            </select>
-                        </div>
-                        <div>
-                            <input type="button" id="btnRight" value="&gt;&gt;"/>
-                            <input type="button" id="btnLeft" value="&lt;&lt;"/>
-                        </div>
-                        <div>
-                            <select id="rightValues" size="4" multiple>
-                                <option>Régional</option>
-                                <option>Végétarienne</option>
-                                <option>Grillade aux feu de bois</option>
-                            </select>
+                    <div class="row">
+                        <section class="col-md-12 container-fluid">
                             <div>
-                                <input type="text" id="txtRight" />
+                                <select id="leftValues" size="5" multiple>
+                                    <option>Cuisines des saisons</option>
+                                </select>
                             </div>
-                        </div>
-                    </section>   
+                            <div>
+                                <input type="button" id="btnLeft" onclick="{
+                                            addCookingType();
+                                        }" value="&lt;&lt;"/>
+                                <input type="button" id="btnRight" onclick="{
+                                            addCookingType();
+                                        }" value="&gt;&gt;"/>
+                            </div>
+                            <div>
 
+                                {!! Form::select('cookingTypeSelection[]', $cookingTypesIdsByName, null, array('multiple' => true,
+                                'id'=>'rightValues')) !!}
+
+                                <div>
+                                    <input type="text" id="txtRight" />
+                                </div>
+                            </div>
+                        </section>   
+                    </div>
                 </div>
             </div>
             <div class="row accordion-heading">
@@ -339,17 +351,28 @@
             </div>
             <div id="five" class="row collapse">
                 <div class="col-md-12 accordion-inner">
-                    <div class="col-md-12  accordion-inner">
-                        {!! Form::label('* Vous pouvez enregistrer jusqu\'a 5 spécialité') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
-                            {!! Form::text('specialiter', old('specialiter'), [
-                            'class'=>'form-control', 
-                            'placeholder'=>'',
-                            'id'=>'specialiter'
-                            ]) !!}<input type="button" class="btn" id="btnLeft" value="Enregistrer"/>
-                        </div>
+                    <div class="row">
+                        <section class="col-md-12 container-fluid">
+                            <div>
+                                <select id="leftValues" size="5" multiple>
 
+                                </select>
+                            </div>
+                            <div>
+                                <input type="button" id="btnLeft" onclick="{
+                                            addCookingType();
+                                        }" value="&lt;&lt;"/>
+                                <input type="button" id="btnRight" onclick="{
+                                            addCookingType();
+                                        }" value="&gt;&gt;"/>
+                            </div>
+                            <div>
+                                {!! Form::select('foodSpecialitieIdsByName[]', $foodSpecialitieIdsByName, null, array('multiple' => true)) !!}
+                                <div>
+                                    <input type="text" id="txtRight" />
+                                </div>
+                            </div>
+                        </section>   
                     </div>
                 </div>
             </div>  
@@ -360,13 +383,15 @@
             </div>
             <div id="sixth" class="row collapse">
                 <div class="accordion-inner">
-                    <div class="col-md-12  accordion-inner">
-                        {!! Form::label('Description :') !!}
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
-                            {!! Form::textarea('description', old('description'), ['class'=>
-                            'form-control', 'placeholder'=>
-                            'Enter Name']) !!}  
+                    <div class="row">
+                        <div class="col-md-12  accordion-inner">
+                            {!! Form::label('Description :') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                                {!! Form::textarea('description', old('description'), ['class'=>
+                                'form-control', 'placeholder'=>
+                                'Enter Name']) !!}  
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -377,57 +402,213 @@
                 </a>
             </div>
             <div id="seven" class="row collapse">
-                <div class="accordion-inner">
-
-                    <section class="col-md-12 container-fluid">
-                        <div>
-                            <select id="leftValues" size="5" multiple>
-
-                            </select>
-                        </div>
-                        <div>
-                            <input type="button" id="btnLeft" value="&lt;&lt;"/>
-                            <input type="button" id="btnRight" value="&gt;&gt;"/>
-                        </div>
-                        <div>
-                            <select id="rightValues" size="4" multiple>
-                                <option>Poulet Masala</option>
-                                <option>Pizza</option>
-                                <option>Fondue</option>
-                            </select>
+                <div class="col-md-12 accordion-inner">
+                    <div class="row">
+                        <section class="col-md-12 container-fluid">
                             <div>
-                                <input type="text" id="txtRight" />
+                                <select id="leftValues" size="5" multiple>
+
+                                </select>
                             </div>
-                        </div>
-                    </section>          
-                </div> 
+                            <div>
+                                <input type="button" id="btnLeft" onclick="{
+                                            addCookingType();
+                                        }" value="&lt;&lt;"/>
+                                <input type="button" id="btnRight" onclick="{
+                                            addCookingType();
+                                        }" value="&gt;&gt;"/>
+                            </div>
+                            <div>
+                                {!! Form::select('servicIdsByName[]', $servicIdsByName, null, array('multiple' => true)) !!}
+                                <div>
+                                    <input type="text" id="txtRight" />
+                                </div>
+                            </div>
+                        </section>   
+                    </div>
+                </div>                    
             </div>
-        </div>  
-        <div class="row accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#eight">
-                <h5>Cardre & Ambiance</h5>
-            </a>
-        </div>
-        <div id="eight" class="row collapse">
-            <div class="accordion-inner">
-                <div class="form-group  accordion-inner">
-                    {!! Form::label('Description :') !!}
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
-                        {!! Form::textarea('description', old('description'), ['class'=>
-                        'form-control', 'placeholder'=>
-                        'Enter Name']) !!}  
+            <div class="row accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#eight">
+                    <h5>Cardre & Ambiance</h5>
+                </a>
+            </div>
+            <div id="eight" class="row collapse">
+                <div class="col-md-12 accordion-inner">
+                    <div class="row">
+                        <section class="col-md-12 container-fluid">
+                            <div>
+                                <select id="leftValues" size="5" multiple>
+                                    <option>Salsa</option>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="button" id="btnLeft" onclick="{
+                                            addCookingType();
+                                        }" value="&lt;&lt;"/>
+                                <input type="button" id="btnRight" onclick="{
+                                            addCookingType();
+                                        }" value="&gt;&gt;"/>
+                            </div>
+                            <div>
+                                {!! Form::select('restaurantAtmospherIdsByName[]',$restaurantAtmospherIdsByName, null, array('multiple' => true)) !!}
+                                <div>
+                                    <input type="text" id="txtRight" />
+                                </div>
+                            </div>
+                        </section>   
                     </div>
                 </div>
+            </div>  
+
+            <div class="row accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#nine">
+                    <h5>Photos et galleries</h5>
+                </a>
             </div>
-        </div>  
+            <div id="nine" class="row collapse">
+                <div class="accordion-inner">
+
+
+                </div> 
+            </div>
+            <div class="row accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionid" href="index.html#ten">
+                    <h5>Horaires</h5>
+                </a>
+            </div>
+            <div id="ten" class="row collapse">
+                <div class="accordion-inner">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Veuillez indiquer vos horaire d'ouverture</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            <h5>Déjeuner</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            <h5>Diner</h5>
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Lundi</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimeAm1',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm1',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm1',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm1',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Mardi</h5>
+                        </div>    
+                        <div class="col-md-4">                       
+                            {!! Form::select('startTimeAm2',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm2',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm2',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm2',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Mercredi</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimeAm3',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm3',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm3',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm3',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Jeudi</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimeAm4',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm4',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm4',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm4',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Vendredi</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimeAm5',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm5',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm5',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm5',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Samedi</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimeAm6',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm6',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm6',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm6',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Dimanche</h5>
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimeAm7',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimeAm7',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                        <div class="col-md-4">
+                            {!! Form::select('startTimePm7',$houreField, null, array('multiple' => false)) !!}
+                            {!! Form::select('endTimePm7',$houreField, null, array('multiple' => false)) !!}
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5> Fermeture exceptionnel</h5> 
+                        </div>      
+                    </div>
+                </div> 
+            </div>
+        </div>    
     </div>
-    {!! form::close() !!}
 </div>
 
+<div class="alert alert-info">
+   {!! Form::submit('Valider !',array('class'=>'btn btn-primary')) !!}
+</div>
+   {!! form::close() !!}
 @endsection
 
 <script>
+
+    function addCookingType() {
+
+        var selectedItem = $("#rightValues option:selected").select();
+        $("#leftValues").append(selectedItem);
+
+        // alert(selectedItem.toString());
+
+    }
+
 
     function getCoords() {
         var city = $('#city').val();
@@ -443,6 +624,7 @@
             geocoder.geocode({
                 'address': address
             }, function (results, status) {
+                console.log(results);
                 if (status === 'OK') {
                     lat = results[0].geometry.location.lat();
                     lng = results[0].geometry.location.lng();
@@ -466,10 +648,11 @@
             'location': latlng
         }, function (results, status) {
             if (status === 'OK') {
+                console.log(results);
                 if (results[0]) {
                     var result = results[0];
                     //look for locality tag and administrative_area_level_1
-                    var city, street_number, street, country, postal_code, canton;
+                    var city, street_number, street, country, postal_code, canton, quartier;
 
                     for (var i = 0, len = result.address_components.length; i < len; i++) {
                         var ac = result.address_components[i];
@@ -485,8 +668,9 @@
                             postal_code = ac.long_name;
                         if (ac.types.indexOf("administrative_area_level_1") >= 0)
                             canton = ac.long_name;
+                        if (ac.types.indexOf("sublocality_level_1") >= 0)
+                            quartier = ac.long_name;
                     }
-
                     //  alert(city+country+street+street_number);
                     //on remplie les champs addresse avec les variable google 
                     $('#street').val(street);

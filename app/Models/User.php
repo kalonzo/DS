@@ -15,10 +15,11 @@ class User extends Model
     
     const TYPE_USER_ADMIN_PRO = 1;
     const TYPE_USER = 2;
-    const TYPE_GENDER_WOMAN = 3;
-    const TYPE_GENDER_MAN = 4;
-    const TYPE_GENDER_SOCITY = 5;
-
+    const TYPE_USER_AUTO_INSERTED = 3;
+    
+    const TYPE_GENDER_WOMAN = 1;
+    const TYPE_GENDER_MAN = 2;
+   
     protected $fillable = [
         'status',
         'name',
