@@ -178,23 +178,17 @@ $(function () {
         $(this).find('.modal-body').empty().append(formGroup);
     });
     
+    $('.filterResetTrigger a').on('click', function(e){
+        e.preventDefault();
+        reloadSearch('reset', 1);
+        return false;
+    });
+    
     $(document).on('click', '.pagination a', function (e) {
         var page = $(this).attr('href').split('page=')[1];
         e.preventDefault();
         reloadSearch('page', page);
     });
-    /*
-    $(window).on('hashchange', function() {
-        if (window.location.hash) {
-            var page = window.location.hash.replace('#', '');
-            if (page == Number.NaN || page <= 0) {
-                return false;
-            } else {
-                reloadSearch('page', page);
-            }
-        }
-    });
-    */
     
     function reloadSearch(filterName, value){
         var ajaxParams = {};
@@ -208,9 +202,6 @@ $(function () {
         })
         .done(function( data ) {
             $('#search-container').empty().html(data);
-//            if(filterName === 'page'){
-//                location.hash = value;
-//            }
             $(document).trigger('searchUpdated');
         });
     };
