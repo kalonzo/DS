@@ -15,6 +15,7 @@ class CreateEstablishmentBusinessCategoriesTable extends Migration {
 		Schema::create('establishment_business_categories', function(Blueprint $table)
 		{
 			$table->binary('id', 16);
+                        $table->timestamps();
 			$table->binary('id_establishment', 16)->index('fk_establishments_has_establishment_attribute_categories_es_idx1');
 			$table->binary('id_business_category', 16)->index('fk_establishments_has_establishment_attribute_categories_es_idx');
 		});
