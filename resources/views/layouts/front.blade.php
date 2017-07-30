@@ -1,3 +1,4 @@
+@if(!isset($reloaded) || !$reloaded)
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
     <head>
@@ -122,3 +123,4 @@
         @yield('js_imports_footer')
     </body>
 </html>
+@endif

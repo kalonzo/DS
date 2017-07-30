@@ -7,6 +7,7 @@ $(function () {
         this._super();
         this.widget().menu({
             items: ".ui-menu-item:not(.ui-autocomplete-category)" 
+            //TODO
         });
     };
     $searckKeywordInstance = $("#search_keywords").autocomplete("instance");
@@ -40,7 +41,6 @@ $(function () {
             $(map).trigger('locationsUpdated', {items: items});
         }
     };
-    
     $searckKeywordInstance._renderItem = function( ul, item ) {
         var that = this;
         var li = $( "<li>" );
@@ -178,10 +178,8 @@ $(function () {
         $(this).find('.modal-body').empty().append(formGroup);
     });
     
-    $('.filterResetTrigger a').on('click', function(e){
-        e.preventDefault();
+    $('body').on('click', '#search-results-filters .filterResetTrigger button', function(e){
         reloadSearch('reset', 1);
-        return false;
     });
     
     $(document).on('click', '.pagination a', function (e) {

@@ -77,7 +77,10 @@ function relocateUserPosition(lat, lng){
         markerPosition.setPosition(latLng);
         map.setCenter(latLng);
     }
-    saveNewPosition(userPositionLat, userPositionLng);
+    reloadPage({'userLat': lat, 'userLng': lng}, function(){
+        $(document).trigger('positionSaved');
+    });
+//    saveNewPosition(userPositionLat, userPositionLng);
 }
 
 function saveNewPosition(lat, lng){

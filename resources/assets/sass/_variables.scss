@@ -18,8 +18,8 @@ $brand-danger: #bf5329;
 
 // Typography
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
-$font-family-sans-serif: "Raleway", sans-serif;
-$font-size-base: 12px;
+$font-family-sans-serif: "Lato", sans-serif;
+$font-size-base: 13px;
 $line-height-base: 1.6;
 $line-height-base-px: $font-size-base * $line-height-base;
 $text-color: #636b6f;
@@ -46,7 +46,7 @@ $input-color-placeholder: lighten($text-color, 30%);
 // Panels
 $panel-default-heading-bg: #fff;
 
-$quickSearchFieldMdWidth: 408px;
-$quickSearchFieldSmWidth: 389px;
+$searchFormMdWidth: 35%;
+$searchFormSmWidth: 45%;
 $navbarInnerPadding: 9px;
 $searchFilterPanelHeadingHeight: 53px;
