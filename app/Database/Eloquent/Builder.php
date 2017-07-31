@@ -12,14 +12,13 @@ class Builder extends \Illuminate\Database\Eloquent\Builder{
     }
 
     public function create(array $attributes = []){
-        $targetPrefix = $this->getModelTableName().'@';
+        $tableName = $this->getModelTableName();
         $targetAttributes = array();
         
         foreach ($attributes as $label =>$attribute){
-            if(strpos($label, '@') !== false){
-                if(strpos($label, $targetPrefix) === 0){
-                    $label = str_replace($targetPrefix, '', $label);
-                    $targetAttributes[$label] = $attribute;
+            if($label === $tableName && is_array($attribute)){
+                foreach($attribute as $dedicatedTableLabel => $dedicatedTableValue){
+                    $targetAttributes[$dedicatedTableLabel] = $dedicatedTableValue;
                 }
             } else {
                 $targetAttributes[$label] = $attribute;
