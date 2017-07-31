@@ -1,0 +1,34 @@
+// Variables
+@import "_variables";
+@import "_mixins";
+
+#map{
+    height: 200px;
+}
+
+#ets-heading{
+    height: 70px;
+    line-height: 70px;
+    background: #ccc;
+    position: relative;
+    #ets-logo{
+        width: 120px;
+        position: absolute;
+        bottom: 5px;
+        border: 2px solid white;
+        + input[type=file]{
+            display: none;
+        }
+    }
+    #ets-name{
+        margin-left: 137px;
+        margin-top: 19px;
+        width: calc(100% - 130px);
+        background: #aaa;
+        color: black;
+        text-transform: uppercase;
+        font-weight: bold;
+        border: 0px;
+        outline: none;
+    }
+}

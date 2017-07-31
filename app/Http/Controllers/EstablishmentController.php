@@ -2,8 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
+use App\Models\BusinessCategory;
+use App\Models\CallNumber;
+use App\Models\Country;
+use App\Models\Establishment;
+use App\Models\EstablishmentBusinessCategory;
+use App\Models\LocationIndex;
+use App\Models\OpeningHour;
+use App\Models\Restaurant;
+use App\Models\User;
 use App\php;
+use App\Utilities\DbQueryTools;
+use App\Utilities\StorageHelper;
+use App\Utilities\UuidTools;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request as Request2;
 use View;
 
 class EstablishmentController extends Controller {
@@ -11,7 +27,7 @@ class EstablishmentController extends Controller {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index() {
         //
@@ -20,10 +36,13 @@ class EstablishmentController extends Controller {
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create() {
-        $view = $this->filterValues();
+        $this->buildCreateFormData();
+        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
+        $view = View::make('establishment.create')->with('form_data', $formData);
+
         return $view;
     }
 
@@ -31,7 +50,7 @@ class EstablishmentController extends Controller {
      * Display the specified resource.
      *
      * @param  \App\php  $php
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(php $php) {
         
@@ -41,7 +60,7 @@ class EstablishmentController extends Controller {
      * Show the form for editing the specified resource.
      *
      * @param  \App\php  $php
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(php $php) {
         //
@@ -50,9 +69,9 @@ class EstablishmentController extends Controller {
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \App\php  $php
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, php $php) {
         //
@@ -62,7 +81,7 @@ class EstablishmentController extends Controller {
      * Remove the specified resource from storage.
      *
      * @param  \App\php  $php
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(php $php) {
         //
@@ -71,20 +90,20 @@ class EstablishmentController extends Controller {
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function store(Request $request) {
         $this->validatePhase($request, $request->get('validationPhase'));
         //$msg = 'Veuillez passez à l\'étape de saisie des contact';
         //return back()->with('message', $msg);
-        $view = $this->filterValues();
+        $view = $this->buildCreateFormData();
         return $view;
     }
 
     /**
      * 
-     * @param \Illuminate\Support\Facades\Request $request
+     * @param Request2 $request
      * @param type $validationPhase
      * @return string
      */
@@ -137,34 +156,37 @@ class EstablishmentController extends Controller {
 
     /**
      * 
-     * @param \Illuminate\Support\Facades\Request $request
+     * @param Request2 $request
      * @param type $phase
      */
     public function validateForm($request, $phase) {
         switch ($phase) {
             case '2':
-                $this->validate($request, [
-                    'name' => 'required|min:2|max:255',
-                    'street' => 'required|min:3|max:255',
-                    'street_number' => 'required|max:45',
-                    'postal_code' => 'required|max:11',
-                    'city' => 'required|max:255',
-                    'country' => 'required|max:255',
-                    'latitude' => 'required',
-                    'longitude' => 'required',
-                        ], [
-                    'name.required' => ' Vous devez spécifier un nom pour votre établissement.',
-                    'name.min' => ' Le nom de votre restaurant dois contenir au minimum 2 caractères.',
-                    'name.max' => ' Le nom du restaurant ne dois pas dépasser 255 caractères',
-                    'street.required' => 'Vous devez spécifiez une rue pour votre établissement',
-                    'street.min' => 'Le nom de rue dois contenir au minimum 3 caractères',
-                    'street_number.required' => ' Vous devez spécifiez un numéro de rue pour votre établissement.',
-                    'postal_code.required' => 'Vous devez spécifier un code postal',
-                    'city.required' => ' Vous devez spécifiez une ville pour votre établissement.',
-                    'country.required' => ' Vous devez spécifiez le pays de votre établissement.',
-                    'latitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
-                    'longitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
-                ]);
+                $this->validate($request, 
+                    [
+                        'name' => 'required|min:2|max:255',
+                        'street' => 'required|min:3|max:255',
+                        'street_number' => 'required|max:45',
+                        'postal_code' => 'required|max:11',
+                        'city' => 'required|max:255',
+                        'country' => 'required|max:255',
+                        'latitude' => 'required',
+                        'longitude' => 'required',
+                    ], 
+                    [
+                        'name.required' => ' Vous devez spécifier un nom pour votre établissement.',
+                        'name.min' => ' Le nom de votre restaurant dois contenir au minimum 2 caractères.',
+                        'name.max' => ' Le nom du restaurant ne dois pas dépasser 255 caractères',
+                        'street.required' => 'Vous devez spécifiez une rue pour votre établissement',
+                        'street.min' => 'Le nom de rue dois contenir au minimum 3 caractères',
+                        'street_number.required' => ' Vous devez spécifiez un numéro de rue pour votre établissement.',
+                        'postal_code.required' => 'Vous devez spécifier un code postal',
+                        'city.required' => ' Vous devez spécifiez une ville pour votre établissement.',
+                        'country.required' => ' Vous devez spécifiez le pays de votre établissement.',
+                        'latitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
+                        'longitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
+                    ]
+                );
                 break;
             case '3':
                 $this->validate($request, [
@@ -200,60 +222,69 @@ class EstablishmentController extends Controller {
         }
     }
 
-    /**
-     * Permet de créer des tableaux associatif pour les business catégory (filtersValu )
-     * @param \Illuminate\Support\Facades\Request $request
-     * @return type
-     */
-    public function getElementsIdsByName($request) {
-        $getElementsIdByName = array();
-        foreach ($request as $uUId) {
-            $getElementsIdByName[$uUId->getUuid()] = $uUId->getName();
-        }
-        return $getElementsIdByName;
-    }
-
-    public function filterValues() {
-        $cookingTypes = \App\Models\BusinessCategory::where('type', \App\Models\BusinessCategory::TYPE_COOKING_TYPE)->get();
-        $foodSpecialities = \App\Models\BusinessCategory::where('type', \App\Models\BusinessCategory::TYPE_FOOD_SPECIALITY)->get();
-        $restaurantAtmosphere = \App\Models\BusinessCategory::where('type', \App\Models\BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE)->get();
-        $services = \App\Models\BusinessCategory::where('type', \App\Models\BusinessCategory::TYPE_SERVICES)->get();
-        $callNumberPrefix = \App\Models\Country::get();
-
-        $cookingTypesIdsByName = $this->getElementsIdsByName($cookingTypes);
-        $foodSpecialitieIdsByName = $this->getElementsIdsByName($foodSpecialities);
-        $restaurantAtmospherIdsByName = $this->getElementsIdsByName($restaurantAtmosphere);
-        $servicIdsByName = $this->getElementsIdsByName($services);
-        $callNumberPrefixIdsByName = array();
-
-        foreach ($callNumberPrefix as $call) {
-            $callNumberPrefixIdsByName[$call->getUuid()] = $call->label . " " . "(" . $call->prefix . ")";
-        }
-
-        foreach ($callNumberPrefix as $call) {
-            $callNumberPrefixIdsByName[$call->getUuid()] = $call->label . " " . "(" . $call->prefix . ")";
-        }
-
-        $houreField = array();
-
-        for ($i = 1; $i <= 24; $i++) {
-            $houreField[sprintf('%02d', $i) . ':00'] = sprintf('%02d', $i) . ':00';
-            $houreField[sprintf('%02d', $i) . ':30'] = sprintf('%02d', $i) . ':30';
+    public function buildCreateFormData() {
+        // Select for business categories
+        $cookingTypes = array();
+        $foodSpecialities = array();
+        $restaurantAtmospheres = array();
+        $services = array();
+        $businessCategoriesData = DB::table(BusinessCategory::TABLENAME)
+                                        ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', name, type')
+                                        ->whereIn('type', array(BusinessCategory::TYPE_COOKING_TYPE,
+                                                                BusinessCategory::TYPE_FOOD_SPECIALITY,
+                                                                BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE,
+                                                                BusinessCategory::TYPE_SERVICES
+                                                                )
+                                        )
+                                        ->orderBy('name')
+                                        ->get();
+        foreach($businessCategoriesData as $businessCategoryData){
+            switch($businessCategoryData->type){
+                case BusinessCategory::TYPE_COOKING_TYPE:
+                    $cookingTypes[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+                case BusinessCategory::TYPE_FOOD_SPECIALITY:
+                    $foodSpecialities[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+                case BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE:
+                    $restaurantAtmospheres[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+                case BusinessCategory::TYPE_SERVICES:
+                    $services[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+            }
         }
 
-        $view = View::make('establishment.create')->with('cookingTypesIdsByName', $cookingTypesIdsByName)
-                ->with('foodSpecialitieIdsByName', $foodSpecialitieIdsByName)
-                ->with('restaurantAtmospherIdsByName', $restaurantAtmospherIdsByName)
-                ->with('servicIdsByName', $servicIdsByName)
-                ->with('callNumberPrefixIdsByName', $callNumberPrefixIdsByName)
-                ->with('houreField', $houreField);
+        // Select for call number prefixes
+        $countryPrefixes = array();
+        $countriesData = DB::table(Country::TABLENAME)
+                                        ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', label, prefix')
+                                        ->where('prefix', '>', 0)
+                                        ->orderBy('label')
+                                        ->get();
+        foreach ($countriesData as $countryData) {
+            $countryPrefixes[$countryData->uuid] = $countryData->label." | +".$countryData->prefix;
+        }
 
-        return $view;
+        // Select for time
+        $timetable = array();
+        for ($i = 0; $i < 24; $i++) {
+            for ($j = 0; $j <= 55; $j+=30) {
+                $timetable[$i*100 + $j] = sprintf('%02d', $i).':'.sprintf('%02d', $j);
+            }
+        }
+        
+        StorageHelper::getInstance()->add('create_establishment.form_data.cooking_types', $cookingTypes);
+        StorageHelper::getInstance()->add('create_establishment.form_data.food_specialities', $foodSpecialities);
+        StorageHelper::getInstance()->add('create_establishment.form_data.atmospheres', $restaurantAtmospheres);
+        StorageHelper::getInstance()->add('create_establishment.form_data.services', $services);
+        StorageHelper::getInstance()->add('create_establishment.form_data.country_prefixes', $countryPrefixes);
+        StorageHelper::getInstance()->add('create_establishment.form_data.timetable', $timetable);
     }
 
     /**
      * 
-     * @param \Illuminate\Support\Facades\Request $request
+     * @param Request2 $request
      */
     public function insertEstablishment($request) {
         //Validation général du formulaire
@@ -265,61 +296,61 @@ class EstablishmentController extends Controller {
         $request->merge([
             'id_location_index' => $idLocation
         ]);
-        $address = \App\Models\Address::create($request->all());
+        $address = Address::create($request->all());
         $uUIdAddress = $address->getId();
 
         $request->merge([
-            'type' => \App\Models\User::TYPE_USER_AUTO_INSERTED,
+            'type' => User::TYPE_USER_AUTO_INSERTED,
             'gender' => 0,
             'id_address' => $uUIdAddress,
             'id_inbox' => 0,
             'id_company' => 0,
         ]);
 
-        $user = \App\Models\User::create($request->all());
+        $user = User::create($request->all());
         $uuid_user = $user->getId();
 
         $request->merge([
             'id_location_index' => $idLocation,
             'id_user_owner' => $uuid_user,
             'id_address' => $uUIdAddress,
-            'id_business_type' => \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT,
+            'id_business_type' => Restaurant::TYPE_BUSINESS_RESTAURANT,
             'id_logo' => 0
         ]);
 
-        $establishment = \App\Models\Establishment::create($request->all());
+        $establishment = Establishment::create($request->all());
 
         if ($request->get('numberReservation') != "") {
-            $this->insertPhoneNumber(0, $request, 'Téléphone utilisé pour les réservation', \App\Models\CallNumber::TYPE_PHONE_NUMBER_RESERVATION, $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
+            $this->insertPhoneNumber(0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
         }
         if ($request->get('contactNumber') != "") {
-            $this->insertPhoneNumber(1, $request, 'Téléphone principale', \App\Models\CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), $request->get('contactNumber'), $establishment->getId());
+            $this->insertPhoneNumber(1, $request, 'Téléphone principale', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), $request->get('contactNumber'), $establishment->getId());
         }
         if ($request->get('fax') != "") {
-            $this->insertPhoneNumber(0, $request, 'Numéro de fax', \App\Models\CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), $establishment->getId());
+            $this->insertPhoneNumber(0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), $establishment->getId());
         }
         if ($request->get('mobile') != "") {
-            $this->insertPhoneNumber(0, $request, 'Téléphone mobile', \App\Models\CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), $request->get('mobile'), $establishment->getId());
+            $this->insertPhoneNumber(0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), $request->get('mobile'), $establishment->getId());
         }
 
         //Insertion des types de cuisine
         foreach (request()->get('cookingTypeSelection') as $cookingType) {
-            $id = \App\Utilities\UuidTools::getId($cookingType);
+            $id = UuidTools::getId($cookingType);
             $this->insertBusinessCategory($request, $establishment->getId(), $id);
         }
         //Insertion des spécialité
         foreach (request()->get('foodSpecialitieIdsByName') as $foodSpeciality) {
-            $id = \App\Utilities\UuidTools::getId($foodSpeciality);
+            $id = UuidTools::getId($foodSpeciality);
             $this->insertBusinessCategory($request, $establishment->getId(), $id);
         }
         //Insertion des spécialité
         foreach (request()->get('restaurantAtmospherIdsByName') as $restaurantAtmospherIdsByName) {
-            $id = \App\Utilities\UuidTools::getId($restaurantAtmospherIdsByName);
+            $id = UuidTools::getId($restaurantAtmospherIdsByName);
             $this->insertBusinessCategory($request, $establishment->getId(), $id);
         }
         //Insertion des spécialité
         foreach (request()->get('servicIdsByName') as $servicIdsByName) {
-            $id = \App\Utilities\UuidTools::getId($servicIdsByName);
+            $id = UuidTools::getId($servicIdsByName);
             $this->insertBusinessCategory($request, $establishment->getId(), $id);
         }
 
@@ -349,7 +380,7 @@ class EstablishmentController extends Controller {
 
     /**
      * 
-     * @param \Illuminate\Support\Facades\Request $request
+     * @param Request2 $request
      * @param type $establishmentId
      * @param type $id
      */
@@ -359,12 +390,12 @@ class EstablishmentController extends Controller {
             'id_business_categories' => $id
         ]);
         //var_dump($request->all());
-         \App\Models\EstablishmentBusinessCategory::create($request->all());
+         EstablishmentBusinessCategory::create($request->all());
     }
 
     /**
      * 
-     * @param \Illuminate\Support\Facades\Request $request
+     * @param Request2 $request
      * @param type $day
      * @param type $startTime
      * @param type $endTime
@@ -377,13 +408,13 @@ class EstablishmentController extends Controller {
             'end_time' => date('H:i', strtotime($endTime)),
             'idEstablishment' => $idEstablishment
         ]);
-        \App\Models\OpeningHour::create($request->all());
+        OpeningHour::create($request->all());
     }
 
     /**
      * 
      * @param type $main
-     * @param \Illuminate\Support\Facades\Request $request
+     * @param Request2 $request
      * @param type $label
      * @param type $type
      * @param type $idCountry
@@ -391,7 +422,7 @@ class EstablishmentController extends Controller {
      * @param type $idEstablishment
      */
     public function insertPhoneNumber($main, $request, $label, $type, $idCountry, $number, $idEstablishment) {
-        $prefix = \App\Models\Country::where('id', \App\Utilities\UuidTools::getId($idCountry))->first();
+        $prefix = Country::where('id', UuidTools::getId($idCountry))->first();
 
         $request->merge([
             'main' => $main,
@@ -402,7 +433,7 @@ class EstablishmentController extends Controller {
             'id_establishment' => $idEstablishment,
         ]);
 
-        \App\Models\CallNumber::create($request->all());
+        CallNumber::create($request->all());
     }
 
     /**
@@ -412,7 +443,7 @@ class EstablishmentController extends Controller {
      * @return type
      */
     public function getIdLocation($postalCode, $city) {
-        $locationIndex = \App\Models\LocationIndex::where('postal_code', $postalCode)
+        $locationIndex = LocationIndex::where('postal_code', $postalCode)
                 ->where('city', $city)->first();   
         $id = $locationIndex->id;
         return $id;
@@ -428,11 +459,11 @@ class EstablishmentController extends Controller {
     public function isUniqueEstablishment($name, $lat, $lng) {
         $bool = false;
         if (isset($name) & isset($lat) & isset($lng)) {
-            $name = \Illuminate\Support\Facades\DB::table('Establishment')
+            $name = DB::table('Establishment')
                     ->where('name', $name)->first();
-            $lat = \Illuminate\Support\Facades\DB::table('Establishment')
+            $lat = DB::table('Establishment')
                     ->where('latitude', $lat)->first();
-            $lng = \Illuminate\Support\Facades\DB::table('Establishment')
+            $lng = DB::table('Establishment')
                     ->where('longitude', $lng)->first();
         } else {
             $bool = false;

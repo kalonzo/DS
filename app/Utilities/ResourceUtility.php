@@ -18,4 +18,8 @@ class ResourceUtility {
                     return $item->$column;
                 })->toArray();
     }
+    
+    public static function getLabelIndexedByUuid($collection, $idAttributes, $labelAttributes){
+        
+    }
 }

@@ -67,6 +67,15 @@ class DbQueryTools {
         return $rawSql;
     }
     
+    public static function genRawSqlForGettingUuid($tableField = 'id', $tableName = '', $alias = 'uuid'){
+        $rawSql = ' HEX(';
+        if(!empty($tableName)){
+            $rawSql .= $tableName.'.';
+        }
+        $rawSql .= $tableField.') AS '.$alias;
+        return $rawSql;
+    }
+    
     /**
      * 
      * @param \Illuminate\Database\Query\Builder $query

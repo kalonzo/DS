@@ -18,5 +18,6 @@ mix.js([
     .copyDirectory('resources/assets/img', 'public/img')
     .sass('resources/assets/sass/app.scss', 'public/css')
     .sass('resources/assets/sass/front.scss', 'public/css')
+    .sass('resources/assets/sass/establishment.scss', 'public/css')
 //    .browserSync('dinerscope')
     ;
