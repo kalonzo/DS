@@ -684,7 +684,7 @@ $mapThumbnailWidth: 145px;
     }
 }
 
-form input[type='name']{
+form:not(.navbar-form) input[type=text]{
     color: $main-text-color;
     border: 1px solid $main-text-color;
     @include borderRadius(0px);

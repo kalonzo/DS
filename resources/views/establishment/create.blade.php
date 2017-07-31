@@ -142,8 +142,15 @@
                             </div>
                             <div class="col-xs-12 col-sm-4 form-group">
                                 <label>&nbsp;</label>
-                                <button role="button" class="btn btn-sm col-xs-12" onclick="getCoords(this); return false;">
+                                <button type="button" role="button" class="btn btn-sm col-xs-12" onclick="getCoords(this);">
                                     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> Géolocaliser mon établissement
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
                                 </button>
                             </div>
                         </div>
@@ -232,6 +239,13 @@
                                 </div>
                             </div>    
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,6 +279,13 @@
                                 </div>
 
                             </div>    
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -304,6 +325,13 @@
                                 </div>
                             </section>   
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -342,6 +370,13 @@
                                 </div>
                             </section>   
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>  
             </div>
@@ -364,6 +399,13 @@
                                     'form-control', 'placeholder'=>
                                     'Enter Name']) !!}  
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -403,6 +445,13 @@
                                 </div>
                             </section>   
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
                     </div>                    
                 </div>
             </div>
@@ -441,6 +490,13 @@
                                 </div>
                             </section>   
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div> 
             </div>
@@ -456,6 +512,13 @@
                 <div id="collapse9" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading9">
                     <div class="panel-body container">
 
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
+                                    Suivant
+                                </button>
+                            </div>
+                        </div>
                     </div> 
                 </div>
             </div>
@@ -652,8 +715,6 @@
                                 }
                             }
                         }
-//                        adresse_location = country + ' ' + city;
-//                        getLocationIndex(adresse_location);
                     } else {
                         window.alert('No results found');
                     }
@@ -664,22 +725,10 @@
         }
     }
     
-    function getLocationIndex(address) {
-
-        var lat, lng;
-        var geocoder = new google.maps.Geocoder();
-
-        if (address !== '') {
-            geocoder.geocode({
-                'address': address
-            }, function (results, status) {
-                if (status === 'OK') {
-                    lat = results[0].geometry.location.lat();
-                    lng = results[0].geometry.location.lng();
-                    $('#index_location_lat').val(lat);
-                    $('#index_location_lng').val(lng);
-                }
-            });
+    function goToNextAccordion(triggerElement){
+        var $currentPanel = $(triggerElement).parentsInclude('.panel');
+        if(checkExist($currentPanel)){
+            $currentPanel.next('.panel').find('a[data-toggle=collapse]').click();
         }
     }
 
@@ -699,34 +748,6 @@
 
 
 </script>
-<style type="text/css">    
-    #resto_name{
-
-        text-align:left;
-        width: 400px;
-        height: 40px;
-        font-size: 30px;
-        margin-top: 35px;
-    }
-
-    SELECT, INPUT[type="text"] {
-        box-sizing: border-box;
-    }
-    SECTION {
-        padding: 8px;
-        background-color: #f0f0f0;
-        overflow: auto;
-    }
-    SECTION > DIV {
-        float: left;
-        padding: 4px;
-    }
-    SECTION > DIV + DIV {
-        width: 40px;
-        text-align: center;
-    }
-
-</style>
 
 @section('js_imports_footer')
 <script src="/js/google-map.js"></script>
