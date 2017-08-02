@@ -40,7 +40,7 @@ class SessionController {
         if($this->typeEts === null){
             $this->typeEts = \Illuminate\Support\Facades\Request::session()->get('user.type_ets');
             if($this->typeEts === null || empty($this->typeEts)){
-                $this->typeEts = \App\Models\Establishment::TYPE_BUSINESS_RESTAURANT;
+                $this->typeEts = \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT;
             }
         }
         return $this->typeEts;

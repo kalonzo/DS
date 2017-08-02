@@ -13,8 +13,7 @@
 @section('content')
 
 @component('components.tile', ['title' => 'Etablissements', 'add_href' => '/establishment/create', 
-                                'tabledata' => ['rows' => $establishments, 
-                                            'columns' => ['name' => 'Nom', 'type' => 'Type', 'city' => 'Ville', 'updated_at' => 'Modifié le']]])
+                                'tabledata' => $establishment_datatable])
 
 @endcomponent
 

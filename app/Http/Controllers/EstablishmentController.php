@@ -212,7 +212,7 @@ class EstablishmentController extends Controller {
                             'id_location_index' => $idLocation,
                             'id_user_owner' => $idUser,
                             'id_address' => $idAddress,
-                            'id_business_type' => Restaurant::TYPE_BUSINESS_RESTAURANT,
+                            'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
                             'id_logo' => 0
                         ]);
                         $establishment = Establishment::create($request->all());
