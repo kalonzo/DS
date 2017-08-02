@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', 'HomeController@index');
+//Route::post('logout', ['as' => 'logout', 'uses' => 'HomeController@index']);
 
 Route::get('/admin', 'AdminController@index');
 

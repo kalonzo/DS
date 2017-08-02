@@ -17,10 +17,6 @@ use View;
 
 class HomeController extends Controller {
 
-    public function __construct() {
-        $this->middleware('guest');
-    }
-
     public static function index() {
         $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
         $sliderEts = array();
