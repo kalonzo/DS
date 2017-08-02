@@ -10,6 +10,8 @@ class DatatableFeeder {
     private $id = null;
     private $paginator = null;
     private $columns = array();
+    private $reloaded = false;
+    
     /**
      *
      * @var DatatableRowAction
@@ -47,11 +49,20 @@ class DatatableFeeder {
         $this->columns = $columns;
     }
     
+    function getReloaded() {
+        return $this->reloaded;
+    }
+
+    function setReloaded($reloaded) {
+        $this->reloaded = $reloaded;
+    }
+
     function getViewParamsArray(){
         $paramsArray = array();
         $paramsArray['id'] = $this->getId();
         $paramsArray['rows'] = $this->getPaginator();
         $paramsArray['columns'] = $this->getColumns();
+        $paramsArray['reloaded'] = $this->getReloaded();
         if(!empty($this->actions)){
             $paramsArray['actions'] = $this->actions;
         }
