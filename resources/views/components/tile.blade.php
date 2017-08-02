@@ -49,7 +49,7 @@
         <small>42%</small>
     </td>
     -->
-    <div class="tile-body datatable-container">
+    <div class="tile-body">
 
         @component('components.datatable', ['tabledata' => $tabledata])
 

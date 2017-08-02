@@ -11,7 +11,7 @@ class Restaurant extends Establishment
      */
     public function __construct(){
         parent::__construct();
-        $this->setIdBusinessType(self::TYPE_BUSINESS_RESTAURANT);
+        $this->setIdBusinessType(BusinessType::TYPE_BUSINESS_RESTAURANT);
     }
 
     

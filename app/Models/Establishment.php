@@ -42,6 +42,15 @@ class Establishment extends Model {
         return $this->latLng;
     }
     
+    public function getBusinessTypeLabel(){
+        $businessLabel = 'Type non défini';
+        $businessTypeLabels = BusinessType::getLabelByType();
+        if(isset($businessTypeLabels[$this->getIdBusinessType()])){
+            $businessLabel = $businessTypeLabels[$this->getIdBusinessType()];
+        }
+        return $businessLabel;
+    }
+    
     public function getDefaultPicture(){
         return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
     }

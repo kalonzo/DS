@@ -31,6 +31,17 @@ Route::match(['get', 'post'], '/search', 'SearchController@search');
 Route::get('/establishment/create', 'EstablishmentController@create');
 Route::put('/establishment', 'EstablishmentController@store');
 
+Route::post('reload_datatable', function(){
+    $jsonResponse = array('success' => 0);
+    $id = Request::get('id');
+    $dtFeeder = \App\Http\Controllers\DatatableController::buildDatatable($id);
+    if(!empty($dtFeeder)){
+        return Illuminate\Support\Facades\View::make('components.datatable')->with('tabledata', $dtFeeder->getViewParamsArray());
+    } else {
+        return $jsonResponse;
+    }
+});
+
 Route::get('/ajax/{action}', function($action){
     $jsonResponse = array('success' => 0);
     $response = response();
