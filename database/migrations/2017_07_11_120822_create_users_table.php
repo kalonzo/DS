@@ -26,12 +26,12 @@ class CreateUsersTable extends Migration {
 			$table->string('password')->nullable();
                         $table->rememberToken();
 			$table->boolean('is_connected')->nullable();
-			$table->binary('id_address', 16);
-			$table->binary('id_inbox', 16);
+			$table->binary('id_address', 16)->nullable();
+			$table->binary('id_inbox', 16)->nullable();
 			$table->float('longitude', 10, 0)->nullable();
 			$table->float('latitude', 10, 0)->nullable();
 			$table->binary('id_photo', 16)->nullable();
-			$table->binary('id_company', 16)->index('fk_users_company1_idx');
+			$table->binary('id_company', 16)->nullable()->index('fk_users_company1_idx');
 		});
 	}
 
