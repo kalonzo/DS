@@ -25,7 +25,7 @@
                                 }" value="&gt;&gt;"/>
                     </div>
                     <div>
-                        {!! Form::select('foodSpecialitieIdsByName[]', $form_data['food_specialities'], 
+                        {!! Form::select('food_specialties[]', $form_data['food_specialities'], 
                         null, array('multiple' => true)) !!}
                         <div>
                             <input type="text" id="txtRight" />

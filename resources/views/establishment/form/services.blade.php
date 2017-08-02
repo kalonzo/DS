@@ -25,7 +25,7 @@
                                 }" value="&gt;&gt;"/>
                     </div>
                     <div>
-                        {!! Form::select('servicIdsByName[]', $form_data['services'], null, array('multiple' => true)) !!}
+                        {!! Form::select('services[]', $form_data['services'], null, array('multiple' => true)) !!}
                         <div>
                             <input type="text" id="txtRight" />
                         </div>

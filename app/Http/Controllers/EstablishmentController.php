@@ -16,11 +16,13 @@ use App\Models\OpeningHour;
 use App\Models\Restaurant;
 use App\Models\User;
 use App\php;
+use App\Utilities\DateTools;
 use App\Utilities\DbQueryTools;
 use App\Utilities\StorageHelper;
 use App\Utilities\UuidTools;
 use Exception;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use View;
 
@@ -32,7 +34,7 @@ class EstablishmentController extends Controller {
      * @return Response
      */
     public function index() {
-        //
+        
     }
 
     /**
@@ -97,8 +99,7 @@ class EstablishmentController extends Controller {
      */
     public function store(StoreEstablishment $request) {
         $establishment = $this->insertEstablishment($request);
-        print_r($establishment);
-        die();
+        return redirect('/admin');
     }
 
     public function buildCreateFormData() {
@@ -154,11 +155,11 @@ class EstablishmentController extends Controller {
         }
         
         // Helper array for days
-        $days = \App\Utilities\DateTools::getDaysArray();
+        $days = DateTools::getDaysArray();
         
         StorageHelper::getInstance()->add('create_establishment.form_data.cooking_types', $cookingTypes);
         StorageHelper::getInstance()->add('create_establishment.form_data.food_specialities', $foodSpecialities);
-        StorageHelper::getInstance()->add('create_establishment.form_data.atmospheres', $restaurantAtmospheres);
+        StorageHelper::getInstance()->add('create_establishment.form_data.ambiences', $restaurantAtmospheres);
         StorageHelper::getInstance()->add('create_establishment.form_data.services', $services);
         StorageHelper::getInstance()->add('create_establishment.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('create_establishment.form_data.timetable', $timetable);
@@ -215,7 +216,6 @@ class EstablishmentController extends Controller {
                             'id_logo' => 0
                         ]);
                         $establishment = Establishment::create($request->all());
-                        print_r($establishment);
                         if(checkModel($establishment)){
                             $createdObjects[] = $establishment;
 
@@ -238,49 +238,46 @@ class EstablishmentController extends Controller {
                             }
 
                             // Create cooking types
-                            foreach (request()->get('cookingTypeSelection') as $cookingType) {
-                                $idCookingType = UuidTools::getId($cookingType);
-                                $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idCookingType);
+                            $cookingTypes = request()->get('cooking_types');
+                            if(!empty($cookingTypes)){
+                                foreach ($cookingTypes as $cookingType) {
+                                    $idCookingType = UuidTools::getId($cookingType);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idCookingType);
+                                }
                             }
                             // Create food specialties
-                            foreach (request()->get('foodSpecialitieIdsByName') as $foodSpecialty) {
-                                // TODO Manage existing and new ones
-                                $idSpecialty = UuidTools::getId($foodSpecialty);
-                                $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idSpecialty);
+                            $foodSpecialties = request()->get('food_specialties');
+                            if(!empty($foodSpecialties)){
+                                foreach ($foodSpecialties as $foodSpecialty) {
+                                    // TODO Manage existing and new ones
+                                    $idSpecialty = UuidTools::getId($foodSpecialty);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idSpecialty);
+                                }
                             }
-                            // Create atmospheres
-                            foreach (request()->get('restaurantAtmospherIdsByName') as $restaurantAtmospherIdsByName) {
-                                $idAmbience = UuidTools::getId($restaurantAtmospherIdsByName);
-                                $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idAmbience);
+                            // Create ambiences
+                            $ambiences = request()->get('ambiences');
+                            if(!empty($ambiences)){
+                                foreach ($ambiences as $ambience) {
+                                    $idAmbience = UuidTools::getId($ambience);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idAmbience);
+                                }
                             }
                             // Create services
-                            foreach (request()->get('servicIdsByName') as $servicIdsByName) {
-                                $idService = UuidTools::getId($servicIdsByName);
-                                $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idService);
+                            $services = request()->get('services');
+                            if(!empty($services)){
+                                foreach ($services as $service) {
+                                    $idService = UuidTools::getId($service);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idService);
+                                }
                             }
 
                             // Create opening hours
-                            $createdObjects[] = $this->createOpeningHour($request, 1, $request->get('startTimeAm1'), $request->get('endTimeAm1'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 1, $request->get('startTimePm1'), $request->get('endTimePm1'), $establishment->getId());
-
-                            $createdObjects[] = $this->createOpeningHour($request, 2, $request->get('startTimeAm2'), $request->get('endTimeAm2'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 2, $request->get('startTimePm2'), $request->get('endTimePm2'), $establishment->getId());
-
-                            $createdObjects[] = $this->createOpeningHour($request, 3, $request->get('startTimeAm3'), $request->get('endTimeAm3'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 3, $request->get('startTimePm3'), $request->get('endTimePm3'), $establishment->getId());
-
-                            $createdObjects[] = $this->createOpeningHour($request, 4, $request->get('startTimeAm4'), $request->get('endTimeAm4'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 4, $request->get('startTimePm4'), $request->get('endTimePm4'), $establishment->getId());
-
-                            $createdObjects[] = $this->createOpeningHour($request, 5, $request->get('startTimeAm5'), $request->get('endTimeAm5'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 5, $request->get('startTimePm5'), $request->get('endTimePm5'), $establishment->getId());
-
-                            $createdObjects[] = $this->createOpeningHour($request, 6, $request->get('startTimeAm6'), $request->get('endTimeAm6'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 6, $request->get('startTimePm6'), $request->get('endTimePm6'), $establishment->getId());
-
-                            $createdObjects[] = $this->createOpeningHour($request, 7, $request->get('startTimeAm7'), $request->get('endTimeAm7'), $establishment->getId());
-                            $createdObjects[] = $this->createOpeningHour($request, 7, $request->get('startTimePm7'), $request->get('endTimePm7'), $establishment->getId());
-
+                            foreach(DateTools::getDaysArray() as $dayIndex => $dayLabel){
+                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm'.$dayIndex), 
+                                        $request->get('endTimeAm'.$dayIndex), $establishment->getId());
+                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm'.$dayIndex), 
+                                        $request->get('endTimePm'.$dayIndex), $establishment->getId());
+                            }
                             return $establishment;
                         } else {
                             throw new Exception("L'établissement n'a pu être enregistré.");
@@ -295,13 +292,14 @@ class EstablishmentController extends Controller {
                 throw new Exception("L'adresse saisie ne correspond à aucun index géographique connu.");
             }
         } catch(Exception $e){
+            // TODO Report error in log system
+            print_r($e->getMessage());
+            
             foreach($createdObjects as $createdObject){
                 if($createdObject instanceof Model){
                     $createdObject->delete();
                 }
             }
-            // TODO Report error in log system
-            print_r($e->getMessage());
         }
     }
 
@@ -332,7 +330,7 @@ class EstablishmentController extends Controller {
             'day' => $day,
             'start_time' => date('H:i', strtotime($startTime)),
             'end_time' => date('H:i', strtotime($endTime)),
-            'idEstablishment' => $idEstablishment
+            'id_establishment' => $idEstablishment
         ]);
         return OpeningHour::create($request->all());
     }

@@ -1,6 +1,7 @@
 
 // Body
 $body-bg: #050508;
+$body-bg-admin: #ddd;
 
 // Borders
 $laravel-border-color: darken($body-bg, 10%);
@@ -24,6 +25,7 @@ $line-height-base: 1.6;
 $line-height-base-px: $font-size-base * $line-height-base;
 $text-color: #636b6f;
 $main-text-color: white;
+$main-text-color-admin: #555;
 
 // Colors 
 $main-dark-color: #050508;
@@ -31,6 +33,7 @@ $main-color: #303030;
 $font-color-dark-bg: white;
 $highlight-color: #d31b4d;
 $alt-highlight-color: #dbb000;
+$sidebar-left-bg-admin: #050508;
 
 // Navbar
 $navbar-default-bg: #fff;

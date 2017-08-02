@@ -25,7 +25,7 @@
                                 }" value="&gt;&gt;"/>
                     </div>
                     <div>
-                        {!! Form::select('cookingTypeSelection[]', $form_data['cooking_types'], 
+                        {!! Form::select('cooking_types[]', $form_data['cooking_types'], 
                         null, array('multiple' => true, 'id'=>'rightValues')) !!}
                         <div>
                             <input type="text" id="txtRight" />

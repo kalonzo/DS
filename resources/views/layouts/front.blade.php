@@ -10,7 +10,6 @@
         <title>Dinerscope</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="/css/app.css" rel="stylesheet">
         <link href="/css/sticky-footer.css" rel="stylesheet">
         <link href="/css/front.css" rel="stylesheet">

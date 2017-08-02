@@ -25,7 +25,7 @@
                                 }" value="&gt;&gt;"/>
                     </div>
                     <div>
-                        {!! Form::select('restaurantAtmospherIdsByName[]',$form_data['atmospheres']
+                        {!! Form::select('ambiences[]',$form_data['ambiences']
                         , null, array('multiple' => true)) !!}
                         <div>
                             <input type="text" id="txtRight" />
