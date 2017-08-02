@@ -10,6 +10,7 @@ namespace App\Models;
 class Country extends Model
 {
     protected $table = 'countries';
+    const TABLENAME = 'countries';
 
     public $timestamps = true;
 

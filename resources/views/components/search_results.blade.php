@@ -8,12 +8,12 @@
                        title="Afficher/masquer les filtres" onclick="$(this).dsToggleClass('collapseEnabled');">
                         <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                     </a>
-                    Filtres
+                    Affiner la recherche
                 </div>
                 <!-- NB RESULTS DISPLAYED FILTER -->
                 <div class="form-group col-xs-6 col-sm-4 col-md-3 text-right">
                     <label>Afficher</label>
-                    <select class="form-control search-filter-input" name='display_by'>                     
+                    <select class="search-filter-input" name='display_by'>                     
                         @foreach($filter_labels['display_by'] as $value)
                         <option value="{{ $value }}" @if( $filter_values['display_by'] == $value) selected @endif >
                             {{ $value }}
@@ -24,7 +24,7 @@
                 <!-- ORDER BY FILTER -->
                 <div class="form-group col-xs-6 col-sm-4 col-md-3 text-right">
                     <label>Trier par</label>
-                    <select class="form-control search-filter-input" name='order_by'>                     
+                    <select class="search-filter-input" name='order_by'>                     
                         @foreach($filter_labels['order_by'] as $value => $label)
                         <option value="{{ $value }}" @if( $filter_values['order_by'] == $value) selected @endif >
                             {{ $label }}
@@ -132,10 +132,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 filterResetTrigger">
-                <a href="javascript:void(0);">
+            <div class="col-md-3 filterResetTrigger no-gutter">
+                <button role="button" class="btn btn-sm">
                     <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Réinitialiser les filtres
-                </a>
+                </button>
             </div>
         </div>
     </div>

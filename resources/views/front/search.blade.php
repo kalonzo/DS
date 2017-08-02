@@ -1,3 +1,4 @@
+@if(!isset($reloaded) || !$reloaded)
 @extends('layouts.front')
 
 @section('js_imports_head')
@@ -6,10 +7,13 @@
 @section('content')
 <div id="map"> </div>
 
-<div id="search-container" class="container">
+<div id="search-container" class="container mainPageReloadContainer">
+@endif
     @component('components.search_results', ['establishments' => $establishments, 'filter_values' => $filter_values, 'filter_labels' => $filter_labels])
 
     @endcomponent
+    
+@if(!isset($reloaded) || !$reloaded)
 </div>
 <!-- Modal -->
 <div id="filterModal" class="modal fade" role="dialog">
@@ -36,3 +40,5 @@
 <script src="/js/search.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection
+
+@endif

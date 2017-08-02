@@ -20,13 +20,22 @@ class StoreUserInfo
      */
     public function handle($request, Closure $next){
         // Geolocation
+        $userLat = Request2::get('userLat');
+        $userLng = Request2::get('userLng');
+        if(!empty($userLat) && !empty($userLng)){
+            SessionController::getInstance()->setUserLng($userLng);
+            SessionController::getInstance()->setUserLat($userLat);
+            Cookie::queue(cookie('userLat', $userLat, 60*12, null, null, null, false));
+            Cookie::queue(cookie('userLng', $userLng, 60*12, null, null, null, false));
+        }
+        // No geolocation available
         if(empty(SessionController::getInstance()->getUserLat()) || empty(SessionController::getInstance()->getUserLng())){
             $userDefaultLatLng = GeolocationController::getRawInitialGeolocation();
             if(!empty($userDefaultLatLng)){
                 SessionController::getInstance()->setUserLat($userDefaultLatLng->getLat());
                 SessionController::getInstance()->setUserLng($userDefaultLatLng->getLng());
-                Cookie::queue('userLat', $userDefaultLatLng->getLat(), 60*12);
-                Cookie::queue('userLng', $userDefaultLatLng->getLng(), 60*12);
+                Cookie::queue(cookie('userLat', $userDefaultLatLng->getLat(), 60*12, null, null, null, false));
+                Cookie::queue(cookie('userLng', $userDefaultLatLng->getLng(), 60*12, null, null, null, false));
             }
         }
         // Type establishment

@@ -1,10 +1,11 @@
+@if(!isset($reloaded) || !$reloaded)
 @extends('layouts.front')
 
 @section('js_imports_head')
 @endsection
-
 @section('content')
-<div class="content">
+<div class="content mainPageReloadContainer">
+@endif
     <div id="homeAdvertCarousel" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
             @foreach($slider_ets as $establishment)
@@ -106,24 +107,27 @@
             </div>
         </div>
     </div>
-</div>
-
-@if (Route::has('login'))
-<div class="container-fluid">
-    <div class="main row">
-        <div class="col-xs-12">
-            <div class="top-right links">
-                @if (Auth::check())
-                <a href="{{ url('/admin') }}">Home</a>
-                @else
-                <a href="{{ url('/login') }}">Login</a>
-                <a href="{{ url('/register') }}">Register</a>
-                @endif
+    
+    
+    @if (Route::has('login'))
+    <div class="container-fluid">
+        <div class="main row">
+            <div class="col-xs-12">
+                <div class="top-right links">
+                    @if (Auth::check())
+                    <a href="{{ url('/admin') }}">Home</a>
+                    @else
+                    <a href="{{ url('/login') }}">Login</a>
+                    <a href="{{ url('/register') }}">Register</a>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
+    @endif
+
+@if(!isset($reloaded) || !$reloaded)
 </div>
-@endif
 
 @endsection
 
@@ -131,3 +135,4 @@
 <script src="/js/search.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection
+@endif

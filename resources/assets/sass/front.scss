@@ -9,24 +9,57 @@ html{
 
 body{
     padding-top: 50px;
+    color: $main-text-color;
 }
 
 .text-highlight{
     color: $highlight-color;
 }
 
+.btn{
+    color: $main-text-color;
+    border: 1px solid $main-text-color;
+    background-color: $body-bg;
+    @include borderRadius(0px);
+    &:hover, &:focus, &.focus {
+        color: $alt-highlight-color;
+    }
+}
+
+select{
+    color: $main-text-color;
+    border: 1px solid $main-text-color;
+    @include borderRadius(0px);
+    height: 30px;
+    padding: 4px 10px;
+    background: $body-bg;
+}
+
 #navbar {
     height: 50px;
-    .container-fluid{
+    > .container-fluid{
         height: 100%;
-        padding-left: $navbarInnerPadding;
-        padding-right: $navbarInnerPadding;
+        padding: 0px;
         .navbar-collapse{
             height: 100% !important;
             .navbar-form{
+                margin-left: $navbarInnerPadding;
                 padding-left: 0px;
+                padding-right: 0px;
+                width: $searchFormSmWidth;
+                float: right;
+                @include bp-md{
+                    width: $searchFormMdWidth;
+                }
                 .locationInputGroup{
                     @include borderRadius(0px);
+                    &:nth-child(1){
+                        width: 59%;
+                    }
+                    &:nth-child(2){
+                        width: 40%;
+                        float: right;
+                    }
                     .input-group-addon{
                         padding: 5px 9px;
                         @include borderRadius(0px);
@@ -41,11 +74,6 @@ body{
                         border: 0px;
                         @include borderRadius(0px);
                         box-shadow: none !important;
-                        @media (min-width: 992px){
-                            &#search_keywords{
-                                width: 175px;
-                            }
-                        }
                     }
                 }
             }
@@ -60,6 +88,7 @@ body{
             }
             .navbar-right{
                 height: 100%;
+                padding-right: $navbarInnerPadding;
                 > li{
                     height: 100%;
                     > a{
@@ -207,7 +236,7 @@ body{
 
 .footer {
     background-color: $main-color;
-    height: 70px;
+    height: $footerHeight;
     padding-top: 1em;
     *{
         color: white;
@@ -228,10 +257,6 @@ body{
     color: $font-color-dark-bg;
     left: $navbarInnerPadding !important;
     border: 1px solid #c5c5c5;
-    width: $quickSearchFieldSmWidth !important;
-    @media (min-width: 992px){
-        width: $quickSearchFieldMdWidth !important;
-    }
     .pac-item{
         &:hover {
             background-color: #666;
@@ -252,10 +277,6 @@ body{
     background-color: $main-dark-color;
     color: $font-color-dark-bg;
     padding: 0.6em 0.4em;
-    width: $quickSearchFieldSmWidth !important;
-    @media (min-width: 992px){
-        width: $quickSearchFieldMdWidth !important;
-    }
     left: $navbarInnerPadding !important;
     box-sizing: border-box;
     > .ui-menu-item{
@@ -322,6 +343,13 @@ body{
     }
 }
 
+.searchKeywordDropdown.ui-autocomplete, .pac-container.pac-logo{
+    width: $searchFormSmWidth !important;
+    @include bp-md{
+        width: $searchFormMdWidth !important;
+    }
+}
+
 .ets-thumbnail{
     background: white;
     color: $main-dark-color;
@@ -381,8 +409,8 @@ body{
             font-weight: bold;
         }
         .thumbnail-info{
-            font-size: 0.8em;
-            height: $line-height-base-px*0.8;
+            font-size: 0.9em;
+            height: 2*$line-height-base-px;
             overflow: hidden;
         }
     }
@@ -398,7 +426,7 @@ body{
         line-height: $searchFilterPanelHeadingHeight;
         color: $main-text-color;
         text-transform: uppercase;
-        font-size: 1.4em;
+        font-size: 1.2em;
         background: $main-dark-color;
         border-bottom: 1px solid white;
         > *, .form-inline > *{
@@ -432,7 +460,7 @@ body{
                 border-bottom: 1px solid white;
                 margin-bottom: 1em;
                 font-weight: bold;
-                font-size: 1.2em;
+                font-size: 1em;
             }
             .slider{
                 margin-bottom: 1em;
@@ -460,6 +488,7 @@ body{
             .checkbox{
                 margin-top: 0px;
                 margin-bottom: 5px;
+                font-size: 0.9em;
             }
             .filter-list-see-more{
                 color: inherit;
@@ -467,8 +496,8 @@ body{
         }
         .filterResetTrigger{
             position: absolute;
-            bottom: 0px;
-            right: 0px;
+            bottom: 5px;
+            right: 5px;
             text-align: right;
             a{
                 color: inherit;
@@ -549,7 +578,7 @@ body{
     }
 }
 
-$mapThumbnailHeight: 213px;
+$mapThumbnailHeight: 242px;
 $mapThumbnailWidth: 145px;
 #map{
     width: 100%; 
@@ -603,4 +632,61 @@ $mapThumbnailWidth: 145px;
             top: 5px !important;
         }
     }
+}
+
+#formControlBottomBand{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    z-index: 2;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.form-accordion{
+    .panel:nth-of-type(odd){
+        .panel-heading{
+            border-bottom: 1px solid #555;
+        }
+        .panel-heading, .panel-collapse{
+            background: $body-bg;
+        }
+    }
+    .panel:nth-of-type(even){
+        .panel-heading{
+            border-bottom: 1px solid #333;
+        }
+        .panel-heading, .panel-collapse{
+            background: $main-color;
+        }
+    }
+    .panel-heading{
+        height: 50px;
+        padding: 0px;
+        &, h4{
+            font-size: 1.2em;
+            line-height: 50px;
+            font-weight: bold;
+            color: white;
+        }
+        a{
+            color: inherit;
+            &, &:hover{
+                text-decoration: none;
+            }
+        }
+    }
+    &.panel-group .panel + .panel{
+        margin-top: -2px;
+    }
+}
+
+form:not(.navbar-form) input[type=text]{
+    color: $main-text-color;
+    border: 1px solid $main-text-color;
+    @include borderRadius(0px);
+    background: $body-bg;
 }

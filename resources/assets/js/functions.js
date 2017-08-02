@@ -33,6 +33,35 @@ function readCookie(name) {
     return null;
 }
 
+function reloadPage(extraParams, doneCallback){
+    var pathArray  = window.location.pathname.split( '/' );
+    if(pathArray.length === 1){
+        var secondLevelLocation = pathArray[0];
+    } else {
+        var secondLevelLocation = pathArray[1];
+    }
+    var $mainPageReloadContainer = $('body .mainPageReloadContainer');
+
+    if(checkExist($mainPageReloadContainer)){
+        var ajaxParams = {};
+        $.each(extraParams, function(index, item){
+            ajaxParams[index] = item;
+        });
+        ajaxParams['reload'] = true;
+
+        $.ajax({
+            url: '/'+secondLevelLocation,
+            data: ajaxParams,
+        })
+        .done(function( data ) {
+            $mainPageReloadContainer.empty().html(data);
+            if(!isEmpty(doneCallback) && typeof doneCallback === 'function'){
+                doneCallback();
+            }
+        });
+    }
+};
+    
 /*
     var searchRadius = 500;
     function calculateDistance() {

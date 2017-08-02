@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'HomeController@index');
 
-Route::get('/admin', function () {
-    return view('admin.home');
-});
+Route::get('/admin', 'AdminController@index');
 
 Route::get('/search-autocomplete', function () {
     $terms = Request::get('term');
@@ -28,8 +26,8 @@ Route::get('/search-autocomplete', function () {
 
 Route::match(['get', 'post'], '/search', 'SearchController@search');
 
-Route::get('/establishment/create', ['as' => 'establishment', 'uses' => 'EstablishmentController@create']);
-Route::post('/establishment/create', ['as' => 'establishment.store', 'uses' => 'EstablishmentController@store']);
+Route::get('/establishment/create', 'EstablishmentController@create');
+Route::put('/establishment', 'EstablishmentController@store');
 
 Route::get('/ajax/{action}', function($action){
     $jsonResponse = array('success' => 0);

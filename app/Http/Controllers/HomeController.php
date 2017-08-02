@@ -66,7 +66,12 @@ class HomeController extends Controller
             }
         }
              
-        
-        return View::make('front.home')->with('slider_ets', $sliderEts)->with('ds_selection', $establishments);
+        $view =  View::make('front.home')->with('slider_ets', $sliderEts)->with('ds_selection', $establishments)
+                                        ->with('reloaded', \Illuminate\Support\Facades\Request::get('reload'));
+        $response = \Illuminate\Support\Facades\Response::make($view);
+        if(!empty(\Illuminate\Support\Facades\Cookie::queued('userLng'))){
+            $response->withCookie(\Illuminate\Support\Facades\Cookie::queued('userLng'));
+        }
+        return $response;
     }
 }

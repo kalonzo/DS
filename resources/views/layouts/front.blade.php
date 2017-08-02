@@ -1,3 +1,4 @@
+@if(!isset($reloaded) || !$reloaded)
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
     <head>
@@ -8,13 +9,13 @@
 
         <title>Dinerscope</title>
 
-        @yield('css_imports')
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
         <link href="/css/app.css" rel="stylesheet">
         <link href="/css/sticky-footer.css" rel="stylesheet">
         <link href="/css/front.css" rel="stylesheet">
         @show
+        
+        @yield('css_imports')
         
         @yield('js_imports_head')
     </head>
@@ -122,3 +123,4 @@
         @yield('js_imports_footer')
     </body>
 </html>
+@endif
