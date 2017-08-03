@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', 'HomeController@index');
-//Route::post('logout', ['as' => 'logout', 'uses' => 'HomeController@index']);
 
 Route::get('/admin', 'AdminController@index');
+
+Route::get('/establishment/{id}', function (\App\Models\Establishment $id) {
+    //
+});
 
 Route::get('/search-autocomplete', function () {
     $terms = Request::get('term');
