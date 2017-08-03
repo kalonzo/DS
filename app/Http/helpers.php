@@ -2,8 +2,8 @@
 
 function checkModel($model, $dbSync = true){
     $valid = false;
-    if($model instanceof App\Models\Model){
-        if(!$dbSync || $model->exists()){
+    if($model instanceof \Illuminate\Database\Eloquent\Model && objectHasTrait($model, 'App\Models\ExtendModelTrait')){
+        if(!$dbSync || $model->exists){
             $valid = true;
         }
     }
@@ -33,4 +33,15 @@ function str_between($string, $start, $end){
     $ini += mb_strlen($start, 'UTF-8');
     $len = mb_strpos($string, $end, $ini, 'UTF-8') - $ini;
     return mb_substr($string, $ini, $len, 'UTF-8');
+}
+
+function objectHasTrait($obj, $trait){
+    $used = class_uses($obj);
+    if (!isset($used[$trait])) {
+        $parents = class_parents($obj);
+        while (!isset($used[$trait]) && $parents) {
+            $used = class_uses(array_pop($parents));
+        }
+    }
+    return isset($used[$trait]);
 }
