@@ -31,6 +31,7 @@ Route::get('/establishment/create', 'EstablishmentController@create');
 Route::put('/establishment', 'EstablishmentController@store');
 
 Route::get('/establishment/{establishment}','EstablishmentController@edit');
+Route::put('/establishment/{establishment}','EstablishmentController@update');
 
 Route::post('reload_datatable', function(){
     $jsonResponse = array('success' => 0);

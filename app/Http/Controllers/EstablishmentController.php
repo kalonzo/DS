@@ -63,7 +63,7 @@ class EstablishmentController extends Controller {
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\php  $php
+     * @param  Establishment  $php
      * @return Response
      */
     public function edit(Establishment $establishment) {
@@ -78,10 +78,10 @@ class EstablishmentController extends Controller {
      * Update the specified resource in storage.
      *
      * @param  Request  $request
-     * @param  \App\php  $php
+     * @param  Establishment  $php
      * @return Response
      */
-    public function update(Request $request, php $php) {
+    public function update(Request $request, Establishment $establishment) {
         //
     }
 

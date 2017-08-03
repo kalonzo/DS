@@ -13,8 +13,7 @@
 <div id="map"> </div>
 
 @if(isset($establishment))
-    //{!! Form::model($establishment) !!}
-    {!! Form::model(array($establishment,'action' => 'EstablishmentController@update')) !!}
+    {{ Form::model($establishment, ['url' => '/establishment'.$establishment->getId(), 'method' => 'PUT']) }}
 @else
     {!! Form::open(['url'=>'/establishment', 'method' => 'put']) !!}
 @endif
