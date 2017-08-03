@@ -19,10 +19,6 @@ Route::get('/', 'HomeController@index');
 
 Route::get('/admin', 'AdminController@index');
 
-Route::get('/establishment/{id}', function (\App\Models\Establishment $id) {
-    //
-});
-
 Route::get('/search-autocomplete', function () {
     $terms = Request::get('term');
     $results = App\Http\Controllers\SearchController::quickSearch($terms);
@@ -33,6 +29,8 @@ Route::match(['get', 'post'], '/search', 'SearchController@search');
 
 Route::get('/establishment/create', 'EstablishmentController@create');
 Route::put('/establishment', 'EstablishmentController@store');
+
+Route::get('/establishment/{establishment}','EstablishmentController@edit');
 
 Route::post('reload_datatable', function(){
     $jsonResponse = array('success' => 0);
