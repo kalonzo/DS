@@ -119,7 +119,8 @@
         <script src="/js/kernelFunctions.js"></script>
         <script src="/js/extendMethods.js"></script>
         <script src="/js/functions.js"></script>
-        <script src="/js/geolocation.js"></script>
+        <script src="/js/plugins.js"></script>    
+        <script src="/js/geolocation.js"></script>    
         @yield('js_imports_footer')
     </body>
 </html>

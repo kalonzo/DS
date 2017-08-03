@@ -21,3 +21,12 @@ isEmptyArray = function(myArray){
     }
     return empty;
 };
+
+isPluginLoaded = function (pluginFn) {
+    if ($.isFunction(pluginFn)) {
+        return true;
+    } else {
+        return false;
+    }
+
+};

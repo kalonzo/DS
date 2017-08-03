@@ -10,28 +10,9 @@
     <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading4">
         <div class="panel-body container">
             <div class="row">
-                <section class="col-md-12 container-fluid">
-                    <div>
-                        <select id="leftValues" size="5" multiple>
-                            <option>Cuisines des saisons</option>
-                        </select>
-                    </div>
-                    <div>
-                        <input type="button" id="btnLeft" onclick="{
-                                    addCookingType();
-                                }" value="&lt;&lt;"/>
-                        <input type="button" id="btnRight" onclick="{
-                                    addCookingType();
-                                }" value="&gt;&gt;"/>
-                    </div>
-                    <div>
-                        {!! Form::select('cooking_types[]', $form_data['cooking_types'], 
-                        null, array('multiple' => true, 'id'=>'rightValues')) !!}
-                        <div>
-                            <input type="text" id="txtRight" />
-                        </div>
-                    </div>
-                </section>   
+                <div class="col-xs-12 form-group">
+                    {!! Form::select('cooking_types[]', $form_data['cooking_types'], null, array('multiple' => true, 'class' => 'multiselect-dual')) !!}
+                </div>   
             </div>
             <div class="row">
                 <div class="col-xs-12">

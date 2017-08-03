@@ -11,12 +11,16 @@ class DatatableFeeder {
     private $paginator = null;
     private $columns = array();
     private $reloaded = false;
-    
     /**
      *
      * @var DatatableRowAction
      */
     private $actions = array();
+    /**
+     *
+     * @var DatatableFilter
+     */
+    private $filters = array();
     
     function __construct($id) {
         $this->id = $id;
@@ -66,6 +70,9 @@ class DatatableFeeder {
         if(!empty($this->actions)){
             $paramsArray['actions'] = $this->actions;
         }
+        if(!empty($this->filters)){
+            $paramsArray['filters'] = $this->filters;
+        }
         return $paramsArray;
     }
     
@@ -83,5 +90,13 @@ class DatatableFeeder {
             $this->enableAction($action);
         }
         return $this->actions[$action];
+    }
+    
+    /**
+     * 
+     * @param DatatableFilter $filter
+     */
+    function addFilter($filter){
+        $this->filters[] = $filter;
     }
 }

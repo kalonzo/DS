@@ -95,7 +95,7 @@
     </div>
 
     <div id="formControlBottomBand">
-       {!! Form::submit('Valider', array('class'=>'btn btn-primary pull-right')) !!}
+       {!! Form::submit('Valider', array('class'=>'btn pull-right')) !!}
     </div>
 {!! form::close() !!}
 @endsection
@@ -199,8 +199,6 @@
             preview.setAttribute('src', 'placeholder.png');
         }
     }
-
-
 
 </script>
 

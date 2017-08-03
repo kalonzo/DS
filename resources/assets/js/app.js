@@ -6,13 +6,15 @@
  */
 require('./bootstrap');
 
-import 'jquery-ui';
-import 'jquery-ui-bundle/jquery-ui.min.css';
-import 'jquery-ui/ui/widgets/autocomplete';
-import 'jquery-ui/ui/widgets/slider';
-import dt from 'datatables.net';
-import 'datatables.net-bs';
-import 'datatables.net-dt/css/jquery.datatables.css';
+require( 'jquery-ui');
+require( 'jquery-ui-bundle/jquery-ui.min.css');
+require( 'jquery-ui/ui/widgets/autocomplete');
+require( 'jquery-ui/ui/widgets/slider');
+//window.dt = require( 'datatables.net');
+//require( 'datatables.net-bs');
+//require( 'datatables.net-dt/css/jquery.datatables.css');
+require( 'multiselect');
+require( 'multiselect/css/multi-select.css');
 
 var jsReadyEvent; // The custom event that will be created
 if (document.createEvent) {
