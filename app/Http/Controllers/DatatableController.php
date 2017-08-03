@@ -67,7 +67,7 @@ class DatatableController {
                 $dtFeeder->setPaginator($resultsPagination);
                 $dtFeeder->setColumns(array('name' => 'Nom', 'type' => 'Type', 'city' => 'Ville', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(\App\Feeders\DatatableRowAction::ACTION_EDIT);
-                $dtFeeder->customizeAction(\App\Feeders\DatatableRowAction::ACTION_EDIT)->setHref('/establishement/{{id}}');
+                $dtFeeder->customizeAction(\App\Feeders\DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
                 break;
         }
         return $dtFeeder;
