@@ -66,8 +66,12 @@ class EstablishmentController extends Controller {
      * @param  \App\php  $php
      * @return Response
      */
-    public function edit(php $php) {
-        //
+    public function edit(Establishment $establishment) {
+        $this->buildCreateFormData();
+        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', $establishment);
+        
+        return $view;
     }
 
     /**
@@ -173,6 +177,7 @@ class EstablishmentController extends Controller {
     public function insertEstablishment($request) {
         $createdObjects = array();
         try{
+            
             $idLocation = 0;
             $postalCode = $request->get('postal_code');
             $city = $request->get('city');
@@ -203,6 +208,7 @@ class EstablishmentController extends Controller {
                         'id_company' => 0,
                     ]);
                     $user = User::create($request->all());
+                   
                     if(checkModel($user)){
                         $createdObjects[] = $user;
                         $idUser = $user->getId();
@@ -310,9 +316,10 @@ class EstablishmentController extends Controller {
      * @param type $id
      */
     public function createLinkBusinessCategory($request, $establishmentId, $id) {
+
         $request->merge([
             'id_establishment' => $establishmentId,
-            'id_business_categories' => $id
+            'id_business_categories' =>  $id
         ]);
         return EstablishmentBusinessCategory::create($request->all());
     }
