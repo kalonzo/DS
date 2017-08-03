@@ -18,6 +18,10 @@ function checkModelId($id){
     return $valid;
 }
 
+function checkHexUuid($uuid){
+    return preg_match('/^[0-9a-f]{8}([0-9a-f]{4}){3}[0-9a-f]{12}$/', $uuid);
+}
+
 function isBinary($str) {
     return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
 }

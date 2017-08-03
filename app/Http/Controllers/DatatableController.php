@@ -33,7 +33,7 @@ class DatatableController {
                 $establishments = array();
 
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.* '))
+                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, '.Establishment::TABLENAME . '.id AS id_establishment'))
                         ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                 ;
                 if (!empty($typeEts)) {
@@ -49,7 +49,7 @@ class DatatableController {
                 $establishmentsQuery->offset($sliceStart)->limit($nbElementPerPage);
                 $establishmentsData = $establishmentsQuery->get();
                 foreach ($establishmentsData as $establishmentData) {
-                    $uuid = UuidTools::getUuid($establishmentData->id);
+                    $uuid = UuidTools::getUuid($establishmentData->id_establishment);
 
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;

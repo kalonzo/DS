@@ -14,6 +14,7 @@ class BusinessType extends Model {
 
     public $timestamps = true;
     public $incrementing = true;
+    public static $hasUuid = false;
     
     protected $fillable = [
         'id_media',
