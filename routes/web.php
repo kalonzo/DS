@@ -39,6 +39,7 @@ Route::post('reload_datatable', function(){
     $id = Request::get('id');
     $dtFeeder = \App\Http\Controllers\DatatableController::buildDatatable($id);
     if(!empty($dtFeeder)){
+        $dtFeeder->setReloaded(true);
         return Illuminate\Support\Facades\View::make('components.datatable')->with('tabledata', $dtFeeder->getViewParamsArray());
     } else {
         return $jsonResponse;
