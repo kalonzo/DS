@@ -7,7 +7,6 @@ $(function () {
         this._super();
         this.widget().menu({
             items: ".ui-menu-item:not(.ui-autocomplete-category)" 
-            //TODO
         });
     };
     $searckKeywordInstance = $("#search_keywords").autocomplete("instance");

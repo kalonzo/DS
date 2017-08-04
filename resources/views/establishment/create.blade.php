@@ -198,6 +198,58 @@
         }
     }
 
+    var autoCompleteArea;
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        $(document).on('googleGeolocReady', function(){
+            var $areaAutoCompleteInput = $('[name="address[area]"]');
+            if(!isEmpty($areaAutoCompleteInput)){
+//                autoCompleteArea = new google.maps.places.Autocomplete($areaAutoCompleteInput, {
+//                    types: ['geocode'],
+//                    componentRestrictions: {country: 'Suisse'}
+//                });
+//                autoCompleteArea.addListener('place_changed', function () {
+//                    var place = autoCompleteArea.getPlace();
+//                });
+                var service = new google.maps.places.AutocompleteService();
+                var areaSource = new Array('Saisissez votre quartier');
+                $areaAutoCompleteInput.autocomplete({
+                    source: areaSource,
+                    minLength: 2,
+                    delay: 500,
+                    search: function( event, ui ) {
+                        var inputValue = $(this).val();
+
+                        service.getQueryPredictions({ input: inputValue, types: ['geocode'], componentRestrictions: {country: 'CH'} }, function(predictions, status) {
+                            if (status != google.maps.places.PlacesServiceStatus.OK) {
+                                alert(status);
+                                return;
+                            }
+
+                            predictions.forEach(function(prediction) {
+                                areaSource.push(prediction.description);
+                                $('#searchAreaDropdown').empty().append('<li>'+prediction.description+'</li>');
+    //                            var li = document.createElement('li');
+    //                            li.appendChild(document.createTextNode(prediction.description));
+    //                            document.getElementById('results').appendChild(li);
+                            });
+                        });
+                    }
+
+                }).autocomplete("instance")._create = function() {
+                    this._super();
+                    this.widget().menu({
+                        items: ".ui-menu-item" 
+                    });
+                }._renderMenu = function (ul, items) {
+                    var that = this;
+                    $(ul).attr('id', 'searchAreaDropdown');
+                    $.each(items, function (index, item) {
+                        that._renderItemData(ul, item);
+                    });
+                };
+            }
+        });
+    });
 </script>
 
 @section('js_imports_footer')

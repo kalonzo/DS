@@ -26,11 +26,15 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-8 col-sm-10 form-group">
+                <div class="col-sm-6 form-group">
                     {!! Form::label('Complément d\'adresse') !!}
                     {!! Form::text('address[address_additional]', old('address_additional'), [
                     'class'=>'form-control',
                     ]) !!}
+                </div>
+                <div class="col-sm-6 form-group">
+                    {!! Form::label('Quartier') !!}
+                    {!! Form::text('address[area]', old('area'), ['class'=>'form-control']) !!}
                 </div>
             </div>
             <div class="row">
@@ -59,7 +63,7 @@
                         {!! Form::text('address[canton]', old('canton'), [
                         'class'=>'form-control', 
                         ]) !!}
-                        {!! Form::text('address[area', old('area'), ['class'=>'hidden']) !!}
+                        {!! Form::text('address[area]', old('area'), ['class'=>'hidden']) !!}
                     </div>
                 </div>
                 <div class="col-md-6">

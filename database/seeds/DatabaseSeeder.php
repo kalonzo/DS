@@ -7,7 +7,7 @@ class DatabaseSeeder extends Seeder {
     function insertBusinessCategory($name, $type) {
         $name = ucfirst($name);
 
-        $id_business_category = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        $id_business_category = \App\Utilities\UuidTools::generateUuid();
         DB::table('business_categories')->insert([
             'id' => $id_business_category,
             'name' => $name,
@@ -26,28 +26,28 @@ class DatabaseSeeder extends Seeder {
         return $business_category->id;
     }
 
-    function getLocationId($postalCode, $city, $lat, $lng, $countryName) {
-        try {
-  
-            
-         //   if (!chekModel($locationIndex)) {
-                $countryName = App\Models\Country::where('label', $countryName);
-                $id = \Ramsey\Uuid\Uuid::uuid4();
-                DB::table('location_index')->insert([
-                    'id' => $id,
+    function getIdLocationIndex($postalCode, $city, $lat, $lng, $countryName) {
+        $idLocationIndex = 0;
+        $locationIndex = App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode);
+        if(checkModel($locationIndex)){
+            $idLocationIndex = $locationIndex->getId();
+        } else {
+            $country = App\Models\Country::where('label', $countryName);
+            if(checkModel($country)){
+                $locationIndex = App\Models\LocationIndex::insert([
+                    'id' => \App\Utilities\UuidTools::generateUuid(),
                     'postal_code' => $postalCode,
                     'city' => $city,
                     'latitude' => $lat,
                     'longitude' => $lng,
-                    'id_country' => $countryName->id
+                    'id_country' => $country->id
                 ]);
-               // $idLocationIndex = 0;
-          //  }
-        } catch (Exception $ex) {
-            
+                if(checkModel($locationIndex)){
+                    $idLocationIndex = $locationIndex->getId();
+                }
+            }
         }
-
-       // return $idLocationIndex;
+        return $idLocationIndex;
     }
 
     /**
@@ -55,19 +55,17 @@ class DatabaseSeeder extends Seeder {
      *
      * @return void
      */
-    function makeTestData($non_etab, $street, $street_number, $postal_code, $city, $country, $latitude, $longitude, $email, $site_url, $type_cuisine, $descn, $id_business_category, $idLocationIndex) {
+    function makeTestData($non_etab, $street, $street_number, $postal_code, $city, $country, $latitude, $longitude, $email, $site_url, $type_cuisine, $descn, $id_business_category) {
 
-        $company_id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        //$id_location_index = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        $id_user_owner = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        // $id_business_type = \App\Models\Restaurant::TYPE_BUSINESS_RESTAURANT;
-        $id_establishment = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
-        //$id_address = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        $company_id = \App\Utilities\UuidTools::generateUuid();
+        $id_user_owner = \App\Utilities\UuidTools::generateUuid();
+        $id_establishment = \App\Utilities\UuidTools::generateUuid();
+        $id_address = \App\Utilities\UuidTools::generateUuid();
 
-        $idLocationIndex = self::getLocationId($postal_code, $city, $latitude, $longitude, $country);
+        $idLocationIndex = $this->getIdLocationIndex($postal_code, $city, $latitude, $longitude, $country);
 
         DB::table('address')->insert([
-            'id' => \Ramsey\Uuid\Uuid::uuid4(),
+            'id' => $id_address,
             'street_number' => $street_number,
             'street' => $street,
             'address_additional' => '',
@@ -87,8 +85,8 @@ class DatabaseSeeder extends Seeder {
             'password' => 'admin1234',
             'id_address' => $id_address,
             'id_inbox' => 0, //Créer la inbox
-            'latitude' => 46.658954,
-            'longitude' => 6.486621,
+            'latitude' => 0,
+            'longitude' => 0,
             'id_company' => 0
         ]);
 
@@ -121,7 +119,7 @@ class DatabaseSeeder extends Seeder {
 
 
         DB::table('establishment_business_categories')->insert([
-            'id' => hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4())),
+            'id' => \App\Utilities\UuidTools::generateUuid(),
             'id_establishment' => $id_establishment,
             'id_business_category' => $idBusinessCategory
         ]);
@@ -130,7 +128,7 @@ class DatabaseSeeder extends Seeder {
     public function run() {
 
         //insertion de type de spécialité
-        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        $id = \App\Utilities\UuidTools::generateUuid();
 
         DB::table('business_categories')->insert([
             'id' => $id,
@@ -138,7 +136,7 @@ class DatabaseSeeder extends Seeder {
             'type' => 2, //const type de cuisinne
         ]);
 
-        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        $id = \App\Utilities\UuidTools::generateUuid();
 
         DB::table('business_categories')->insert([
             'id' => $id,
@@ -146,7 +144,7 @@ class DatabaseSeeder extends Seeder {
             'type' => 2, //const type de cuisinne
         ]);
 
-        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        $id = \App\Utilities\UuidTools::generateUuid();
 
         DB::table('business_categories')->insert([
             'id' => $id,
@@ -401,7 +399,7 @@ class DatabaseSeeder extends Seeder {
         self::insertBusinessCategory("Service traiteur", 4);
 
 
-        $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+        $id = \App\Utilities\UuidTools::generateUuid();
 
         self::makeTestData('Broadway Restaurant', 'chemin Malombré ', 18, 1202, 'Genève', 'Switzerland', 46.1954749, 6.1496726, 'restaurantbroadway.com', '', 'Franconienne', 'descn', $id, null);
         /*
@@ -409,25 +407,25 @@ class DatabaseSeeder extends Seeder {
 
           self::makeTestData('Restaurant Chausse-Coqs', 'Rue Micheli-du-Crest', 18, 1205, 'Genève', 'Suisse', 46.1945955, 6.1453122, 'chausse-coqs.ch', '', 'Franconienne', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Pékin Palace', 'Rue des Alpes', 22, 1201, 'Genève', 'Suisse', 46.2109976, 6.1425921, 'pekin-palace.thefork.rest', '', 'Chinoise', 'descn', $id, null);
 
           self::makeTestData('Restaurant Wang', 'Rue des Eaux-Vives', 9, 1207, 'Genève', 'Suisse', 46.2033257, 6.1550633, 'restaurant-wang.ch', '', 'Chinoise', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Matsuri', 'Rue de la Confédération', 8, 1204, 'Genève', 'Suisse', 46.2035711, 6.1424213, 'matsuri.ch', '', 'Japonaise', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Gaùcho Churrascaria', 'Chemin Malombré ', 1, 1206, 'Genève', 'Suisse', 46.196326, 6.15203, 'churrascaria-gaucho.com', '', 'Brésilienne', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Thaï tastes café & restaurant', 'Rue de la Servette', 16, 1201, 'Genève', 'Suisse', 46.2102704, 6.1356, 'thaitastes .ch', '', 'Thaïlandaise', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Contact - Bar et Restaurant', 'Rue du Prieuré', 8, 1202, 'Genève', 'Suisse', 46.2972433, 6.1230715, 'jimma.ch', '', 'Ethiopienne', 'descn', $id, null);
 
@@ -436,25 +434,25 @@ class DatabaseSeeder extends Seeder {
 
           self::makeTestData('Restaurant Arabesque', 'Quai Wilson', 47, 1201, 'Genève', 'Suisse', 46.2148921, 6.1488857, '', 'restaurantarabesque.com', 'Libanaise', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Le Léman', 'Rue de Rive ', 28, 1260, 'Nyon', 'Suisse', 46.3803758, 6.240229, 'restorive-nyon.ch', '', 'Suisse', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('L Auberge du Château', 'Place du Château', 8, 1260, 'Nyon', 'Suisse', 46.3819953, 6.2385886, 'aubergeduchateau.ch', '', 'Italienne', 'descn', $id, null);
 
           self::makeTestData('Le Grand Café - Hôtel Real', 'Place de Savoie ', 1, 1260, 'Nyon', 'Suisse', 46.3806361, 6.2393026, 'hotlerealnyon.ch', '', 'Italienne', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Café du Raisin', 'Gran Rue', 26, 1268, 'Begnins', 'Suisse', 46.4153124, 6.2117013, '', '', 'Régionale', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Khãnã Mandir', 'Place du Marché', 1, 1260, 'Nyon', 'Suisse', 46.381897, 6.2363523, 'khanamandir.ch', '', 'Indienne', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Le Club House', 'Avenue du Mont-Blanc', 38, 1196, 'Gland', 'Suisse', 46.4139564, 6.2736606, 'leclubhouse.ch', '', 'Bar à vin', 'descn', $id, null);
 
@@ -462,17 +460,17 @@ class DatabaseSeeder extends Seeder {
           self::makeTestData('Café des Moulins', 'Rue de la Colombière', 12, 1260, 'Nyon', 'Suisse', 46.3899031, 6.2151437, 'restorive-nyon.ch', '', 'Européenne', 'descn', $id, null);
 
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
 
           self::makeTestData('Hôtel Restaurant La Truite', 'Grand-Rue', 203, 1220, 'Divonnes-les-Bains', 'France', 46.3296795, 6.1153798, '', 'hotelrestaurantlatruite.com', 'Traditionnelle / Classique', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
           self::makeTestData('Linstant Restaurant ', 'Place Perdtemps', 9, 1220, 'Divonnes-les-Bains', 'France', 46.357373, 6.117848, '', 'restaurantdivonne-les-bains.fr', 'Traditionnelle / Classique', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
           self::makeTestData('Château de Divonne', 'Rue des Bains', 115, 1220, 'Divonnes-les-Bains', 'France', 46.3563213, 6.1317597, '', 'château-divonne.com', 'Gastronomique', 'descn', $id, null);
 
-          $id = hex2bin(str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()));
+          $id = \App\Utilities\UuidTools::generateUuid();
           self::makeTestData('Restaurant Le Nabab ', 'Avenue de Genève ', 252, 1220, 'Divonnes-les-Bains', 'France', 46.3533643, 6.1400721, '', 'lenabab-restaurant.fr', 'Indienne', 'descn', $id, null);
          * */
     }
