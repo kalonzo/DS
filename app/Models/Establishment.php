@@ -30,7 +30,9 @@ class Establishment extends Model {
         'average_price_max',
         'id_banking_info',
         'id_user_owner',
-        'id_business_type'
+        'id_business_type',
+        'latitude',
+        'longitude'
     ];
     protected $guarded = [];
 

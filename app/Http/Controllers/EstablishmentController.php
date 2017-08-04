@@ -219,7 +219,9 @@ class EstablishmentController extends Controller {
                             'id_user_owner' => $idUser,
                             'id_address' => $idAddress,
                             'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
-                            'id_logo' => 0
+                            'id_logo' => 0,
+                            'latitude' => $address->latitude,
+                            'longitude' => $address->longitude
                         ]);
                         $establishment = Establishment::create($request->all());
                         if(checkModel($establishment)){
@@ -316,12 +318,24 @@ class EstablishmentController extends Controller {
      * @param type $id
      */
     public function createLinkBusinessCategory($request, $establishmentId, $id) {
-
+        
+        
         $request->merge([
             'id_establishment' => $establishmentId,
-            'id_business_categories' =>  $id
+            'id_business_category' =>  $id
         ]);
-        return EstablishmentBusinessCategory::create($request->all());
+        try {
+            EstablishmentBusinessCategory::create($request->all());
+        } catch (Exception $ex) {
+            
+            
+            die($ex);
+        }
+        
+        
+        
+        
+        //return EstablishmentBusinessCategory::create($request->all());
     }
 
     /**

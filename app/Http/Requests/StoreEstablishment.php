@@ -30,6 +30,7 @@ class StoreEstablishment extends \App\Http\FormRequest
             'country' => 'required|max:255',
             'latitude' => 'required',
             'longitude' => 'required',
+            'cooking_types' => 'required|min:1'
             /*
             'numberReservation' => 'required|min:11|numeric',
             'contactNumber' => 'required|min:11|numeric',
@@ -40,17 +41,18 @@ class StoreEstablishment extends \App\Http\FormRequest
     
     public function messages(){
         return [
-            'establishment.name.required' => ' Vous devez spécifier un nom pour votre établissement.',
-            'establishment.name.min' => ' Le nom de votre restaurant dois contenir au minimum 2 caractères.',
-            'establishment.name.max' => ' Le nom du restaurant ne dois pas dépasser 255 caractères',
-            'street.required' => 'Vous devez spécifiez une rue pour votre établissement',
-            'street.min' => 'Le nom de rue dois contenir au minimum 3 caractères',
-            'street_number.required' => ' Vous devez spécifiez un numéro de rue pour votre établissement.',
-            'postal_code.required' => 'Vous devez spécifier un code postal',
-            'city.required' => ' Vous devez spécifiez une ville pour votre établissement.',
-            'country.required' => ' Vous devez spécifiez le pays de votre établissement.',
-            'latitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
-            'longitude.required' => 'Veuillez cliquer sur le bouton localisation de mon restaurant.',
+            'establishment.name.required' => 'Veuillez saisir le nom de votre restaurant.',
+            'establishment.name.min' => 'Veuillez rendeigner au minimum 2 caractère pour le nom de votre restaurant',
+            'establishment.name.max' => 'Merci de ne pas renseigner plus de 255 caractère pour le nom de votre restaurant',
+            'street.required' => 'Veuillez remplir ce champ.',
+            'street.min' => 'Le nom de rue dois contenir au minimum 3 caractères.',
+            'street_number.required' => 'Vous devez spécifiez un numéro de rue.',
+            'postal_code.required' => 'Vous devez spécifier un code postal.',
+            'city.required' => 'Vous devez spécifiez une ville pour votre établissement.',
+            'country.required' => 'Vous devez spécifiez le pays de votre établissement.',
+            'latitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
+            'longitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
+            'cooking_types.required' => 'veuillez spécifiez au minimum un type de cuisine',
             /*
             'numberReservation.required' => 'Veuillez indiquer un numéro de résérvation.',
             'numberReservation.min' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
@@ -59,7 +61,7 @@ class StoreEstablishment extends \App\Http\FormRequest
             'contactNumber.min' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
             'contactNumber.numeric' => 'Le numéro de résérvation de dois pas contenir de caractères',
             
-            'site_url.regex' => 'Veuillez.',
+            'site_url.regex' => 'Le format de votre site n'est pas valide (MonRestaurant.com)',
             'site_url' => 'requis pour toto',*/
         ];
     }
