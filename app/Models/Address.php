@@ -27,7 +27,10 @@ class Address extends Model {
         'lastname',
         'id_location_index',
         'id_object_related',
-        'type_object_related'
+        'type_object_related',
+        'department',
+        'district',
+        'region'
     ];
     protected $guarded = [];
     
@@ -127,6 +130,26 @@ class Address extends Model {
      */
     public function getIdObjectRelated() {
         return $this->id_object_related;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDepartment() {
+        return $this->department;
+    }
+    /**
+     * @return mixed
+     */
+    public function getRegion() {
+        return $this->region;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDistrict() {
+        return $this->district;
     }
 
     /**
@@ -268,6 +291,32 @@ class Address extends Model {
      */
     public function setTypeObjectRelated($value) {
         $this->type_object_related = $value;
+        return $this;
+    }
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setDepartment($value) {
+        $this->department= $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setRegion($value) {
+        $this->region = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setDistrict($value) {
+        $this->district = $value;
         return $this;
     }
 
