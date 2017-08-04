@@ -13,13 +13,13 @@
             <div class="row"> 
                 <div class="col-xs-8 col-sm-10 form-group {{ $errors->has('street') ? 'has-error' : '' }}">
                     {!! Form::label('* Adresse') !!}	
-                    {!! Form::text('street', old('street'), [
+                    {!! Form::text('address[street]', old('street'), [
                     'class'=>'form-control',
                     ]) !!}
                 </div>
                 <div class="col-xs-4 col-sm-2 form-group {{ $errors->has('street_number') ? 'has-error' : '' }}">
                     {!! Form::label('* N° Rue') !!}
-                    {!! Form::text('street_number', old('street_number'), ['class'=>
+                    {!! Form::text('address[street_number]', old('street_number'), ['class'=>
                     'form-control', 
                     ]) !!}
                 </div>      
@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-xs-8 col-sm-10 form-group">
                     {!! Form::label('Complément d\'adresse') !!}
-                    {!! Form::text('address_additional', old('address_additional'), [
+                    {!! Form::text('address[address_additional]', old('address_additional'), [
                     'class'=>'form-control',
                     ]) !!}
                 </div>
@@ -37,7 +37,7 @@
                 <div class="col-md-4">
                     {!! Form::label('* NPA') !!}
                     <div class="form-group {{ $errors->has('postal_code') ? 'has-error' : '' }}">
-                        {!! Form::text('postal_code', old('postal_code'), [
+                        {!! Form::text('address[postal_code]', old('postal_code'), [
                         'class'=>'form-control', 
                         ]) !!}
                     </div>
@@ -45,7 +45,7 @@
                 <div class="col-md-8">
                     {!! Form::label('* Localité') !!}
                     <div class="form-group {{ $errors->has('city') ? 'has-error' : '' }}">
-                        {!! Form::text('city', old('city'), ['class'=>
+                        {!! Form::text('address[city]', old('city'), ['class'=>
                         'form-control',
                         ]) !!}
                     </div>
@@ -56,16 +56,16 @@
                 <div class="col-md-6">
                     {!! Form::label('* Canton/Départements') !!}
                     <div class="form-group {{ $errors->has('country') ? 'has-error' : '' }}">
-                        {!! Form::text('canton', old('canton'), [
+                        {!! Form::text('address[canton]', old('canton'), [
                         'class'=>'form-control', 
                         ]) !!}
-                        {!! Form::text('area', old('area'), ['class'=>'hidden']) !!}
+                        {!! Form::text('address[area', old('area'), ['class'=>'hidden']) !!}
                     </div>
                 </div>
                 <div class="col-md-6">
                     {!! Form::label('* Pays') !!}
                     <div class="form-group {{ $errors->has('country') ? 'has-error' : '' }}">
-                        {!! Form::text('country', old('country'), [
+                        {!! Form::text('address[country]', old('country'), [
                         'class'=>'form-control', 
                         ]) !!}
                         <p id="demo"></p>

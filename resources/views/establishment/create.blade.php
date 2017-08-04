@@ -11,9 +11,8 @@
 @section('content')
 
 <div id="map"> </div>
-
 @if(isset($establishment))
-    {{ Form::model($establishment, ['url' => '/establishment'.$establishment->getId(), 'method' => 'PUT']) }}
+    {!! Form::model($establishment, ['url' => '/establishment/'.$establishment->getId(), 'method' => 'PUT']) !!}
 @else
     {!! Form::open(['url'=>'/establishment', 'method' => 'put']) !!}
 @endif
@@ -25,7 +24,7 @@
                 <img id="ets-logo" src="/img/images_ds/imagen-DS-1.jpg"/>
                 {!! Form::file('url', array('class' => 'name', 'onchange' => 'previewImage(this)')) !!} 
                 <div id="" class="form-inline form-group">
-                    {!! Form::text('establishment[name]', old('name'), ['class'=>'form-control', 'placeholder'=>'Nom de votre restaurant', 'id' => 'ets-name']) !!}
+                    {!! Form::text('name', old('name'), ['class'=>'form-control', 'placeholder'=>'Nom de votre restaurant', 'id' => 'ets-name']) !!}
                     <!--<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>-->
                 </div>
             </div>
@@ -48,7 +47,6 @@
         </div>
 
         @endif
-
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
             @component('establishment.form.location', ['form_data' => $form_data])
             @endcomponent

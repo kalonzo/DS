@@ -52,7 +52,7 @@ class User extends Authenticatable {
     /**
      * @return mixed
      */
-    public function getStatus() { 
+    public function getStatus() {
         return $this->status;
     }
 
