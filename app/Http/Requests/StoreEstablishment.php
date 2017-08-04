@@ -22,12 +22,12 @@ class StoreEstablishment extends \App\Http\FormRequest
     public function rules()
     {
         return [
-            'establishment.name' => 'required|min:2|max:255',
-            'street' => 'required|min:3|max:255',
-            'street_number' => 'required|max:45',
-            'postal_code' => 'required|max:11',
-            'city' => 'required|max:255',
-            'country' => 'required|max:255',
+            'name' => 'required|min:2|max:255',
+            'address.street' => 'required|min:3|max:255',
+            'address.street_number' => 'required|max:45',
+            'address.postal_code' => 'required|max:11',
+            'address.city' => 'required|max:255',
+            'address.country' => 'required|max:255',
             'latitude' => 'required',
             'longitude' => 'required',
             'cooking_types' => 'required|min:1'
@@ -41,9 +41,9 @@ class StoreEstablishment extends \App\Http\FormRequest
     
     public function messages(){
         return [
-            'establishment.name.required' => 'Veuillez saisir le nom de votre restaurant.',
-            'establishment.name.min' => 'Veuillez rendeigner au minimum 2 caractère pour le nom de votre restaurant',
-            'establishment.name.max' => 'Merci de ne pas renseigner plus de 255 caractère pour le nom de votre restaurant',
+            'name.required' => 'Veuillez saisir le nom de votre restaurant.',
+            'name.min' => 'Veuillez rendeigner au minimum 2 caractère pour le nom de votre restaurant',
+            'name.max' => 'Merci de ne pas renseigner plus de 255 caractère pour le nom de votre restaurant',
             'street.required' => 'Veuillez remplir ce champ.',
             'street.min' => 'Le nom de rue dois contenir au minimum 3 caractères.',
             'street_number.required' => 'Vous devez spécifiez un numéro de rue.',
