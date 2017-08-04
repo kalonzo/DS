@@ -31,8 +31,6 @@ class CreateAddressTable extends Migration {
 			$table->binary('id_location_index', 16)->index('fk_address_cities1_idx');
 			$table->binary('id_object_related', 16)->nullable();
 			$table->integer('type_object_related')->nullable();
-                        $table->string('department', 255)->nullable();
-                        $table->string('canton', 255)->nullable();
 		});
 	}
 
