@@ -61,8 +61,12 @@ class Establishment extends Model {
         return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
     }
     
-    public function getAddress(){
-        return $this->hasOne(Address::class, 'id_address');
+    public function address(){
+        return $this->hasOne(Address::class, 'id', 'id_address');
+    }
+    
+    public function userOwner(){
+        return $this->hasOne(User::class, 'id', 'id_user_owner');
     }
     
     /**

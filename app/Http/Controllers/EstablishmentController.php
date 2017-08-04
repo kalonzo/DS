@@ -63,14 +63,14 @@ class EstablishmentController extends Controller {
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  Establishment  $php
+     * @param  Establishment $establishment
      * @return Response
      */
     public function edit(Establishment $establishment) {
         $this->buildCreateFormData();
         $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', $establishment);
         
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', $establishment);
         return $view;
     }
 
