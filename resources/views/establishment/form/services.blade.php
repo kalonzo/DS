@@ -12,23 +12,8 @@
             <div class="row">
                 <section class="col-md-12 container-fluid">
                     <div>
-                        <select id="leftValues" size="5" multiple>
-
-                        </select>
-                    </div>
-                    <div>
-                        <input type="button" id="btnLeft" onclick="{
-                                    addCookingType();
-                                }" value="&lt;&lt;"/>
-                        <input type="button" id="btnRight" onclick="{
-                                    addCookingType();
-                                }" value="&gt;&gt;"/>
-                    </div>
-                    <div>
-                        {!! Form::select('services[]', $form_data['services'], null, array('multiple' => true)) !!}
-                        <div>
-                            <input type="text" id="txtRight" />
-                        </div>
+                        {!! Form::select('services[]', $form_data['services'], null, array('multiple' => true,
+                                                       'class' => 'multiselect-dual')) !!}
                     </div>
                 </section>   
             </div>

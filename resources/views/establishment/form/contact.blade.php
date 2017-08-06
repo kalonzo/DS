@@ -36,7 +36,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    {!! Form::label('* Fax') !!}
+                    {!! Form::label('  Fax') !!}
                     <div class="form-group ">
 
                         {!!  Form::select('callNumberPrefixIdsByNameFax',$form_data['country_prefixes'], ['class'=>
@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    {!! Form::label('* Mobile') !!}
+                    {!! Form::label('  Mobile') !!}
                     <div class="form-group">
                         {!!  Form::select('callNumberPrefixIdsByNameMobile',$form_data['country_prefixes'], ['class'=>
                         'form-control',

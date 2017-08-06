@@ -401,70 +401,62 @@ class DatabaseSeeder extends Seeder {
 
         $id = \App\Utilities\UuidTools::generateUuid();
 
-        self::makeTestData('Broadway Restaurant', 'chemin Malombré ', 18, 1202, 'Genève', 'Switzerland', 46.1954749, 6.1496726, 'restaurantbroadway.com', '', 'Franconienne', 'descn', $id, null);
-        /*
-          self::makeTestData('Restaurant Le Pradier', 'Rue Pradier', 6, 1201, 'Genève', 'Suisse', 46.1945955, 6.1453122, 'lepradier.com', '', 'Franconienne', 'descn', $id, null);
+           self::makeTestData('Broadway Restaurant', 'chemin Malombré ', 18, 1202, 'Genève', 'Switzerland', 46.1954749, 6.1496726, 'restaurantbroadway.com', '', 'Franconienne', 'descn', $id, null);
+        
+          self::makeTestData('Restaurant Le Pradier', 'Rue Pradier', 6, 1201, 'Genève', 'Switzerland', 46.1945955, 6.1453122, 'lepradier.com', '', 'Franconienne', 'descn', $id, null);
 
-          self::makeTestData('Restaurant Chausse-Coqs', 'Rue Micheli-du-Crest', 18, 1205, 'Genève', 'Suisse', 46.1945955, 6.1453122, 'chausse-coqs.ch', '', 'Franconienne', 'descn', $id, null);
+          self::makeTestData('Restaurant Chausse-Coqs', 'Rue Micheli-du-Crest', 18, 1205, 'Genève', 'Switzerland', 46.1945955, 6.1453122, 'chausse-coqs.ch', '', 'Franconienne', 'descn', $id, null);
+ 
+          $id = \App\Utilities\UuidTools::generateUuid();
+
+          self::makeTestData('Pékin Palace', 'Rue des Alpes', 22, 1201, 'Genève', 'Switzerland', 46.2109976, 6.1425921, 'pekin-palace.thefork.rest', '', 'Chinoise', 'descn', $id, null);
+
+          self::makeTestData('Restaurant Wang', 'Rue des Eaux-Vives', 9, 1207, 'Genève', 'Switzerland', 46.2033257, 6.1550633, 'restaurant-wang.ch', '', 'Chinoise', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Pékin Palace', 'Rue des Alpes', 22, 1201, 'Genève', 'Suisse', 46.2109976, 6.1425921, 'pekin-palace.thefork.rest', '', 'Chinoise', 'descn', $id, null);
-
-          self::makeTestData('Restaurant Wang', 'Rue des Eaux-Vives', 9, 1207, 'Genève', 'Suisse', 46.2033257, 6.1550633, 'restaurant-wang.ch', '', 'Chinoise', 'descn', $id, null);
+          self::makeTestData('Matsuri', 'Rue de la Confédération', 8, 1204, 'Genève', 'Switzerland', 46.2035711, 6.1424213, 'matsuri.ch', '', 'Japonaise', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Matsuri', 'Rue de la Confédération', 8, 1204, 'Genève', 'Suisse', 46.2035711, 6.1424213, 'matsuri.ch', '', 'Japonaise', 'descn', $id, null);
+          self::makeTestData('Gaùcho Churrascaria', 'Chemin Malombré ', 1, 1206, 'Genève', 'Switzerland', 46.196326, 6.15203, 'churrascaria-gaucho.com', '', 'Brésilienne', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Gaùcho Churrascaria', 'Chemin Malombré ', 1, 1206, 'Genève', 'Suisse', 46.196326, 6.15203, 'churrascaria-gaucho.com', '', 'Brésilienne', 'descn', $id, null);
+          self::makeTestData('Thaï tastes café & restaurant', 'Rue de la Servette', 16, 1201, 'Genève', 'Switzerland', 46.2102704, 6.1356, 'thaitastes .ch', '', 'Thaïlandaise', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Thaï tastes café & restaurant', 'Rue de la Servette', 16, 1201, 'Genève', 'Suisse', 46.2102704, 6.1356, 'thaitastes .ch', '', 'Thaïlandaise', 'descn', $id, null);
+          self::makeTestData('Contact - Bar et Restaurant', 'Rue du Prieuré', 8, 1202, 'Genève', 'Switzerland', 46.2972433, 6.1230715, 'jimma.ch', '', 'Ethiopienne', 'descn', $id, null);
+
+          self::makeTestData('Chez Sami', 'Rue de fribourg ', 11, 1201, 'Genève', 'Switzerland', 46.3390482, 6.2137802, 'chezsami.ch', '', 'Libanaise', 'descn', $id, null);
+
+
+          self::makeTestData('Restaurant Arabesque', 'Quai Wilson', 47, 1201, 'Genève', 'Switzerland', 46.2148921, 6.1488857, '', 'restaurantarabesque.com', 'Libanaise', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Contact - Bar et Restaurant', 'Rue du Prieuré', 8, 1202, 'Genève', 'Suisse', 46.2972433, 6.1230715, 'jimma.ch', '', 'Ethiopienne', 'descn', $id, null);
-
-          self::makeTestData('Chez Sami', 'Rue de fribourg ', 11, 1201, 'Genève', 'Suisse', 46.3390482, 6.2137802, 'chezsami.ch', '', 'Libanaise', 'descn', $id, null);
-
-
-          self::makeTestData('Restaurant Arabesque', 'Quai Wilson', 47, 1201, 'Genève', 'Suisse', 46.2148921, 6.1488857, '', 'restaurantarabesque.com', 'Libanaise', 'descn', $id, null);
+          self::makeTestData('Le Léman', 'Rue de Rive ', 28, 1260, 'Nyon', 'Switzerland', 46.3803758, 6.240229, 'restorive-nyon.ch', '', 'Suisse', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Le Léman', 'Rue de Rive ', 28, 1260, 'Nyon', 'Suisse', 46.3803758, 6.240229, 'restorive-nyon.ch', '', 'Suisse', 'descn', $id, null);
+          self::makeTestData('L Auberge du Château', 'Place du Château', 8, 1260, 'Nyon', 'Switzerland', 46.3819953, 6.2385886, 'aubergeduchateau.ch', '', 'Italienne', 'descn', $id, null);
+
+          self::makeTestData('Le Grand Café - Hôtel Real', 'Place de Savoie ', 1, 1260, 'Nyon', 'Switzerland', 46.3806361, 6.2393026, 'hotlerealnyon.ch', '', 'Italienne', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('L Auberge du Château', 'Place du Château', 8, 1260, 'Nyon', 'Suisse', 46.3819953, 6.2385886, 'aubergeduchateau.ch', '', 'Italienne', 'descn', $id, null);
-
-          self::makeTestData('Le Grand Café - Hôtel Real', 'Place de Savoie ', 1, 1260, 'Nyon', 'Suisse', 46.3806361, 6.2393026, 'hotlerealnyon.ch', '', 'Italienne', 'descn', $id, null);
+          self::makeTestData('Café du Raisin', 'Gran Rue', 26, 1268, 'Begnins', 'Switzerland', 46.4153124, 6.2117013, '', '', 'Régionale', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
 
-          self::makeTestData('Café du Raisin', 'Gran Rue', 26, 1268, 'Begnins', 'Suisse', 46.4153124, 6.2117013, '', '', 'Régionale', 'descn', $id, null);
+          self::makeTestData('Khãnã Mandir', 'Place du Marché', 1, 1260, 'Nyon', 'Switzerland', 46.381897, 6.2363523, 'khanamandir.ch', '', 'Indienne', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
-
-          self::makeTestData('Khãnã Mandir', 'Place du Marché', 1, 1260, 'Nyon', 'Suisse', 46.381897, 6.2363523, 'khanamandir.ch', '', 'Indienne', 'descn', $id, null);
-
-          $id = \App\Utilities\UuidTools::generateUuid();
-
-          self::makeTestData('Le Club House', 'Avenue du Mont-Blanc', 38, 1196, 'Gland', 'Suisse', 46.4139564, 6.2736606, 'leclubhouse.ch', '', 'Bar à vin', 'descn', $id, null);
-
-
-          self::makeTestData('Café des Moulins', 'Rue de la Colombière', 12, 1260, 'Nyon', 'Suisse', 46.3899031, 6.2151437, 'restorive-nyon.ch', '', 'Européenne', 'descn', $id, null);
-
-
-          $id = \App\Utilities\UuidTools::generateUuid();
-
+          
           self::makeTestData('Hôtel Restaurant La Truite', 'Grand-Rue', 203, 1220, 'Divonnes-les-Bains', 'France', 46.3296795, 6.1153798, '', 'hotelrestaurantlatruite.com', 'Traditionnelle / Classique', 'descn', $id, null);
 
-          $id = \App\Utilities\UuidTools::generateUuid();
+         // $id = \App\Utilities\UuidTools::generateUuid();
           self::makeTestData('Linstant Restaurant ', 'Place Perdtemps', 9, 1220, 'Divonnes-les-Bains', 'France', 46.357373, 6.117848, '', 'restaurantdivonne-les-bains.fr', 'Traditionnelle / Classique', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();
@@ -472,7 +464,9 @@ class DatabaseSeeder extends Seeder {
 
           $id = \App\Utilities\UuidTools::generateUuid();
           self::makeTestData('Restaurant Le Nabab ', 'Avenue de Genève ', 252, 1220, 'Divonnes-les-Bains', 'France', 46.3533643, 6.1400721, '', 'lenabab-restaurant.fr', 'Indienne', 'descn', $id, null);
-         * */
+          self::makeTestData('Café des Moulins', 'Rue de la Colombière', 12, 1260, 'Nyon', 'Switzerland', 46.3899031, 6.2151437, 'restorive-nyon.ch', '', 'Européenne', 'descn', $id, null);
+
+
     }
 
 }
