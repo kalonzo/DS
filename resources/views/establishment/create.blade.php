@@ -203,38 +203,50 @@
         $(document).on('googleGeolocReady', function(){
             var $areaAutoCompleteInput = $('[name="address[area]"]');
             if(!isEmpty($areaAutoCompleteInput)){
-//                autoCompleteArea = new google.maps.places.Autocomplete($areaAutoCompleteInput, {
-//                    types: ['geocode'],
-//                    componentRestrictions: {country: 'Suisse'}
-//                });
-//                autoCompleteArea.addListener('place_changed', function () {
-//                    var place = autoCompleteArea.getPlace();
-//                });
                 var service = new google.maps.places.AutocompleteService();
-                var areaSource = new Array('Saisissez votre quartier');
+                var placeIds = [];
+                var sourceArray = [];
                 $areaAutoCompleteInput.autocomplete({
-                    source: areaSource,
-                    minLength: 2,
-                    delay: 500,
-                    search: function( event, ui ) {
-                        var inputValue = $(this).val();
-
-                        service.getQueryPredictions({ input: inputValue, types: ['geocode'], componentRestrictions: {country: 'CH'} }, function(predictions, status) {
+                    source: function(requete, reponse){
+                        sourceArray = [];
+                        placeIds = [];
+                        var city = $areaAutoCompleteInput.parentsInclude('form').find('[name="address[city]"]').val();
+                        var country = $areaAutoCompleteInput.parentsInclude('form').find('[name="address[country]"]').val();
+                        var lat = $areaAutoCompleteInput.parentsInclude('form').find('[name=latitude]').val()*1;
+                        var lng = $areaAutoCompleteInput.parentsInclude('form').find('[name=longitude]').val()*1;
+                        var inputValue = city+' '+country + ' ' + requete.term;
+                        var request = { 
+                                input: inputValue, 
+                                types: ['geocode'], 
+                            };
+                        service.getQueryPredictions(request, function(predictions, status) {
                             if (status != google.maps.places.PlacesServiceStatus.OK) {
                                 alert(status);
                                 return;
                             }
-
                             predictions.forEach(function(prediction) {
-                                areaSource.push(prediction.description);
-                                $('#searchAreaDropdown').empty().append('<li>'+prediction.description+'</li>');
-    //                            var li = document.createElement('li');
-    //                            li.appendChild(document.createTextNode(prediction.description));
-    //                            document.getElementById('results').appendChild(li);
+                                var type = prediction.types[0];
+                                switch(type){
+                                    case 'neighborhood':
+                                    case 'colloquial_area':
+                                    case 'sublocality_level_1':
+                                    case 'sublocality_level_2':
+                                    case 'sublocality_level_3':
+                                    case 'sublocality_level_4':
+                                    case 'sublocality_level_5':
+                                        var placeId = prediction.place_id;
+                                        if(typeof placeIds[placeId] == 'undefined'){
+                                            placeIds[placeId] = placeId;
+                                            sourceArray.push(prediction.description);
+                                        }
+                                    break;
+                                }
                             });
+                            reponse(sourceArray);
                         });
-                    }
-
+                    },
+                    minLength: 2,
+                    delay: 0,
                 }).autocomplete("instance")._create = function() {
                     this._super();
                     this.widget().menu({
