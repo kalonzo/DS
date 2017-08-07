@@ -45,7 +45,7 @@ class EstablishmentController extends Controller {
     public function create() {
         $this->buildCreateFormData();
         $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
-        $view = View::make('establishment.create')->with('form_data', $formData);
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', null);
 
         return $view;
     }
