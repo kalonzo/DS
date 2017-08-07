@@ -9,9 +9,9 @@
 
 <div id="map"> </div>
 @if(isset($establishment))
-    {!! Form::model($establishment, ['url' => '/establishment/'.$establishment->getId(), 'method' => 'PUT']) !!}
+    {!! Form::model($establishment, ['url' => '/establishment/'.$establishment->getId(), 'method' => 'PUT', 'files' => true]) !!}
 @else
-    {!! Form::open(['url'=>'/establishment', 'method' => 'put']) !!}
+    {!! Form::open(['url'=>'/establishment', 'method' => 'put', 'files' => true]) !!}
 @endif
     <input  type="hidden" name="_token" value="{{ csrf_token() }}">
 
@@ -45,46 +45,46 @@
 
         @endif
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
-            @component('establishment.form.location', ['form_data' => $form_data])
+            @component('establishment.form.location', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.contact', ['form_data' => $form_data])
+            @component('establishment.form.contact', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.web', ['form_data' => $form_data])
+            @component('establishment.form.web', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.cooking', ['form_data' => $form_data])
+            @component('establishment.form.cooking', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.food_specialties', ['form_data' => $form_data])
+            @component('establishment.form.food_specialties', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.description', ['form_data' => $form_data])
+            @component('establishment.form.description', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.services', ['form_data' => $form_data])
+            @component('establishment.form.services', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.ambiences', ['form_data' => $form_data])
+            @component('establishment.form.ambiences', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.galleries', ['form_data' => $form_data])
+            @component('establishment.form.galleries', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.videos', ['form_data' => $form_data])
+            @component('establishment.form.videos', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.menus', ['form_data' => $form_data])
+            @component('establishment.form.menus', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.timetable', ['form_data' => $form_data])
+            @component('establishment.form.timetable', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.staff', ['form_data' => $form_data])
+            @component('establishment.form.staff', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
             
-            @component('establishment.form.story', ['form_data' => $form_data])
+            @component('establishment.form.story', ['establishment' => $establishment, 'form_data' => $form_data])
             @endcomponent
         </div>
     </div>

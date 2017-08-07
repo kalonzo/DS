@@ -457,6 +457,15 @@ class EstablishmentController extends Controller {
                                 $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm'.$dayIndex), 
                                         $request->get('endTimePm'.$dayIndex), $establishment->getId());
                             }
+                            
+                            // Create medias
+                            $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
+                            if(checkModel($logo)){
+                                $establishment->setIdLogo($logo->getId());
+                                $createdObjects[] = $logo;
+                            }
+                            $establishment->save();
+                            
                             return $establishment;
                         } else {
                             throw new Exception("L'établissement n'a pu être enregistré.");

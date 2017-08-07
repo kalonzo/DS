@@ -456,7 +456,7 @@ class DatabaseSeeder extends Seeder {
           
           self::makeTestData('Hôtel Restaurant La Truite', 'Grand-Rue', 203, 1220, 'Divonnes-les-Bains', 'France', 46.3296795, 6.1153798, '', 'hotelrestaurantlatruite.com', 'Traditionnelle / Classique', 'descn', $id, null);
 
-         // $id = \App\Utilities\UuidTools::generateUuid();
+          $id = \App\Utilities\UuidTools::generateUuid();
           self::makeTestData('Linstant Restaurant ', 'Place Perdtemps', 9, 1220, 'Divonnes-les-Bains', 'France', 46.357373, 6.117848, '', 'restaurantdivonne-les-bains.fr', 'Traditionnelle / Classique', 'descn', $id, null);
 
           $id = \App\Utilities\UuidTools::generateUuid();

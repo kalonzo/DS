@@ -26,6 +26,9 @@ class CreateEstablishmentMediasTable extends Migration {
 			$table->integer('position')->nullable();
 			$table->binary('id_gallery', 16)->nullable()->index('fk_medias_galleries1_idx');
 			$table->binary('id_draft_media', 16)->nullable()->index('fk_establishment_medias_establishment_medias1_idx');
+                        $table->binary('id_object_related', 16)->index('fk_establishment_medias_object_related_idx');
+                        $table->boolean('public')->nullable();
+                        $table->string('drive',255)->nullable();
 		});
 	}
 

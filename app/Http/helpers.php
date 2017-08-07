@@ -45,3 +45,25 @@ function objectHasTrait($obj, $trait){
     }
     return isset($used[$trait]);
 }
+
+function getImageWidth($filePath){
+    $width = null;
+    if(!empty($filePath) && file_exists($filePath)){
+        $dim = getimagesize($filePath);
+        if(is_array($dim) && isset($dim[0])){
+            $width = $dim[0];
+        }
+    }
+    return $width;
+}
+
+function getImageHeight($filePath){
+    $height = null;
+    if(!empty($filePath) && file_exists($filePath)){
+        $dim = getimagesize($filePath);
+        if(is_array($dim) && isset($dim[1])){
+            $height = $dim[1];
+        }
+    }
+    return $height;
+}

@@ -69,6 +69,10 @@ class Establishment extends Model {
         return $this->hasOne(User::class, 'id', 'id_user_owner');
     }
     
+    public function logo(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
+    }
+    
     /**
      * @return mixed
      */
