@@ -19,6 +19,9 @@ class Address extends Model {
         'po_box',
         'postal_code',
         'city',
+        'district',
+        'department',
+        'region',
         'country',
         'latitude',
         'longitude',
@@ -28,9 +31,6 @@ class Address extends Model {
         'id_location_index',
         'id_object_related',
         'type_object_related',
-        'department',
-        'district',
-        'region'
     ];
     protected $guarded = [];
     

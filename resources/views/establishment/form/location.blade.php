@@ -34,7 +34,7 @@
                 </div>
                 <div class="col-sm-6 form-group">
                     {!! Form::label('Quartier') !!}
-                    {!! Form::text('address[area]', old('area'), ['class'=>'form-control']) !!}
+                    {!! Form::text('address[district]', old('district'), ['class'=>'form-control']) !!}
                 </div>
             </div>
             <div class="row">
@@ -58,12 +58,9 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    {!! Form::label('* Canton/Départements') !!}
-                    <div class="form-group {{ $errors->has('country') ? 'has-error' : '' }}">
-                        {!! Form::text('address[canton]', old('canton'), [
-                        'class'=>'form-control', 
-                        ]) !!}
-                        {!! Form::text('address[area]', old('area'), ['class'=>'hidden']) !!}
+                    {!! Form::label('* Canton/Région') !!}
+                    <div class="form-group {{ $errors->has('region') ? 'has-error' : '' }}">
+                        {!! Form::text('address[region]', old('region'), ['class'=>'form-control']) !!}
                     </div>
                 </div>
                 <div class="col-md-6">

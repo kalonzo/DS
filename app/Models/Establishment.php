@@ -9,6 +9,7 @@ class Establishment extends Model {
 
     protected $table = 'establishments';
     const TABLENAME = 'establishments';
+    const TYPE_OBJECT_ESTABLISHMENT = 1;
 
     const TYPE_BUSINESS_RESTAURANT = 1;
 

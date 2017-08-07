@@ -9,11 +9,10 @@
 
 <div id="map"> </div>
 @if(isset($establishment))
-    {!! Form::model($establishment, ['url' => '/establishment/'.$establishment->getId(), 'method' => 'PUT', 'files' => true]) !!}
+    {!! Form::model($establishment, ['url' => '/establishment/'.$establishment->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
 @else
     {!! Form::open(['url'=>'/establishment', 'method' => 'put', 'files' => true]) !!}
 @endif
-    <input  type="hidden" name="_token" value="{{ csrf_token() }}">
 
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
@@ -154,10 +153,10 @@
                                         $form.find('input[name="address[postal_code]"]').val(ac.long_name);
                                         break;
                                     case 'administrative_area_level_1':
-                                        $form.find('input[name="address[canton]"]').val(ac.long_name);
+                                        $form.find('input[name="address[region]"]').val(ac.long_name);
                                         break;
                                     case 'administrative_area_level_2':
-                                        $form.find('input[name="address[area]"]').val(ac.long_name);
+                                        $form.find('input[name="address[district]"]').val(ac.long_name);
                                         break;
                                     case 'sublocality_level_1':
                                         $form.find('input[name="address[city]"]').val(ac.long_name);
@@ -198,7 +197,7 @@
     var autoCompleteArea;
     document.addEventListener("DOMContentLoaded", function(event) { 
         $(document).on('googleGeolocReady', function(){
-            var $areaAutoCompleteInput = $('[name="address[area]"]');
+            var $areaAutoCompleteInput = $('[name="address[district]"]');
             if(!isEmpty($areaAutoCompleteInput)){
                 var service = new google.maps.places.AutocompleteService();
                 var placeIds = [];

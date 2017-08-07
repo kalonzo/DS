@@ -28,6 +28,23 @@ class Builder extends \Illuminate\Database\Eloquent\Builder{
         return parent::create($targetAttributes);
     }
     
+    public function insert(array $attributes = []){
+        $tableName = $this->getModelTableName();
+        $targetAttributes = array();
+        
+        foreach ($attributes as $label =>$attribute){
+            if($label === $tableName && is_array($attribute)){
+                foreach($attribute as $dedicatedTableLabel => $dedicatedTableValue){
+                    $targetAttributes[$dedicatedTableLabel] = $dedicatedTableValue;
+                }
+            } else {
+                $targetAttributes[$label] = $attribute;
+            }
+        }
+        
+        return parent::insert($targetAttributes);
+    }
+    
     public function getModelClass(){
         return get_class($this->newModelInstance());
     }
