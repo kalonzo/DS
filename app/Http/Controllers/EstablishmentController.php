@@ -68,8 +68,7 @@ class EstablishmentController extends Controller {
      */
     public function edit(Establishment $establishment) {
         $this->buildCreateFormData();
-        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
-        
+        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');       
         $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', $establishment);
         return $view;
     }
@@ -81,8 +80,163 @@ class EstablishmentController extends Controller {
      * @param  Establishment  $php
      * @return Response
      */
-    public function update(Request $request, Establishment $establishment) {
+    public function update(StoreEstablishment $request, Establishment $establishment) {
         //
+       // var_dump($request->all());
+     
+        $createdObjects = array();
+        $formObjects = $request->all();
+        try{
+            
+            $idLocation = 0;
+            $postalCode = $request->get('address.postal_code');
+            $city = $request->get('address.city');
+            if(!empty($postalCode) && !empty($city)){
+                $locationIndex = LocationIndex::where('postal_code', $postalCode)
+                                                ->where('city', $city)->first(); 
+                //die($locationIndex->getId());
+                if(checkModel($locationIndex)){
+                    $idLocation = $locationIndex->getId();
+                }
+            }
+            if(checkModelId($idLocation)){
+                //Create establishment address
+                $request->merge([
+                    'id_location_index' => $idLocation
+                ]);
+                $address = Address::find(UuidTools::getUuid($establishment->id_address))->first();
+                var_dump($address);
+                $address::updateOrCreate($request->all());
+                $address->save();
+                die();
+               
+                //$address = Address::create($request->all());
+                
+                if(checkModel($address)){
+                    $createdObjects[] = $address;
+                    $idAddress = $address->getId();
+
+                    // Create establishment user owner
+                    $request->merge([
+                        'name' => $request->get('establishment.name'),
+                        'type' => User::TYPE_USER_AUTO_INSERTED,
+                        'gender' => 0,
+                        'id_address' => $idAddress,
+                        'id_inbox' => 0,
+                        'id_company' => 0,
+                    ]);
+                    
+                    
+                    $user = user::find();
+                    
+                    $user = User::create($request->all());
+                   
+                    if(checkModel($user)){
+                        $createdObjects[] = $user;
+                        $idUser = $user->getId();
+
+                        // Create establishment
+                        $request->merge([
+                            'id_location_index' => $idLocation,
+                            'id_user_owner' => $idUser,
+                            'id_address' => $idAddress,
+                            'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
+                            'id_logo' => 0,
+                            'latitude' => $address->latitude,
+                            'longitude' => $address->longitude
+                        ]);
+                        $establishment = Establishment::create($request->all());
+                        if(checkModel($establishment)){
+                            $createdObjects[] = $establishment;
+
+                            // Create phone numbers
+                            if ($request->get('numberReservation') != "") {
+                                $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, 
+                                        $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
+                            }
+                            if ($request->get('contactNumber') != "") {
+                                $createdObjects[] = $this->createCallNumber(1, $request, 'Téléphone principal', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), 
+                                        $request->get('contactNumber'), $establishment->getId());
+                            }
+                            if ($request->get('fax') != "") {
+                                $createdObjects[] = $this->createCallNumber(0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), 
+                                        $establishment->getId());
+                            }
+                            if ($request->get('mobile') != "") {
+                                $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), 
+                                        $request->get('mobile'), $establishment->getId());
+                            }
+
+                            // Create cooking types
+                            $cookingTypes = request()->get('cooking_types');
+                            if(!empty($cookingTypes)){
+                                foreach ($cookingTypes as $cookingType) {
+                                    $idCookingType = UuidTools::getId($cookingType);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idCookingType);
+                                }
+                            }
+                            // Create food specialties
+                            $foodSpecialties = request()->get('food_specialties');
+                            if(!empty($foodSpecialties)){
+                                foreach ($foodSpecialties as $foodSpecialty) {
+                                    // TODO Manage existing and new ones
+                                    $idSpecialty = UuidTools::getId($foodSpecialty);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idSpecialty);
+                                }
+                            }
+                            // Create ambiences
+                            $ambiences = request()->get('ambiences');
+                            if(!empty($ambiences)){
+                                foreach ($ambiences as $ambience) {
+                                    $idAmbience = UuidTools::getId($ambience);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idAmbience);
+                                }
+                            }
+                            // Create services
+                            $services = request()->get('services');
+                            if(!empty($services)){
+                                foreach ($services as $service) {
+                                    $idService = UuidTools::getId($service);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idService);
+                                }
+                            }
+
+                            // Create opening hours
+                            foreach(DateTools::getDaysArray() as $dayIndex => $dayLabel){
+                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm'.$dayIndex), 
+                                        $request->get('endTimeAm'.$dayIndex), $establishment->getId());
+                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm'.$dayIndex), 
+                                        $request->get('endTimePm'.$dayIndex), $establishment->getId());
+                            }
+                            return $establishment;
+                        } else {
+                            throw new Exception("L'établissement n'a pu être enregistré.");
+                        }
+                    } else {
+                        throw new Exception("Le propriétaire de l'établissement n'a pu être enregistré.");
+                    }
+                } else {
+                    throw new Exception("L'adresse de l'établissement n'a pu être enregistrée.");
+                }
+            } else {
+                throw new Exception("L'adresse saisie ne correspond à aucun index géographique connu.");
+            }
+        } catch(Exception $e){
+            // TODO Report error in log system
+            print_r($e->getMessage());
+            
+            foreach($createdObjects as $createdObject){
+                if($createdObject instanceof Model){
+                    $createdObject->delete();
+                }
+            }
+        }
+    
+        
+        //$establishment = $this->insertEstablishment($request);
+        return redirect('/admin');
+        
+        
     }
 
     /**
@@ -179,8 +333,8 @@ class EstablishmentController extends Controller {
         try{
             
             $idLocation = 0;
-            $postalCode = $request->get('postal_code');
-            $city = $request->get('city');
+            $postalCode = $request->get('address.postal_code');
+            $city = $request->get('address.city');
             if(!empty($postalCode) && !empty($city)){
                 $locationIndex = LocationIndex::where('postal_code', $postalCode)
                                                 ->where('city', $city)->first(); 
