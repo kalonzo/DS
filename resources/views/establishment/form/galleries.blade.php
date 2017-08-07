@@ -9,7 +9,22 @@
     </div>
     <div id="collapse9" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading9">
         <div class="panel-body container">
-
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    {{ Form::label('Sélectionnez votre logo') }}
+                    {!! Form::file('logo', ['class'=>'form-control bootstrap-file-input file-input-single']) !!}
+                </div>
+            </div>
+            <br/><br/>
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    Ajoutez les photos les plus représentatives de votre restaurant (format JPEG, PNG) en haute résolution.<br/>
+                    Les photos seront affichées dans la page d\'accueil
+                    <br/><br/>
+                    {{ Form::label('Images page d\'accueil') }}
+                    {!! Form::file('home_pictures', ['class'=>'form-control bootstrap-file-input file-input-multiple']) !!}
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
@@ -20,3 +35,8 @@
         </div> 
     </div>
 </div>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        $(".bootstrap-file-input").fileinput();
+    });
+</script>

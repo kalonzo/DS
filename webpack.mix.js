@@ -17,6 +17,7 @@ mix.js([
     .copyDirectory('resources/assets/js/', 'public/js')
     .copyDirectory('resources/assets/img', 'public/img')
     .copyDirectory('resources/assets/dashboard-innovate', 'public/dashboard-innovate')
+    .copyDirectory('vendor/kartik-v/bootstrap-fileinput', 'public/libraries/bootstrap-fileinput')
     .sass('resources/assets/sass/app.scss', 'public/css')
     .sass('resources/assets/sass/front.scss', 'public/css')
     .sass('resources/assets/sass/admin.scss', 'public/css')

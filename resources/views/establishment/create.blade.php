@@ -2,10 +2,7 @@
 
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
-@endsection
-
-@section('js_imports_head')
-
+<link href="/libraries/bootstrap-fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -108,11 +105,11 @@
 
     function getCoords(triggerELement) {
         var $form = $(triggerELement).parentsInclude('form');
-        var city = $form.find('input[name=city]').val();
-        var street = $form.find('input[name=street]').val();
-        var street_number = $form.find('input[name=street_number]').val();
-        var postal_code = $form.find('input[name=postal_code]').val();
-        var country = $form.find('input[name=country]').val();
+        var city = $form.find('input[name="address[city]"]').val();
+        var street = $form.find('input[name="address[street]"]').val();
+        var street_number = $form.find('input[name="address[street_number]"]').val();
+        var postal_code = $form.find('input[name="address[postal_code]"]').val();
+        var country = $form.find('input[name="address[country]"]').val();
         
         var address = street + ' ' + street_number + ', ' + postal_code + ' ' + city + ' ' + country;
         if (!isEmpty(address)) {
@@ -142,28 +139,28 @@
                             if(typeof ac.types[0] != 'undefined'){
                                 switch(ac.types[0]){
                                     case 'locality':
-                                        $form.find('input[name=city]').val(ac.long_name);
+                                        $form.find('input[name="address[city]"]').val(ac.long_name);
                                         break;
                                     case 'street_number':
-                                        $form.find('input[name=street_number]').val(ac.long_name);
+                                        $form.find('input[name="address[street_number]"]').val(ac.long_name);
                                         break;
                                     case 'route':
-                                        $form.find('input[name=street]').val(ac.long_name);
+                                        $form.find('input[name="address[street]"]').val(ac.long_name);
                                         break;
                                     case 'country':
-                                        $form.find('input[name=country]').val(ac.long_name);
+                                        $form.find('input[name="address[country]"]').val(ac.long_name);
                                         break;
                                     case 'postal_code':
-                                        $form.find('input[name=postal_code]').val(ac.long_name);
+                                        $form.find('input[name="address[postal_code]"]').val(ac.long_name);
                                         break;
                                     case 'administrative_area_level_1':
-                                        $form.find('input[name=canton]').val(ac.long_name);
+                                        $form.find('input[name="address[canton]"]').val(ac.long_name);
                                         break;
                                     case 'administrative_area_level_2':
-                                        $form.find('input[name=area]').val(ac.long_name);
+                                        $form.find('input[name="address[area]"]').val(ac.long_name);
                                         break;
                                     case 'sublocality_level_1':
-                                        $form.find('input[name=city]').val(ac.long_name);
+                                        $form.find('input[name="address[city]"]').val(ac.long_name);
                                         break;
                                 }
                             }
@@ -268,4 +265,5 @@
 <script src="/js/google-map.js"></script>
 <script src="/js/search.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
+<script src="/libraries/bootstrap-fileinput/js/fileinput.min.js"></script>
 @endsection
