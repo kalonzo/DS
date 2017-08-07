@@ -94,16 +94,27 @@ class EstablishmentController extends Controller {
                 $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
                 if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
+                } else {
+                    $country = \App\Models\Country::where('label', $countryName)->first();
+                    if (checkModel($country)) {
+                        $locationIndex = \App\Models\LocationIndex::insert([
+                                    'id' => \App\Utilities\UuidTools::generateUuid(),
+                                    'postal_code' => $postalCode,
+                                    'city' => $city,
+                                    'latitude' => $latitude,
+                                    'longitude' => $longitude,
+                                    'id_country' => $country->getId()
+                        ]);
+                        if (checkModel($locationIndex)) {
+                            $idLocation = $locationIndex->getId();
+                        }
+                    }
                 }
             }
             if (checkModelId($idLocation)) {
                 //Create establishment address
                 $request->merge([
-                    'id_location_index' => $idLocation,
-                    'postal_code' => $postalCode,
-                    'city' => $city,
-                    'latitude' => $latitude,
-                    'longitude' => $longitude,
+                    'id_location_index' => $idLocation
                 ]);
                 $address = Address::find(UuidTools::getUuid($establishment->id_address));
                 $address->fill($request->all());
@@ -220,7 +231,7 @@ class EstablishmentController extends Controller {
                             }
                         }
 
-                        die('At end');
+                        die();
 
                         // Create opening hours
                         foreach (DateTools::getDaysArray() as $dayIndex => $dayLabel) {
