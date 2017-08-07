@@ -331,15 +331,32 @@ class EstablishmentController extends Controller {
     public function insertEstablishment($request) {
         $createdObjects = array();
         try{
-            
             $idLocation = 0;
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
-            if(!empty($postalCode) && !empty($city)){
-                $locationIndex = LocationIndex::where('postal_code', $postalCode)
-                                                ->where('city', $city)->first(); 
+            $countryName = $request->get('address.country');
+            $latitude = $request->get('latitude');
+            $longitude = $request->get('longitude');
+               
+            if(!empty($postalCode) && !empty($city) && !empty($countryName)){
+                $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
                 if(checkModel($locationIndex)){
                     $idLocation = $locationIndex->getId();
+                } else {
+                    $country = \App\Models\Country::where('label', $countryName)->first();
+                    if(checkModel($country)){
+                        $locationIndex = \App\Models\LocationIndex::insert([
+                            'id' => \App\Utilities\UuidTools::generateUuid(),
+                            'postal_code' => $postalCode,
+                            'city' => $city,
+                            'latitude' => $latitude,
+                            'longitude' => $longitude,
+                            'id_country' => $country->getId()
+                        ]);
+                        if(checkModel($locationIndex)){
+                            $idLocation = $locationIndex->getId();
+                        }
+                    }
                 }
             }
             if(checkModelId($idLocation)){
@@ -354,7 +371,7 @@ class EstablishmentController extends Controller {
 
                     // Create establishment user owner
                     $request->merge([
-                        'name' => $request->get('establishment.name'),
+                        'name' => $request->get('name'),
                         'type' => User::TYPE_USER_AUTO_INSERTED,
                         'gender' => 0,
                         'id_address' => $idAddress,
@@ -382,19 +399,19 @@ class EstablishmentController extends Controller {
                             $createdObjects[] = $establishment;
 
                             // Create phone numbers
-                            if ($request->get('numberReservation') != "") {
+                            if (!empty($request->get('numberReservation'))) {
                                 $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, 
                                         $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
                             }
-                            if ($request->get('contactNumber') != "") {
+                            if (!empty($request->get('contactNumber'))) {
                                 $createdObjects[] = $this->createCallNumber(1, $request, 'Téléphone principal', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), 
                                         $request->get('contactNumber'), $establishment->getId());
                             }
-                            if ($request->get('fax') != "") {
+                            if (!empty($request->get('fax'))) {
                                 $createdObjects[] = $this->createCallNumber(0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), 
                                         $establishment->getId());
                             }
-                            if ($request->get('mobile') != "") {
+                            if (!empty($request->get('mobile'))) {
                                 $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), 
                                         $request->get('mobile'), $establishment->getId());
                             }
