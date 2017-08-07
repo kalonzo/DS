@@ -28,13 +28,13 @@ class DatabaseSeeder extends Seeder {
 
     function getIdLocationIndex($postalCode, $city, $lat, $lng, $countryName) {
         $idLocationIndex = 0;
-        $locationIndex = App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode);
+        $locationIndex = App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
         if(checkModel($locationIndex)){
             $idLocationIndex = $locationIndex->getId();
         } else {
-            $country = App\Models\Country::where('label', $countryName);
+            $country = App\Models\Country::where('label', $countryName)->first();
             if(checkModel($country)){
-                $locationIndex = App\Models\LocationIndex::insert([
+                         $locationIndex = App\Models\LocationIndex::insert([
                     'id' => \App\Utilities\UuidTools::generateUuid(),
                     'postal_code' => $postalCode,
                     'city' => $city,

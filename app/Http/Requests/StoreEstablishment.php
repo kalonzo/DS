@@ -30,7 +30,7 @@ class StoreEstablishment extends \App\Http\FormRequest
             'address.country' => 'required|max:255',
             'latitude' => 'required',
             'longitude' => 'required',
-            'cooking_types' => 'required|min:1'
+           // 'cooking_types' => 'required|min:1'
             /*
             'numberReservation' => 'required|min:11|numeric',
             'contactNumber' => 'required|min:11|numeric',
@@ -44,16 +44,15 @@ class StoreEstablishment extends \App\Http\FormRequest
             'name.required' => 'Veuillez saisir le nom de votre restaurant.',
             'name.min' => 'Veuillez rendeigner au minimum 2 caractère pour le nom de votre restaurant',
             'name.max' => 'Merci de ne pas renseigner plus de 255 caractère pour le nom de votre restaurant',
-            'street.required' => 'Veuillez remplir ce champ.',
-            'street.min' => 'Le nom de rue dois contenir au minimum 3 caractères.',
-            'street_number.required' => 'Vous devez spécifiez un numéro de rue.',
-            'postal_code.required' => 'Vous devez spécifier un code postal.',
-            'city.required' => 'Vous devez spécifiez une ville pour votre établissement.',
-            'country.required' => 'Vous devez spécifiez le pays de votre établissement.',
+            'address.street.required' => 'Veuillez remplir ce champ.',
+            'address.street.min' => 'Le nom de rue dois contenir au minimum 3 caractères.',
+            'address.street_number.required' => 'Vous devez spécifiez un numéro de rue.',
+            'address.postal_code.required' => 'Vous devez spécifier un code postal.',
+            'address.city.required' => 'Vous devez spécifiez une ville pour votre établissement.',
+            'address.country.required' => 'Vous devez spécifiez le pays de votre établissement.',
             'latitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
             'longitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
-            'cooking_types.required' => 'veuillez spécifiez au minimum un type de cuisine',
-            /*
+           /* 'cooking_types.required' => 'veuillez spécifiez au minimum un type de cuisine',
             'numberReservation.required' => 'Veuillez indiquer un numéro de résérvation.',
             'numberReservation.min' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
             'numberReservation.numeric' => 'Le numéro de résérvation de dois pas contenir de caractères',
