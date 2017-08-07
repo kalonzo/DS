@@ -26,12 +26,12 @@
                     <h5>{{ $dayLabel }}</h5>
                 </div>    
                 <div class="col-md-4">
-                    {!! Form::select('startTimeAm'.$dayIndex, $form_data['timetable'],['placeholder' => '08:00'], array('multiple' => false)) !!}
-                    {!! Form::select('endTimeAm'.$dayIndex, $form_data['timetable'], null,['placeholder' => '12:00'], array('multiple' => false)) !!}
+                    {!! Form::select('startTimeAm'.$dayIndex, $form_data['timetable'],['placeholder' => 'Sélectionner...'], array('multiple' => false)) !!}
+                    {!! Form::select('endTimeAm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Sélectionner...'], array('multiple' => false)) !!}
                 </div>    
                 <div class="col-md-4">
-                    {!! Form::select('startTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => '13:00'], array('multiple' => false)) !!}
-                    {!! Form::select('endTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => '22:00'], array('multiple' => false)) !!}
+                    {!! Form::select('startTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Sélectionner...'], array('multiple' => false)) !!}
+                    {!! Form::select('endTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Sélectionner...'], array('multiple' => false)) !!}
                 </div>    
             </div>
             @endforeach

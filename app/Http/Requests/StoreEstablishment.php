@@ -28,10 +28,14 @@ class StoreEstablishment extends \App\Http\FormRequest
             'address.postal_code' => 'required|max:11',
             'address.city' => 'required|max:255',
             'address.country' => 'required|max:255',
-            'latitude' => 'required',
+           /* 'latitude' => 'required',
             'longitude' => 'required',
-           // 'cooking_types' => 'required|min:1'
-            /*
+            'startTimeAm'=> 'required|min:7',
+            'endTimeAm'=> 'required|min:7',
+            'startTimePm'=> 'required|min:7',
+            'endTimePm'=> 'required|min:7'
+             'cooking_types' => 'required|min:1'
+           
             'numberReservation' => 'required|min:11|numeric',
             'contactNumber' => 'required|min:11|numeric',
             

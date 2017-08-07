@@ -67,8 +67,8 @@ class EstablishmentController extends Controller {
      * @return Response
      */
     public function edit(Establishment $establishment) {
-        $this->buildCreateFormData();
-        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');       
+        $this->buildUpdateFormData($establishment);
+        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
         $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', $establishment);
         return $view;
     }
@@ -81,139 +81,155 @@ class EstablishmentController extends Controller {
      * @return Response
      */
     public function update(StoreEstablishment $request, Establishment $establishment) {
-        //
-       // var_dump($request->all());
-     
         $createdObjects = array();
-        $formObjects = $request->all();
-        try{
-            
+        try {
             $idLocation = 0;
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
-            if(!empty($postalCode) && !empty($city)){
-                $locationIndex = LocationIndex::where('postal_code', $postalCode)
-                                                ->where('city', $city)->first(); 
-                //die($locationIndex->getId());
-                if(checkModel($locationIndex)){
+            $countryName = $request->get('address.country');
+            $latitude = $request->get('latitude');
+            $longitude = $request->get('longitude');
+
+            if (!empty($postalCode) && !empty($city) && !empty($countryName)) {
+                $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
+                if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
                 }
             }
-            if(checkModelId($idLocation)){
+            if (checkModelId($idLocation)) {
                 //Create establishment address
                 $request->merge([
-                    'id_location_index' => $idLocation
+                    'id_location_index' => $idLocation,
+                    'postal_code' => $postalCode,
+                    'city' => $city,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
                 ]);
-                $address = Address::find(UuidTools::getUuid($establishment->id_address))->first();
-                var_dump($address);
-                $address::updateOrCreate($request->all());
+                $address = Address::find(UuidTools::getUuid($establishment->id_address));
+                $address->fill($request->all());
                 $address->save();
-                die();
-               
-                //$address = Address::create($request->all());
-                
-                if(checkModel($address)){
+                if (checkModel($address)) {
                     $createdObjects[] = $address;
                     $idAddress = $address->getId();
 
-                    // Create establishment user owner
+
+
+                    // Update establishment
+
                     $request->merge([
-                        'name' => $request->get('establishment.name'),
-                        'type' => User::TYPE_USER_AUTO_INSERTED,
-                        'gender' => 0,
+                        'name' => $request->get('name'),
+                        'id_location_index' => $idLocation,
                         'id_address' => $idAddress,
-                        'id_inbox' => 0,
-                        'id_company' => 0,
+                        'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
+                        'id_logo' => 0,
+                        'latitude' => $address->latitude,
+                        'longitude' => $address->longitude
                     ]);
-                    
-                    
-                    $user = user::find();
-                    
-                    $user = User::create($request->all());
-                   
-                    if(checkModel($user)){
-                        $createdObjects[] = $user;
-                        $idUser = $user->getId();
 
-                        // Create establishment
-                        $request->merge([
-                            'id_location_index' => $idLocation,
-                            'id_user_owner' => $idUser,
-                            'id_address' => $idAddress,
-                            'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
-                            'id_logo' => 0,
-                            'latitude' => $address->latitude,
-                            'longitude' => $address->longitude
-                        ]);
-                        $establishment = Establishment::create($request->all());
-                        if(checkModel($establishment)){
-                            $createdObjects[] = $establishment;
+                    $establishment->fill($request->all());
+                    $establishment->save();
+                    if (checkModel($establishment)) {
+                        $createdObjects[] = $establishment;
 
-                            // Create phone numbers
-                            if ($request->get('numberReservation') != "") {
-                                $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, 
-                                        $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
-                            }
-                            if ($request->get('contactNumber') != "") {
-                                $createdObjects[] = $this->createCallNumber(1, $request, 'Téléphone principal', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), 
-                                        $request->get('contactNumber'), $establishment->getId());
-                            }
-                            if ($request->get('fax') != "") {
-                                $createdObjects[] = $this->createCallNumber(0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), 
-                                        $establishment->getId());
-                            }
-                            if ($request->get('mobile') != "") {
-                                $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), 
-                                        $request->get('mobile'), $establishment->getId());
-                            }
+                        // Update phone numbers
+                        if (!empty($request->get('numberReservation'))) {
 
-                            // Create cooking types
+                            $createdObjects[] = $this->feedCallNumber(CallNumber::where('number', '=', $request->get('numberReservation'))->first(), 0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
+                        }
+                        if (!empty($request->get('contactNumber'))) {
+                            $createdObjects[] = $this->feedCallNumber(CallNumber::where('number', '=', $request->get('contactNumber'))->first(), 1, $request, 'Téléphone principal', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), $request->get('contactNumber'), $establishment->getId());
+                        }
+                        if (!empty($request->get('fax'))) {
+                            $createdObjects[] = $this->feedCallNumber(CallNumber::where('number', '=', $request->get('fax'))->first(), 0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), $establishment->getId());
+                        }
+                        if (!empty($request->get('mobile'))) {
+                            $createdObjects[] = $this->feedCallNumber(CallNumber::where('number', '=', $request->get('fax'))->first(), 0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), $request->get('mobile'), $establishment->getId());
+                        }
+
+
+                        //Get cooking types from establishment
+                        // $getCookingTypes = EstablishmentBusinessCategory::find(UuidTools::getUuid($establishment->id))->get();
+
+                        $cookingTypes = BusinessCategory::find(UuidTools::getUuid($establishment->id));
+                        $foodSpecialties = BusinessCategory::find(UuidTools::getUuid($establishment->id));
+                        $serviceTypes = BusinessCategory::find(UuidTools::getUuid($establishment->id));
+                        $ambiences = BusinessCategory::find(UuidTools::getUuid($establishment->id));
+
+                        if (!checkModel($cookingTypes)) {
+                            // Create all cooking types in the box
                             $cookingTypes = request()->get('cooking_types');
-                            if(!empty($cookingTypes)){
+                            if (!empty($cookingTypes)) {
                                 foreach ($cookingTypes as $cookingType) {
+                                    echo $cookingType . '<br>';
                                     $idCookingType = UuidTools::getId($cookingType);
                                     $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idCookingType);
                                 }
                             }
-                            // Create food specialties
+                        } else {
+                            //delete cooking out the box and insert 
+                            foreach ($cookingTypes as $cookingType) {
+                                $createdObjects[] = updateLinkBusinessCategory($request, $establishment->getId(), $idCookingType);
+                            }
+                        }
+                        if (!checkModel($foodSpecialties)) {
+                            // Create all cooking types in the box
                             $foodSpecialties = request()->get('food_specialties');
-                            if(!empty($foodSpecialties)){
+                            if (!empty($foodSpecialties)) {
                                 foreach ($foodSpecialties as $foodSpecialty) {
                                     // TODO Manage existing and new ones
                                     $idSpecialty = UuidTools::getId($foodSpecialty);
                                     $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idSpecialty);
                                 }
                             }
-                            // Create ambiences
-                            $ambiences = request()->get('ambiences');
-                            if(!empty($ambiences)){
+                        } else {
+                            //delete cooking out the box and insert 
+                            foreach ($foodSpecialties as $foodSpecialty) {
+                                $createdObjects[] = updateLinkBusinessCategory($request, $establishment->getId(), $idSpecialty);
+                            }
+                        }
+                        if (!checkModel($serviceTypes)) {
+                            // Create all cooking types in the box
+                            $serviceTypes = request()->get('services');
+                            if (!empty($serviceTypes)) {
+                                foreach ($serviceTypes as $serviceType) {
+                                    echo $serviceType . '<br>';
+                                    $idService = UuidTools::getId($serviceType);
+                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idService);
+                                }
+                            }
+                        } else {
+                            //delete cooking out the box and insert 
+                            foreach ($serviceTypes as $serviceType) {
+                                $createdObjects[] = updateLinkBusinessCategory($request, $establishment->getId(), $serviceType->id);
+                            }
+                        }
+
+                        if (!checkModel($ambiences)) {
+                            // Create all cooking types in the box
+                            $ambiences = request()->get('ambiance');
+                            if (!empty($ambiences)) {
                                 foreach ($ambiences as $ambience) {
                                     $idAmbience = UuidTools::getId($ambience);
                                     $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idAmbience);
                                 }
                             }
-                            // Create services
-                            $services = request()->get('services');
-                            if(!empty($services)){
-                                foreach ($services as $service) {
-                                    $idService = UuidTools::getId($service);
-                                    $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idService);
-                                }
-                            }
-
-                            // Create opening hours
-                            foreach(DateTools::getDaysArray() as $dayIndex => $dayLabel){
-                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm'.$dayIndex), 
-                                        $request->get('endTimeAm'.$dayIndex), $establishment->getId());
-                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm'.$dayIndex), 
-                                        $request->get('endTimePm'.$dayIndex), $establishment->getId());
-                            }
-                            return $establishment;
                         } else {
-                            throw new Exception("L'établissement n'a pu être enregistré.");
+                            //delete cooking out the box and insert 
+                            foreach ($ambiences as $ambiance) {
+                                $createdObjects[] = updateLinkBusinessCategory($request, $establishment->getId(), $idAmbience);
+                            }
                         }
+
+                        die('At end');
+
+                        // Create opening hours
+                        foreach (DateTools::getDaysArray() as $dayIndex => $dayLabel) {
+                            $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm' . $dayIndex), $request->get('endTimeAm' . $dayIndex), $establishment->getId());
+                            $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm' . $dayIndex), $request->get('endTimePm' . $dayIndex), $establishment->getId());
+                        }
+                        return $establishment;
                     } else {
-                        throw new Exception("Le propriétaire de l'établissement n'a pu être enregistré.");
+                        throw new Exception("L'établissement n'a pu être enregistré.");
                     }
                 } else {
                     throw new Exception("L'adresse de l'établissement n'a pu être enregistrée.");
@@ -221,22 +237,16 @@ class EstablishmentController extends Controller {
             } else {
                 throw new Exception("L'adresse saisie ne correspond à aucun index géographique connu.");
             }
-        } catch(Exception $e){
+        } catch (Exception $e) {
             // TODO Report error in log system
             print_r($e->getMessage());
-            
-            foreach($createdObjects as $createdObject){
-                if($createdObject instanceof Model){
+
+            foreach ($createdObjects as $createdObject) {
+                if ($createdObject instanceof Model) {
                     $createdObject->delete();
                 }
             }
         }
-    
-        
-        //$establishment = $this->insertEstablishment($request);
-        return redirect('/admin');
-        
-        
     }
 
     /**
@@ -267,17 +277,17 @@ class EstablishmentController extends Controller {
         $restaurantAtmospheres = array();
         $services = array();
         $businessCategoriesData = DB::table(BusinessCategory::TABLENAME)
-                                        ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', name, type')
-                                        ->whereIn('type', array(BusinessCategory::TYPE_COOKING_TYPE,
-                                                                BusinessCategory::TYPE_FOOD_SPECIALITY,
-                                                                BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE,
-                                                                BusinessCategory::TYPE_SERVICES
-                                                                )
-                                        )
-                                        ->orderBy('name')
-                                        ->get();
-        foreach($businessCategoriesData as $businessCategoryData){
-            switch($businessCategoryData->type){
+                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', name, type')
+                ->whereIn('type', array(BusinessCategory::TYPE_COOKING_TYPE,
+                    BusinessCategory::TYPE_FOOD_SPECIALITY,
+                    BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE,
+                    BusinessCategory::TYPE_SERVICES
+                        )
+                )
+                ->orderBy('name')
+                ->get();
+        foreach ($businessCategoriesData as $businessCategoryData) {
+            switch ($businessCategoryData->type) {
                 case BusinessCategory::TYPE_COOKING_TYPE:
                     $cookingTypes[$businessCategoryData->uuid] = $businessCategoryData->name;
                     break;
@@ -296,25 +306,98 @@ class EstablishmentController extends Controller {
         // Select for call number prefixes
         $countryPrefixes = array();
         $countriesData = DB::table(Country::TABLENAME)
-                                        ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', label, prefix')
-                                        ->where('prefix', '>', 0)
-                                        ->orderBy('label')
-                                        ->get();
+                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
+                ->where('prefix', '>', 0)
+                ->orderBy('label')
+                ->get();
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = $countryData->label." | +".$countryData->prefix;
+            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
         }
 
         // Select for time
         $timetable = array();
         for ($i = 0; $i < 24; $i++) {
-            for ($j = 0; $j <= 55; $j+=30) {
-                $timetable[$i*100 + $j] = sprintf('%02d', $i).':'.sprintf('%02d', $j);
+            for ($j = 0; $j <= 55; $j += 30) {
+                $timetable[$i * 100 + $j] = sprintf('%02d', $i) . ':' . sprintf('%02d', $j);
             }
         }
-        
+
         // Helper array for days
         $days = DateTools::getDaysArray();
+
+        StorageHelper::getInstance()->add('create_establishment.form_data.cooking_types', $cookingTypes);
+        StorageHelper::getInstance()->add('create_establishment.form_data.food_specialities', $foodSpecialities);
+        StorageHelper::getInstance()->add('create_establishment.form_data.ambiences', $restaurantAtmospheres);
+        StorageHelper::getInstance()->add('create_establishment.form_data.services', $services);
+        StorageHelper::getInstance()->add('create_establishment.form_data.country_prefixes', $countryPrefixes);
+        StorageHelper::getInstance()->add('create_establishment.form_data.timetable', $timetable);
+        StorageHelper::getInstance()->add('create_establishment.form_data.days', $days);
+    }
+    
+    
+    /**
+     * 
+     * @param Establishment $establishment
+     */
+    public function buildUpdateFormData(Establishment $establishment) {
         
+        // Select for business categories
+        $linkEstablishmentBusiness = EstablishmentBusinessCategory::where('id_establishment','=',$establishment->getId() )->get();
+        
+        
+         $cookingTypes = array();
+        $foodSpecialities = array();
+        $restaurantAtmospheres = array();
+        $services = array();
+        $businessCategoriesData = DB::table(BusinessCategory::TABLENAME)
+                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', name, type')
+                ->whereIn('type', array(BusinessCategory::TYPE_COOKING_TYPE,
+                    BusinessCategory::TYPE_FOOD_SPECIALITY,
+                    BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE,
+                    BusinessCategory::TYPE_SERVICES
+                        )
+                )
+                ->orderBy('name')
+                ->get();
+        foreach ($businessCategoriesData as $businessCategoryData) {
+            switch ($businessCategoryData->type) {
+                case BusinessCategory::TYPE_COOKING_TYPE:
+                    $cookingTypes[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+                case BusinessCategory::TYPE_FOOD_SPECIALITY:
+                    $foodSpecialities[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+                case BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE:
+                    $restaurantAtmospheres[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+                case BusinessCategory::TYPE_SERVICES:
+                    $services[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    break;
+            }
+        }
+
+        // Select for call number prefixes
+        $countryPrefixes = array();
+        $countriesData = DB::table(Country::TABLENAME)
+                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
+                ->where('prefix', '>', 0)
+                ->orderBy('label')
+                ->get();
+        foreach ($countriesData as $countryData) {
+            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
+        }
+
+        // Select for time
+        $timetable = array();
+        for ($i = 0; $i < 24; $i++) {
+            for ($j = 0; $j <= 55; $j += 30) {
+                $timetable[$i * 100 + $j] = sprintf('%02d', $i) . ':' . sprintf('%02d', $j);
+            }
+        }
+
+        // Helper array for days
+        $days = DateTools::getDaysArray();
+
         StorageHelper::getInstance()->add('create_establishment.form_data.cooking_types', $cookingTypes);
         StorageHelper::getInstance()->add('create_establishment.form_data.food_specialities', $foodSpecialities);
         StorageHelper::getInstance()->add('create_establishment.form_data.ambiences', $restaurantAtmospheres);
@@ -330,42 +413,42 @@ class EstablishmentController extends Controller {
      */
     public function insertEstablishment($request) {
         $createdObjects = array();
-        try{
+        try {
             $idLocation = 0;
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
             $countryName = $request->get('address.country');
             $latitude = $request->get('latitude');
             $longitude = $request->get('longitude');
-               
-            if(!empty($postalCode) && !empty($city) && !empty($countryName)){
+
+            if (!empty($postalCode) && !empty($city) && !empty($countryName)) {
                 $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
-                if(checkModel($locationIndex)){
+                if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
                 } else {
                     $country = \App\Models\Country::where('label', $countryName)->first();
-                    if(checkModel($country)){
+                    if (checkModel($country)) {
                         $locationIndex = \App\Models\LocationIndex::insert([
-                            'id' => \App\Utilities\UuidTools::generateUuid(),
-                            'postal_code' => $postalCode,
-                            'city' => $city,
-                            'latitude' => $latitude,
-                            'longitude' => $longitude,
-                            'id_country' => $country->getId()
+                                    'id' => \App\Utilities\UuidTools::generateUuid(),
+                                    'postal_code' => $postalCode,
+                                    'city' => $city,
+                                    'latitude' => $latitude,
+                                    'longitude' => $longitude,
+                                    'id_country' => $country->getId()
                         ]);
-                        if(checkModel($locationIndex)){
+                        if (checkModel($locationIndex)) {
                             $idLocation = $locationIndex->getId();
                         }
                     }
                 }
             }
-            if(checkModelId($idLocation)){
+            if (checkModelId($idLocation)) {
                 //Create establishment address
                 $request->merge([
                     'id_location_index' => $idLocation
                 ]);
                 $address = Address::create($request->all());
-                if(checkModel($address)){
+                if (checkModel($address)) {
                     $createdObjects[] = $address;
                     $idAddress = $address->getId();
 
@@ -379,8 +462,8 @@ class EstablishmentController extends Controller {
                         'id_company' => 0,
                     ]);
                     $user = User::create($request->all());
-                   
-                    if(checkModel($user)){
+
+                    if (checkModel($user)) {
                         $createdObjects[] = $user;
                         $idUser = $user->getId();
 
@@ -394,31 +477,29 @@ class EstablishmentController extends Controller {
                             'latitude' => $address->latitude,
                             'longitude' => $address->longitude
                         ]);
+
                         $establishment = Establishment::create($request->all());
-                        if(checkModel($establishment)){
+                        if (checkModel($establishment)) {
                             $createdObjects[] = $establishment;
 
                             // Create phone numbers
                             if (!empty($request->get('numberReservation'))) {
-                                $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, 
-                                        $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
+                                $createdObjects[] = $this->feedCallNumber(null, 0, $request, 'Téléphone utilisé pour les réservation', CallNumber::TYPE_PHONE_NUMBER_RESERVATION, $request->get('callNumberPrefixIdsByNameReservation'), $request->get('numberReservation'), $establishment->getId());
                             }
                             if (!empty($request->get('contactNumber'))) {
-                                $createdObjects[] = $this->createCallNumber(1, $request, 'Téléphone principal', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), 
-                                        $request->get('contactNumber'), $establishment->getId());
+                                $createdObjects[] = $this->feedCallNumber(null, 1, $request, 'Téléphone principal', CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), $request->get('contactNumber'), $establishment->getId());
                             }
                             if (!empty($request->get('fax'))) {
-                                $createdObjects[] = $this->createCallNumber(0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), 
-                                        $establishment->getId());
+                                $createdObjects[] = $this->feedCallNumber(null, 0, $request, 'Numéro de fax', CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), $request->get('fax'), $establishment->getId());
                             }
                             if (!empty($request->get('mobile'))) {
-                                $createdObjects[] = $this->createCallNumber(0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), 
-                                        $request->get('mobile'), $establishment->getId());
+                                $createdObjects[] = $this->feedCallNumber(null, 0, $request, 'Téléphone mobile', CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), $request->get('mobile'), $establishment->getId());
                             }
 
                             // Create cooking types
+
                             $cookingTypes = request()->get('cooking_types');
-                            if(!empty($cookingTypes)){
+                            if (!empty($cookingTypes)) {
                                 foreach ($cookingTypes as $cookingType) {
                                     $idCookingType = UuidTools::getId($cookingType);
                                     $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idCookingType);
@@ -426,7 +507,7 @@ class EstablishmentController extends Controller {
                             }
                             // Create food specialties
                             $foodSpecialties = request()->get('food_specialties');
-                            if(!empty($foodSpecialties)){
+                            if (!empty($foodSpecialties)) {
                                 foreach ($foodSpecialties as $foodSpecialty) {
                                     // TODO Manage existing and new ones
                                     $idSpecialty = UuidTools::getId($foodSpecialty);
@@ -435,7 +516,7 @@ class EstablishmentController extends Controller {
                             }
                             // Create ambiences
                             $ambiences = request()->get('ambiences');
-                            if(!empty($ambiences)){
+                            if (!empty($ambiences)) {
                                 foreach ($ambiences as $ambience) {
                                     $idAmbience = UuidTools::getId($ambience);
                                     $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idAmbience);
@@ -443,7 +524,7 @@ class EstablishmentController extends Controller {
                             }
                             // Create services
                             $services = request()->get('services');
-                            if(!empty($services)){
+                            if (!empty($services)) {
                                 foreach ($services as $service) {
                                     $idService = UuidTools::getId($service);
                                     $createdObjects[] = $this->createLinkBusinessCategory($request, $establishment->getId(), $idService);
@@ -451,11 +532,9 @@ class EstablishmentController extends Controller {
                             }
 
                             // Create opening hours
-                            foreach(DateTools::getDaysArray() as $dayIndex => $dayLabel){
-                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm'.$dayIndex), 
-                                        $request->get('endTimeAm'.$dayIndex), $establishment->getId());
-                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm'.$dayIndex), 
-                                        $request->get('endTimePm'.$dayIndex), $establishment->getId());
+                            foreach (DateTools::getDaysArray() as $dayIndex => $dayLabel) {
+                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm' . $dayIndex), $request->get('endTimeAm' . $dayIndex), $establishment->getId());
+                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm' . $dayIndex), $request->get('endTimePm' . $dayIndex), $establishment->getId());
                             }
                             return $establishment;
                         } else {
@@ -470,12 +549,12 @@ class EstablishmentController extends Controller {
             } else {
                 throw new Exception("L'adresse saisie ne correspond à aucun index géographique connu.");
             }
-        } catch(Exception $e){
+        } catch (Exception $e) {
             // TODO Report error in log system
             print_r($e->getMessage());
-            
-            foreach($createdObjects as $createdObject){
-                if($createdObject instanceof Model){
+
+            foreach ($createdObjects as $createdObject) {
+                if ($createdObject instanceof Model) {
                     $createdObject->delete();
                 }
             }
@@ -489,24 +568,35 @@ class EstablishmentController extends Controller {
      * @param type $id
      */
     public function createLinkBusinessCategory($request, $establishmentId, $id) {
-        
-        
+
+
         $request->merge([
             'id_establishment' => $establishmentId,
-            'id_business_category' =>  $id
+            'id_business_category' => $id
         ]);
         try {
             EstablishmentBusinessCategory::create($request->all());
         } catch (Exception $ex) {
-            
-            
+
+
             die($ex);
         }
-        
-        
-        
-        
-        //return EstablishmentBusinessCategory::create($request->all());
+    }
+
+    public function updateLinkBusinessCategory($request, $establishmentId, $id) {
+
+
+        $request->merge([
+            'id_establishment' => $establishmentId,
+            'id_business_category' => $id
+        ]);
+        try {
+            $cookingType = EstablishmentBusinessCategory::find($establishmentId);
+            $cookingType->fill($request->all());
+            $cookingType->save();
+        } catch (Exception $ex) {
+            die($ex);
+        }
     }
 
     /**
@@ -537,19 +627,34 @@ class EstablishmentController extends Controller {
      * @param type $number
      * @param type $idEstablishment
      */
-    public function createCallNumber($main, $request, $label, $type, $idCountry, $number, $idEstablishment) {
-        $prefix = Country::where('id', UuidTools::getId($idCountry))->first();
+    public function feedCallNumber($callNumber, $main, $request, $label, $type, $idCountry, $number, $idEstablishment) {
+        if (!checkModel($callNumber)) {
+            $prefix = Country::where('id', UuidTools::getId($idCountry))
+                    ->first();
 
-        $request->merge([
-            'main' => $main,
-            'label' => $label,
-            'type' => $type,
-            'prefix' => $prefix->getPrefix(),
-            'number' => $number,
-            'id_establishment' => $idEstablishment,
-        ]);
+            $request->merge([
+                'main' => $main,
+                'label' => $label,
+                'type' => $type,
+                'prefix' => $prefix->getPrefix(),
+                'number' => $number,
+                'id_establishment' => $idEstablishment,
+            ]);
+            return CallNumber::create($request->all());
+        } else {
+            $prefix = Country::where('id', UuidTools::getId($idCountry))
+                    ->first();
 
-        return CallNumber::create($request->all());
+            $request->merge([
+                'main' => $main,
+                'label' => $label,
+                'type' => $type,
+                'prefix' => $prefix->getPrefix(),
+                'number' => $number,
+                'id_establishment' => $idEstablishment,
+            ]);
+            return CallNumber::find(UuidTools::getUuid($callNumber->id))->first()->fill($request->all());
+        }
     }
 
     /**
@@ -563,11 +668,11 @@ class EstablishmentController extends Controller {
         $bool = false;
         if (isset($name) & isset($lat) & isset($lng)) {
             $name = DB::table('Establishment')
-                    ->where('name', $name)->first();
+                            ->where('name', $name)->first();
             $lat = DB::table('Establishment')
-                    ->where('latitude', $lat)->first();
+                            ->where('latitude', $lat)->first();
             $lng = DB::table('Establishment')
-                    ->where('longitude', $lng)->first();
+                            ->where('longitude', $lng)->first();
         } else {
             $bool = false;
         }
