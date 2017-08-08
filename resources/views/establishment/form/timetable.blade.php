@@ -29,7 +29,7 @@
                     {!! Form::select('startTimeAm'.$dayIndex, $form_data['timetable'], null,[
                         'placeholder' => 'Début'], array('multiple' => false)) !!}
                     {!! Form::select('endTimeAm'.$dayIndex, $form_data['timetable'], null,[
-                        'placeholder' =>'Fin'], array('multiple' => false)) !!}
+                        'placeholder' => 'Fin'], array('multiple' => false)) !!}
                 </div>    
                 <div class="col-md-4">
                     {!! Form::select('startTimePm'.$dayIndex, $form_data['timetable'], null,[

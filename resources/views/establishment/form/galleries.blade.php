@@ -15,7 +15,7 @@
                     <img src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" style="width: 50px;" />
                     @endif
                     {{ Form::label('Sélectionnez votre logo') }}
-                    {!! Form::file('logo', ['class'=>'form-control bootstrap-file-input file-input-single']) !!}
+                    {!! Form::file('logo', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                 </div>
             </div>
             <br/><br/>
@@ -25,7 +25,7 @@
                     Les photos seront affichées dans la page d\'accueil
                     <br/><br/>
                     {{ Form::label('Images page d\'accueil') }}
-                    {!! Form::file('home_pictures', ['class'=>'form-control bootstrap-file-input file-input-multiple']) !!}
+                    {!! Form::file('home_pictures', ['class' => 'form-control bootstrap-file-input file-input-multiple']) !!}
                 </div>
             </div>
             <div class="row">
