@@ -13,10 +13,8 @@
                 <div class="col-md-12">
                     {!! Form::label('Description :') !!}
                     <div class="form-group">
-                        {!! Form::textarea('description', old('description'), ['class'=>
-                        'form-control', 'placeholder'=>
-                        'Mettez en valeur votre établissement (Paragraphe : Qui somme nous.)'
-                        ]) !!}  
+                        {!! Form::textarea('description', old('description'), ['class' => 'form-control', 
+                            'placeholder'=>'Mettez en valeur votre établissement (Paragraphe : Qui somme nous.)']) !!}  
                     </div>
                 </div>
             </div>

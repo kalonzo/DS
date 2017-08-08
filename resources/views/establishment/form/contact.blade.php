@@ -13,23 +13,17 @@
                 <div class="col-md-6">
                     {!! Form::label('* Téléphone pour réservation') !!}
                     <div class="form-group {{ $errors->has('numberReservation') ? 'has-error' : '' }}">
-                        {!!  Form::select('callNumberPrefixIdsByNameReservation',$form_data['country_prefixes'], ['class'=>
-                        'form-control',
-                        ]) !!}
-                        {!! Form::text('numberReservation', old('number'), ['class'=>
-                        'form-control', 
-                        ]) !!}
+                        {!!  Form::select('callNumberPrefixIdsByNameReservation',$form_data['country_prefixes'], [
+                            'class' => 'form-control']) !!}
+                        {!! Form::text('numberReservation', old('number'), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="col-md-6">
                     {!! Form::label('* Téléphone de contact') !!}
                     <div class="form-group {{ $errors->has('contactNumber') ? 'has-error' : '' }} " >
-                        {!!  Form::select('callNumberPrefixIdsByNameContact',$form_data['country_prefixes'], ['class'=>
-                        'form-control',
-                        ]) !!}
-                        {!! Form::text('contactNumber', old('number'), ['class'=>
-                        'form-control',
-                        ]) !!}
+                        {!!  Form::select('callNumberPrefixIdsByNameContact',$form_data['country_prefixes'], [
+                            'class' => 'form-control']) !!}
+                        {!! Form::text('contactNumber', old('number'), ['class' => 'form-control']) !!}
                     </div>
                 </div>
             </div>
@@ -37,23 +31,17 @@
                 <div class="col-md-6">
                     {!! Form::label('  Fax') !!}
                     <div class="form-group ">
-                        {!!  Form::select('callNumberPrefixIdsByNameFax',$form_data['country_prefixes'], ['class'=>
-                        'form-control',
-                        ]) !!}
-                        {!! Form::text('fax', old('fax'), [
-                        'class'=>'form-control', 
-                        ]) !!}
+                        {!!  Form::select('callNumberPrefixIdsByNameFax',$form_data['country_prefixes'], [
+                            'class' => 'form-control']) !!}
+                        {!! Form::text('fax', old('fax'), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="col-md-6">
                     {!! Form::label('  Mobile') !!}
                     <div class="form-group">
-                        {!!  Form::select('callNumberPrefixIdsByNameMobile',$form_data['country_prefixes'], ['class'=>
-                        'form-control',
-                        ]) !!}
-                        {!! Form::text('mobile', old('mobile'), [
-                        'class'=>'form-control',
-                        ]) !!}
+                        {!!  Form::select('callNumberPrefixIdsByNameMobile',$form_data['country_prefixes'], [
+                            'class' => 'form-control',]) !!}
+                        {!! Form::text('mobile', old('mobile'), ['class' => 'form-control']) !!}
                     </div>
                 </div>    
             </div>

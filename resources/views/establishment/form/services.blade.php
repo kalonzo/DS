@@ -12,8 +12,7 @@
             <div class="row">
                 <section class="col-md-12 container-fluid">
                     <div>
-                        {!! Form::select('services[]', $form_data['services'], null, array('multiple' => true,'class' => 
-                        'multiselect-dual')) !!}
+                        {!! Form::select('services[]', $form_data['services'], null, array('multiple' => true,'class' => 'multiselect-dual')) !!}
                     </div>
                 </section>   
             </div>

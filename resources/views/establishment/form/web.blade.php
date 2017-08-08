@@ -13,16 +13,11 @@
                 <div class="col-md-12 accordion-inner">
                     {!! Form::label(' e-mail') !!}
                     <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
-                        {!! Form::text('email', old('email'), [
-                        'class'=>'form-control', 
-                        ]) !!}
+                        {!! Form::text('email', old('email'), ['class' => 'form-control']) !!}
                     </div>
                     {!! Form::label(' Site web de votre restaurant') !!}
                     <div class="form-group">
-                        {!! Form::text('site_url', old('site_url'), ['class'=>
-                        'form-control', 'placeholder'=>
-                        'Enter Message'
-                        ]) !!}
+                        {!! Form::text('site_url', old('site_url'), ['class' => 'form-control', 'placeholder' => 'Enter Message']) !!}
                     </div>
                 </div>    
             </div>
