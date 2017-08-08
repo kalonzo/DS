@@ -17,7 +17,9 @@
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
-                <img id="ets-logo" src="/img/images_ds/imagen-DS-1.jpg"/>
+                @if($establishment->logo()->exists())
+                <img id="ets-logo" src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" />
+                @endif
                 {!! Form::file('url', array('class' => 'name', 'onchange' => 'previewImage(this)')) !!} 
                 <div id="" class="form-inline form-group">
                     {!! Form::text('name', old('name'), ['class'=>'form-control', 'placeholder'=>'Nom de votre restaurant', 'id' => 'ets-name']) !!}
