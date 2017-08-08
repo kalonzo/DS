@@ -11,7 +11,7 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    @if($establishment->logo()->exists())
+                    @if(checkModel($establishment) && $establishment->logo()->exists())
                     <img src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" style="width: 50px;" />
                     @endif
                     {{ Form::label('Sélectionnez votre logo') }}

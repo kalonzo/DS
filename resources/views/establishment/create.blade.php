@@ -8,7 +8,7 @@
 @section('content')
 
 <div id="map"> </div>
-@if(isset($establishment))
+@if(checkModel($establishment))
     {!! Form::model($establishment, ['url' => '/establishment/'.$establishment->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
 @else
     {!! Form::open(['url'=>'/establishment', 'method' => 'put', 'files' => true]) !!}
@@ -17,7 +17,7 @@
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
-                @if($establishment->logo()->exists())
+                @if(checkModel($establishment) && $establishment->logo()->exists())
                 <img id="ets-logo" src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" />
                 @else
                 <img id="ets-logo" src="/img/images_ds/imagen-DS-1.jpg"/>
