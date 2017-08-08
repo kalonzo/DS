@@ -563,6 +563,7 @@ public function create() {
                 'label' => $label,
                 'type' => $type,
                 'prefix' => $prefix,
+                'id_country' => $prefix,
                 'number' => $number,
                 'id_establishment' => $establishment->getId(),
             ];
