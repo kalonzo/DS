@@ -42,7 +42,7 @@ class EstablishmentController extends Controller {
      *
      * @return Response
      */
-    public function create() {
+public function create() {
         $this->buildFeedFormData();
         $this->buildCreateFormValues();
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');

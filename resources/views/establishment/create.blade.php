@@ -13,7 +13,6 @@
 @else
     {!! Form::open(['url'=>'/establishment', 'method' => 'put', 'files' => true]) !!}
 @endif
-
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
@@ -28,14 +27,12 @@
                     <!--<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>-->
                 </div>
             </div>
-        </div>  
-        
+        </div>        
         @if (Session::has('message'))
         <div class="alert alert-info">{{ Session::get('message') }}</div>
         @endif
 
         @if(count($errors))
-
         <div class="alert alert-danger">
             <strong>Erreur!</strong> Les informations saisies ne sont pas correctes.
             <br/>
@@ -45,7 +42,6 @@
                 @endforeach
             </ul>
         </div>
-
         @endif
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
             @component('establishment.form.location', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
@@ -91,7 +87,6 @@
             @endcomponent
         </div>
     </div>
-
     <div id="formControlBottomBand">
        {!! Form::submit('Valider', array('class'=>'btn pull-right')) !!}
     </div>
