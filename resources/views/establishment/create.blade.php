@@ -112,7 +112,7 @@
         var street = $form.find('input[name="address[street]"]').val();
         var street_number = $form.find('input[name="address[street_number]"]').val();
         var postal_code = $form.find('input[name="address[postal_code]"]').val();
-        var country = $form.find('input[name="address[country]"]').val();
+        var country = $form.find('select[name="address[country]"]').children('option:selected').text();
         
         var address = street + ' ' + street_number + ', ' + postal_code + ' ' + city + ' ' + country;
         if (!isEmpty(address)) {
