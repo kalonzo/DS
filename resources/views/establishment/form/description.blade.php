@@ -15,7 +15,8 @@
                     <div class="form-group">
                         {!! Form::textarea('description', old('description'), ['class'=>
                         'form-control', 'placeholder'=>
-                        'Enter Name']) !!}  
+                        'Mettez en valeur votre établissement (Paragraphe : Qui somme nous.)'
+                        ]) !!}  
                     </div>
                 </div>
             </div>

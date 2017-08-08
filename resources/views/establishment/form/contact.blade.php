@@ -16,15 +16,14 @@
                         {!!  Form::select('callNumberPrefixIdsByNameReservation',$form_data['country_prefixes'], ['class'=>
                         'form-control',
                         ]) !!}
-                        {!! Form::text('numberReservation', old('number'), [
-                        'class'=>'form-control', 
+                        {!! Form::text('numberReservation', old('number'), ['class'=>
+                        'form-control', 
                         ]) !!}
                     </div>
                 </div>
                 <div class="col-md-6">
                     {!! Form::label('* Téléphone de contact') !!}
                     <div class="form-group {{ $errors->has('contactNumber') ? 'has-error' : '' }} " >
-
                         {!!  Form::select('callNumberPrefixIdsByNameContact',$form_data['country_prefixes'], ['class'=>
                         'form-control',
                         ]) !!}
@@ -38,7 +37,6 @@
                 <div class="col-md-6">
                     {!! Form::label('  Fax') !!}
                     <div class="form-group ">
-
                         {!!  Form::select('callNumberPrefixIdsByNameFax',$form_data['country_prefixes'], ['class'=>
                         'form-control',
                         ]) !!}

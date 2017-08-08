@@ -21,9 +21,9 @@
                     <div class="form-group">
                         {!! Form::text('site_url', old('site_url'), ['class'=>
                         'form-control', 'placeholder'=>
-                        'Enter Message']) !!}
+                        'Enter Message'
+                        ]) !!}
                     </div>
-
                 </div>    
             </div>
             <div class="row">

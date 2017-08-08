@@ -11,26 +11,7 @@
         <div class="panel-body container">
             <div class="row">
                 <section class="col-md-12 container-fluid">
-                    <div>
-                        <select id="leftValues" size="5" multiple>
 
-                        </select>
-                    </div>
-                    <div>
-                        <input type="button" id="btnLeft" onclick="{
-                                    addCookingType();
-                                }" value="&lt;&lt;"/>
-                        <input type="button" id="btnRight" onclick="{
-                                    addCookingType();
-                                }" value="&gt;&gt;"/>
-                    </div>
-                    <div>
-                        {!! Form::select('food_specialties[]', $form_data['food_specialities'], 
-                        null, array('multiple' => true)) !!}
-                        <div>
-                            <input type="text" id="txtRight" />
-                        </div>
-                    </div>
                 </section>   
             </div>
             <div class="row">

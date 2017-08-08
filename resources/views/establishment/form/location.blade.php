@@ -24,7 +24,6 @@
                     ]) !!}
                 </div>      
             </div>
-
             <div class="row">
                 <div class="col-sm-6 form-group">
                     {!! Form::label('Complément d\'adresse') !!}
@@ -34,7 +33,9 @@
                 </div>
                 <div class="col-sm-6 form-group">
                     {!! Form::label('Quartier') !!}
-                    {!! Form::text('address[district]', old('district'), ['class'=>'form-control']) !!}
+                    {!! Form::text('address[district]', old('district'), ['class'=>
+                    'form-control'
+                    ]) !!}
                 </div>
             </div>
             <div class="row">
@@ -55,23 +56,23 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-6">
                     {!! Form::label('* Canton/Région') !!}
                     <div class="form-group {{ $errors->has('region') ? 'has-error' : '' }}">
-                        {!! Form::text('address[region]', old('region'), ['class'=>'form-control']) !!}
+                        {!! Form::text('address[region]', old('region'), ['class'=>
+                        'form-control'
+                        ]) !!}
                     </div>
                 </div>
                 <div class="col-md-6">
                     {!! Form::label('* Pays') !!}
                     <div class="form-group {{ $errors->has('country') ? 'has-error' : '' }}">
-                        {!! Form::select('address[country]', $form_data['location'], null, array('class' => 'form-control', 'id' => 'countrySelect')) !!}
-                        <p id="demo"></p>
+                        {!! Form::select('address[country]', $form_data['location'], null, array('class' => 
+                        'form-control'
+                        )) !!}
                     </div>
-
                 </div>
-
             </div>
             <div class="row">
                 <div class="col-xs-6 col-sm-4 form-group {{ $errors->has('latitude') ? 'has-error' : '' }}">
