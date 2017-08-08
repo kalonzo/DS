@@ -27,7 +27,7 @@ class StoreEstablishment extends \App\Http\FormRequest
             'address.street_number' => 'required|max:45',
             'address.postal_code' => 'required|max:11',
             'address.city' => 'required|max:255',
-            'address.country' => 'required|max:255',
+            'address.id_country' => 'required',
            /* 'latitude' => 'required',
             'longitude' => 'required',
             'startTimeAm'=> 'required|min:7',

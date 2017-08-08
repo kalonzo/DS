@@ -42,10 +42,12 @@ class EstablishmentController extends Controller {
      *
      * @return Response
      */
-    public function create() {
+public function create() {
         $this->buildFeedFormData();
-        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', null);
+        $this->buildCreateFormValues();
+        $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
+        $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', null);
 
         return $view;
     }
@@ -68,9 +70,10 @@ class EstablishmentController extends Controller {
      */
     public function edit(Establishment $establishment) {
         $this->buildFeedFormData();
-        $this->buildFormValues($establishment);
-        $formData = StorageHelper::getInstance()->get('create_establishment.form_data');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('establishment', $establishment);
+        $this->buildEditFormValues($establishment);
+        $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
+        $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', $establishment);
         return $view;
     }
 
@@ -164,86 +167,35 @@ class EstablishmentController extends Controller {
         // Helper array for days
         $days = DateTools::getDaysArray();
 
-        StorageHelper::getInstance()->add('create_establishment.form_data.cooking_types', $cookingTypes);
-        StorageHelper::getInstance()->add('create_establishment.form_data.food_specialities', $foodSpecialities);
-        StorageHelper::getInstance()->add('create_establishment.form_data.ambiences', $restaurantAtmospheres);
-        StorageHelper::getInstance()->add('create_establishment.form_data.services', $services);
-        StorageHelper::getInstance()->add('create_establishment.form_data.country_prefixes', $countryPrefixes);
-        StorageHelper::getInstance()->add('create_establishment.form_data.timetable', $timetable);
-        StorageHelper::getInstance()->add('create_establishment.form_data.days', $days);
-        StorageHelper::getInstance()->add('create_establishment.form_data.location', $countryName);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.cooking_types', $cookingTypes);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.food_specialities', $foodSpecialities);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.ambiences', $restaurantAtmospheres);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.services', $services);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.country_prefixes', $countryPrefixes);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.timetable', $timetable);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.days', $days);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.country_ids', $countryName);
     }
 
     /**
      * 
      * @param Establishment $establishment
      */
-    public function buildFormValues(Establishment $establishment) {
+    public function buildCreateFormValues(Establishment $establishment) {
+        $idCountry = UuidTools::getUuid(Country::where('iso', '=', 'CH'));
+        StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
+    }
 
-        // Select for business categories
-        $linkEstablishmentBusiness = EstablishmentBusinessCategory::where('id_establishment', '=', $establishment->getId())->get();
-
-
-        $cookingTypes = array();
-        $foodSpecialities = array();
-        $restaurantAtmospheres = array();
-        $services = array();
-        $businessCategoriesData = DB::table(BusinessCategory::TABLENAME)
-                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', name, type')
-                ->whereIn('type', array(BusinessCategory::TYPE_COOKING_TYPE,
-                    BusinessCategory::TYPE_FOOD_SPECIALITY,
-                    BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE,
-                    BusinessCategory::TYPE_SERVICES
-                        )
-                )
-                ->orderBy('name')
-                ->get();
-        foreach ($businessCategoriesData as $businessCategoryData) {
-            switch ($businessCategoryData->type) {
-                case BusinessCategory::TYPE_COOKING_TYPE:
-                    $cookingTypes[$businessCategoryData->uuid] = $businessCategoryData->name;
-                    break;
-                case BusinessCategory::TYPE_FOOD_SPECIALITY:
-                    $foodSpecialities[$businessCategoryData->uuid] = $businessCategoryData->name;
-                    break;
-                case BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE:
-                    $restaurantAtmospheres[$businessCategoryData->uuid] = $businessCategoryData->name;
-                    break;
-                case BusinessCategory::TYPE_SERVICES:
-                    $services[$businessCategoryData->uuid] = $businessCategoryData->name;
-                    break;
-            }
-        }
-
-        // Select for call number prefixes
-        $countryPrefixes = array();
-        $countriesData = DB::table(Country::TABLENAME)
-                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
-                ->where('prefix', '>', 0)
-                ->orderBy('label')
-                ->get();
-        foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
-        }
-
-        // Select for time
-        $timetable = array();
-        for ($i = 0; $i < 24; $i++) {
-            for ($j = 0; $j <= 55; $j += 30) {
-                $timetable[$i * 100 + $j] = sprintf('%02d', $i) . ':' . sprintf('%02d', $j);
-            }
-        }
-
-        // Helper array for days
-        $days = DateTools::getDaysArray();
-
-        StorageHelper::getInstance()->add('create_establishment.form_data.cooking_types', $cookingTypes);
-        StorageHelper::getInstance()->add('create_establishment.form_data.food_specialities', $foodSpecialities);
-        StorageHelper::getInstance()->add('create_establishment.form_data.ambiences', $restaurantAtmospheres);
-        StorageHelper::getInstance()->add('create_establishment.form_data.services', $services);
-        StorageHelper::getInstance()->add('create_establishment.form_data.country_prefixes', $countryPrefixes);
-        StorageHelper::getInstance()->add('create_establishment.form_data.timetable', $timetable);
-        StorageHelper::getInstance()->add('create_establishment.form_data.days', $days);
+    /**
+     * 
+     * @param Establishment $establishment
+     */
+    public function buildEditFormValues(Establishment $establishment) {
+        // Values for business categories
+//        $linkEstablishmentBusiness = EstablishmentBusinessCategory::where('id_establishment', '=', $establishment->getId())->get();
+        
+        $idCountry = UuidTools::getUuid($establishment->address()->first()->getIdCountry());
+        StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
     }
 
     /**
@@ -254,31 +206,31 @@ class EstablishmentController extends Controller {
         $createdObjects = array();
         try {
             $idLocation = 0;
+            $idCountry = 0;
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
-            $countryName = $request->get('address.country');
+            $uuidCountry = $request->get('address.id_country');
             $latitude = $request->get('latitude');
             $longitude = $request->get('longitude');
 
-            $country = \App\Models\Country::where('label', $countryName)->first();
-            if (!empty($postalCode) && !empty($city) && !empty($countryName)) {
+            $country = \App\Models\Country::findUuid($uuidCountry);
+            if (!empty($postalCode) && !empty($city) && checkModelId($uuidCountry)) {
+                $idCountry = UuidTools::getId($uuidCountry);
                 $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
                 if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
                 } else {
-                    if (checkModel($country)) {
-                        $locationIndex = \App\Models\LocationIndex::create([
-                                    'id' => \App\Utilities\UuidTools::generateUuid(),
-                                    'postal_code' => $postalCode,
-                                    'city' => $city,
-                                    'latitude' => $latitude,
-                                    'longitude' => $longitude,
-                                    'id_country' => $country->getId()
-                        ]);
-                        if (checkModel($locationIndex)) {
-                            $createdObjects[] = $locationIndex;
-                            $idLocation = $locationIndex->getId();
-                        }
+                    $locationIndex = \App\Models\LocationIndex::create([
+                                'id' => \App\Utilities\UuidTools::generateUuid(),
+                                'postal_code' => $postalCode,
+                                'city' => $city,
+                                'latitude' => $latitude,
+                                'longitude' => $longitude,
+                                'id_country' => $idCountry
+                    ]);
+                    if (checkModel($locationIndex)) {
+                        $createdObjects[] = $locationIndex;
+                        $idLocation = $locationIndex->getId();
                     }
                 }
             }
@@ -297,7 +249,8 @@ class EstablishmentController extends Controller {
                     'city' => $request->get('address.city'),
                     'latitude' => $request->get('latitude'),
                     'longitude' => $request->get('longitude'),
-                    'country' => $countryName,
+                    'id_country' => $idCountry,
+                    'country' => $country->getLabel(),
                     'id_location_index' => $idLocation,
                     'id_object_related' => $idEstablishment,
                     'type_object_related' => Establishment::TYPE_OBJECT_ESTABLISHMENT,
@@ -440,41 +393,37 @@ class EstablishmentController extends Controller {
         try {
             if(checkModel($establishment)){
                 $idLocation = 0;
+                $idCountry = 0;
                 $postalCode = $request->get('address.postal_code');
                 $city = $request->get('address.city');
-                $countryName = $request->get('address.country');
+                $uuidCountry = $request->get('address.id_country');
                 $latitude = $request->get('latitude');
                 $longitude = $request->get('longitude');
 
-                if (!empty($postalCode) && !empty($city) && !empty($countryName)) {
+                $country = \App\Models\Country::findUuid($uuidCountry);
+                if (!empty($postalCode) && !empty($city) && checkModelId($uuidCountry)) {
+                    $idCountry = UuidTools::getId($uuidCountry);
                     $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
                     if (checkModel($locationIndex)) {
                         $idLocation = $locationIndex->getId();
                     } else {
-                        $country = \App\Models\Country::where('label', $countryName)->first();
-                        if (checkModel($country)) {
-                            $locationIndex = \App\Models\LocationIndex::create([
-                                        'id' => \App\Utilities\UuidTools::generateUuid(),
-                                        'postal_code' => $postalCode,
-                                        'city' => $city,
-                                        'latitude' => $latitude,
-                                        'longitude' => $longitude,
-                                        'id_country' => $country->getId()
-                            ]);
-                            if (checkModel($locationIndex)) {
-                                $idLocation = $locationIndex->getId();
-                            }
+                        $locationIndex = \App\Models\LocationIndex::create([
+                                    'id' => \App\Utilities\UuidTools::generateUuid(),
+                                    'postal_code' => $postalCode,
+                                    'city' => $city,
+                                    'latitude' => $latitude,
+                                    'longitude' => $longitude,
+                                    'id_country' => $idCountry
+                        ]);
+                        if (checkModel($locationIndex)) {
+                            $idLocation = $locationIndex->getId();
                         }
                     }
                 }
                 if (checkModelId($idLocation)) {
-                    //Create establishment address
-                    $request->merge([
-                        'id_location_index' => $idLocation
-                    ]);
                     $address = Address::find(UuidTools::getUuid($establishment->getIdAddress()));
                     if (checkModel($address)) {
-                        //Create establishment address
+                        // Update establishment address
                         $address->update([
                             'street' => $request->get('address.street'),
                             'street_number' => $request->get('address.street_number'),
@@ -486,7 +435,8 @@ class EstablishmentController extends Controller {
                             'city' => $request->get('address.city'),
                             'latitude' => $request->get('latitude'),
                             'longitude' => $request->get('longitude'),
-                            'country' => $countryName,
+                            'id_country' => $country->getId(),
+                            'country' => $country->getLabel(),
                             'id_location_index' => $idLocation,
                         ]);
 
