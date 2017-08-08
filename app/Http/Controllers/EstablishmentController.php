@@ -552,18 +552,18 @@ public function create() {
      * @param type $main
      * @param type $label
      * @param type $type
-     * @param type $prefix
+     * @param type $idCountry
      * @param type $number
      * @return type
      */
-    public function feedCallNumber($establishment, $main, $label, $type, $prefix, $number) {
-        $callNumber = $establishment->callNumbers()->where('type', '=', $type);
+    public function feedCallNumber($establishment, $main, $label, $type, $idCountry, $number) {
+        $callNumber = $establishment->callNumbers()->where('type', '=', $type)->first();
         $attributes = [
                 'main' => $main,
                 'label' => $label,
                 'type' => $type,
-                'prefix' => $prefix,
-                'id_country' => $prefix,
+                'prefix' => $idCountry,
+                'id_country' => $idCountry,
                 'number' => $number,
                 'id_establishment' => $establishment->getId(),
             ];
