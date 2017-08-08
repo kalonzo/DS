@@ -142,6 +142,7 @@ class EstablishmentController extends Controller {
 
         // Select for call number prefixes
         $countryPrefixes = array();
+        $countryName = array();
         $countriesData = DB::table(Country::TABLENAME)
                 ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
                 ->where('prefix', '>', 0)
@@ -149,6 +150,7 @@ class EstablishmentController extends Controller {
                 ->get();
         foreach ($countriesData as $countryData) {
             $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
+            $countryName[$countryData->uuid] = $countryData->label;
         }
 
         // Select for time
@@ -169,6 +171,7 @@ class EstablishmentController extends Controller {
         StorageHelper::getInstance()->add('create_establishment.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('create_establishment.form_data.timetable', $timetable);
         StorageHelper::getInstance()->add('create_establishment.form_data.days', $days);
+        StorageHelper::getInstance()->add('create_establishment.form_data.location', $countryName);
     }
 
     /**
