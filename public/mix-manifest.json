@@ -1,8 +1,0 @@
-{
-  "/js/app.js": "/js/app.js",
-  "/css/app.css": "/css/app.css",
-  "/css/front.css": "/css/front.css",
-  "/js/js.js": "/js/js.js",
-  "/js/*.js": "/js/*.js",
-  "/js/google-map.js": "/js/google-map.js"
-}
