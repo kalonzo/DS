@@ -498,16 +498,18 @@ class EstablishmentController extends Controller {
                         if (checkModel($establishment)) {
                             
                             // Update medias
-                            $logo = $establishment->logo()->getRelated();
-                            if(checkModel($logo) && false){
-                                
-                            } else {
-                                $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
-                            }
-                            if (checkModel($logo)){
-                                $establishment->setIdLogo($logo->getId());
-                                $establishment->save();
-                                $createdObjects[] = $logo;
+                            if($request->file('logo')){
+                                $logo = $establishment->logo()->first();
+                                if(checkModel($logo) && false){
+
+                                } else {
+                                    $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
+                                }
+                                if (checkModel($logo)){
+                                    $establishment->setIdLogo($logo->getId());
+                                    $establishment->save();
+                                    $createdObjects[] = $logo;
+                                }
                             }
 
                             return $establishment;

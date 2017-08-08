@@ -19,6 +19,8 @@
             <div class="container">
                 @if($establishment->logo()->exists())
                 <img id="ets-logo" src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" />
+                @else
+                <img id="ets-logo" src="/img/images_ds/imagen-DS-1.jpg"/>
                 @endif
                 {!! Form::file('url', array('class' => 'name', 'onchange' => 'previewImage(this)')) !!} 
                 <div id="" class="form-inline form-group">
