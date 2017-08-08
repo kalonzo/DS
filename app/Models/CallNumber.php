@@ -19,6 +19,7 @@ class CallNumber extends Model {
         'type',
         'main',
         'prefix',
+        'id_country',
         'number',
         'id_establishment'
     ];
@@ -119,5 +120,14 @@ class CallNumber extends Model {
         $this->id_establishment = $value;
         return $this;
     }
+
+    function getIdCountry() {
+        return $this->id_country;
+    }
+
+    function setIdCountry($id_country) {
+        $this->id_country = $id_country;
+    }
+
 
 }
