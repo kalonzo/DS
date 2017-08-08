@@ -38,8 +38,3 @@
         </div> 
     </div>
 </div>
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function(event) { 
-        $(".bootstrap-file-input").fileinput();
-    });
-</script>

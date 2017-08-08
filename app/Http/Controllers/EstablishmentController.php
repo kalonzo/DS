@@ -333,24 +333,24 @@ class EstablishmentController extends Controller {
 //      TODO Manage clean create below
                             // Create phone numbers
                             if (!empty($request->get('numberReservation'))) {
-                                $createdObjects[] = $this->feedCallNumber(null, 0, $request, 'Téléphone utilisé pour les réservation', 
+                                $createdObjects[] = $this->feedCallNumber($establishment, false, 'Téléphone utilisé pour les réservation', 
                                         CallNumber::TYPE_PHONE_NUMBER_RESERVATION, $request->get('callNumberPrefixIdsByNameReservation'), 
-                                        $request->get('numberReservation'), $establishment->getId());
+                                        $request->get('numberReservation'));
                             }
                             if (!empty($request->get('contactNumber'))) {
-                                $createdObjects[] = $this->feedCallNumber(null, 1, $request, 'Téléphone principal', 
+                                $createdObjects[] = $this->feedCallNumber($establishment, true, 'Téléphone principal', 
                                         CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), 
-                                        $request->get('contactNumber'), $establishment->getId());
+                                        $request->get('contactNumber'));
                             }
                             if (!empty($request->get('fax'))) {
-                                $createdObjects[] = $this->feedCallNumber(null, 0, $request, 'Numéro de fax', 
+                                $createdObjects[] = $this->feedCallNumber($establishment, false, 'Numéro de fax', 
                                         CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), 
-                                        $request->get('fax'), $establishment->getId());
+                                        $request->get('fax'));
                             }
                             if (!empty($request->get('mobile'))) {
-                                $createdObjects[] = $this->feedCallNumber(null, 0, $request, 'Téléphone mobile', 
+                                $createdObjects[] = $this->feedCallNumber($establishment, false, 'Téléphone mobile', 
                                         CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), 
-                                        $request->get('mobile'), $establishment->getId());
+                                        $request->get('mobile'));
                             }
 
                             // Create cooking types
@@ -593,42 +593,30 @@ class EstablishmentController extends Controller {
 
     /**
      * 
+     * @param Establishment $establishment
      * @param type $main
-     * @param StoreEstablishment $request
      * @param type $label
      * @param type $type
-     * @param type $idCountry
+     * @param type $prefix
      * @param type $number
-     * @param type $idEstablishment
+     * @return type
      */
-    public function feedCallNumber($callNumber, $main, $request, $label, $type, $idCountry, $number, $idEstablishment) {
+    public function feedCallNumber($establishment, $main, $label, $type, $prefix, $number) {
+        $callNumber = $establishment->callNumbers()->where('type', '=', $type);
+        $attributes = [
+                'main' => $main,
+                'label' => $label,
+                'type' => $type,
+                'prefix' => $prefix,
+                'number' => $number,
+                'id_establishment' => $establishment->getId(),
+            ];
         if (!checkModel($callNumber)) {
-            $prefix = Country::where('id', UuidTools::getId($idCountry))
-                    ->first();
-
-            $request->merge([
-                'main' => $main,
-                'label' => $label,
-                'type' => $type,
-                'prefix' => $prefix->getPrefix(),
-                'number' => $number,
-                'id_establishment' => $idEstablishment,
-            ]);
-            return CallNumber::create($request->all());
+            $callNumber = CallNumber::create($attributes);
         } else {
-            $prefix = Country::where('id', UuidTools::getId($idCountry))
-                    ->first();
-
-            $request->merge([
-                'main' => $main,
-                'label' => $label,
-                'type' => $type,
-                'prefix' => $prefix->getPrefix(),
-                'number' => $number,
-                'id_establishment' => $idEstablishment,
-            ]);
-            return CallNumber::find(UuidTools::getUuid($callNumber->id))->first()->fill($request->all());
+            $callNumber->update($attributes);
         }
+        return $callNumber;
     }
 
     /**

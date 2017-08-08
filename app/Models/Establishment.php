@@ -74,6 +74,10 @@ class Establishment extends Model {
         return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
     }
     
+    public function callNumbers(){
+        return $this->hasMany(CallNumber::class, 'id_establishment', 'id');
+    }
+    
     /**
      * @return mixed
      */
