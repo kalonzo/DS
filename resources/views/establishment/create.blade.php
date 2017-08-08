@@ -48,46 +48,46 @@
 
         @endif
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
-            @component('establishment.form.location', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.location', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.contact', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.contact', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.web', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.web', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.cooking', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.cooking', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.food_specialties', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.food_specialties', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.description', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.description', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.services', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.services', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.ambiences', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.ambiences', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.galleries', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.galleries', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.videos', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.videos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.menus', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.menus', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.timetable', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.timetable', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.staff', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.staff', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.story', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.form.story', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
         </div>
     </div>

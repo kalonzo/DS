@@ -68,11 +68,11 @@ class DbQueryTools {
     }
     
     public static function genRawSqlForGettingUuid($tableField = 'id', $tableName = '', $alias = 'uuid'){
-        $rawSql = ' HEX(';
+        $rawSql = ' LOWER(HEX(';
         if(!empty($tableName)){
             $rawSql .= $tableName.'.';
         }
-        $rawSql .= $tableField.') AS '.$alias;
+        $rawSql .= $tableField.')) AS '.$alias;
         return $rawSql;
     }
     

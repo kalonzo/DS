@@ -65,8 +65,8 @@
                 </div>
                 <div class="col-md-6">
                     {!! Form::label('* Pays') !!}
-                    <div class="form-group {{ $errors->has('country') ? 'has-error' : '' }}">
-                        {!! Form::select('address[country]', $form_data['location'], null, array('class' => 'form-control', 'id' => 'countrySelect')) !!}
+                    <div class="form-group {{ $errors->has('id_country') ? 'has-error' : '' }}">
+                        {!! Form::select('address[id_country]', $form_data['country_ids'], $form_values['id_country'], ['class' => 'form-control']) !!}
                         <p id="demo"></p>
                     </div>
 

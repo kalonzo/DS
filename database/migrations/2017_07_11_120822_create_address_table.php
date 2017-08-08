@@ -14,23 +14,24 @@ class CreateAddressTable extends Migration {
 	{
 		Schema::create('address', function(Blueprint $table)
 		{
-			$table->binary('id', 16)->primary();
-                        $table->timestamps();
-			$table->string('street_number', 45)->nullable();
-			$table->string('street')->nullable();
-			$table->string('address_additional')->nullable();
-			$table->string('po_box')->nullable();
-			$table->integer('postal_code')->nullable();
-			$table->string('city')->nullable();
-			$table->string('country')->nullable();
-			$table->float('latitude', 10, 0)->nullable();
-			$table->float('longitude', 10, 0)->nullable();
-			$table->string('label')->nullable();
-			$table->string('firstname')->nullable();
-			$table->string('lastname')->nullable();
-			$table->binary('id_location_index', 16)->index('fk_address_cities1_idx');
-			$table->binary('id_object_related', 16)->nullable();
-			$table->integer('type_object_related')->nullable();
+                    $table->binary('id', 16)->primary();
+                    $table->timestamps();
+                    $table->string('street_number', 45)->nullable();
+                    $table->string('street')->nullable();
+                    $table->string('address_additional')->nullable();
+                    $table->string('po_box')->nullable();
+                    $table->integer('postal_code')->nullable();
+                    $table->string('city')->nullable();
+                    $table->binary('id_country', 16)->nullable()->index('fk_address_country_idx');
+                    $table->string('country')->nullable();
+                    $table->float('latitude', 10, 0)->nullable();
+                    $table->float('longitude', 10, 0)->nullable();
+                    $table->string('label')->nullable();
+                    $table->string('firstname')->nullable();
+                    $table->string('lastname')->nullable();
+                    $table->binary('id_location_index', 16)->index('fk_address_cities1_idx');
+                    $table->binary('id_object_related', 16)->nullable();
+                    $table->integer('type_object_related')->nullable();
 		});
 	}
 

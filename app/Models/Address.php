@@ -22,6 +22,7 @@ class Address extends Model {
         'district',
         'department',
         'region',
+        'id_country',
         'country',
         'latitude',
         'longitude',
@@ -33,6 +34,10 @@ class Address extends Model {
         'type_object_related',
     ];
     protected $guarded = [];
+    
+    public function country(){
+        return $this->hasOne(Country::class, 'id', 'id_country');
+    }
     
     /**
      * @return mixed
@@ -319,5 +324,14 @@ class Address extends Model {
         $this->district = $value;
         return $this;
     }
+
+    function getIdCountry() {
+        return $this->id_country;
+    }
+
+    function setIdCountry($id_country) {
+        $this->id_country = $id_country;
+    }
+
 
 }
