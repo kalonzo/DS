@@ -9,37 +9,37 @@
     </div>
     <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
         <div class="panel-body container">
+            @php
+            $callNumbersAvailable = [
+                                        1 => '* Téléphone pour réservation',
+                                        4 => '* Téléphone de contact',
+                                        3 => 'Fax',
+                                        2 => 'Mobile'
+                                    ];
+            @endphp
             <div class="row">
+            @foreach($callNumbersAvailable as $typeNumber => $label)
                 <div class="col-md-6">
-                    {!! Form::label('* Téléphone pour réservation') !!}
-                    <div class="form-group {{ $errors->has('numberReservation') ? 'has-error' : '' }}">
-                        {!!  Form::select('callNumberPrefixIdsByNameReservation',$form_data['country_prefixes'], ['class' => 'form-control']) !!}
-                        {!! Form::text('numberReservation', old('number'), ['class' => 'form-control']) !!}
+                    {!! Form::label($label) !!}
+                    <div class="form-group form-inline {{ $errors->has('call_number['.$typeNumber.']') ? 'has-error' : '' }}">
+                        @php
+                        $selectedPrefix = old('id_country_prefix['.$typeNumber.']');
+                        $selectedNumber = old('call_number['.$typeNumber.']');
+                        if(isset($form_values['call_numbers'][$typeNumber]['number'])){
+                            $selectedNumber = $form_values['call_numbers'][$typeNumber]['number'];
+                        }
+                        if(isset($form_values['call_numbers'][$typeNumber]['id_country_prefix'])){
+                            $selectedPrefix = $form_values['call_numbers'][$typeNumber]['id_country_prefix'];
+                        } else if(isset($form_values['id_country'])){
+                            $selectedPrefix = $form_values['id_country'];
+                        }
+                        @endphp
+                        {!! Form::select('id_country_prefix['.$typeNumber.']', $form_data['country_prefixes'], $selectedPrefix, 
+                                        ['class' => 'form-control', 'placeholder' => 'Indicatif']) !!}
+                        {!! Form::text('call_number['.$typeNumber.']', $selectedNumber, ['class' => 'form-control']) !!}
                     </div>
                 </div>
-                <div class="col-md-6">
-                    {!! Form::label('* Téléphone de contact') !!}
-                    <div class="form-group {{ $errors->has('contactNumber') ? 'has-error' : '' }} " >
-                        {!!  Form::select('callNumberPrefixIdsByNameContact',$form_data['country_prefixes'], ['class' => 'form-control']) !!}
-                        {!! Form::text('contactNumber', old('number'), ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    {!! Form::label('  Fax') !!}
-                    <div class="form-group ">
-                        {!!  Form::select('callNumberPrefixIdsByNameFax',$form_data['country_prefixes'], ['class' => 'form-control']) !!}
-                        {!! Form::text('fax', old('fax'), ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    {!! Form::label('  Mobile') !!}
-                    <div class="form-group">
-                        {!!  Form::select('callNumberPrefixIdsByNameMobile',$form_data['country_prefixes'], ['class' => 'form-control',]) !!}
-                        {!! Form::text('mobile', old('mobile'), ['class' => 'form-control']) !!}
-                    </div>
-                </div>    
+            @endforeach
             </div>
             <div class="row">
                 <div class="col-xs-12">

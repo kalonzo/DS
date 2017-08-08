@@ -42,7 +42,7 @@ class EstablishmentController extends Controller {
      *
      * @return Response
      */
-public function create() {
+    public function create() {
         $this->buildFeedFormData();
         $this->buildCreateFormValues();
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
@@ -181,8 +181,8 @@ public function create() {
      * 
      * @param Establishment $establishment
      */
-    public function buildCreateFormValues(Establishment $establishment) {
-        $idCountry = UuidTools::getUuid(Country::where('iso', '=', 'CH'));
+    public function buildCreateFormValues() {
+        $idCountry = UuidTools::getUuid(Country::where('iso', '=', 'CH')->first()->getId());
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
     }
 
@@ -193,9 +193,18 @@ public function create() {
     public function buildEditFormValues(Establishment $establishment) {
         // Values for business categories
 //        $linkEstablishmentBusiness = EstablishmentBusinessCategory::where('id_establishment', '=', $establishment->getId())->get();
-        
         $idCountry = UuidTools::getUuid($establishment->address()->first()->getIdCountry());
+        $callNumbers = $establishment->callNumbers()->get();
+        $callNumbersData = array();
+        foreach($callNumbers as $callNumber){
+            if($callNumber instanceof CallNumber){
+                $callNumbersData[$callNumber->getType()]['id_country_prefix'] = UuidTools::getUuid($callNumber->getIdCountry());
+                $callNumbersData[$callNumber->getType()]['number'] = $callNumber->getNumber();
+            }
+        }
+        
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
+        StorageHelper::getInstance()->add('feed_establishment.form_values.call_numbers', $callNumbersData);
     }
 
     /**
@@ -238,35 +247,35 @@ public function create() {
                 $idEstablishment = \App\Utilities\UuidTools::generateUuid();
                 //Create establishment address
                 $address = Address::create([
-                    'id' => \App\Utilities\UuidTools::generateUuid(),
-                    'street' => $request->get('address.street'),
-                    'street_number' => $request->get('address.street_number'),
-                    'address_additional' => $request->get('address.address_additional'),
-                    'region' => $request->get('address.region'),
-                    'district' => $request->get('address.district'),
-                    'postal_code' => $request->get('address.postal_code'),
-                    'po_box' => $request->get('address.po_box'),
-                    'city' => $request->get('address.city'),
-                    'latitude' => $request->get('latitude'),
-                    'longitude' => $request->get('longitude'),
-                    'id_country' => $idCountry,
-                    'country' => $country->getLabel(),
-                    'id_location_index' => $idLocation,
-                    'id_object_related' => $idEstablishment,
-                    'type_object_related' => Establishment::TYPE_OBJECT_ESTABLISHMENT,
+                            'id' => \App\Utilities\UuidTools::generateUuid(),
+                            'street' => $request->get('address.street'),
+                            'street_number' => $request->get('address.street_number'),
+                            'address_additional' => $request->get('address.address_additional'),
+                            'region' => $request->get('address.region'),
+                            'district' => $request->get('address.district'),
+                            'postal_code' => $request->get('address.postal_code'),
+                            'po_box' => $request->get('address.po_box'),
+                            'city' => $request->get('address.city'),
+                            'latitude' => $request->get('latitude'),
+                            'longitude' => $request->get('longitude'),
+                            'id_country' => $idCountry,
+                            'country' => $country->getLabel(),
+                            'id_location_index' => $idLocation,
+                            'id_object_related' => $idEstablishment,
+                            'type_object_related' => Establishment::TYPE_OBJECT_ESTABLISHMENT,
                 ]);
                 if (checkModel($address)) {
                     $createdObjects[] = $address;
 
                     // Create establishment user owner
                     $user = User::create([
-                        'id' => \App\Utilities\UuidTools::generateUuid(),
-                        'name' => $request->get('name'),
-                        'type' => User::TYPE_USER_AUTO_INSERTED,
-                        'gender' => 0,
-                        'id_address' => $address->getId(),
-                        'id_inbox' => 0,
-                        'id_company' => 0,
+                                'id' => \App\Utilities\UuidTools::generateUuid(),
+                                'name' => $request->get('name'),
+                                'type' => User::TYPE_USER_AUTO_INSERTED,
+                                'gender' => 0,
+                                'id_address' => $address->getId(),
+                                'id_inbox' => 0,
+                                'id_company' => 0,
                     ]);
 
                     if (checkModel($user)) {
@@ -274,41 +283,22 @@ public function create() {
 
                         // Create establishment
                         $establishment = Establishment::create([
-                            'id' => $idEstablishment,
-                            'name' => $request->get('name'),
-                            'latitude' => $request->get('latitude'),
-                            'longitude' => $request->get('longitude'),
-                            'id_location_index' => $idLocation,
-                            'id_user_owner' => $user->getId(),
-                            'id_address' => $address->getId(),
-                            'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
-                            'id_logo' => 0,
+                                    'id' => $idEstablishment,
+                                    'name' => $request->get('name'),
+                                    'latitude' => $request->get('latitude'),
+                                    'longitude' => $request->get('longitude'),
+                                    'id_location_index' => $idLocation,
+                                    'id_user_owner' => $user->getId(),
+                                    'id_address' => $address->getId(),
+                                    'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
+                                    'id_logo' => 0,
                         ]);
                         if (checkModel($establishment)) {
                             $createdObjects[] = $establishment;
-//      TODO Manage clean create below
                             // Create phone numbers
-                            if (!empty($request->get('numberReservation'))) {
-                                $createdObjects[] = $this->feedCallNumber($establishment, false, 'Téléphone utilisé pour les réservation', 
-                                        CallNumber::TYPE_PHONE_NUMBER_RESERVATION, $request->get('callNumberPrefixIdsByNameReservation'), 
-                                        $request->get('numberReservation'));
-                            }
-                            if (!empty($request->get('contactNumber'))) {
-                                $createdObjects[] = $this->feedCallNumber($establishment, true, 'Téléphone principal', 
-                                        CallNumber::TYPE_PHONE_CONTACT, $request->get('callNumberPrefixIdsByNameContact'), 
-                                        $request->get('contactNumber'));
-                            }
-                            if (!empty($request->get('fax'))) {
-                                $createdObjects[] = $this->feedCallNumber($establishment, false, 'Numéro de fax', 
-                                        CallNumber::TYPE_FAX, $request->get('callNumberPrefixIdsByNameFax'), 
-                                        $request->get('fax'));
-                            }
-                            if (!empty($request->get('mobile'))) {
-                                $createdObjects[] = $this->feedCallNumber($establishment, false, 'Téléphone mobile', 
-                                        CallNumber::TYPE_MOBILE, $request->get('callNumberPrefixIdsByNameMobile'), 
-                                        $request->get('mobile'));
-                            }
+                            $createdObjects = array_merge($createdObjects, $this->feedCallNumbers($request, $establishment));
 
+//      TODO Manage clean create below
                             // Create cooking types
                             $cookingTypes = request()->get('cooking_types');
                             if (!empty($cookingTypes)) {
@@ -391,7 +381,7 @@ public function create() {
     public function updateEstablishment($request, $establishment) {
         $createdObjects = array();
         try {
-            if(checkModel($establishment)){
+            if (checkModel($establishment)) {
                 $idLocation = 0;
                 $idCountry = 0;
                 $postalCode = $request->get('address.postal_code');
@@ -442,23 +432,25 @@ public function create() {
 
                         // Update establishment
                         $establishment->update([
-                                'name' => $request->get('name'),
-                                'latitude' => $request->get('latitude'),
-                                'longitude' => $request->get('longitude'),
-                                'id_location_index' => $idLocation,
-                                'id_logo' => 0,
+                            'name' => $request->get('name'),
+                            'latitude' => $request->get('latitude'),
+                            'longitude' => $request->get('longitude'),
+                            'id_location_index' => $idLocation,
+                            'id_logo' => 0,
                         ]);
                         if (checkModel($establishment)) {
-                            
-                            // Update medias
-                            if($request->file('logo')){
-                                $logo = $establishment->logo()->first();
-                                if(checkModel($logo) && false){
+                            // Update phone numbers
+                            $this->feedCallNumbers($request, $establishment);
 
+                            // Update medias
+                            if ($request->file('logo')) {
+                                $logo = $establishment->logo()->first();
+                                if (checkModel($logo) && false) {
+                                    
                                 } else {
                                     $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
                                 }
-                                if (checkModel($logo)){
+                                if (checkModel($logo)) {
                                     $establishment->setIdLogo($logo->getId());
                                     $establishment->save();
                                     $createdObjects[] = $logo;
@@ -548,30 +540,93 @@ public function create() {
 
     /**
      * 
+     * @param StoreEstablishment $request
+     * @param Establishment $establishment
+     */
+    public function feedCallNumbers($request, $establishment) {
+        $callNumbers = array();
+        $prefixByIdCountry = array();
+        // Get all country ids matching each selected number prefix
+        $prefixCountryIds = array();
+        foreach ($request->get('id_country_prefix') as $typeNumber => $idPrefix) {
+            if (!empty($request->get('call_number.'.$typeNumber)) && checkModelId($idPrefix)) {
+                $prefixCountryIds[$idPrefix] = $idPrefix;
+            }
+        }
+        if(!empty($prefixCountryIds)){
+            // Get all countries data matching each selected number prefix
+            $prefixCountries = DB::table(Country::TABLENAME)->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $prefixCountryIds))
+                            ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', prefix, id')->get();
+            foreach ($prefixCountries as $countryData) {
+                $prefixByIdCountry[$countryData->uuid] = $countryData->prefix;
+            }
+
+            foreach ($request->get('call_number') as $typeNumber => $number) {
+                $numberLabel = null;
+                $prefix = null;
+                $isMain = false;
+                switch ($typeNumber) {
+                    case CallNumber::TYPE_PHONE_NUMBER_RESERVATION:
+                        $numberLabel = 'Téléphone utilisé pour les réservations';
+                        break;
+                    case CallNumber::TYPE_PHONE_CONTACT:
+                        $numberLabel = 'Téléphone principal';
+                        $isMain = true;
+                        break;
+                    case CallNumber::TYPE_FAX:
+                        $numberLabel = 'Numéro de fax';
+                        break;
+                    case CallNumber::TYPE_MOBILE:
+                        $numberLabel = 'Téléphone mobile';
+                        break;
+                }
+                $prefixCountryUuid = $request->get('id_country_prefix.'.$typeNumber);
+                if (isset($prefixByIdCountry[$prefixCountryUuid])) {
+                    $prefix = $prefixByIdCountry[$prefixCountryUuid];
+                }
+
+                if(!empty($typeNumber) && !empty($prefix) && !empty($number)){
+                    $callNumber = $establishment->callNumbers()->where('type', '=', $typeNumber)->first();
+                    $attributes = [
+                        'main' => $isMain,
+                        'label' => $numberLabel,
+                        'type' => $typeNumber,
+                        'prefix' => $prefix,
+                        'id_country' => UuidTools::getId($prefixCountryUuid),
+                        'number' => $number,
+                        'id_establishment' => $establishment->getId(),
+                    ];
+
+                    try{
+                        if (!checkModel($callNumber)) {
+                            $attributes['id'] = UuidTools::generateUuid();
+                            $callNumber = CallNumber::create($attributes);
+                        } else {
+                            $callNumber->update($attributes);
+                        }
+                        $callNumbers[] = $callNumber;
+                    } catch(Exception $e){
+                        print_r($e->getMessage());
+                        die();
+                    }
+                }
+            }
+        }
+        return $callNumbers;
+    }
+
+    /**
+     * 
      * @param Establishment $establishment
      * @param type $main
      * @param type $label
      * @param type $type
-     * @param type $idCountry
+     * @param type $uuidCountry
      * @param type $number
      * @return type
      */
-    public function feedCallNumber($establishment, $main, $label, $type, $idCountry, $number) {
-        $callNumber = $establishment->callNumbers()->where('type', '=', $type)->first();
-        $attributes = [
-                'main' => $main,
-                'label' => $label,
-                'type' => $type,
-                'prefix' => $idCountry,
-                'id_country' => $idCountry,
-                'number' => $number,
-                'id_establishment' => $establishment->getId(),
-            ];
-        if (!checkModel($callNumber)) {
-            $callNumber = CallNumber::create($attributes);
-        } else {
-            $callNumber->update($attributes);
-        }
+    public function feedCallNumber($establishment, $main, $label, $type, $uuidCountry, $prefix, $number) {
+        
         return $callNumber;
     }
 
