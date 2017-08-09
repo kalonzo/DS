@@ -183,7 +183,7 @@ class SearchController {
             switch ($typeEts) {
                 case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
                     $businessCategoryType1 = BusinessCategory::TYPE_COOKING_TYPE;
-                    $businessCategoryType2 = BusinessCategory::TYPE_RESTAURANT_ATMOSPHERE;
+                    $businessCategoryType2 = BusinessCategory::TYPE_RESTAURANT_AMBIENCE;
                     break;
             }
 
