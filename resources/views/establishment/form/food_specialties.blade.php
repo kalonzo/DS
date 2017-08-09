@@ -10,9 +10,16 @@
     <div id="collapse5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading5">
         <div class="panel-body container">
             <div class="row">
-                <section class="col-md-12 container-fluid">
-
-                </section>   
+                <div class="col-xs-12">
+                    * Vous pouvez enregistrer jusqu'à 5 spécialités
+                    <br/>
+                    <div class="form-group {{ $errors->has('id_country') ? 'has-error' : '' }}">
+                        {!! Form::select('businessCategories[2][]', $form_data['food_specialties'], $form_values['business_categories'], 
+                                   ['multiple' => true, 'class' => 'form-control select2', 'id' => 'foodSpecialties',
+                                   'style' => 'width: 100%;',
+                                   'data-tags' => 'true', 'data-maximumSelectionLength' => 5]) !!}
+                    </div>
+                </div>   
             </div>
             <div class="row">
                 <div class="col-xs-12">

@@ -15,6 +15,8 @@ require( 'jquery-ui/ui/widgets/slider');
 //require( 'datatables.net-dt/css/jquery.datatables.css');
 require( 'multiselect');
 require( 'multiselect/css/multi-select.css');
+require( 'select2');
+require( 'select2/dist/css/select2.min.css');
 
 var jsReadyEvent; // The custom event that will be created
 if (document.createEvent) {

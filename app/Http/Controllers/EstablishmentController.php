@@ -113,7 +113,7 @@ class EstablishmentController extends Controller {
     public function buildFeedFormData() {
         // Select for business categories
         $cookingTypes = array();
-        $foodSpecialities = array();
+        $foodSpecialties = array();
         $restaurantAtmospheres = array();
         $services = array();
         $businessCategoriesData = DB::table(BusinessCategory::TABLENAME)
@@ -132,7 +132,7 @@ class EstablishmentController extends Controller {
                     $cookingTypes[$businessCategoryData->uuid] = $businessCategoryData->name;
                     break;
                 case BusinessCategory::TYPE_FOOD_SPECIALTY:
-                    $foodSpecialities[$businessCategoryData->uuid] = $businessCategoryData->name;
+                    $foodSpecialties[$businessCategoryData->uuid] = $businessCategoryData->name;
                     break;
                 case BusinessCategory::TYPE_RESTAURANT_AMBIENCE:
                     $restaurantAtmospheres[$businessCategoryData->uuid] = $businessCategoryData->name;
@@ -168,7 +168,7 @@ class EstablishmentController extends Controller {
         $days = DateTools::getDaysArray();
 
         StorageHelper::getInstance()->add('feed_establishment.form_data.cooking_types', $cookingTypes);
-        StorageHelper::getInstance()->add('feed_establishment.form_data.food_specialities', $foodSpecialities);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.food_specialties', $foodSpecialties);
         StorageHelper::getInstance()->add('feed_establishment.form_data.ambiences', $restaurantAtmospheres);
         StorageHelper::getInstance()->add('feed_establishment.form_data.services', $services);
         StorageHelper::getInstance()->add('feed_establishment.form_data.country_prefixes', $countryPrefixes);
@@ -295,6 +295,7 @@ class EstablishmentController extends Controller {
                                     'longitude' => $request->get('longitude'),
                                     'email' => $request->get('email'),
                                     'site_url' => $request->get('site_url'),
+                                    'description' => $request->get('description'),
                                     'id_location_index' => $idLocation,
                                     'id_user_owner' => $user->getId(),
                                     'id_address' => $address->getId(),
@@ -312,6 +313,8 @@ class EstablishmentController extends Controller {
                             $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_RESTAURANT_AMBIENCE));
                             // Create services
                             $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_SERVICES));
+                            // Create food specialties
+                            $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
                             
 //      TODO Manage clean create below
                             
@@ -419,6 +422,7 @@ class EstablishmentController extends Controller {
                             'longitude' => $request->get('longitude'),
                             'email' => $request->get('email'),
                             'site_url' => $request->get('site_url'),
+                            'description' => $request->get('description'),
                             'id_location_index' => $idLocation,
                             'id_logo' => 0,
                         ]);
@@ -432,6 +436,8 @@ class EstablishmentController extends Controller {
                             $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_RESTAURANT_AMBIENCE);
                             // Update services
                             $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_SERVICES);
+                            // Update food specialties
+                            $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
                             
                             // Update medias
                             if ($request->file('logo')) {
@@ -477,7 +483,7 @@ class EstablishmentController extends Controller {
      * 
      * @param StoreEstablishment $request
      * @param Establishment $establishment
-     * @param type $id
+     * @param type $typeBusinessCategory
      */
     public function feedLinkBusinessCategories($request, $establishment, $typeBusinessCategory) {
         $businessCategoriesQuery = $establishment->businessCategoryLinks()
@@ -509,6 +515,48 @@ class EstablishmentController extends Controller {
             die();
         }
         return $links;
+    }
+    
+    /**
+     * 
+     * @param StoreEstablishment $request
+     * @param Establishment $establishment
+     * @param type $typeBusinessCategory
+     */
+    public function feedLinkBusinessCategoriesWithTagging($request, $establishment, $typeBusinessCategory) {
+        $links = array();
+        $businessCategories = array();
+        try{
+            $requestInputKey = 'businessCategories.'.$typeBusinessCategory;
+            $submittedBusinessCategoryValues = $request->get($requestInputKey);
+            foreach($submittedBusinessCategoryValues as $value){
+                if(!empty($value) && !checkHexUuid($value)){
+                    // Create tagged business category
+                    $businessCategory = BusinessCategory::create([
+                        'id' => UuidTools::generateUuid(),
+                        'name' => $value,
+                        'type' => $typeBusinessCategory
+                    ]);
+                    $businessCategories[] = $businessCategory;
+                }
+            }
+            if(!empty($businessCategories)){
+                foreach($businessCategories as $businessCategory){
+                    $index = array_search($businessCategory->getName(), $submittedBusinessCategoryValues);
+                    if($index !== false){
+                        $submittedBusinessCategoryValues[$index] = $businessCategory->getUuid();
+                    }
+                }
+                $requestInputs = $request->all();
+                $requestInputs['businessCategories'][$typeBusinessCategory] = $submittedBusinessCategoryValues;
+                $request->replace($requestInputs);
+            }
+            $links = $this->feedLinkBusinessCategories($request, $establishment, $typeBusinessCategory);
+        } catch(Exception $e){
+            print_r($e->getMessage());
+            die();
+        }
+        return array_merge($businessCategories, $links);
     }
 
     /**

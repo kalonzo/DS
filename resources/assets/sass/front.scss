@@ -26,13 +26,63 @@ body{
     }
 }
 
-select{
-    color: $main-text-color;
-    border: 1px solid $main-text-color;
-    @include borderRadius(0px);
-    height: 30px;
-    padding: 4px 10px;
-    background: $body-bg;
+select:not(.select2){
+        color: $main-text-color !important;
+        border: 1px solid $main-text-color !important;
+        @include borderRadius(0px);
+        height: 30px;
+        padding: 4px 10px;
+        background: $body-bg !important;
+}
+.select2.select2{
+    .select2-selection{
+        color: $main-text-color !important;
+        border: 1px solid $main-text-color !important;
+        @include borderRadius(0px);
+        background: $body-bg !important;
+        height: 34px;
+        padding: 3px 5px;
+        .select2-selection__rendered{
+            color: inherit;
+            .select2-selection__choice{
+                color: $main-text-color !important;
+                background: transparent;
+                border: 0px;
+                .select2-selection__choice__remove{
+                    float: right;
+                    color: inherit !important;
+                    margin-left: 5px;
+                    border: 2px solid $main-text-color !important;
+                    @include borderRadius(100%);
+                    padding: 0px 4px;
+                    font-weight: bold;
+                    height: 20px;
+                    line-height: 16px;
+                    font-size: 17px;
+                }
+            }
+        }
+    }
+}
+.select2-container{
+    .select2-dropdown{
+        color: $main-text-color !important;
+        @include borderRadius(0px);
+        background: $body-bg !important;
+        .select2-search{
+            .select2-search__field{
+                background-color: $main-color;
+            }
+        }
+        .select2-results__option{
+            &[aria-selected='true']{
+                background-color: $main-color;
+            }
+            &.select2-results__option--highlighted{
+                background-color: $alt-highlight-color;
+            }
+        }
+    }
 }
 
 #navbar {
