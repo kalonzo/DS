@@ -693,39 +693,44 @@ $mapThumbnailWidth: 145px;
     padding: 10px;
     z-index: 2;
     box-sizing: border-box;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(255, 255, 255, 0.7);
 }
 
 .form-accordion{
-    .panel:nth-of-type(odd){
+    .panel{
+        @include borderRadius(0px);
+        &:nth-of-type(odd){
+            .panel-heading{
+                border-bottom: 1px solid #555;
+            }
+            .panel-heading, .panel-collapse{
+                background: $body-bg;
+            }
+        }
+        &:nth-of-type(even){
+            .panel-heading{
+                border-bottom: 1px solid #333;
+            }
+            .panel-heading, .panel-collapse{
+                background: $main-color;
+            }
+        }
+        
         .panel-heading{
-            border-bottom: 1px solid #555;
-        }
-        .panel-heading, .panel-collapse{
-            background: $body-bg;
-        }
-    }
-    .panel:nth-of-type(even){
-        .panel-heading{
-            border-bottom: 1px solid #333;
-        }
-        .panel-heading, .panel-collapse{
-            background: $main-color;
-        }
-    }
-    .panel-heading{
-        height: 50px;
-        padding: 0px;
-        &, h4{
-            font-size: 1.2em;
-            line-height: 50px;
-            font-weight: bold;
-            color: white;
-        }
-        a{
-            color: inherit;
-            &, &:hover{
-                text-decoration: none;
+            height: 50px;
+            padding: 0px;
+            @include borderRadius(0px);
+            &, h4{
+                font-size: 1.2em;
+                line-height: 50px;
+                font-weight: bold;
+                color: white;
+            }
+            a{
+                color: inherit;
+                &, &:hover{
+                    text-decoration: none;
+                }
             }
         }
     }

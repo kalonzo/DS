@@ -424,7 +424,6 @@ class EstablishmentController extends Controller {
                             'site_url' => $request->get('site_url'),
                             'description' => $request->get('description'),
                             'id_location_index' => $idLocation,
-                            'id_logo' => 0,
                         ]);
                         if (checkModel($establishment)) {
                             // Update phone numbers
@@ -442,11 +441,7 @@ class EstablishmentController extends Controller {
                             // Update medias
                             if ($request->file('logo')) {
                                 $logo = $establishment->logo()->first();
-                                if (checkModel($logo) && false) {
-                                    
-                                } else {
-                                    $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
-                                }
+                                $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment, $logo);
                                 if (checkModel($logo)) {
                                     $establishment->setIdLogo($logo->getId());
                                     $establishment->save();
