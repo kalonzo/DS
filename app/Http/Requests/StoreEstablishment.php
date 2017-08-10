@@ -25,6 +25,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'address.street' => 'required|min:3|max:255',
             'address.street_number' => 'required|max:45',
             'address.postal_code' => 'required|max:11',
+            'address.region' => 'required|max:255',
             'address.city' => 'required|max:255',
             'address.id_country' => 'required',
 
@@ -41,16 +42,13 @@ class StoreEstablishment extends \App\Http\FormRequest {
             // Cooking types
             'businessCategories.1' => 'required|array|min:1',
         ];
-        /*
         // Opening hours
         foreach(\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel){
-            $rules['openingHours.'.$dayIndex.'1.start'] = 'required|array|before_or_equal:openingHours.'.$dayIndex.'1.end';
-            $rules['openingHours.'.$dayIndex.'2.start'] = 'required|array|before_or_equal:openingHours.'.$dayIndex.'2.end';
-            $rules['openingHours.'.$dayIndex.'1.end'] = 'required|array';
-            $rules['openingHours.'.$dayIndex.'2.end'] = 'required|array';
+            $rules['openingHours.'.$dayIndex.'.1.start'] = 'required|before_or_equal:openingHours.'.$dayIndex.'.1.end';
+            $rules['openingHours.'.$dayIndex.'.2.start'] = 'required|before_or_equal:openingHours.'.$dayIndex.'.2.end';
+            $rules['openingHours.'.$dayIndex.'.1.end'] = 'required';
+            $rules['openingHours.'.$dayIndex.'.2.end'] = 'required';
         }
-         * 
-         */
         return $rules;
     }
 
@@ -59,12 +57,15 @@ class StoreEstablishment extends \App\Http\FormRequest {
             //Emplacement msg
             'name.required' => 'Veuillez saisir le nom de votre restaurant.',
             'name.min' => 'Veuillez renseigner au minimum 2 caractère pour le nom de votre restaurant',
-            'name.max' => 'Merci de ne pas renseigner plus de 255 caractère pour le nom de votre restaurant',
+            'name.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre restaurant',
             'address.street.required' => 'Veuillez saisir une adresse pour votre établissement.',
             'address.street.min' => 'Le nom de la rue dois contenir au minimum 3 caractères.',
             'address.street_number.required' => 'Vous devez spécifiez un numéro de rue.',
             'address.postal_code.required' => 'Vous devez spécifier un code postal.',
+            'address.region.required' => 'Vous devez spécifiez une région pour votre établissement.',
+            'address.region.max' => 'Merci de ne pas renseigner plus de 255 caractères pour la région de votre établissement.',
             'address.city.required' => 'Vous devez spécifiez une ville pour votre établissement.',
+            'address.city.max' => 'Merci de ne pas renseigner plus de 255 caractères pour la ville de votre établissement.',
             'address.country.required' => 'Vous devez spécifiez le pays de votre établissement.',
             'latitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
             'longitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
@@ -81,19 +82,19 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'site_url.regex' => 'Veuillez saisir une adresse correcte pour votre site internet.',
             'email.email' => 'Veuillez saisir une adresse email valide.',
             //cooking type
-            'cooking_types.required' => 'Veuillez séléctioner au minimum un types de cuisine pour être correctement référencer par l\'application',
-            'cooking_types.array' => 'veuillez spécifiez au minimum un type de cuisine',
+            'businessCategories.1.required' => 'Veuillez séléctioner au minimum un types de cuisine pour être correctement référencer par l\'application',
+            'businessCategories.1.array' => 'Veuillez spécifiez au minimum un type de cuisine',
         ];
         // Opening hours
         foreach(\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel){
-            $messages['openingHours.'.$dayIndex.'1.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
+            $messages['openingHours.'.$dayIndex.'.1.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
                                                                                 ." matin doit être supérieure à l'heure d'ouverture";
-            $messages['openingHours.'.$dayIndex.'2.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
+            $messages['openingHours.'.$dayIndex.'.2.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
                                                                                 ." après-midi doit être supérieure à l'heure d'ouverture";
-            $messages['openingHours.'.$dayIndex.'1.start'] = "Veuillez saisir l'heure d'ouverture du ".$dayLabel." après-midi";
-            $messages['openingHours.'.$dayIndex.'1.end'] = "Veuillez saisir l'heure de fermeture du ".$dayLabel." après-midi";
-            $messages['openingHours.'.$dayIndex.'2.start'] = "Veuillez saisir l'heure d'ouverture du ".$dayLabel." après-midi";
-            $messages['openingHours.'.$dayIndex.'2.end'] = "Veuillez saisir l'heure de fermeture du ".$dayLabel." après-midi";
+            $messages['openingHours.'.$dayIndex.'.1.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";
+            $messages['openingHours.'.$dayIndex.'.1.end.required'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." après-midi";
+            $messages['openingHours.'.$dayIndex.'.2.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";
+            $messages['openingHours.'.$dayIndex.'.2.end.required'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." après-midi";
         }
         return $messages;
     }
