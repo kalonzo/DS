@@ -77,7 +77,14 @@ class Establishment extends Model {
     public function callNumbers(){
         return $this->hasMany(CallNumber::class, 'id_establishment', 'id');
     }
+
+    public function businessCategoryLinks(){
+        return $this->hasMany(EstablishmentBusinessCategory::class, 'id_establishment', 'id');
+    }
     
+    public function businessCategories(){
+        return $this->belongsToMany(BusinessCategory::class, EstablishmentBusinessCategory::TABLENAME, 'id_establishment', 'id_business_category');
+    }    
     /**
      * @return mixed
      */

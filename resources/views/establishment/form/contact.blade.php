@@ -34,8 +34,9 @@
                             $selectedPrefix = $form_values['id_country'];
                         }
                         @endphp
+                        
                         {!! Form::select('id_country_prefix['.$typeNumber.']', $form_data['country_prefixes'], $selectedPrefix, 
-                                        ['class' => 'form-control', 'placeholder' => 'Indicatif']) !!}
+                                        ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
                         {!! Form::text('call_number['.$typeNumber.']', $selectedNumber, ['class' => 'form-control']) !!}
                     </div>
                 </div>

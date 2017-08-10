@@ -45,7 +45,7 @@ class DbQueryTools {
      * @param string $tableName
      * @return string
      */
-    public static function genSqlForWhereRawUuidConstraint($tableField, $uuidRef, $tableName = ''){
+    public static function genSqlForWhereRawUuidConstraint($tableField, $uuidRef, $tableName = '', $notIn = false){
         $rawSql = "";
         if(!empty($uuidRef)){
             if(is_array($uuidRef)){
@@ -55,7 +55,11 @@ class DbQueryTools {
                 if(!empty($tableName)){
                     $rawSql .= $tableName.'.';
                 }
-                $rawSql .= $tableField.') IN ('.$inValuesStringified.') ';
+                $rawSql .= $tableField.') ';
+                if($notIn){
+                    $rawSql .= ' NOT ';
+                }
+                $rawSql .= ' IN ('.$inValuesStringified.') ';
             } else {
                 $rawSql = ' HEX(';
                 if(!empty($tableName)){
