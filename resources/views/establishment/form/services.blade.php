@@ -12,7 +12,14 @@
             <div class="row">
                 <section class="col-md-12 container-fluid">
                     <div>
-                        {!! Form::select('businessCategories[4][]', $form_data['services'], $form_values['business_categories'], 
+                        @php
+                        $selectedValues = old('business_categories[4][]');
+                        if(isset($form_values['business_categories'])){
+                            $selectedValues = $form_values['business_categories'];
+                        }
+                        @endphp
+                        
+                        {!! Form::select('businessCategories[4][]', $form_data['services'], $selectedValues, 
                                         array('multiple' => true, 'class' => 'multiselect-dual')) !!}
                     </div>
                 </section>   

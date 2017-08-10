@@ -23,6 +23,7 @@
         <nav class="navbar navbar-inverse navbar-fixed-top" id="navbar">
             <div class="container-fluid">
                 <div class="navbar-collapse collapse">
+                    @if(!isset($disableQuickSearch) || !$disableQuickSearch)
                     <form class="navbar-form navbar-left">
                         <div class="input-group locationInputGroup">
                             <span class="input-group-addon clickable" onclick="document.location.href='/search'" title="Cliquer ici pour rechercher autour de moi">
@@ -37,6 +38,7 @@
                             <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
                         </div>
                     </form>
+                    @endif
                     <a class="navbar-brand" href="/">
                         <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
                     </a>

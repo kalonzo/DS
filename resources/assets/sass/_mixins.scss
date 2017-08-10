@@ -4,19 +4,6 @@
     -moz-border-radius: $radius;
 }
 
-@mixin custom-calc-grid-column($index, $class, $index-label) {
-
-    @if ($index > 0) {
-        .col-#{$class}-#{$index-label} {
-            float: left;
-            width: percentage(($index / $grid-columns));
-        }
-        .col-#{$class}-offset-#{$index-label} {
-            margin-left: percentage(($index / $grid-columns));
-        }
-    }
-}
-
 @function calculateRem($size) {
     $remSize: $size / 16px;
     @return $remSize * 1rem;
@@ -99,5 +86,40 @@
 @mixin bp-lg {
     @media only screen and (min-width: 1200px) {
         @content;
+    }
+}
+
+@mixin custom-calc-grid-column($index, $class, $index-label) {
+    @if ($index >= 0) {
+        @if ($class == "xs"){
+            @include custom-calc-grid-column-rules($index, $class, $index-label)
+        }
+        @if ($class == "sm"){
+            @include bp-sm{
+                @include custom-calc-grid-column-rules($index, $class, $index-label)
+            }
+        }
+        @if ($class == "md"){
+            @include bp-md{
+                @include custom-calc-grid-column-rules($index, $class, $index-label)
+            }
+        }
+        @if ($class == "md"){
+            @include bp-md{
+                @include custom-calc-grid-column-rules($index, $class, $index-label)
+            }
+        }
+    }
+}
+
+@mixin custom-calc-grid-column-rules($index, $class, $index-label) {
+    @if ($index >= 0) {
+        .col-#{$class}-#{$index-label} {
+            float: left;
+            width: percentage(($index / $grid-columns));
+        }
+        .col-#{$class}-offset-#{$index-label} {
+            margin-left: percentage(($index / $grid-columns));
+        }
     }
 }

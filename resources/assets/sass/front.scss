@@ -699,17 +699,17 @@ $mapThumbnailWidth: 145px;
 .form-accordion{
     .panel{
         @include borderRadius(0px);
-        &:nth-of-type(odd){
+        &:nth-of-type(even){
             .panel-heading{
-                border-bottom: 1px solid #555;
+                border-bottom: 1px solid #333;
             }
             .panel-heading, .panel-collapse{
                 background: $body-bg;
             }
         }
-        &:nth-of-type(even){
+        &:nth-of-type(odd){
             .panel-heading{
-                border-bottom: 1px solid #333;
+                border-bottom: 1px solid #555;
             }
             .panel-heading, .panel-collapse{
                 background: $main-color;
@@ -732,6 +732,9 @@ $mapThumbnailWidth: 145px;
                     text-decoration: none;
                 }
             }
+        }
+        .panel-body.panel-body{
+            border-top: 0px;
         }
     }
     &.panel-group .panel + .panel{

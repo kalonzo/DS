@@ -11,7 +11,14 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::select('businessCategories[1][]', $form_data['cooking_types'], $form_values['business_categories'], 
+                    @php
+                    $selectedValues = old('business_categories[1][]');
+                    if(isset($form_values['business_categories'])){
+                        $selectedValues = $form_values['business_categories'];
+                    }
+                    @endphp
+                        
+                    {!! Form::select('businessCategories[1][]', $form_data['cooking_types'], $selectedValues, 
                                         array('multiple' => true, 'class' => 'multiselect-dual')) !!}
                 </div>   
             </div>
