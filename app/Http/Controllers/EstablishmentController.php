@@ -162,7 +162,9 @@ class EstablishmentController extends Controller {
         $timetable = array();
         for ($i = 0; $i < 24; $i++) {
             for ($j = 0; $j <= 55; $j += 30) {
-                $timetable[$i * 100 + $j] = sprintf('%02d', $i) . ':' . sprintf('%02d', $j);
+                $hours = sprintf('%02d', $i);
+                $minutes = sprintf('%02d', $j);
+                $timetable[$hours.':'.$minutes] = $hours. ':' . $minutes;
             }
         }
         $timetable[-1] = 'Fermé';
@@ -211,9 +213,37 @@ class EstablishmentController extends Controller {
         $businessCategories = $establishment->businessCategoryLinks()->selectRaw(DbQueryTools::genRawSqlForGettingUuid('id_business_category'))->get();
         $businessCategoryIds = $businessCategories->pluck('uuid');
         
+        // Opening hours
+        $etsOpeningHours = $establishment->openingHours()->orderBy('day', 'ASC')->orderBy('day_order', 'ASC')->get();
+        $openingHours = array();
+        if(!empty($etsOpeningHours)){
+            foreach($etsOpeningHours as $openingHour){
+                if($openingHour instanceof OpeningHour){
+                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['start']['id'] = $openingHour->getUuid();
+                    $startTime = null;
+                    if($openingHour->getClosed()){
+                        $startTime = -1;
+                    } else {
+                        $startTime = date('H:i', strtotime($openingHour->getStartTime()));
+                    }
+                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['start']['time'] = $startTime;
+
+                    $endTime = null;
+                    if($openingHour->getClosed()){
+                        $endTime = -1;
+                    } else {
+                        $endTime = date('H:i', strtotime($openingHour->getEndTime()));
+                    }
+                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['end']['id'] = $openingHour->getUuid();
+                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['end']['time'] = $endTime;
+                }
+            }
+        }
+        
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
         StorageHelper::getInstance()->add('feed_establishment.form_values.call_numbers', $callNumbersData);
         StorageHelper::getInstance()->add('feed_establishment.form_values.business_categories', $businessCategoryIds);
+        StorageHelper::getInstance()->add('feed_establishment.form_values.opening_hours', $openingHours);
     }
 
     /**
@@ -319,13 +349,8 @@ class EstablishmentController extends Controller {
                             // Create food specialties
                             $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
                             
-//      TODO Manage clean create below
-                            
                             // Create opening hours
-                            foreach (DateTools::getDaysArray() as $dayIndex => $dayLabel) {
-                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimeAm' . $dayIndex), $request->get('endTimeAm' . $dayIndex), $establishment->getId());
-                                $createdObjects[] = $this->createOpeningHour($request, $dayIndex, $request->get('startTimePm' . $dayIndex), $request->get('endTimePm' . $dayIndex), $establishment->getId());
-                            }
+                            $createdObjects = array_merge($createdObjects, $this->feedOpeningHours($request, $establishment));
 
                             // Create medias
                             $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
@@ -440,6 +465,8 @@ class EstablishmentController extends Controller {
                             $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_SERVICES);
                             // Update food specialties
                             $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
+                            //Update opening hours
+                            $this->feedOpeningHours($request, $establishment);
                             
                             // Update medias
                             if ($request->file('logo')) {
@@ -563,16 +590,61 @@ class EstablishmentController extends Controller {
      * @param type $day
      * @param type $startTime
      * @param type $endTime
-     * @param type $idEstablishment
+     * @param Establishment $establishment
      */
-    public function createOpeningHour($request, $day, $startTime, $endTime, $idEstablishment) {
-        $request->merge([
-            'day' => $day,
-            'start_time' => date('H:i', strtotime($startTime)),
-            'end_time' => date('H:i', strtotime($endTime)),
-            'id_establishment' => $idEstablishment
-        ]);
-        return OpeningHour::create($request->all());
+    public function feedOpeningHours($request, $establishment) {
+        $openingHours = array();
+        try{
+            $etsOpeningHours = $establishment->openingHours()->get();
+            foreach($request->get('openingHours') as $day => $dayData){
+                foreach($dayData as $idTimeslot => $timeslotData){
+                    $start = null;
+                    if(isset($timeslotData['start'])){
+                        $start = $timeslotData['start'];
+                    }
+                    $end = null;
+                    if(isset($timeslotData['end'])){
+                        $end = $timeslotData['end'];
+                    }
+                    if(!empty($start) && !empty($end)){
+                        $openingHour = null;
+                        $dayOrder = 1;
+                        if(checkHexUuid($idTimeslot)){
+                            $openingHour = $etsOpeningHours->where('id', UuidTools::getId($idTimeslot));
+                        } else {
+                            $dayOrder = $idTimeslot;
+                        }
+                        $attributes = [
+                                'day' => $day,
+                                'day_order' => $dayOrder,
+                                'id_establishment' => $establishment->getId()
+                        ];
+                        
+                        if($start == -1 || $end == -1){
+                            $attributes['start_time'] = null;
+                            $attributes['end_time'] = null;
+                            $attributes['closed'] = true;
+                        } else {
+                            $attributes['start_time'] = date('H:i', strtotime($start));
+                            $attributes['end_time'] = date('H:i', strtotime($end));
+                            $attributes['closed'] = false;
+                        }
+                                
+                        if(checkModel($openingHour)){
+                            $attributes['day_order'] = $openingHour->getDayOrder();
+                            $openingHour->update($attributes);
+                        } else {
+                            $attributes['id'] = UuidTools::generateUuid();
+                            $openingHour = OpeningHour::create($attributes);
+                        }
+                    }
+                }
+            }
+        } catch(Exception $e){
+            print_r($e->getMessage());
+            die();
+        }
+        return $openingHours;
     }
 
     /**

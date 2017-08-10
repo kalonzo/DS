@@ -85,6 +85,11 @@ class Establishment extends Model {
     public function businessCategories(){
         return $this->belongsToMany(BusinessCategory::class, EstablishmentBusinessCategory::TABLENAME, 'id_establishment', 'id_business_category');
     }    
+    
+    public function openingHours(){
+        return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
+    }
+    
     /**
      * @return mixed
      */

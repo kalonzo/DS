@@ -185,15 +185,19 @@
     
     function duplicateTimeSlots(triggerElement){
         var $timetableGrid = $(triggerElement).parentsInclude('#timetable-grid');
-        var startTimeAmRef = $timetableGrid.find('select[name=startTimeAm1]').val();
-        var startTimePmRef = $timetableGrid.find('select[name=startTimePm1]').val();
-        var endTimeAmRef = $timetableGrid.find('select[name=endTimeAm1]').val();
-        var endTimePmRef = $timetableGrid.find('select[name=endTimePm1]').val();
+        var startTimeAmRef = $timetableGrid.find('select[name="openingHours[1][1][start]"]').val();
+        var endTimeAmRef = $timetableGrid.find('select[name="openingHours[1][1][end]"]').val();
+
+        var startTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][start]"]').val();
+        var endTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][end]"]').val();
         
-        $timetableGrid.find('select[name^="startTimeAm"]').val(startTimeAmRef);
-        $timetableGrid.find('select[name^="endTimeAm"]').val(endTimeAmRef);
-        $timetableGrid.find('select[name^="startTimePm"]').val(startTimePmRef);
-        $timetableGrid.find('select[name^="endTimePm"]').val(endTimePmRef);
+        for(var $i=2; $i<=7; $i++){
+            $timetableGrid.find('select[name="openingHours['+$i+'][1][start]"]').val(startTimeAmRef);
+            $timetableGrid.find('select[name="openingHours['+$i+'][1][end]"]').val(endTimeAmRef);
+        
+            $timetableGrid.find('select[name="openingHours['+$i+'][2][start]"]').val(startTimePmRef);
+            $timetableGrid.find('select[name="openingHours['+$i+'][2][end]"]').val(endTimePmRef);
+        }
     }
 
     var autoCompleteArea;
