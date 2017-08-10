@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder {
         if(checkModel($locationIndex)){
             $idLocationIndex = $locationIndex->getId();
         } else {
-            $country = App\Models\Country::where('label', $countryName)->first();
+            $country = App\Models\Country::where('label','=', $countryName)->first();
             if(checkModel($country)){
                          $locationIndex = App\Models\LocationIndex::insert([
                     'id' => \App\Utilities\UuidTools::generateUuid(),
@@ -51,7 +51,20 @@ class DatabaseSeeder extends Seeder {
     }
 
     /**
-     * Run the database seeds.
+     * 
+     * @param type $non_etab
+     * @param type $street
+     * @param type $street_number
+     * @param type $postal_code
+     * @param type $city
+     * @param type $country
+     * @param type $latitude
+     * @param type $longitude
+     * @param type $email
+     * @param type $site_url
+     * @param type $type_cuisine
+     * @param type $descn
+     * @param type $id_business_categoryRun the database seeds.
      *
      * @return void
      */
@@ -63,7 +76,8 @@ class DatabaseSeeder extends Seeder {
         $id_address = \App\Utilities\UuidTools::generateUuid();
 
         $idLocationIndex = $this->getIdLocationIndex($postal_code, $city, $latitude, $longitude, $country);
-
+         $countryId = App\Models\Country::where('label', $country)->first()->getId();
+       
         DB::table('address')->insert([
             'id' => $id_address,
             'street_number' => $street_number,
@@ -74,7 +88,8 @@ class DatabaseSeeder extends Seeder {
             'country' => $country,
             'latitude' => $latitude,
             'longitude' => $longitude,
-            'id_location_index' => $idLocationIndex
+            'id_location_index' => $idLocationIndex,
+            'id_country' => $countryId
         ]);
 
         DB::table('users')->insert([
