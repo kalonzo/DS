@@ -47,7 +47,8 @@ class EstablishmentController extends Controller {
         $this->buildCreateFormValues();
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', null);
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', null)
+                ->with('disableQuickSearch', true);
 
         return $view;
     }
@@ -73,7 +74,8 @@ class EstablishmentController extends Controller {
         $this->buildEditFormValues($establishment);
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', $establishment);
+        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', $establishment)
+                ->with('disableQuickSearch', true);
         return $view;
     }
 
@@ -163,6 +165,7 @@ class EstablishmentController extends Controller {
                 $timetable[$i * 100 + $j] = sprintf('%02d', $i) . ':' . sprintf('%02d', $j);
             }
         }
+        $timetable[-1] = 'Fermé';
 
         // Helper array for days
         $days = DateTools::getDaysArray();

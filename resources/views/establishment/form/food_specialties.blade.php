@@ -14,7 +14,14 @@
                     * Vous pouvez enregistrer jusqu'à 5 spécialités
                     <br/>
                     <div class="form-group {{ $errors->has('id_country') ? 'has-error' : '' }}">
-                        {!! Form::select('businessCategories[2][]', $form_data['food_specialties'], $form_values['business_categories'], 
+                        @php
+                        $selectedValues = old('business_categories[2][]');
+                        if(isset($form_values['business_categories'])){
+                            $selectedValues = $form_values['business_categories'];
+                        }
+                        @endphp
+                        
+                        {!! Form::select('businessCategories[2][]', $form_data['food_specialties'], $selectedValues, 
                                    ['multiple' => true, 'class' => 'form-control select2', 'id' => 'foodSpecialties',
                                    'style' => 'width: 100%;',
                                    'data-tags' => 'true', 'data-maximumSelectionLength' => 5]) !!}

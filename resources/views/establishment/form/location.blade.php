@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-4 form-group">
                     <label>&nbsp;</label>
-                    <button type="button" role="button" class="btn btn-sm col-xs-12" onclick="getCoords(this);">
+                    <button type="button" role="button" class="btn btn-sm col-xs-12" onclick="geocodeAddress(this);">
                         <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> Géolocaliser mon établissement
                     </button>
                 </div>

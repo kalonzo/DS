@@ -10,42 +10,62 @@
     <div id="collapse12" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading12">
         <div class="panel-body container">
             <div class="row">
-                <div class="col-md-4">
-                    <h5>Veuillez indiquer vos horaire d'ouverture</h5>
+                <div class="col-xs-12 no-gutter">
+                    <h5>Veuillez indiquer vos horaires d'ouverture</h5>
                 </div>    
-                <div class="col-md-4">
+            </div>
+            <div class="row">
+                <div class="col-xs-5_5 col-sm-2">
+                    &nbsp;
+                </div> 
+                <div class="col-xs-5_5 col-sm-4 text-center">
                     <h5>Déjeuner</h5>
                 </div>    
-                <div class="col-md-4">
+                <div class="hidden-xs col-xs-5_5 col-sm-4 col-sm-offset-0_5 text-center">
                     <h5>Diner</h5>
                 </div>    
             </div>
-            @foreach($form_data['days'] as $dayIndex => $dayLabel)
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>{{ $dayLabel }}</h5>
-                </div>    
-                <div class="col-md-4">
-                    {!! Form::select('startTimeAm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Début'], array('multiple' => false)) !!}
-                    {!! Form::select('endTimeAm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Fin'], array('multiple' => false)) !!}
-                </div>    
-                <div class="col-md-4">
-                    {!! Form::select('startTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Début'], array('multiple' => false )) !!}
-                    {!! Form::select('endTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Fin'], array('multiple' => false)) !!}
-                </div>    
+            <div id="timetable-grid">
+                @foreach($form_data['days'] as $dayIndex => $dayLabel)
+                <div class="row timetable-grid-row form-group">
+                    <div class="col-xs-5_5 col-sm-2 timetable-day">
+                        {{ $dayLabel }}
+                    </div>    
+                    <div class="col-xs-5_5 col-sm-4 col-xs-offset-0_5 col-sm-offset-0 col-sm-4 timetable-col timetable-col-am">
+                        {!! Form::select('startTimeAm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Début'], array('multiple' => false)) !!}
+                        {!! Form::select('endTimeAm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Fin'], array('multiple' => false)) !!}
+                        <a class="col-xs-12 no-gutter close-timeslot" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>
+                    </div>    
+                    <div class="col-xs-5_5 hidden-sm hidden-md hidden-lg">
+                        &nbsp;
+                    </div>    
+                    <div class="col-xs-5_5 col-sm-4 col-xs-offset-0_5 timetable-col timetable-col-pm">
+                        {!! Form::select('startTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Début'], array('multiple' => false )) !!}
+                        {!! Form::select('endTimePm'.$dayIndex, $form_data['timetable'], null,['placeholder' => 'Fin'], array('multiple' => false)) !!}
+                        <a class="col-xs-12 no-gutter close-timeslot" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>
+                    </div>    
+                    <div class="col-sm-1_5 timetable-action">
+                        @if($loop->iteration == 1)
+                        <button type="button" role="button" class="btn btn-md text-uppercase" onclick="duplicateTimeSlots(this);">
+                            Copier
+                        </button>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
             </div>
-            @endforeach
+            <div class="cleaner"></div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h5> Fermeture exceptionnelle</h5> 
+                </div>      
+            </div>
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
                         Suivant
                     </button>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <h5> Fermeture exceptionnelle</h5> 
-                </div>      
             </div>
         </div> 
     </div>

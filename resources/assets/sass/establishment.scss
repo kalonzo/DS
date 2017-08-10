@@ -36,3 +36,38 @@
 #foodSpecialties{
     width: 100%;
 }
+
+$timetableRowHeight: 76px;
+#timetable-grid{
+    float: left;
+    width: 100%;
+    .timetable-grid-row{
+        height: $timetableRowHeight;
+        > *{
+            height: 100%;
+            &.timetable-day{
+                font-size: 1.4em;
+                line-height: $timetableRowHeight;
+                text-align: left;
+            }
+            &.timetable-action{
+                line-height: $timetableRowHeight;
+                text-align: center;
+            }
+        }
+        .timetable-col-am, .timetable-col-pm{
+            text-align: center;
+            background: $main-color;
+            padding-top: 1em;
+            padding-bottom: 0.5em;
+        }
+    }
+}
+a.close-timeslot{
+    color: white;
+    text-decoration: underline;
+    margin-top: 0.5em;
+    &:hover{
+        color: white;
+    }
+}

@@ -11,11 +11,12 @@
 
 @import "_mixins";
 
-@for $i from 0 through $grid-columns {
-    @include custom-calc-grid-column(($i + 0.5), xs, $i + '_5')
-    @include custom-calc-grid-column(($i + 0.5), sm, $i + '_5')
-    @include custom-calc-grid-column(($i + 0.5), md, $i + '_5')
-    @include custom-calc-grid-column(($i + 0.5), lg, $i + '_5')
+$classes: (xs, sm, md, lg);
+@each $class in $classes{
+    @for $i from 0 through $grid-columns {
+        @include custom-calc-grid-column($i, $class, $i)
+        @include custom-calc-grid-column(($i + 0.5), $class, $i + '_5')
+    }
 }
 
 .clickable{
