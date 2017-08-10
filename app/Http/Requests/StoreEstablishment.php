@@ -19,31 +19,43 @@ class StoreEstablishment extends \App\Http\FormRequest {
      * @return array
      */
     public function rules() {
-        return [
-            //Emplacement validation
+        $rules = [
+            // Location
             'name' => 'required|min:2|max:255',
             'address.street' => 'required|min:3|max:255',
             'address.street_number' => 'required|max:45',
             'address.postal_code' => 'required|max:11',
             'address.city' => 'required|max:255',
             'address.id_country' => 'required',
-            //Contact validation
+
+            // Call numbers
             'call_number.1' => 'required|min:11|numeric',
             'call_number.4' => 'required|min:11|numeric',
             'call_number.3' => 'nullable|min:11|numeric',
             'call_number.2' => 'nullable|min:11|numeric',
-            //Web validation
-             'site_url' => 'nullable|regex:/^(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',  
+            
+            //Web 
+            'site_url' => 'nullable|regex:/^(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',  
             'email' => 'nullable|email',
-            //cooking type
+            
+            // Cooking types
             'businessCategories.1' => 'required|array|min:1',
-            //horaire
-            'startTimeAm1'    => 'nullable|date_format:H:i|before:endTimeAm1',
         ];
+        /*
+        // Opening hours
+        foreach(\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel){
+            $rules['openingHours.'.$dayIndex.'1.start'] = 'required|array|before_or_equal:openingHours.'.$dayIndex.'1.end';
+            $rules['openingHours.'.$dayIndex.'2.start'] = 'required|array|before_or_equal:openingHours.'.$dayIndex.'2.end';
+            $rules['openingHours.'.$dayIndex.'1.end'] = 'required|array';
+            $rules['openingHours.'.$dayIndex.'2.end'] = 'required|array';
+        }
+         * 
+         */
+        return $rules;
     }
 
     public function messages() {
-        return [
+        $messages = [
             //Emplacement msg
             'name.required' => 'Veuillez saisir le nom de votre restaurant.',
             'name.min' => 'Veuillez renseigner au minimum 2 caractère pour le nom de votre restaurant',
@@ -72,5 +84,17 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'cooking_types.required' => 'Veuillez séléctioner au minimum un types de cuisine pour être correctement référencer par l\'application',
             'cooking_types.array' => 'veuillez spécifiez au minimum un type de cuisine',
         ];
+        // Opening hours
+        foreach(\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel){
+            $messages['openingHours.'.$dayIndex.'1.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
+                                                                                ." matin doit être supérieure à l'heure d'ouverture";
+            $messages['openingHours.'.$dayIndex.'2.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
+                                                                                ." après-midi doit être supérieure à l'heure d'ouverture";
+            $messages['openingHours.'.$dayIndex.'1.start'] = "Veuillez saisir l'heure d'ouverture du ".$dayLabel." après-midi";
+            $messages['openingHours.'.$dayIndex.'1.end'] = "Veuillez saisir l'heure de fermeture du ".$dayLabel." après-midi";
+            $messages['openingHours.'.$dayIndex.'2.start'] = "Veuillez saisir l'heure d'ouverture du ".$dayLabel." après-midi";
+            $messages['openingHours.'.$dayIndex.'2.end'] = "Veuillez saisir l'heure de fermeture du ".$dayLabel." après-midi";
+        }
+        return $messages;
     }
 }

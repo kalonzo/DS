@@ -597,7 +597,7 @@ class EstablishmentController extends Controller {
         try{
             $etsOpeningHours = $establishment->openingHours()->get();
             foreach($request->get('openingHours') as $day => $dayData){
-                foreach($dayData as $idTimeslot => $timeslotData){
+                foreach($dayData as $dayOrder => $timeslotData){
                     $start = null;
                     if(isset($timeslotData['start'])){
                         $start = $timeslotData['start'];
@@ -607,13 +607,7 @@ class EstablishmentController extends Controller {
                         $end = $timeslotData['end'];
                     }
                     if(!empty($start) && !empty($end)){
-                        $openingHour = null;
-                        $dayOrder = 1;
-                        if(checkHexUuid($idTimeslot)){
-                            $openingHour = $etsOpeningHours->where('id', UuidTools::getId($idTimeslot));
-                        } else {
-                            $dayOrder = $idTimeslot;
-                        }
+                        $openingHour = $etsOpeningHours->where('day', $day)->where('day_order', $dayOrder)->first();
                         $attributes = [
                                 'day' => $day,
                                 'day_order' => $dayOrder,
