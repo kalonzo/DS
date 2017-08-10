@@ -28,17 +28,15 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'address.city' => 'required|max:255',
             'address.id_country' => 'required',
             //Contact validation
-            /*
-            'numberReservation' => 'required|min:11|numeric',
-            'contactNumber' => 'required|min:11|numeric',
-            'fax' => 'nullable|min:11|numeric',
-            'mobile' => 'nullable|min:11|numeric',
-             */
+            'call_number.1' => 'required|min:11|numeric',
+            'call_number.4' => 'required|min:11|numeric',
+            'call_number.3' => 'nullable|min:11|numeric',
+            'call_number.2' => 'nullable|min:11|numeric',
             //Web validation
-            'site_url' => 'nullable|active_url',    
+             'site_url' => 'nullable|regex:/^(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',  
             'email' => 'nullable|email',
             //cooking type
-            'cooking_types' => 'required|array|min:1',
+            'businessCategories.1' => 'required|array|min:1',
             //horaire
             'startTimeAm1'    => 'nullable|date_format:H:i|before:endTimeAm1',
         ];
@@ -59,21 +57,19 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'latitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
             'longitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissemnt.',
             //contact
-            'numberReservation.required' => 'Veuillez indiquer un numéro de résérvation.',
-            'numberReservation.max' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
-            'numberReservation.numeric' => 'Le numéro de résérvation de dois pas contenir de caractères',
-            'contactNumber.required' => 'Veuillez indiquer un numéro pour vous joindre.',
-            'contactNumber.min' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
-            'contactNumber.numeric' => 'Le numéro de résérvation de dois pas contenir de caractères', 
-            'fax.numeric' => 'Le numéro de fax ne doit pas contenir plus de 11 numéro.',
-            'mobile.numeric' => 'Le numéro de résérvation de dois pas contenir de caractères', 
+            'call_number.1.required' => 'Veuillez indiquer un numéro de résérvation.',
+            'call_number.1.numeric' => 'Veuillez indiquer un numéro de résérvation.',
+            'call_number.1.max' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
+            'call_number.4.numeric' => 'Le numéro de contact ne de dois pas contenir de caractères',
+            'call_number.4.required' => 'Veuillez indiquer un numéro pour vous joindre.',
+            'call_number.4.max' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
+            'call_number.3.numeric' => 'Le numéro de fax ne doit pas contenir plus de 11 numéro.',
+            'call_number.2.numeric' => 'Le numéro de résérvation de dois pas contenir de caractères', 
             //Web
-            'site_url.active_url' => 'Veuillez saisir une adresse correcte pour votre site internet.',
+            'site_url.regex' => 'Veuillez saisir une adresse correcte pour votre site internet.',
             'email.email' => 'Veuillez saisir une adresse email valide.',
-            'email.required' => 'Veuillez saisir une adresse email de contact.',
             //cooking type
             'cooking_types.required' => 'Veuillez séléctioner au minimum un types de cuisine pour être correctement référencer par l\'application',
-            'cooking_types.required' => 'veuillez spécifiez au minimum un type de cuisine',
             'cooking_types.array' => 'veuillez spécifiez au minimum un type de cuisine',
         ];
     }
