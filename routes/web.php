@@ -13,25 +13,44 @@ use Illuminate\Support\Facades\Route;
  * | contains the "web" middleware group. Now create something great!
  * |
  */
+
+/************************* AUTH ***********************************************/
 Auth::routes();
 
+/****************************** FRONT *****************************************/
 Route::get('/', 'HomeController@index');
+Route::match(['get', 'post'], '/search', 'SearchController@search');
+
+
+
+// ESTABLISHMENT
+Route::get('/establishment/create', 'EstablishmentController@create');          // create
+Route::put('/establishment', 'EstablishmentController@store');                  // store
+
+Route::get('/establishment/{establishment}','EstablishmentController@edit');    // edit
+Route::put('/establishment/{establishment}','EstablishmentController@update');  // update
+
+Route::get('/{type_ets}/{city}/{slug}/{url_id}', function($typeEts, $city, $slug, $url_id){                        // view
+    $establishment = \App\Models\Establishment::where('slug', '=', $slug)->where('url_id', '=', $url_id)->first();
+    
+    $app = app();
+    $establishmentController = $app->make(App\Http\Controllers\EstablishmentController::class);
+    return $establishmentController->callAction('show', array('establishment' => $establishment));
+});
+
+
+/****************************** ADMIN *****************************************/
 
 Route::get('/admin', 'AdminController@index');
+
+
+/**************************** AJAX CALLS **************************************/
 
 Route::get('/search-autocomplete', function () {
     $terms = Request::get('term');
     $results = App\Http\Controllers\SearchController::quickSearch($terms);
     echo json_encode($results);
 });
-
-Route::match(['get', 'post'], '/search', 'SearchController@search');
-
-Route::get('/establishment/create', 'EstablishmentController@create');
-Route::put('/establishment', 'EstablishmentController@store');
-
-Route::get('/establishment/{establishment}','EstablishmentController@edit');
-Route::put('/establishment/{establishment}','EstablishmentController@update');
 
 Route::post('reload_datatable', function(){
     $jsonResponse = array('success' => 0);

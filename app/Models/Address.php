@@ -18,6 +18,7 @@ class Address extends Model {
         'address_additional',
         'po_box',
         'postal_code',
+        'city_slug',
         'city',
         'district',
         'department',
@@ -37,6 +38,28 @@ class Address extends Model {
     
     public function country(){
         return $this->hasOne(Country::class, 'id', 'id_country');
+    }
+    
+    public function save(array $options = array()) {
+        if($this->isDirty()){
+            $changedAttr = $this->getDirty();
+            if(isset($changedAttr['city']) && !isset($changedAttr['city_slug'])){
+                $this->generateCitySlug();
+            }
+        } else if(empty($this->getCitySlug())){
+            $this->generateCitySlug();
+        }
+        return parent::save($options);
+    }
+    
+    public function generateCitySlug(){
+        $city = $this->getCity();
+        $slug = null;
+        if(!empty($city)){
+            $slug = str_slug($city);
+            $this->setCitySlug($slug);
+        }
+        return $slug;
     }
     
     /**
@@ -333,5 +356,12 @@ class Address extends Model {
         $this->id_country = $id_country;
     }
 
+    function getCitySlug() {
+        return $this->city_slug;
+    }
+
+    function setCitySlug($city_slug) {
+        $this->city_slug = $city_slug;
+    }
 
 }

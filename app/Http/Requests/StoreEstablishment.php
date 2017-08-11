@@ -95,10 +95,10 @@ class StoreEstablishment extends \App\Http\FormRequest {
                                                                                 ." après-midi doit être supérieure à l'heure d'ouverture";
             $messages['openingHours.'.$dayIndex.'.2.start.after_or_equal'] = "L'heure d'ouverture du ".strtolower($dayLabel)
                                                                                 ." après-midi doit être supérieure à l'heure de fermeture du matin";
-            $messages['openingHours.'.$dayIndex.'.1.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";
-            $messages['openingHours.'.$dayIndex.'.1.end.required'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." après-midi";
-            $messages['openingHours.'.$dayIndex.'.2.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";
-            $messages['openingHours.'.$dayIndex.'.2.end.required'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." après-midi";
+            $messages['openingHours.'.$dayIndex.'.1.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." matin";
+            $messages['openingHours.'.$dayIndex.'.1.end.required'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." matin";
+            $messages['openingHours.'.$dayIndex.'.2.start.required_unless'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";
+            $messages['openingHours.'.$dayIndex.'.2.end.required_unless'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." après-midi";
         }
         return $messages;
     }

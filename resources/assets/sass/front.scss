@@ -339,6 +339,19 @@ select:not(.select2){
     box-sizing: border-box;
     > .ui-menu-item{
         margin: 0.2em 0px;
+        .ui-menu-item-wrapper{
+            padding: 0px;
+            > a {
+                color: inherit;
+                width: 100%;
+                height: 100%;
+                display: inline-block;
+                padding: 3px 1em 3px .4em;
+                &:hover{
+                    color: inherit;
+                }
+            }
+        }
         &:not(.ui-autocomplete-category){
             background-color: $main-color;
             line-height: 35px;
@@ -445,31 +458,37 @@ select:not(.select2){
             clear: both;
         }
     }
-    .thumbnail-top{
-        position: relative;
-        .thumbnail-distance{
-            background: rgba(0, 0, 0, 0.4); 
-            color: white;
-            font-weight: bold;
-            position: absolute; 
-            bottom: 0px; 
-            right: 0px;
-            padding: 0px 0.5em;
+    > a{
+        color: inherit;
+        &:hover{
+            color: inherit;
         }
-    }
-    .thumbnail-text{
-        padding-top: 0.4em;
-        padding-bottom: 0.4em;
-        .thumbnail-label{
-            text-transform: uppercase;
-            height: 2*$line-height-base-px;
-            overflow: hidden;
-            font-weight: bold;
+        .thumbnail-top{
+            position: relative;
+            .thumbnail-distance{
+                background: rgba(0, 0, 0, 0.4); 
+                color: white;
+                font-weight: bold;
+                position: absolute; 
+                bottom: 0px; 
+                right: 0px;
+                padding: 0px 0.5em;
+            }
         }
-        .thumbnail-info{
-            font-size: 0.9em;
-            height: 2*$line-height-base-px;
-            overflow: hidden;
+        .thumbnail-text{
+            padding-top: 0.4em;
+            padding-bottom: 0.4em;
+            .thumbnail-label{
+                text-transform: uppercase;
+                height: 2*$line-height-base-px;
+                overflow: hidden;
+                font-weight: bold;
+            }
+            .thumbnail-info{
+                font-size: 0.9em;
+                height: 2*$line-height-base-px;
+                overflow: hidden;
+            }
         }
     }
 }

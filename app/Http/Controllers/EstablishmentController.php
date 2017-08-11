@@ -56,11 +56,13 @@ class EstablishmentController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  \App\php  $php
+     * @param  Establishment $establishment
      * @return Response
      */
-    public function show(php $php) {
-        
+    public function show(Establishment $establishment) {
+        $view = View::make('establishment.show')->with('establishment', $establishment);
+
+        return $view;
     }
 
     /**

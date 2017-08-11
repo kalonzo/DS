@@ -44,6 +44,7 @@ $(function () {
         var that = this;
         var li = $( "<li>" );
         var wrapper = $("<div>", {title: item.label});
+        var link = $('<a>', {href: item.url});
         
         if(!item.avatar_bg_color){
             item.avatar_bg_color = '#FFF';
@@ -56,20 +57,21 @@ $(function () {
             avatar += "<span class='ui-menu-item-avatar-text'>"+ item.avatar_text+"</span>";
         }
         avatar += "</div>";
-        wrapper.append(avatar);
+        link.append(avatar);
         
         if ( item.label ) {
-                wrapper.append("<span class='ui-menu-item-text'>"+ item.label+"</span>");
+                link.append("<span class='ui-menu-item-text'>"+ item.label+"</span>");
         } else {
-                wrapper.html( "&#160;" );
+                link.html( "&#160;" );
         }
         if ( item.text_right ) {
-                wrapper.append("<span class='ui-menu-item-text-right'>"+ item.text_right+"</span>");
+                link.append("<span class='ui-menu-item-text-right'>"+ item.text_right+"</span>");
         }
         if ( item.disabled ) {
             that._addClass( li, null, "ui-state-disabled" );
         }
 
+        wrapper.append(link);
         return li.append( wrapper ).appendTo( ul );
     };
     

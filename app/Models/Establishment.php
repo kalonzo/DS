@@ -17,6 +17,8 @@ class Establishment extends Model {
     protected $fillable = [
         'status',
         'name',
+        'slug',
+        'url_id',
         'profile_condition',
         'email',
         'id_address',
@@ -90,6 +92,85 @@ class Establishment extends Model {
         return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
     }
     
+    protected $url = null;
+    public function getUrl($lazy = true){
+        if($this->url === null || !$lazy){
+            $typeLabel = str_slug($this->getBusinessTypeLabel());
+            $citySlug = $this->address()->first()->getCitySlug();
+            $slug = $this->getSlug();
+            $urlId = $this->getUrlId();
+            if(!empty($typeLabel) && !empty($citySlug) && !empty($slug) && !empty($urlId)){
+                $this->url = '/'.$typeLabel.'/'.$citySlug.'/'.$slug.'/'.$urlId;
+            }
+        }
+        return $this->url;
+    }
+    
+    public static function getUrlStatic($typeBusiness, $city, $slug, $urlId){
+        $url = null;
+        $businessTypeLabels = BusinessType::getLabelByType();
+        if(isset($businessTypeLabels[$typeBusiness])){
+            $typeLabel = $businessTypeLabels[$typeBusiness];
+            if(!empty($typeLabel) && !empty($city) && !empty($slug) && !empty($urlId)){
+                $citySlug = str_slug($city);
+                $typeSlug = str_slug($typeLabel);
+                $url = '/'.$typeSlug.'/'.$citySlug.'/'.$slug.'/'.$urlId;
+            }
+        }
+        return $url;
+    }
+    
+    public function save(array $options = array()) {
+        $this->generateUrlId();
+        if($this->isDirty()){
+            $changedAttr = $this->getDirty();
+            if(isset($changedAttr['name']) && !isset($changedAttr['slug'])){
+                $this->generateSlug();
+            }
+        } else if(empty($this->getSlug())){
+            $this->generateSlug();
+        }
+        return parent::save($options);
+    }
+    
+    public function generateUrlId(){
+        $urlId = $this->getUrlId();
+        if(empty($urlId)){
+            $urlId = '';
+            $countdown = 8;
+            $uuid = $this->getUuid();
+            if(empty($uuid)){
+                $id = \App\Utilities\UuidTools::generateUuid();
+                $uuid = \App\Utilities\UuidTools::getUuid($id);
+                $this->setId($id);
+            }
+            if(checkHexUuid($uuid)){
+                for($i=0; $i <= strlen($uuid); $i++){
+                    $char = $uuid[$i];
+                    if(is_numeric($char)){
+                        $urlId .= $char;
+                        $countdown--;
+                        if($countdown <= 0){
+                            break;
+                        }
+                    }
+                }
+                $this->setUrlId($urlId);
+            }
+        }
+        return $urlId;
+    }
+    
+    public function generateSlug(){
+        $name = $this->getName();
+        $slug = null;
+        if(!empty($name)){
+            $slug = str_slug($name);
+            $this->setSlug($slug);
+        }
+        return $slug;
+    }
+
     /**
      * @return mixed
      */
@@ -394,4 +475,19 @@ class Establishment extends Model {
         return $this;
     }
 
+    function getSlug() {
+        return $this->slug;
+    }
+
+    function setSlug($slug) {
+        $this->slug = $slug;
+    }
+    
+    function getUrlId() {
+        return $this->url_id;
+    }
+
+    function setUrlId($url_id) {
+        $this->url_id = $url_id;
+    }
 }

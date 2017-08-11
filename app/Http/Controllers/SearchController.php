@@ -74,7 +74,8 @@ class SearchController {
                             'section' => 'Localité',
                             'order_by' => self::SEARCH_ORDER_BY_PROXIMITY,
                             'lat' => $restaurant->getLatitude(),
-                            'lng' => $restaurant->getLongitude()
+                            'lng' => $restaurant->getLongitude(),
+                            'url' => $restaurant->getUrl()
                         );
                         $counter++;
                     } else {
@@ -93,7 +94,8 @@ class SearchController {
                         'section' => 'Nom',
                         'order_by' => self::SEARCH_ORDER_BY_NAME,
                         'lat' => $restaurant->getLatitude(),
-                        'lng' => $restaurant->getLongitude()
+                        'lng' => $restaurant->getLongitude(),
+                        'url' => $restaurant->getUrl()
                     );
                 }
 
@@ -379,6 +381,8 @@ class SearchController {
                     $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;
                     $establishments[$uuid]['longitude'] = $establishmentData->longitude;
+                    $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
+                            $establishmentData->slug, $establishmentData->url_id);
                 }
             }
 
