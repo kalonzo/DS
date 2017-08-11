@@ -50,9 +50,25 @@ $timetableRowHeight: 76px;
                 line-height: $timetableRowHeight;
                 text-align: left;
             }
+            .timetable-action-nobreak{
+                float: right;
+                width: 60px;
+                margin-left: -60px;
+                position: relative;
+                z-index: 2;
+            }
             &.timetable-action{
                 line-height: $timetableRowHeight;
                 text-align: center;
+            }
+            a.close-timeslot{
+                color: white;
+                text-decoration: underline;
+                margin-top: 0.5em;
+                display: inline-block;
+                &:hover{
+                    color: white;
+                }
             }
         }
         .timetable-col-am, .timetable-col-pm{
@@ -61,13 +77,5 @@ $timetableRowHeight: 76px;
             padding-top: 1em;
             padding-bottom: 0.5em;
         }
-    }
-}
-a.close-timeslot{
-    color: white;
-    text-decoration: underline;
-    margin-top: 0.5em;
-    &:hover{
-        color: white;
     }
 }

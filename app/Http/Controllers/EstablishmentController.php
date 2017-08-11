@@ -219,7 +219,6 @@ class EstablishmentController extends Controller {
         if(!empty($etsOpeningHours)){
             foreach($etsOpeningHours as $openingHour){
                 if($openingHour instanceof OpeningHour){
-                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['start']['id'] = $openingHour->getUuid();
                     $startTime = null;
                     if($openingHour->getClosed()){
                         $startTime = -1;
@@ -234,8 +233,8 @@ class EstablishmentController extends Controller {
                     } else {
                         $endTime = date('H:i', strtotime($openingHour->getEndTime()));
                     }
-                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['end']['id'] = $openingHour->getUuid();
                     $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['end']['time'] = $endTime;
+                    $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
                 }
             }
         }
@@ -606,12 +605,19 @@ class EstablishmentController extends Controller {
                     if(isset($timeslotData['end'])){
                         $end = $timeslotData['end'];
                     }
-                    if(!empty($start) && !empty($end)){
+                    $noBreak = null;
+                    if($dayOrder == 1 && isset($dayData[2]['no_break'])){
+                        $noBreak = true;
+                    } else if(isset($timeslotData['no_break'])){
+                        $noBreak = true;
+                    }
+                    if((!empty($start) && !empty($end)) || $noBreak){
                         $openingHour = $etsOpeningHours->where('day', $day)->where('day_order', $dayOrder)->first();
                         $attributes = [
-                                'day' => $day,
-                                'day_order' => $dayOrder,
-                                'id_establishment' => $establishment->getId()
+                            'day' => $day,
+                            'day_order' => $dayOrder,
+                            'id_establishment' => $establishment->getId(),
+                            'no_break' => $noBreak
                         ];
                         
                         if($start == -1 || $end == -1){

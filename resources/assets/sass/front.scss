@@ -12,6 +12,11 @@ body{
     color: $main-text-color;
 }
 
+a.disabled{
+    @include opacity(0.5);
+    pointer-events: none;
+}
+
 .text-highlight{
     color: $highlight-color;
 }
@@ -33,6 +38,9 @@ select:not(.select2){
         height: 30px;
         padding: 4px 10px;
         background: $body-bg !important;
+        &[disabled]{
+            @include opacity(0.5);
+        }
 }
 .select2.select2{
     .select2-selection{

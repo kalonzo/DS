@@ -183,6 +183,18 @@
         $(triggerElement).parentsInclude('.timetable-col').find('select').val(-1);
     }
     
+    function toggleNoBreak(triggerElement){
+        var checked = $(triggerElement).is(':checked');
+        var $column = $(triggerElement).parentsInclude('.timetable-col');
+        if(checked){
+            $column.find('select').attr('disabled', 'disabled');
+            $column.find('a.close-timeslot').addClass('disabled');
+        } else {
+            $column.find('select').removeAttr('disabled');
+            $column.find('a.close-timeslot').removeClass('disabled');
+        }
+    }
+    
     function duplicateTimeSlots(triggerElement){
         var $timetableGrid = $(triggerElement).parentsInclude('#timetable-grid');
         var startTimeAmRef = $timetableGrid.find('select[name="openingHours[1][1][start]"]').val();

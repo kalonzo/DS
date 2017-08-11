@@ -45,9 +45,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
         // Opening hours
         foreach(\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel){
             $rules['openingHours.'.$dayIndex.'.1.start'] = 'required|before_or_equal:openingHours.'.$dayIndex.'.1.end';
-            $rules['openingHours.'.$dayIndex.'.2.start'] = 'required|before_or_equal:openingHours.'.$dayIndex.'.2.end';
             $rules['openingHours.'.$dayIndex.'.1.end'] = 'required';
-            $rules['openingHours.'.$dayIndex.'.2.end'] = 'required';
+            
+            $rules['openingHours.'.$dayIndex.'.2.start'] = 'required_unless:openingHours.'.$dayIndex.'.2.no_break,1|before_or_equal:openingHours.'.$dayIndex.'.2.end'.
+                    '|after_or_equal:openingHours.'.$dayIndex.'.1.end';
+            $rules['openingHours.'.$dayIndex.'.2.end'] = 'required_unless:openingHours.'.$dayIndex.'.2.no_break,1';
         }
         return $rules;
     }
@@ -91,6 +93,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
                                                                                 ." matin doit être supérieure à l'heure d'ouverture";
             $messages['openingHours.'.$dayIndex.'.2.start.before_or_equal'] = "L'heure de fermeture du ".strtolower($dayLabel)
                                                                                 ." après-midi doit être supérieure à l'heure d'ouverture";
+            $messages['openingHours.'.$dayIndex.'.2.start.after_or_equal'] = "L'heure d'ouverture du ".strtolower($dayLabel)
+                                                                                ." après-midi doit être supérieure à l'heure de fermeture du matin";
             $messages['openingHours.'.$dayIndex.'.1.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";
             $messages['openingHours.'.$dayIndex.'.1.end.required'] = "Veuillez saisir l'heure de fermeture du ".strtolower($dayLabel)." après-midi";
             $messages['openingHours.'.$dayIndex.'.2.start.required'] = "Veuillez saisir l'heure d'ouverture du ".strtolower($dayLabel)." après-midi";

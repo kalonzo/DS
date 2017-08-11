@@ -45,6 +45,13 @@
                     if(isset($form_values['opening_hours'][$dayIndex][2]['end']['time'])){
                         $endTimePm = $form_values['opening_hours'][$dayIndex][2]['end']['time'];
                     }
+                    
+                    $noBreakValue = old("openingHours[".$dayIndex."][2][no_break]");
+                    if(isset($form_values['opening_hours'][$dayIndex][2]['no_break'])){
+                        $noBreakValue = $form_values['opening_hours'][$dayIndex][2]['no_break'];
+                        $startTimePm = null;
+                        $endTimePm = null;
+                    }
                     @endphp
                     <div class="row timetable-grid-row form-group">
                         <div class="col-xs-5_5 col-sm-2 timetable-day">
@@ -53,15 +60,24 @@
                         <div class="col-xs-5_5 col-sm-4 col-xs-offset-0_5 col-sm-offset-0 col-sm-4 timetable-col timetable-col-am">
                             {!! Form::select("openingHours[".$dayIndex."][1][start]", $form_data['timetable'], $startTimeAm,['placeholder' => 'Début']) !!}
                             {!! Form::select("openingHours[".$dayIndex."][1][end]", $form_data['timetable'], $endTimeAm,['placeholder' => 'Fin']) !!}
-                            <a class="col-xs-12 no-gutter close-timeslot" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>
+                            <div class="col-xs-12 no-gutter text-center">
+                                <a class="close-timeslot" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>
+                            </div>
                         </div>    
                         <div class="col-xs-5_5 hidden-sm hidden-md hidden-lg">
                             &nbsp;
                         </div>    
                         <div class="col-xs-5_5 col-sm-4 col-xs-offset-0_5 timetable-col timetable-col-pm">
-                            {!! Form::select("openingHours[".$dayIndex."][2][start]", $form_data['timetable'], $startTimePm,['placeholder' => 'Début']) !!}
-                            {!! Form::select("openingHours[".$dayIndex."][2][end]", $form_data['timetable'], $endTimePm,['placeholder' => 'Fin']) !!}
-                            <a class="col-xs-12 no-gutter close-timeslot" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>
+                            {!! Form::select("openingHours[".$dayIndex."][2][start]", $form_data['timetable'], $startTimePm,['placeholder' => 'Début', 'disabled' => $noBreakValue]) !!}
+                            {!! Form::select("openingHours[".$dayIndex."][2][end]", $form_data['timetable'], $endTimePm,['placeholder' => 'Fin', 'disabled' => $noBreakValue]) !!}
+                            <div class="timetable-action-nobreak">
+                                {!! Form::label('Non stop') !!}
+                                <br/>
+                                {!! Form::checkbox("openingHours[".$dayIndex."][2][no_break]", '1', $noBreakValue, ['class' => '', 'onchange' => 'toggleNoBreak(this);']) !!}
+                            </div>
+                            <div class="col-xs-12 no-gutter text-center">
+                                <a class="close-timeslot @if($noBreakValue) disabled @endif" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>
+                            </div>
                         </div>    
                         <div class="col-sm-1_5 timetable-action">
                             @if($loop->iteration == 1)
