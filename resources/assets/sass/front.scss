@@ -597,6 +597,10 @@ select:not(.select2){
 }
 
 #filterModal{
+    .modal-content{
+        background: $main-dark-color;
+        border: 1px solid white;
+    }
     .filter-list-see-more{
         display: none;
     }

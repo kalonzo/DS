@@ -60,7 +60,21 @@ class EstablishmentController extends Controller {
      * @return Response
      */
     public function show(Establishment $establishment) {
-        $view = View::make('establishment.show')->with('establishment', $establishment);
+        $data = array();
+        $data['cooking_type'] = '-';
+        $mainCookingType = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_COOKING_TYPE)->first();
+        if($mainCookingType instanceof BusinessCategory){
+            $data['cooking_type'] = $mainCookingType->getName();
+        }
+        $data['specialties'] = array();
+        $specialties = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_FOOD_SPECIALTY)->get();
+        foreach($specialties as $specialty){
+            if($specialty instanceof BusinessCategory){
+                $data['specialties'][] = $specialty->getName();
+            }
+        }
+        
+        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data);
 
         return $view;
     }
