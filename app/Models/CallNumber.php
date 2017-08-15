@@ -24,7 +24,20 @@ class CallNumber extends Model {
         'id_establishment'
     ];
     protected $guarded = [];
-
+    
+    public function getDisplayable(){
+        $country = $this->country()->select('iso')->first();
+        if(checkModel($country)){
+            $countryIso = $country->getIso();
+        }
+        $label = (string)\Propaganistas\LaravelPhone\PhoneNumber::make($this->getNumber(), $countryIso)->formatForCountry(\Illuminate\Support\Facades\App::getLocale());
+        return $label;
+    }
+    
+    public function country(){
+        return $this->hasOne(Country::class, 'id', 'id_country');
+    }
+    
     /**
      * @return mixed
      */

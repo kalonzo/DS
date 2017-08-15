@@ -10,6 +10,7 @@ html{
 body{
     padding-top: 50px;
     color: $main-text-color;
+    margin-bottom: $footerHeight + $prefooterHeight;
 }
 
 a.disabled{
@@ -242,6 +243,12 @@ select:not(.select2){
 
 .pre-footer{
     padding-bottom: 2em;
+    @include bp-sm{
+        position: absolute;
+        bottom: $footerHeight;
+        width: 100%;
+        height: $prefooterHeight;
+    }
     *{
         color: white;
     }
@@ -793,6 +800,176 @@ form:not(.navbar-form) input[type=text]{
                 &.ms-hover{
                     background-color: #666;
                 }
+            }
+        }
+    }
+}
+
+.show-page{
+    section{
+        &:nth-of-type(odd){
+            background: $body-bg;
+        }
+        &:nth-of-type(even){
+            background: $main-color;
+        }
+        &:not(.ets-intro){
+            padding: 3em 0px;
+            h1, h2, h3, h4{
+                text-transform: uppercase;
+                margin-bottom: 0.5em;
+            }
+            h1{
+                font-size: 6em;
+                font-weight: 300;
+                color: $text-color-alt;
+                text-align: center;
+                strong{
+                    color: white;
+                }
+            }
+            h2{
+                border-bottom: 2px solid $text-color-alt;
+                padding-bottom: 0.4em;
+                margin-bottom: 1em;
+                font-weight: bold;
+            }
+        }
+        &.ets-intro{
+            text-align: center;
+            text-transform: uppercase;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            h1{
+                font-size: 6em;
+                font-weight: bold;
+            }
+            h2{
+                font-size: 2.3em;
+                padding: 0.4em 0px;
+            }
+            h3{
+                font-size: 1.5em;
+                .point-separator{
+                    padding: 0px 0.5em;
+                }
+            }
+        }
+        &.ets-details{
+            .category-list{
+                text-transform: uppercase;
+            }
+        }
+        &.ets-events{
+            h1{
+                font-size: 4em;
+            }
+        }
+        &.ets-timetable{
+            text-transform: uppercase;
+            .row{
+                margin: 0px;
+            }
+            .col-label{
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.6em;
+                padding-bottom: 1em;
+                &:nth-child(3){
+                    padding-left: 4.16666667%;
+                }
+            }
+            .timetable-show{
+                .timetable-day{
+                    text-align: right;
+                    font-weight: bold;
+                    font-size: 1.6em;
+                    box-sizing: border-box;
+                    line-height: 2.1em;
+                }
+                .timetable-row{
+                    &:first-child{
+                        .timetable-col{
+                            border-top: 2px solid $text-color-alt;
+                        }
+                    }
+                    .timetable-col{
+                        border-bottom: 2px solid $text-color-alt;
+                        padding: 1em 0px;
+                        text-align: center;
+                        &.timetable-col-pm{
+                            padding-left: 4.16666667%;
+                        }
+                    }
+                }
+            }
+        }
+        &.ets-contact{
+            text-transform: uppercase;
+            text-align: center;
+            .quick-map{
+                height: 300px;
+                width: 100%;
+            }
+            .ets-address{
+                font-size: 1.6em;
+                text-align: center;
+                padding: 1em 0px;
+            }
+            .book-button{
+                background-color: $booking-color;
+                text-transform: uppercase;
+                font-size: 1.6em;
+                font-weight: bold;
+                border: 0px;
+                @include borderRadius(4px);
+                &:hover{
+                    color: $main-text-color;
+                }
+            }
+            .contact-number{
+                font-size: 2.4em;
+                padding: 0.6em 0px;
+                a{
+                    color: $main-text-color;
+                    text-decoration: none;
+                    font-weight: bold;
+                    &:hover{
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
+    #ets-nav-bookmarks{
+        position: fixed;
+        right: calc(100% - 40px);
+        top: $searchFilterPanelHeadingHeight + 10px;
+        text-transform: uppercase;
+        
+        .ets-nav-bookmark{
+            height: 40px;
+            line-height: 35px;
+            margin-bottom: 5px;
+            font-size: 2em;
+            background: $alt-highlight-color;
+            float: right;
+            clear: both;
+            white-space: nowrap;
+            > *{
+                vertical-align: middle;
+            }
+            img.bookmark-icon{
+                height: 30px;
+                width: 30px;
+                box-sizing: initial;
+            }
+            .bookmark-icon{
+                vertical-align: middle;
+                padding-left: 10px;
+                padding-right: 5px;
             }
         }
     }

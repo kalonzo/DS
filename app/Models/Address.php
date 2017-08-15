@@ -40,6 +40,20 @@ class Address extends Model {
         return $this->hasOne(Country::class, 'id', 'id_country');
     }
     
+    public function getDisplayable(){
+        $label = $this->getStreet().' ';
+        if(!empty($this->getStreetNumber())){
+            $label .= $this->getStreetNumber().' ';
+        }
+        if(!empty($this->getAddressAdditional())){
+            $label .= ', '.$this->getAddressAdditional().' ';
+        }
+        $label .= '- '.$this->getPostalCode().' ';
+        $label .= $this->getCity().' ';
+        $label = str_replace('  ', ' ', $label);
+        return $label;
+    }
+    
     public function save(array $options = array()) {
         if($this->isDirty()){
             $changedAttr = $this->getDirty();

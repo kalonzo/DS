@@ -44,11 +44,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
         ];
         // Opening hours
         foreach(\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel){
-            $rules['openingHours.'.$dayIndex.'.1.start'] = 'required|before_or_equal:openingHours.'.$dayIndex.'.1.end';
+            $rules['openingHours.'.$dayIndex.'.1.start'] = 'required';//|before_or_equal:openingHours.'.$dayIndex.'.1.end';
             $rules['openingHours.'.$dayIndex.'.1.end'] = 'required';
             
-            $rules['openingHours.'.$dayIndex.'.2.start'] = 'required_unless:openingHours.'.$dayIndex.'.2.no_break,1|before_or_equal:openingHours.'.$dayIndex.'.2.end'.
-                    '|after_or_equal:openingHours.'.$dayIndex.'.1.end';
+            $rules['openingHours.'.$dayIndex.'.2.start'] = 'required_unless:openingHours.'.$dayIndex.'.2.no_break,1|after_or_equal:openingHours.'.$dayIndex.'.1.end'
+                    ;//.'before_or_equal:openingHours.'.$dayIndex.'.2.end';
             $rules['openingHours.'.$dayIndex.'.2.end'] = 'required_unless:openingHours.'.$dayIndex.'.2.no_break,1';
         }
         return $rules;

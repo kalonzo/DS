@@ -24,6 +24,22 @@ class OpeningHour extends Model {
     ];
     protected $guarded = [];
 
+    protected $dayLabels = null;
+    public function getDayLabels($lazy = true){
+        if($this->dayLabels === null || !$lazy){
+            $this->dayLabels = \App\Utilities\DateTools::getDaysArray();
+        }
+        return $this->dayLabels;
+    }
+    
+    public function getDayLabel(){
+        $dayLabel = null;
+        if(isset($this->getDayLabels()[$this->getDay()])){
+            $dayLabel = $this->getDayLabels()[$this->getDay()];
+        }
+        return $dayLabel;
+    }
+    
     /**
      * @return mixed
      */

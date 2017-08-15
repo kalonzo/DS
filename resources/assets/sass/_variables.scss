@@ -25,6 +25,7 @@ $line-height-base: 1.6;
 $line-height-base-px: $font-size-base * $line-height-base;
 $text-color: #636b6f;
 $main-text-color: white;
+$text-color-alt: #777;
 $main-text-color-admin: #555;
 
 // Colors 
@@ -34,6 +35,7 @@ $font-color-dark-bg: white;
 $highlight-color: #d31b4d;
 $alt-highlight-color: #dbb000;
 $sidebar-left-bg-admin: #050508;
+$booking-color: #0f6694;
 
 // Navbar
 $navbar-default-bg: #fff;
@@ -54,4 +56,5 @@ $searchFormSmWidth: 45%;
 $navbarInnerPadding: 9px;
 $searchFilterPanelHeadingHeight: 53px;
 
+$prefooterHeight: 165px;
 $footerHeight: 70px;
