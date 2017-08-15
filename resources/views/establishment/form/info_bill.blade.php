@@ -65,11 +65,11 @@
             </div>
             @php
             $callNumbersAvailable = [
-            5 => '* Téléphone pro',
-            4 => '* Téléphone de contact',                            
-            3 => 'Fax',
-            2 => 'Mobile'
-            ];
+                                        1 => '* Téléphone pour réservation',
+                                        4 => '* Téléphone de contact',
+                                        3 => 'Fax',
+                                        2 => 'Mobile'
+                                    ];
             @endphp
             <div class="row">
                 @foreach($callNumbersAvailable as $typeNumber => $label)

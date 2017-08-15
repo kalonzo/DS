@@ -3,7 +3,7 @@
         <a role="button" data-toggle="collapse" data-parent="#establishment_form_accordion" href="#collapse4" 
            aria-expanded="true" aria-controls="collapse4">
             <div class="container">
-                <h4 class="panel-title">Type de paiment</h4>
+                <h4 class="panel-title">Types de paiement</h4>
             </div>
         </a>
     </div>

@@ -27,7 +27,7 @@ Route::get('/establishment/create', 'EstablishmentController@create');          
 Route::put('/establishment', 'EstablishmentController@store');                  // store
 
 Route::get('/establishment/register', 'UserProController@create');          // register
-Route::put('/establishment', 'UserProController@store');                  // store
+//Route::put('/establishment', 'UserProController@store');                  // store
 
 Route::get('/establishment/{establishment}','EstablishmentController@edit');    // edit
 Route::put('/establishment/{establishment}','EstablishmentController@update');  // update

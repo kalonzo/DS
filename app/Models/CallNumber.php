@@ -11,7 +11,6 @@ class CallNumber extends Model {
     const TYPE_FAX = 2;
     const TYPE_MOBILE = 3;
     const TYPE_PHONE_CONTACT = 4;
-    const TYPE_PHONE_PRO = 5;
 
     protected $table = 'call_numbers';
     public $timestamps = true;

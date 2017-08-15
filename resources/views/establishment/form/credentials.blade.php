@@ -13,15 +13,15 @@
             <div class="row">
                 <div class="col-sm-4 form-group">
                     {!! Form::label('Madame') !!}
-                    {!! Form::radio('gender', old('company_name'), ['class' => 'form-control']) !!}
+                    {!! Form::radio('gender', old('gender'), ['class' => 'form-control']) !!}
                 </div>
                 <div class="col-sm-4 form-group">
                     {!! Form::label('Monsieur') !!}
-                    {!! Form::radio('gender', old('company_name'), ['class' => 'form-control']) !!}
+                    {!! Form::radio('gender', old('gender'), ['class' => 'form-control']) !!}
                 </div>
                 <div class="col-sm-4 form-group">
                     {!! Form::label('Société') !!}
-                    {!! Form::radio('gender', old('company_name'), ['class' => 'form-control']) !!}
+                    {!! Form::radio('gender', old('gender'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
@@ -50,15 +50,15 @@
                 <div class="col-md-6">
                     {!! Form::label('* Téléphone / Mobile') !!}
                     <div class="form-group form-inline {{ $errors->has('call_number[contact_number]') ? 'has-error' : '' }}">                        
-                            {!! Form::select('prefix', $form_data['country_prefixes'], null, 
-                                        ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
+                        {!! Form::select('prefix', $form_data['country_prefixes'], null, 
+                        ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
                         {!! Form::text('pro_phone', null, ['class' => 'form-control']) !!}
                     </div>
                 </div>
             </div>     
             <div class="row">
                 <div class="col-md-6">
-                    <label for="password" class="col-md-4 control-label">* Password</label>
+                    <label for="password-confirm" class="col-md-4 control-label">* Mot de passe</label>      
                     <input id="password" type="password" class="form-control" name="password" required>
                     @if ($errors->has('password'))
                     <span class="help-block">
@@ -67,8 +67,8 @@
                     @endif
                 </div>
                 <div class="col-md-6">
-                    <label for="password-confirm" class="col-md-4 control-label">* Confirm Password</label>                   
-                        <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                    <label for="password-confirm" class="col-md-4 control-label">* Connfirmation mot de passe</label>                   
+                    <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
                 </div>
             </div>
             <div class="row">

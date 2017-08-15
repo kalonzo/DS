@@ -3,7 +3,7 @@
         <a role="button" data-toggle="collapse" data-parent="#establishment_form_accordion" href="#collapse3" 
            aria-expanded="true" aria-controls="collapse3">
             <div class="container">
-                <h4 class="panel-title">Séléctionner votre abonement DinerScope</h4>
+                <h4 class="panel-title">Sélectionner votre abonnement DinerScope</h4>
             </div>
         </a>
     </div>
