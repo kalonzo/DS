@@ -26,7 +26,15 @@ $classes: (xs, sm, md, lg);
         }
     }
 }
-
+a.simple{
+    color: inherit;
+    text-decoration: none;
+    font-weight: bold;
+    &:hover{
+        color: inherit;
+        text-decoration: none;
+    }
+}
 .cleaner{
     clear: both;
 }

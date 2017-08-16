@@ -100,7 +100,7 @@ class Establishment extends Model {
             $slug = $this->getSlug();
             $urlId = $this->getUrlId();
             if(!empty($typeLabel) && !empty($citySlug) && !empty($slug) && !empty($urlId)){
-                $this->url = '/'.$typeLabel.'/'.$citySlug.'/'.$slug.'/'.$urlId;
+                $this->url = '/'.$typeLabel.'/'.$citySlug.'/'.$slug.'/'.$urlId.'/';
             }
         }
         return $this->url;
@@ -114,7 +114,7 @@ class Establishment extends Model {
             if(!empty($typeLabel) && !empty($city) && !empty($slug) && !empty($urlId)){
                 $citySlug = str_slug($city);
                 $typeSlug = str_slug($typeLabel);
-                $url = '/'.$typeSlug.'/'.$citySlug.'/'.$slug.'/'.$urlId;
+                $url = '/'.$typeSlug.'/'.$citySlug.'/'.$slug.'/'.$urlId.'/';
             }
         }
         return $url;
