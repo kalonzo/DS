@@ -22,10 +22,12 @@ Route::get('/', 'HomeController@index');
 Route::match(['get', 'post'], '/search', 'SearchController@search');
 
 
-
 // ESTABLISHMENT
 Route::get('/establishment/create', 'EstablishmentController@create');          // create
 Route::put('/establishment', 'EstablishmentController@store');                  // store
+
+Route::get('/establishment/register', 'UserProController@create');          // register
+//Route::put('/establishment', 'UserProController@store');                  // store
 
 Route::get('/establishment/{establishment}','EstablishmentController@edit');    // edit
 Route::put('/establishment/{establishment}','EstablishmentController@update');  // update

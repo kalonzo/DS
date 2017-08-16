@@ -141,6 +141,4 @@ class CallNumber extends Model {
     function setIdCountry($id_country) {
         $this->id_country = $id_country;
     }
-
-
 }

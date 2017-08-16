@@ -166,7 +166,30 @@ class DatabaseSeeder extends Seeder {
             'name' => 'Poulet Masalah',
             'type' => 2, //const type de cuisinne
         ]);
+        
+        //insertion des méthode de paiment
+        $id = \App\Utilities\UuidTools::generateUuid();
 
+        DB::table('payment_methods')->insert([
+            'id' => $id,
+            'name' => 'Payer par carte de crédit',
+        ]);
+
+        $id = \App\Utilities\UuidTools::generateUuid();
+
+        DB::table('payment_methods')->insert([
+            'id' => $id,
+            'name' => 'Facture à 30 jours',
+        ]);
+
+        $id = \App\Utilities\UuidTools::generateUuid();
+
+        DB::table('business_types')->insert([
+            //'id' => $id,
+            'label' => 'RESTO',
+            'id_media' => $id,
+        ]);
+        
         self::insertBusinessCategory("Régionale", 1);
         self::insertBusinessCategory("bistronomique", 1);
         self::insertBusinessCategory("Asiatique", 1);
