@@ -40,6 +40,11 @@ Route::get('/{type_ets}/{city}/{slug}/{url_id}', function($typeEts, $city, $slug
     return $establishmentController->callAction('show', array('establishment' => $establishment));
 });
 
+/******************************TEST ROUTE**************************************/
+Route::get('welcome/{locale}', function ($local) {
+     Lang::setLocale($local);
+     return view('dev.welcome');  
+});
 
 /****************************** ADMIN *****************************************/
 
