@@ -84,6 +84,7 @@ class DatabaseSeeder extends Seeder {
             'street' => $street,
             'address_additional' => '',
             'postal_code' => $postal_code,
+            'city_slug' => str_slug($city),
             'city' => $city,
             'country' => $country,
             'latitude' => $latitude,
@@ -127,7 +128,9 @@ class DatabaseSeeder extends Seeder {
             'average_price_min' => 10,
             'average_price_max' => 60,
             'id_user_owner' => $id_user_owner,
-            'id_business_type' => 1
+            'id_business_type' => 1,
+            'url_id' => \App\Models\Establishment::generateStaticUrlId(\App\Utilities\UuidTools::getUuid($id_establishment)),
+            'slug' => str_slug($non_etab),
         ]);
 
         $idBusinessCategory = self::getBusinessCategoryId($type_cuisine, 1);

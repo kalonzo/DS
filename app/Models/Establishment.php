@@ -8,9 +8,9 @@ namespace App\Models;
 class Establishment extends Model {
 
     protected $table = 'establishments';
+
     const TABLENAME = 'establishments';
     const TYPE_OBJECT_ESTABLISHMENT = 1;
-
     const TYPE_BUSINESS_RESTAURANT = 1;
 
     public $timestamps = true;
@@ -38,133 +38,138 @@ class Establishment extends Model {
         'longitude'
     ];
     protected $guarded = [];
-
     private $latLng = null;
-    public function getLatLng($lazy = true){
-        if($this->latLng === null || !$lazy){
+
+    public function getLatLng($lazy = true) {
+        if ($this->latLng === null || !$lazy) {
             $this->latLng = new Utilities\LatLng($this->getLatitude(), $this->getLongitude());
         }
         return $this->latLng;
     }
-    
-    public function getBusinessTypeLabel(){
+
+    public function getBusinessTypeLabel() {
         $businessLabel = 'Type non défini';
         $businessTypeLabels = BusinessType::getLabelByType();
-        if(isset($businessTypeLabels[$this->getIdBusinessType()])){
+        if (isset($businessTypeLabels[$this->getIdBusinessType()])) {
             $businessLabel = $businessTypeLabels[$this->getIdBusinessType()];
         }
         return $businessLabel;
     }
-    
-    public function getDefaultPicture(){
-        return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+
+    public function getDefaultPicture() {
+        return "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
     }
-    
-    public function getDefaultBanner(){
-        return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+
+    public function getDefaultBanner() {
+        return "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
     }
-    
-    public function address(){
+
+    public function address() {
         return $this->hasOne(Address::class, 'id', 'id_address');
     }
-    
-    public function userOwner(){
+
+    public function userOwner() {
         return $this->hasOne(User::class, 'id', 'id_user_owner');
     }
-    
-    public function logo(){
+
+    public function logo() {
         return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
     }
-    
-    public function callNumbers(){
+
+    public function callNumbers() {
         return $this->hasMany(CallNumber::class, 'id_establishment', 'id');
     }
 
-    public function businessCategoryLinks(){
+    public function businessCategoryLinks() {
         return $this->hasMany(EstablishmentBusinessCategory::class, 'id_establishment', 'id');
     }
-    
-    public function businessCategories(){
+
+    public function businessCategories() {
         return $this->belongsToMany(BusinessCategory::class, EstablishmentBusinessCategory::TABLENAME, 'id_establishment', 'id_business_category');
-    }    
-    
-    public function openingHours(){
+    }
+
+    public function openingHours() {
         return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
     }
-    
+
     protected $url = null;
-    public function getUrl($lazy = true){
-        if($this->url === null || !$lazy){
+
+    public function getUrl($lazy = true) {
+        if ($this->url === null || !$lazy) {
             $typeLabel = str_slug($this->getBusinessTypeLabel());
             $citySlug = $this->address()->first()->getCitySlug();
             $slug = $this->getSlug();
             $urlId = $this->getUrlId();
-            if(!empty($typeLabel) && !empty($citySlug) && !empty($slug) && !empty($urlId)){
-                $this->url = '/'.$typeLabel.'/'.$citySlug.'/'.$slug.'/'.$urlId;
+            if (!empty($typeLabel) && !empty($citySlug) && !empty($slug) && !empty($urlId)) {
+                $this->url = '/' . $typeLabel . '/' . $citySlug . '/' . $slug . '/' . $urlId;
             }
         }
         return $this->url;
     }
-    
-    public static function getUrlStatic($typeBusiness, $city, $slug, $urlId){
+
+    public static function getUrlStatic($typeBusiness, $city, $slug, $urlId) {
         $url = null;
         $businessTypeLabels = BusinessType::getLabelByType();
-        if(isset($businessTypeLabels[$typeBusiness])){
+        if (isset($businessTypeLabels[$typeBusiness])) {
             $typeLabel = $businessTypeLabels[$typeBusiness];
-            if(!empty($typeLabel) && !empty($city) && !empty($slug) && !empty($urlId)){
+            if (!empty($typeLabel) && !empty($city) && !empty($slug) && !empty($urlId)) {
                 $citySlug = str_slug($city);
                 $typeSlug = str_slug($typeLabel);
-                $url = '/'.$typeSlug.'/'.$citySlug.'/'.$slug.'/'.$urlId;
+                $url = '/' . $typeSlug . '/' . $citySlug . '/' . $slug . '/' . $urlId;
             }
         }
         return $url;
     }
-    
+
     public function save(array $options = array()) {
         $this->generateUrlId();
-        if($this->isDirty()){
+        if ($this->isDirty()) {
             $changedAttr = $this->getDirty();
-            if(isset($changedAttr['name']) && !isset($changedAttr['slug'])){
+            if (isset($changedAttr['name']) && !isset($changedAttr['slug'])) {
                 $this->generateSlug();
             }
-        } else if(empty($this->getSlug())){
+        } else if (empty($this->getSlug())) {
             $this->generateSlug();
         }
         return parent::save($options);
     }
-    
-    public function generateUrlId(){
+
+    public function generateUrlId() {
         $urlId = $this->getUrlId();
-        if(empty($urlId)){
-            $urlId = '';
-            $countdown = 8;
+        if (empty($urlId)) {
             $uuid = $this->getUuid();
-            if(empty($uuid)){
+            if (empty($uuid)) {
                 $id = \App\Utilities\UuidTools::generateUuid();
                 $uuid = \App\Utilities\UuidTools::getUuid($id);
                 $this->setId($id);
             }
-            if(checkHexUuid($uuid)){
-                for($i=0; $i <= strlen($uuid); $i++){
-                    $char = $uuid[$i];
-                    if(is_numeric($char)){
-                        $urlId .= $char;
-                        $countdown--;
-                        if($countdown <= 0){
-                            break;
-                        }
+            $urlId = self::generateStaticUrlId($uuid);
+            $this->setUrlId($urlId);
+        }
+    }
+
+    public static function generateStaticUrlId($uuid) {
+        $urlId = '';
+        $countdown = 8;
+        if (checkHexUuid($uuid)) {
+            for ($i = 0; $i <= strlen($uuid); $i++) {
+                $char = $uuid[$i];
+                if (is_numeric($char)) {
+                    $urlId .= $char;
+                    $countdown--;
+                    if ($countdown <= 0) {
+                        break;
                     }
                 }
-                $this->setUrlId($urlId);
             }
         }
         return $urlId;
     }
-    
-    public function generateSlug(){
+
+    public function generateSlug() {
         $name = $this->getName();
         $slug = null;
-        if(!empty($name)){
+        if (!empty($name)) {
             $slug = str_slug($name);
             $this->setSlug($slug);
         }
@@ -482,7 +487,7 @@ class Establishment extends Model {
     function setSlug($slug) {
         $this->slug = $slug;
     }
-    
+
     function getUrlId() {
         return $this->url_id;
     }
@@ -490,4 +495,5 @@ class Establishment extends Model {
     function setUrlId($url_id) {
         $this->url_id = $url_id;
     }
+
 }
