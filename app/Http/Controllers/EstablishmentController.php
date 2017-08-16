@@ -222,8 +222,8 @@ class EstablishmentController extends Controller {
                 ->orderBy('label')
                 ->get();
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
-            $countryName[$countryData->uuid] = $countryData->label;
+            $countryPrefixes[$countryData->uuid] = __($countryData->label) . " | +" . $countryData->prefix;
+            $countryName[$countryData->uuid] = __($countryData->label);
         }
 
         // Select for time

@@ -133,8 +133,8 @@ class UserProController extends Controller {
                 ->orderBy('label')
                 ->get();
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
-            $countryName[$countryData->uuid] = $countryData->label;
+            $countryPrefixes[$countryData->uuid] = __($countryData->label) . " | +" . $countryData->prefix;
+            $countryName[$countryData->uuid] = __($countryData->label);
         }
 
         StorageHelper::getInstance()->add('feed_establishment.form_data.business_tools', $businessTools);
