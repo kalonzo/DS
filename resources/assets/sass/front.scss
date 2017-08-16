@@ -951,25 +951,81 @@ form:not(.navbar-form) input[type=text]{
         
         .ets-nav-bookmark{
             height: 40px;
-            line-height: 35px;
+            line-height: 40px;
             margin-bottom: 5px;
             font-size: 2em;
-            background: $alt-highlight-color;
             float: right;
             clear: both;
             white-space: nowrap;
+            position: relative;
+            &.bookmark-voucher{
+                $colorVoucher: #e0141f;
+                background: $colorVoucher;
+                &::after{
+                    border-left-color: $colorVoucher;
+                }
+            }
+            &.bookmark-contact{
+                $colorContact: #0d5c85;
+                background: $colorContact;
+                &::after{
+                    border-left-color: $colorContact;
+                }
+            }
+            &.bookmark-event{
+                $colorEvent: #e05c14;
+                background: $colorEvent;
+                &::after{
+                    border-left-color: $colorEvent;
+                }
+            }
+            &.bookmark-home{
+                $colorHome: $alt-highlight-color;
+                background: $colorHome;
+                &::after{
+                    border-left-color: $colorHome;
+                }
+            }
+            &.bookmark-menu{
+                $colorMenu: #c59f5d;
+                background: $colorMenu;
+                &::after{
+                    border-left-color: $colorMenu;
+                }
+            }
+            &.bookmark-photos{
+                $colorPhotos: #008b03;
+                background: $colorPhotos;
+                &::after{
+                    border-left-color: $colorPhotos;
+                }
+            }
             > *{
                 vertical-align: middle;
             }
-            img.bookmark-icon{
-                height: 30px;
-                width: 30px;
-                box-sizing: initial;
-            }
             .bookmark-icon{
-                vertical-align: middle;
-                padding-left: 10px;
+                padding-left: 13px;
                 padding-right: 5px;
+            }
+            img.bookmark-icon{
+                height: 35px;
+                width: 35px;
+                box-sizing: initial;
+                vertical-align: top;
+                padding-right: 0px;
+                margin-top: 2px;
+            }
+            $bookmarkArrowWidth: 15px;
+            &::after{
+                content: '';
+                position: absolute;
+                right: -$bookmarkArrowWidth;
+                top: 0px;
+                width: 0px; 
+                height: 0px; 
+                border-top: 20px solid transparent;
+                border-bottom: 20px solid transparent;
+                border-left: $bookmarkArrowWidth solid;
             }
         }
     }

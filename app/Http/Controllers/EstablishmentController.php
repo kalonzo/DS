@@ -59,68 +59,74 @@ class EstablishmentController extends Controller {
      * @param  Establishment $establishment
      * @return Response
      */
-    public function show(Establishment $establishment) {
+    public function show(Establishment $establishment, $page = null) {
         $data = array();
         
-        // Business categories
-        $data['cooking_type'] = '-';
-        $mainCookingType = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_COOKING_TYPE)->first();
-        if($mainCookingType instanceof BusinessCategory){
-            $data['cooking_type'] = $mainCookingType->getName();
-        }
-        $data['specialties'] = array();
-        $specialties = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_FOOD_SPECIALTY)->orderBy('name')->get();
-        foreach($specialties as $specialty){
-            if($specialty instanceof BusinessCategory){
-                $data['specialties'][] = $specialty->getName();
-            }
-        }
-        $data['services'] = array();
-        $services = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_SERVICES)->orderBy('name')->get();
-        foreach($services as $service){
-            if($service instanceof BusinessCategory){
-                $data['services'][] = $service->getName();
-            }
-        }
-        $data['ambiences'] = array();
-        $ambiences = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_RESTAURANT_AMBIENCE)->orderBy('name')->get();
-        foreach($ambiences as $ambience){
-            if($ambience instanceof BusinessCategory){
-                $data['ambiences'][] = $ambience->getName();
-            }
-        }
-        
-        // Opening hours
-        $etsOpeningHours = $establishment->openingHours()->orderBy('day', 'ASC')->orderBy('day_order', 'ASC')->get();
-        $data['timetable'] = array();
-        if(!empty($etsOpeningHours)){
-            foreach($etsOpeningHours as $openingHour){
-                if($openingHour instanceof OpeningHour){
-                    $time = '';
-                    if($openingHour->getClosed()){
-                        $time = "Fermé";
-                    } else {
-                        $time = date('H:i', strtotime($openingHour->getStartTime())).' - '.date('H:i', strtotime($openingHour->getEndTime()));
-                        if($openingHour->getNoBreak()){
-                            $time .= ' non-stop';
+        switch($page){
+            case 'menu':
+            case 'photos':
+            default :
+                // Business categories
+                $data['cooking_type'] = '-';
+                $mainCookingType = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_COOKING_TYPE)->first();
+                if($mainCookingType instanceof BusinessCategory){
+                    $data['cooking_type'] = $mainCookingType->getName();
+                }
+                $data['specialties'] = array();
+                $specialties = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_FOOD_SPECIALTY)->orderBy('name')->get();
+                foreach($specialties as $specialty){
+                    if($specialty instanceof BusinessCategory){
+                        $data['specialties'][] = $specialty->getName();
+                    }
+                }
+                $data['services'] = array();
+                $services = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_SERVICES)->orderBy('name')->get();
+                foreach($services as $service){
+                    if($service instanceof BusinessCategory){
+                        $data['services'][] = $service->getName();
+                    }
+                }
+                $data['ambiences'] = array();
+                $ambiences = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_RESTAURANT_AMBIENCE)->orderBy('name')->get();
+                foreach($ambiences as $ambience){
+                    if($ambience instanceof BusinessCategory){
+                        $data['ambiences'][] = $ambience->getName();
+                    }
+                }
+
+                // Opening hours
+                $etsOpeningHours = $establishment->openingHours()->orderBy('day', 'ASC')->orderBy('day_order', 'ASC')->get();
+                $data['timetable'] = array();
+                if(!empty($etsOpeningHours)){
+                    foreach($etsOpeningHours as $openingHour){
+                        if($openingHour instanceof OpeningHour){
+                            $time = '';
+                            if($openingHour->getClosed()){
+                                $time = "Fermé";
+                            } else {
+                                $time = date('H:i', strtotime($openingHour->getStartTime())).' - '.date('H:i', strtotime($openingHour->getEndTime()));
+                                if($openingHour->getNoBreak()){
+                                    $time .= ' non-stop';
+                                }
+                            }
+                            $data['timetable'][$openingHour->getDayLabel()][$openingHour->getDayOrder()]['time'] = $time;
+
+                            $data['timetable'][$openingHour->getDayLabel()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
                         }
                     }
-                    $data['timetable'][$openingHour->getDayLabel()][$openingHour->getDayOrder()]['time'] = $time;
-
-                    $data['timetable'][$openingHour->getDayLabel()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
                 }
-            }
+
+                //Contact
+                $data['address'] = $establishment->address()->first()->getDisplayable();
+                $data['phone_number'] = null;
+                $callNumber = $establishment->callNumbers()->where('type', '=', CallNumber::TYPE_PHONE_NUMBER_RESERVATION)->first();
+                if(checkModel($callNumber)){
+                    $data['phone_number'] = $callNumber->getDisplayable();
+                }
+            break;
         }
         
-        //Contact
-        $data['address'] = $establishment->address()->first()->getDisplayable();
-        $data['phone_number'] = null;
-        $callNumber = $establishment->callNumbers()->where('type', '=', CallNumber::TYPE_PHONE_NUMBER_RESERVATION)->first();
-        if(checkModel($callNumber)){
-            $data['phone_number'] = $callNumber->getDisplayable();
-        }
-        
-        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data);
+        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page);
 
         return $view;
     }

@@ -8,25 +8,58 @@
     <div class="content show-page">
         <div id="ets-nav-bookmarks">
             <div class="ets-nav-bookmark bookmark-voucher">
-                <span>Bon cadeau</span>
-                <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
+                <a href="#voucher" class="simple">
+                    <span>Bon cadeau</span>
+                    <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
+                </a>
             </div>
             <div class="ets-nav-bookmark bookmark-contact">
-                <span>Nous contacter</span>
-                <span class="bookmark-icon glyphicon glyphicon-phone" aria-hidden="true"></span>
+                <a href="#contact" class="simple">
+                    <span>Nous contacter</span>
+                    <span class="bookmark-icon glyphicon glyphicon-phone" aria-hidden="true"></span>
+                </a>
             </div>
+            @if(isset($data['events']) || isset($data['promo']))
             <div class="ets-nav-bookmark bookmark-event">
                 <span>Promotions et événements</span>
-                <!--<span class="bookmark-icon glyphicon glyphicon-calendar" aria-hidden="true"></span>-->
-                <img class="bookmark-icon" alt="events" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
-                <!--<img class="bookmark-icon" alt="events" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>-->
+                <a href="#events" class="simple">
+                    <!--<span class="bookmark-icon glyphicon glyphicon-calendar" aria-hidden="true"></span>-->
+                    <img class="bookmark-icon" alt="events" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
+                    <!--<img class="bookmark-icon" alt="events" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>-->
+                </a>
             </div>
+            @endif
+            @if($page != null)
+            <div class="ets-nav-bookmark bookmark-home">
+                <a href="{{ $establishment->getUrl() }}" class="simple">
+                    <span>Le restaurant</span>
+                    <span class="bookmark-icon glyphicon glyphicon-home" aria-hidden="true"></span>
+                </a>
+            </div>
+            @endif
+            @if($page != 'menu')
+            <div class="ets-nav-bookmark bookmark-menu">
+                <a href="{{ $establishment->getUrl() }}menu" class="simple">
+                    <span>Menu</span>
+                    <span class="bookmark-icon glyphicon glyphicon-cutlery" aria-hidden="true"></span>
+                </a>
+            </div>
+            @endif
+            @if($page != 'photos')
+            <div class="ets-nav-bookmark bookmark-photos">
+                <a href="{{ $establishment->getUrl() }}photos" class="simple">
+                    <span>Photos</span>
+                    <span class="bookmark-icon glyphicon glyphicon-picture" aria-hidden="true"></span>
+                </a>
+            </div>
+            @endif
         </div>
         <!------------- RESTAURANT INTRO -------------------------------------->
         <section class="container-fluid ets-intro">
             @component('components.divcell', ['style' => 'height: 100%;'])
                 @slot('content')
                     <h1>{{ $establishment->getName() }}</h1>
+            {{ Route::currentRouteName() }}
                     <h2>{{ $data['cooking_type'] }}</h2>
                     @if(isset($data['specialties']))
                     <h3>
@@ -77,7 +110,7 @@
         </section>
         <!------------- RESTAURANT EVENTS & PROMO ----------------------------->
         @if(isset($data['events']) || isset($data['promo']))
-        <section class="container-fluid ets-events">
+        <section class="container-fluid ets-events" id="events">
             <div class="container">
                 <h1>Nos <strong>événements</strong> et <strong>promotions</strong></h1>
                 <div class="row">
@@ -112,7 +145,7 @@
             </div>
         </section>
         @endif
-        <!------------- RESTAURANT STAFF -------------------------------------->
+        <!------------- RESTAURANT TIMETABLE ---------------------------------->
         @if(isset($data['timetable']))
         <section class="container-fluid ets-timetable">
             <div class="container">
@@ -166,7 +199,7 @@
         </section>
         @endif
          <!------------- CONTACT -------------------------------------->
-        <section class="container-fluid ets-contact">
+         <section class="container-fluid ets-contact" id="contact">
             <div class="container">
                 <h1><strong>Nous</strong> contacter</h1>
                 <div class="quick-map" data-lat="{{ $establishment->getLatitude() }}" data-lng="{{ $establishment->getLongitude() }}"></div>
