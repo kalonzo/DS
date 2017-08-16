@@ -22,5 +22,6 @@ mix.js([
     .sass('resources/assets/sass/front.scss', 'public/css')
     .sass('resources/assets/sass/admin.scss', 'public/css')
     .sass('resources/assets/sass/establishment.scss', 'public/css')
+    .sass('resources/assets/sass/sidebar.scss', 'public/css')
 //    .browserSync('dinerscope')
     ;

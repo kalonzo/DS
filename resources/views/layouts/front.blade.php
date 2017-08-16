@@ -43,6 +43,7 @@
                         <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
                     </a>
                     <ul class="nav navbar-nav navbar-right">
+                        @yield('navbar-right')
                         <li id="promotionButton">
                             <a href="#">
                                 <img alt="user" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>

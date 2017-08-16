@@ -55,6 +55,16 @@ $searchFormMdWidth: 35%;
 $searchFormSmWidth: 45%;
 $navbarInnerPadding: 9px;
 $searchFilterPanelHeadingHeight: 53px;
+$navbarHeight: 53px;
 
 $prefooterHeight: 165px;
 $footerHeight: 70px;
+
+// Sidebar variables
+$zindex-sidebar-fixed: 1035;
+
+$sidebar-desktop-width: 300px;
+$sidebar-width: 200px;
+$sidebar-padding: 16px;
+$sidebar-divider: $sidebar-padding/2;
+$sidebar-nav-height: 48px;

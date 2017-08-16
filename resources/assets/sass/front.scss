@@ -95,7 +95,7 @@ select:not(.select2){
 }
 
 #navbar {
-    height: 50px;
+    height: $navbarHeight;
     > .container-fluid{
         height: 100%;
         padding: 0px;
@@ -918,15 +918,20 @@ form:not(.navbar-form) input[type=text]{
                 text-align: center;
                 padding: 1em 0px;
             }
-            .book-button{
+            @at-root .book-button{
                 background-color: $booking-color;
                 text-transform: uppercase;
                 font-size: 1.6em;
                 font-weight: bold;
                 border: 0px;
                 @include borderRadius(4px);
-                &:hover{
+                &:hover, &:focus{
                     color: $main-text-color;
+                    background-color: $booking-color;
+                }
+                nav &{
+                    font-size: 1em;
+                    margin-top: 10px;
                 }
             }
             .contact-number{
@@ -947,7 +952,8 @@ form:not(.navbar-form) input[type=text]{
         position: fixed;
         right: calc(100% - 40px);
         top: $searchFilterPanelHeadingHeight + 10px;
-        text-transform: uppercase;
+        text-transform: uppercase;   
+        z-index: 1;
         
         .ets-nav-bookmark{
             height: 40px;
@@ -1029,4 +1035,12 @@ form:not(.navbar-form) input[type=text]{
             }
         }
     }
+}
+#sidebar-booking.custom-sidebar{
+    top: $navbarHeight;
+    height: 100%;
+    height: -webkit-calc(100% + $navbarHeight);
+    height: calc(100% + $navbarHeight);
+    height: -moz-calc(100%);
+    background-color: $main-dark-color;
 }

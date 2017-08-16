@@ -2,25 +2,37 @@
 
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
+<link href="/css/sidebar.css" rel="stylesheet">
+@endsection
+
+@section('navbar-right')
+    <li>
+        <button type="button" class="btn book-button sidebar-booking-toggler" >Réservez une table</button>
+    </li>
 @endsection
 
 @section('content')
-    <div class="content show-page">
+    <aside id="sidebar-booking" class="custom-sidebar sidebar-fixed-right" data-toggler=".sidebar-booking-toggler">
+        @component('establishment.form.booking', ['establishment' => $establishment])
+
+        @endcomponent
+    </aside>
+    <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">
-            <div class="ets-nav-bookmark bookmark-voucher">
+            <div class="ets-nav-bookmark bookmark-voucher" title="Bon cadeau">
                 <a href="#voucher" class="simple">
                     <span>Bon cadeau</span>
                     <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
                 </a>
             </div>
-            <div class="ets-nav-bookmark bookmark-contact">
+            <div class="ets-nav-bookmark bookmark-contact" title="Nous contacter">
                 <a href="#contact" class="simple">
                     <span>Nous contacter</span>
                     <span class="bookmark-icon glyphicon glyphicon-phone" aria-hidden="true"></span>
                 </a>
             </div>
             @if(isset($data['events']) || isset($data['promo']))
-            <div class="ets-nav-bookmark bookmark-event">
+            <div class="ets-nav-bookmark bookmark-event" title="Promotions et événements">
                 <span>Promotions et événements</span>
                 <a href="#events" class="simple">
                     <!--<span class="bookmark-icon glyphicon glyphicon-calendar" aria-hidden="true"></span>-->
@@ -30,7 +42,7 @@
             </div>
             @endif
             @if($page != null)
-            <div class="ets-nav-bookmark bookmark-home">
+            <div class="ets-nav-bookmark bookmark-home" title="Le restaurant">
                 <a href="{{ $establishment->getUrl() }}" class="simple">
                     <span>Le restaurant</span>
                     <span class="bookmark-icon glyphicon glyphicon-home" aria-hidden="true"></span>
@@ -38,15 +50,15 @@
             </div>
             @endif
             @if($page != 'menu')
-            <div class="ets-nav-bookmark bookmark-menu">
+            <div class="ets-nav-bookmark bookmark-menu" title="Menus">
                 <a href="{{ $establishment->getUrl() }}menu" class="simple">
-                    <span>Menu</span>
+                    <span>Menus</span>
                     <span class="bookmark-icon glyphicon glyphicon-cutlery" aria-hidden="true"></span>
                 </a>
             </div>
             @endif
             @if($page != 'photos')
-            <div class="ets-nav-bookmark bookmark-photos">
+            <div class="ets-nav-bookmark bookmark-photos" title="Photos">
                 <a href="{{ $establishment->getUrl() }}photos" class="simple">
                     <span>Photos</span>
                     <span class="bookmark-icon glyphicon glyphicon-picture" aria-hidden="true"></span>
@@ -208,7 +220,7 @@
                     {{ $data['address'] }}
                 </div>
                 <div class="row">
-                    <button type="button" class="btn btn-default book-button">Réservez une table</button>
+                    <button type="button" class="btn book-button sidebar-booking-toggler" >Réservez une table</button>
                 </div>
                 <div class="row contact-number">
                     <a href="tel:{{ $data['phone_number'] }}">
@@ -222,5 +234,6 @@
 @endsection
 
 @section('js_imports_footer')
+<script src="/js/sidebar.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection
