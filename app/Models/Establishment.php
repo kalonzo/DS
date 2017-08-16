@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 
 namespace App\Models;
@@ -133,29 +134,34 @@ class Establishment extends Model {
         return parent::save($options);
     }
     
-    public function generateUrlId(){
+    
+    public function generateUrlId() {
         $urlId = $this->getUrlId();
-        if(empty($urlId)){
-            $urlId = '';
-            $countdown = 8;
+        if (empty($urlId)) {
             $uuid = $this->getUuid();
-            if(empty($uuid)){
+            if (empty($uuid)) {
                 $id = \App\Utilities\UuidTools::generateUuid();
                 $uuid = \App\Utilities\UuidTools::getUuid($id);
                 $this->setId($id);
             }
-            if(checkHexUuid($uuid)){
-                for($i=0; $i <= strlen($uuid); $i++){
-                    $char = $uuid[$i];
-                    if(is_numeric($char)){
-                        $urlId .= $char;
-                        $countdown--;
-                        if($countdown <= 0){
-                            break;
-                        }
+            $urlId = self::generateStaticUrlId($uuid);
+            $this->setUrlId($urlId);
+        }
+    }
+
+    public static function generateStaticUrlId($uuid) {
+        $urlId = '';
+        $countdown = 8;
+        if (checkHexUuid($uuid)) {
+            for ($i = 0; $i <= strlen($uuid); $i++) {
+                $char = $uuid[$i];
+                if (is_numeric($char)) {
+                    $urlId .= $char;
+                    $countdown--;
+                    if ($countdown <= 0) {
+                        break;
                     }
                 }
-                $this->setUrlId($urlId);
             }
         }
         return $urlId;
