@@ -126,21 +126,29 @@ class UserProController extends Controller {
 
         // Select for call number prefixes
         $countryPrefixes = array();
-        $countryName = array();
+        $countryNames = array();
         $countriesData = DB::table(Country::TABLENAME)
                 ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
                 ->where('prefix', '>', 0)
                 ->orderBy('label')
                 ->get();
+        $countriesData->map(function($item, $key){
+            // Translate country name
+            $item->label = __($item->label);
+            return $item;
+        });
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = __($countryData->label) . " | +" . $countryData->prefix;
-            $countryName[$countryData->uuid] = __($countryData->label);
+            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
+            $countryNames[$countryData->uuid] = $countryData->label;
         }
+        // Sort list by translated country name
+        asort($countryPrefixes);
+        asort($countryNames);
 
         StorageHelper::getInstance()->add('feed_establishment.form_data.business_tools', $businessTools);
         StorageHelper::getInstance()->add('feed_establishment.form_data.payment_methods', $paymentMethods);
         StorageHelper::getInstance()->add('feed_establishment.form_data.country_prefixes', $countryPrefixes);
-        StorageHelper::getInstance()->add('feed_establishment.form_data.country_ids', $countryName);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.country_ids', $countryNames);
     }
 
     /**
