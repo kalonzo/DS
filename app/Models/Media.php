@@ -13,11 +13,15 @@ class Media extends Model {
     
     const TYPE_IMAGE = 1;
     
+    const TYPE_USE_ETS_LOGO = 1;
+    const TYPE_USE_ETS_HOME_PICS = 2;
+    
     const DRIVE_LOCAL = 'local';
     const DRIVE_S3 = 's3';
     
     protected $fillable = [
         'type',
+        'type_use',
         'filename',
         'extension',
         'size',
@@ -33,6 +37,14 @@ class Media extends Model {
     ];
     protected $guarded = [];
     
+    
+    public function delete() {
+        if(checkModel($this)){
+            \Illuminate\Support\Facades\Storage::delete($this->getLocalPath());
+        }
+        return parent::delete();
+    }
+
     /**
      * @return mixed
      */
@@ -215,6 +227,14 @@ class Media extends Model {
 
     function setIdObjectRelated($id_object_related) {
         $this->id_object_related = $id_object_related;
+    }
+
+    function getTypeUse() {
+        return $this->type_use;
+    }
+
+    function setTypeUse($type_use) {
+        $this->type_use = $type_use;
     }
 
 

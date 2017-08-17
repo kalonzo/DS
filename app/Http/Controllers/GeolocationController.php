@@ -9,7 +9,7 @@ class GeolocationController extends Controller
     const DEFAULT_COUNTRY = 'ch';
     const DEFAULT_LANG = 'fr';
     static $geolocArrayByCountryLanguage = array(   self::DEFAULT_COUNTRY => array(
-                                                                self::DEFAULT_LANG => array('lat' => 46.204905, 'lng' => 6.144775), // Geneva
+                                                                self::DEFAULT_LANG => array('lat' => 46.204549, 'lng' => 6.144775), // Geneva
                                                                 'de' => array('lat' => 47.376969, 'lng' => 8.540833), // Zurich
                                                                 'it' => array('lat' => 46.003654, 'lng' => 8.952918), // Lugano
                                                                 ),

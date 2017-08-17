@@ -11,11 +11,24 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-xs-12 form-group">
+                    @php
+                        $medias = null;
+                    @endphp
                     @if(checkModel($establishment) && $establishment->logo()->exists())
-                    <img src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" style="width: 50px;" />
+                        <img src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" style="width: 50px;" />
+                        @php
+                        $medias = [$establishment->logo()->first()];
+                        @endphp
                     @endif
                     {{ Form::label('Sélectionnez votre logo') }}
-                    {!! Form::file('logo', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
+                    @component('components.file-input', 
+                                        ['name' => 'logo',
+                                        'class' => 'form-control',
+                                        'medias' => $medias,
+                                        'fileType' => 'image'
+                                        ])
+                    
+                    @endcomponent
                 </div>
             </div>
             <br/><br/>
@@ -24,8 +37,27 @@
                     Ajoutez les photos les plus représentatives de votre restaurant (format JPEG, PNG) en haute résolution.<br/>
                     Les photos seront affichées dans la page d\'accueil
                     <br/><br/>
-                    {{ Form::label('Images page d\'accueil') }}
-                    {!! Form::file('home_pictures', ['class' => 'form-control bootstrap-file-input file-input-multiple']) !!}
+                    @php
+                        $medias = null;
+                    @endphp
+                    @if(checkModel($establishment) && $establishment->homePictures()->exists())
+                        @foreach($establishment->homePictures()->get() as $media)
+                            <img src="{{ asset($media->getLocalPath()) }}" style="width: 50px;" />
+                        @endforeach
+                        @php
+                        $medias = $establishment->homePictures()->get();
+                        @endphp
+                    @endif
+                    {{ Form::label("Images page d'accueil") }}
+                    @component('components.file-input', 
+                                        ['name' => 'home_pictures',
+                                        'class' => 'form-control',
+                                        'medias' => $medias,
+                                        'multiple' => true,
+                                        'fileType' => 'image'
+                                        ])
+                    
+                    @endcomponent
                 </div>
             </div>
             <div class="row">

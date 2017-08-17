@@ -428,13 +428,18 @@ class EstablishmentController extends Controller {
                             $createdObjects = array_merge($createdObjects, $this->feedOpeningHours($request, $establishment));
 
                             // Create medias
-                            $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment);
+                            $logo = FileController::storeFile('logo', \App\Models\Media::TYPE_USE_ETS_LOGO, $establishment);
                             if (checkModel($logo)) {
                                 $createdObjects[] = $logo;
                                 $establishment->setIdLogo($logo->getId());
                                 $establishment->save();
                             }
-
+                            
+                            $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, null);
+                            if (!empty($homePictures)) {
+                                $createdObjects[] = $homePictures;
+                            }
+                            
                             return $establishment;
                         } else {
                             throw new Exception("L'établissement n'a pu être enregistré.");
@@ -546,11 +551,19 @@ class EstablishmentController extends Controller {
                             // Update medias
                             if ($request->file('logo')) {
                                 $logo = $establishment->logo()->first();
-                                $logo = FileController::storeFile('logo', FileController::FILE_ETS_LOGO, $establishment, $logo);
+                                $logo = FileController::storeFile('logo', \App\Models\Media::TYPE_USE_ETS_LOGO, $establishment, $logo);
                                 if (checkModel($logo)) {
                                     $establishment->setIdLogo($logo->getId());
                                     $establishment->save();
                                     $createdObjects[] = $logo;
+                                }
+                            }
+                            
+                            if ($request->file('home_pictures')) {
+                                $homePictures = $establishment->homePictures()->get();
+                                $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, $homePictures);
+                                if (!empty($homePictures)) {
+                                    $createdObjects[] = $homePictures;
                                 }
                             }
 
@@ -629,27 +642,29 @@ class EstablishmentController extends Controller {
         try{
             $requestInputKey = 'businessCategories.'.$typeBusinessCategory;
             $submittedBusinessCategoryValues = $request->get($requestInputKey);
-            foreach($submittedBusinessCategoryValues as $value){
-                if(!empty($value) && !checkHexUuid($value)){
-                    // Create tagged business category
-                    $businessCategory = BusinessCategory::create([
-                        'id' => UuidTools::generateUuid(),
-                        'name' => $value,
-                        'type' => $typeBusinessCategory
-                    ]);
-                    $businessCategories[] = $businessCategory;
-                }
-            }
-            if(!empty($businessCategories)){
-                foreach($businessCategories as $businessCategory){
-                    $index = array_search($businessCategory->getName(), $submittedBusinessCategoryValues);
-                    if($index !== false){
-                        $submittedBusinessCategoryValues[$index] = $businessCategory->getUuid();
+            if(!empty($submittedBusinessCategoryValues)){
+                foreach($submittedBusinessCategoryValues as $value){
+                    if(!empty($value) && !checkHexUuid($value)){
+                        // Create tagged business category
+                        $businessCategory = BusinessCategory::create([
+                            'id' => UuidTools::generateUuid(),
+                            'name' => $value,
+                            'type' => $typeBusinessCategory
+                        ]);
+                        $businessCategories[] = $businessCategory;
                     }
                 }
-                $requestInputs = $request->all();
-                $requestInputs['businessCategories'][$typeBusinessCategory] = $submittedBusinessCategoryValues;
-                $request->replace($requestInputs);
+                if(!empty($businessCategories)){
+                    foreach($businessCategories as $businessCategory){
+                        $index = array_search($businessCategory->getName(), $submittedBusinessCategoryValues);
+                        if($index !== false){
+                            $submittedBusinessCategoryValues[$index] = $businessCategory->getUuid();
+                        }
+                    }
+                    $requestInputs = $request->all();
+                    $requestInputs['businessCategories'][$typeBusinessCategory] = $submittedBusinessCategoryValues;
+                    $request->replace($requestInputs);
+                }
             }
             $links = $this->feedLinkBusinessCategories($request, $establishment, $typeBusinessCategory);
         } catch(Exception $e){

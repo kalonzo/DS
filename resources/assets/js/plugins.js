@@ -2,11 +2,24 @@ $(document).ready(function(){
     if(isPluginLoaded($.fn.multiSelect)){
         $('.multiselect-dual').multiSelect();
     }
-    if(isPluginLoaded($.fn.fileinput)){
-        $(".bootstrap-file-input").fileinput({
-            'showUpload': false
-        });
-    }
+//    if(isPluginLoaded($.fn.fileinput)){
+//        $(".bootstrap-file-input").each(function(){
+//            var initialPreview = $(this).attr('initialPreview');
+//            $(this).fileinput({
+//                showUpload: false,
+//                hiddenThumbnailContent: true,
+//                allowedFileExtensions: ['jpg', 'png'],
+//                allowedFileTypes: ['image'],
+//                browseLabel: 'Parcourir',
+//                removeLabel: 'Supprimer',
+//                uploadLabel: 'Upload',
+//                maxFileSize: 2000,
+//                previewFileType: 'any',
+//                initialPreview: [initialPreview],
+//    //            msgSizeTooLarge: "File "{name}" ({size} KB) exceeds maximum allowed upload size of {maxSize} KB. Please retry your upload!",
+//            });
+//        });
+//    }
     if(isPluginLoaded($.fn.select2)){
         $('.select2').each(function(){
             var tagsParam = $(this).attr('aria-tags') ? true : false;
