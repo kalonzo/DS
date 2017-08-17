@@ -82,12 +82,7 @@
         <div class="row">
             <div class="col-md-12 form-group">
                 {!! Form::label('Pour l\'envoyer à plusieur amis, merci de séparer les emails par des points virgule') !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                {!! Form::label('Message de l\'invitation') !!}
-                {!! Form::textarea('message', old('message'), ['class' => 'form-control', 
+                    {!! Form::textarea('message', old('message'), ['class' => 'form-control', 
                 'placeholder' => 'Votre message']) !!}  
             </div>
         </div>

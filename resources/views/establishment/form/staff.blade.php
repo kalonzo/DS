@@ -19,7 +19,7 @@
                     <div class="row"> 
                         <div class="col-xs-6 col-sm-10 form-group {{ $errors->has('logo') ? 'has-error' : '' }}">
                             {!! Form::label('Ajouter votre image') !!}	
-                            {!! Form::file('logo', old('logo'),['class' => 'form-control bootstrap-file-input file-input-single',]) !!}
+                            {!! Form::file('logo', old('logo'),['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                         </div>
                         <div class="col-xs-6 col-sm-2 form-group {{ $errors->has('complete_name') ? 'has-error' : '' }}">
                             {!! Form::label('Nom / Prénom') !!}
@@ -59,17 +59,17 @@
             <!-- composant vignettee -->
             <div class="row">
                 <div class="col-md-4 form-group">
-                    <img src="ssds" width="30" height="30"/>
+                    <img src="" width="30" height="30"/>
                     Pablo Callejo
                     Chef de cuisine
                 </div>
                 <div class="col-md-4 form-group">
-                    <img src="ssds" width="30" height="30"/>
+                    <img src="" width="30" height="30"/>
                     Kenny Alonzo
                     Staff
                 </div>
                 <div class="col-md-4 form-group">
-                    <img src="ssds" width="30" height="30"/>
+                    <img src="" width="30" height="30"/>
                     Alexine Brutin
                     Staff
                 </div>
