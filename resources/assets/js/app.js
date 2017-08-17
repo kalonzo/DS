@@ -17,6 +17,8 @@ require( 'multiselect');
 require( 'multiselect/css/multi-select.css');
 require( 'select2');
 require( 'select2/dist/css/select2.min.css');
+require( 'select2/dist/css/select2.min.css');
+require('ckeditor');
 
 var jsReadyEvent; // The custom event that will be created
 if (document.createEvent) {
