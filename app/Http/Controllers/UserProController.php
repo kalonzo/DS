@@ -138,8 +138,8 @@ class UserProController extends Controller {
             return $item;
         });
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = __($countryData->label) . " | +" . $countryData->prefix;
-            $countryNames[$countryData->uuid] = __($countryData->label);
+            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
+            $countryNames[$countryData->uuid] = $countryData->label;
         }
         // Sort list by translated country name
         asort($countryPrefixes);
