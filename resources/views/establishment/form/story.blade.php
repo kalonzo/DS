@@ -36,15 +36,15 @@
             <!-- Example d'historique -->
             <div class="row">
                 <div class="col-md-4 form-group">
-                    <img src="ssds" width="30" height="30"/>
+                    <img src="" width="30" height="30"/>
                     2001 Ouverture du restaurant
                 </div>
                 <div class="col-md-4 form-group">
-                    <img src="ssds" width="30" height="30"/>
+                    <img src="" width="30" height="30"/>
                     2002 Le restaurant prend feu
                 </div>
                 <div class="col-md-4 form-group">
-                    <img src="ssds" width="30" height="30"/>
+                    <img src="" width="30" height="30"/>
                     2018 Rien ne nous arréterra
                 </div>
             </div>
