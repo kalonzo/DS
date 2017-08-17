@@ -67,3 +67,49 @@ function getImageHeight($filePath){
     }
     return $height;
 }
+
+/**
+ * 
+ * @param App\Models\Media $medias
+ */
+function getMediaConfigForInputFile($medias, $jsonEncoded = true){
+    $mediaConfig = array();
+    if($medias instanceof App\Models\Media){
+        $medias = array($medias);
+    }
+    if(!empty($medias)){
+        foreach($medias as $media){
+            $mediaConfig[] = array(
+                'caption' => $media->getFilename(),
+                'size' => $media->getSize(),
+                'key' => $media->getUuid()
+            );
+        }
+    }
+    if($jsonEncoded){
+        return json_encode($mediaConfig);
+    } else {
+        return $mediaConfig;
+    }
+}
+
+/**
+ * 
+ * @param App\Models\Media $medias
+ */
+function getMediaUrlForInputFile($medias, $jsonEncoded = true){
+    $mediaUrls = array();
+    if($medias instanceof App\Models\Media){
+        $medias = array($medias);
+    }
+    if(!empty($medias)){
+        foreach($medias as $media){
+            $mediaUrls[] = asset($media->getLocalPath());
+        }
+    }
+    if($jsonEncoded){
+        return json_encode($mediaUrls);
+    } else {
+        return $mediaUrls;
+    }
+}

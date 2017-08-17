@@ -23,13 +23,16 @@ a.disabled{
 }
 
 .btn{
-    color: $main-text-color;
-    border: 1px solid $main-text-color;
-    background-color: $body-bg;
-    @include borderRadius(0px);
-    &:hover, &:focus, &.focus {
-        color: $alt-highlight-color;
+    &, &.btn-primary, &.btn-default{
+        color: $main-text-color;
+        border: 1px solid $main-text-color;
+        background-color: $body-bg;
+        @include borderRadius(0px);
+        &:hover, &:focus, &.focus {
+            color: $alt-highlight-color;
+        }
     }
+    
 }
 
 select:not(.select2){

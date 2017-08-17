@@ -219,9 +219,11 @@
             if(checkExist($form)){
                 var lat = $form.find('[name=latitude]').val()*1;
                 var lng = $form.find('[name=longitude]').val()*1;
-                if(!isEmpty(lat) && !isEmpty(lng)){
+                if(!isNaN(lat) && !isNaN(lng)){
                     addressGeocoded = true;
                     relocateMapPosition(lat, lng);
+                } else {
+                    relocateMapPosition(46.204549, 6.144775);
                 }
             }
             

@@ -76,6 +76,10 @@ class Establishment extends Model {
         return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
     }
     
+    public function homePictures(){
+        return $this->hasMany(EstablishmentMedia::class, 'id_object_related', 'id')->where('type_use', '=', Media::TYPE_USE_ETS_HOME_PICS);
+    }
+    
     public function callNumbers(){
         return $this->hasMany(CallNumber::class, 'id_establishment', 'id');
     }

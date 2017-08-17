@@ -20,13 +20,13 @@
     <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">
             <div class="ets-nav-bookmark bookmark-voucher" title="Bon cadeau">
-                <a href="#voucher" class="simple">
+                <a href="{{ $establishment->getUrl() }}#voucher" class="simple">
                     <span>Bon cadeau</span>
                     <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
                 </a>
             </div>
             <div class="ets-nav-bookmark bookmark-contact" title="Nous contacter">
-                <a href="#contact" class="simple">
+                <a href="{{ $establishment->getUrl() }}#contact" class="simple">
                     <span>Nous contacter</span>
                     <span class="bookmark-icon glyphicon glyphicon-phone" aria-hidden="true"></span>
                 </a>
@@ -34,7 +34,7 @@
             @if(isset($data['events']) || isset($data['promo']))
             <div class="ets-nav-bookmark bookmark-event" title="Promotions et événements">
                 <span>Promotions et événements</span>
-                <a href="#events" class="simple">
+                <a href="{{ $establishment->getUrl() }}#events" class="simple">
                     <!--<span class="bookmark-icon glyphicon glyphicon-calendar" aria-hidden="true"></span>-->
                     <img class="bookmark-icon" alt="events" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
                     <!--<img class="bookmark-icon" alt="events" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>-->
