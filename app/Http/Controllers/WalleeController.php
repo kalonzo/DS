@@ -47,13 +47,30 @@ class WalleeController extends Controller {
     public function show() {
         // Setup API client
         $client = new \Wallee\Sdk\ApiClient('592', 'SSh8KJebkHmR7zhQJ58jCONIX5kk64uITe8CRgccdHs=');
-         $transaction = new \Wallee\Sdk\Model\TransactionCreate();
-         $transaction->setCurrency('CHF');
-        // $transaction->set('CHF');
+        //taxes
+
+        $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
+        
+        $lineItem->setSku('CH_RESTO_PRO');
+        $lineItem->setName('abonement_110');
+        $lineItem->setQuantity(1);
+       // $lineItem->setTaxes($tax);
+        $lineItem->setAmountIncludingTax(283.5);
+        $lineItem->setUniqueId(UuidTools::getUuid(UuidTools::generateUuid()));
+        $lineItem->setType(\Wallee\Sdk\Model\LineItemType::FEE);
+        
+         $transactionPending = new \Wallee\Sdk\Model\TransactionPending();
+         $transactionPending->setCurrency('CHF');
+         $transactionPending->setLineItems(array($lineItem));
+         $transactionPending->setId(15);
+         $transactionPending->setVersion(1);
+         $transactionPending->validate();
         
         // Create API service instance
         $service = new \Wallee\Sdk\Service\TransactionService($client);
-        
+      $transaction =   $service->confirm(454, $transactionPending);
+      var_dump($transaction->getId()); 
+       $url =  $service->buildJavaScriptUrl(454, $transaction->getId());
         // The filter which restricts the entities which are used to calculate the count.
         $filter = new \Wallee\Sdk\Model\EntityQueryFilter();
 
