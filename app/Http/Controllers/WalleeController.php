@@ -53,7 +53,7 @@ class WalleeController extends Controller {
         
         // Create API service instance
         $service = new \Wallee\Sdk\Service\TransactionService($client);
-        var_dump($service->c);die();
+        
         // The filter which restricts the entities which are used to calculate the count.
         $filter = new \Wallee\Sdk\Model\EntityQueryFilter();
 
