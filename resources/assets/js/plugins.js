@@ -2,25 +2,27 @@ $(document).ready(function(){
     if(isPluginLoaded($.fn.multiSelect)){
         $('.multiselect-dual').multiSelect();
     }
-//    if(isPluginLoaded($.fn.fileinput)){
-//        $(".bootstrap-file-input").each(function(){
-//            var initialPreview = $(this).attr('initialPreview');
-//            $(this).fileinput({
-//                showUpload: false,
-//                hiddenThumbnailContent: true,
-//                allowedFileExtensions: ['jpg', 'png'],
-//                allowedFileTypes: ['image'],
-//                browseLabel: 'Parcourir',
-//                removeLabel: 'Supprimer',
-//                uploadLabel: 'Upload',
-//                maxFileSize: 2000,
-//                previewFileType: 'any',
-//                initialPreview: [initialPreview],
-//    //            msgSizeTooLarge: "File "{name}" ({size} KB) exceeds maximum allowed upload size of {maxSize} KB. Please retry your upload!",
-//            });
-//        });
-//    }
+    if(isPluginLoaded($.fn.datepicker)){
+        $.datepicker.setDefaults($.datepicker.regional[ "fr" ]);
+        $.datepicker.setDefaults({dayNamesMin: $.datepicker._defaults.dayNamesShort});
+        
+        $('div.datepicker-inline').each(function(){
+            var $input = $(this).find('input[type=hidden]');
+            if(checkExist($input)){
+                var options = {
+                    dateFormat: "dd/mm/yy",
+                    defaultDate: $input.val(),
+                    onSelect: function(dateText, inst){
+                        $($input).val(dateText).change();
+                    }
+                };
+                $(this).datepicker(options);
+            }
+        });
+    }
     if(isPluginLoaded($.fn.select2)){
+        $.fn.select2.defaults.set('language', 'fr');
+        
         $('.select2').each(function(){
             var tagsParam = $(this).attr('aria-tags') ? true : false;
             var maxSelectionLengthParam = $(this).attr('data-maximumSelectionLength') ? $(this).attr('data-maximumSelectionLength') : null;

@@ -1,120 +1,101 @@
-{!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment']) !!}
-<div class="row">
-    <div class="col-md-12 form-group">
-        <div><h4>Choisissez<strong>une date</strong></h4></div>
-        <div class="row">
-            <div class="col-md-12">
-                {!! Form::date('datetime_reservation', old('date'), ['class' => 'form-control']) !!}
+<div class="container-fluid" id="booking-container">
+    {!! Form::open(['url' => '/establishment/booking/{{ $establishment->getUuid() }}']) !!}
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <h3 class="row">Choisissez <strong>une date</strong></h3>
+            <div class="datepicker-inline">
+                {!! Form::hidden('datetime_reservation', '23/12/2017', ['class' => '']) !!}
             </div>
         </div>
     </div>
-    <div class="col-md-12 form-group">
-        <div><h4>Choisissez<strong>l'heure</strong></h4></div>
-        <div class="row">
-            <div class="col-md-6">
-                Déjeuner
+    <div class="row">
+        <h3>Choisissez <strong>l'heure</strong></h3>
+        <div class="form-horizontal">
+            <div class="form-group">
+                {!! Form::label('time[1]', 'Déjeuner', ['class' => 'col-xs-6 control-label']) !!}	
+                <div class="col-xs-6">
+                    {!! Form::time('time[1]', old('time'), ['class' => 'form-control']) !!}
+                </div>
             </div>
-            <div class="col-md-6 form-group">
-                {!! Form::time('time', old('time'), ['class' => 'form-control']) !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 ">
-                Diner
-            </div>
-            <div class="col-md-6 form-group">
-                {!! Form::time('time', old('time'), ['class' => 'form-control']) !!}
+            <div class="form-group">
+                {!! Form::label('time[2]', 'Diner', ['class' => 'col-xs-6 control-label']) !!}	
+                <div class="col-xs-6">
+                    {!! Form::time('time[2]', old('time'), ['class' => 'form-control']) !!}
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-12 form-group">
-        <div ><h4>Pour<strong>combien de personnes</strong></h4></div>
-        <div class="row">
-            <div class="col-md-6 form-group">
-                {!! Form::selectRange('nb_adults', 1, 100) !!}
+    <div class="row">
+        <h3>Pour <strong>combien de personnes</strong></h3>
+        <div class="form-inline form-group text-center text-lowercase">
+            {!! Form::selectRange('nb_adults', 1, 30) !!}
+            &nbsp;personnes
+        </div>
+    </div>
+    <div class="row booking-contact" style="text-transform: none;">
+        <h3 class="text-uppercase">Info du <strong>contact</strong></h3>
+        <div class="col-xs-12">
+            Saisissez vos coordonnées pour finaliser votre réservation 
+        </div>
+        <br class="cleaner"/>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('Prénom*') !!}
+            {!! Form::text('firstname', old('firstname'), ['class' => 'form-control']) !!}
+        </div>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('Nom*') !!}
+            {!! Form::text('lastname',old('lastname'), ['class' => 'form-control']) !!}
+        </div>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('Email*') !!}
+            {!! Form::text('email',old('email'), ['class' => 'form-control']) !!}
+        </div>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('Portable*') !!}
+            {!! Form::text('phone_number',old('phone_number'), ['class' => 'form-control']) !!}
+        </div>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('Ajouter une demande particulière*') !!}
+            {!! Form::textarea('comment', old('content'), ['class' => 'form-control', 'placeholder' => 'Allergie/habitude alimentaire']) !!}  
+        </div>
+    </div>
+    <div class="row booking-invitation" style="text-transform: none;">
+        <h3 class="text-uppercase">Inviter des <strong>amis</strong></h3>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('invited_emails', 'Pour l\'envoyer à plusieur amis, merci de séparer les emails par des virgules') !!}
+            {!! Form::textarea('invited_emails', old('invited_emails'), ['class' => 'form-control']) !!}  
+        </div>
+        <div class="col-xs-12 form-group">
+            {!! Form::label('Message de l\'invitation') !!}
+            {!! Form::textarea('message', old('message'), ['class' => 'form-control', 'placeholder' => 'Votre message']) !!}  
+        </div>
+        <div class="col-xs-12 checkbox">
+            <label>
+                {!! Form::checkbox('copy_invitation', 1, false) !!}
+                Recevoir la copie de l'invitation par email
+            </label>
+        </div>
+    </div>
+    <div class="row booking-validation" style="text-transform: none;">
+        <div class="col-xs-12">
+            <div class="row ">
+                <div class="col-xs-12">
+                    {!! Form::button('Valider votre réservation', ['class' => 'book-button', 'type' => 'submit']) !!}
+                </div>
             </div>
-            <div class="col-md-6">
-                Personne
+            <br class="cleaner"/>
+            <div class="row">
+                <div class="col-xs-12 validation-clause">
+                    En cliquant sur valider votre réservation vous acceptez <a href="#">les conditions général de vente</a>
+                </div>
+            </div>
+            <br class="cleaner"/>
+            <div class="row">
+                <div class="col-xs-12 validation-clause">
+                    Nous renvoyons l’information au restaurant . Veuillez attendre la confirmation de votre table par email.
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-12 form-group">
-        <div ><h4>Info<strong>du contact</strong></h4></div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                Saissisez vos coordonées pour finaliser votre résérvation 
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 form-group">
-                Prénom
-                {!! Form::text('firstname',old('range')) !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 form-group">
-                Nom
-                {!! Form::text('lastname',old('range')) !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 form-group">
-                Email
-                {!! Form::text('email',old('range')) !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 form-group">
-                Portable
-                {!! Form::text('phone_number',old('range')) !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                Ajouter une demande particulière
-                {!! Form::textarea('comment', old('content'), ['class' => 'form-control', 
-                'placeholder' => 'Allergie/habitude alimentaire']) !!}  
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12">
-        <div class='row'><h4>Inviter<strong>des amis</strong></h4></div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                {!! Form::label('Pour l\'envoyer à plusieur amis, merci de séparer les emails par des points virgule') !!}
-                    {!! Form::textarea('message', old('message'), ['class' => 'form-control', 
-                'placeholder' => 'Votre message']) !!}  
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                {!! Form::label('Message de l\'invitation') !!}
-                {!! Form::textarea('message', old('message'), ['class' => 'form-control', 
-                'placeholder' => 'Votre message']) !!}  
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                {!! Form::label('Recevoir la copie de l\'invitation par email') !!}
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-12 form-group alert-info">
-                {!! Form::submit('Valider votre résérvation') !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 form-group">
-                {!! Form::label('En cliquant sur valider votre réservation vous acceptez les conditions général de vente.') !!}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 form-group alert-info">
-                {!! Form::submit('Nous renvoyons l’information au restaurant . Veuillez attendre la confirmation de votre table par email.') !!}
-            </div>
-        </div>
-    </div>
+    {!! form::close() !!}
 </div>
-{!! form::close() !!}
