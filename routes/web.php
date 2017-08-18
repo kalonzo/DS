@@ -46,6 +46,7 @@ Route::get('welcome/{locale}', function ($local) {
      return view('dev.welcome');  
 });
 
+Route::get('/checkout', 'WalleeController@show');                  
 /****************************** ADMIN *****************************************/
 
 Route::get('/admin', 'AdminController@index');

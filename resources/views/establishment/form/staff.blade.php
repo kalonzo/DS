@@ -17,31 +17,31 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="row"> 
-                        <div class="col-xs-6 col-sm-10 form-group {{ $errors->has('logo') ? 'has-error' : '' }}">
+                        <div class="col-xs-6 col-sm-10 form-group ">
                             {!! Form::label('Ajouter votre image') !!}	
                             {!! Form::file('logo', old('logo'),['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                         </div>
-                        <div class="col-xs-6 col-sm-2 form-group {{ $errors->has('complete_name') ? 'has-error' : '' }}">
+                        <div class="col-xs-6 col-sm-2 form-group ">
                             {!! Form::label('Nom / Prénom') !!}
                             {!! Form::text('complete_name', old('complete_name'), ['class' => 'form-control']) !!}
                         </div>      
                     </div>
                     <div class="row"> 
-                        <div class="col-xs-6 col-sm-10 form-group {{ $errors->has('job_type[name]') ? 'has-error' : '' }}">
+                        <div class="col-xs-6 col-sm-10 form-group ">
                             <div class="row">
-                                <div class="col-xs-6 col-sm-10 form-group {{ $errors->has('street') ? 'has-error' : '' }}">
-                                    {!! Form::radio('job_type[name]', old('job_type'), ['class' => 'form-control']) !!}
+                                <div class="col-xs-6 col-sm-10 form-group ">
+                                    {!! Form::radio('job_title', old('job_type'), ['class' => 'form-control']) !!}
                                     {!! Form::label('Chef de cuisine') !!}
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6 col-sm-10 form-group {{ $errors->has('job_type[name]') ? 'has-error' : '' }}">
-                                    {!! Form::radio('job_type[name]', old('job_type'), ['class' => 'form-control']) !!}
+                                <div class="col-xs-6 col-sm-10 form-group ">
+                                    {!! Form::radio('job_title', old('job_type'), ['class' => 'form-control']) !!}
                                     {!! Form::label('Commis') !!}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-6 col-sm-2 form-group {{ $errors->has('position') ? 'has-error' : '' }}">
+                        <div class="col-xs-6 col-sm-2 form-group ">
                             {!! Form::label('Titre') !!}
                             {!! Form::text('position', old('position'), ['class' => 'form-control']) !!}
                         </div>      

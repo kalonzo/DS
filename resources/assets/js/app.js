@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -19,6 +18,7 @@ require( 'multiselect');
 require( 'multiselect/css/multi-select.css');
 require( 'select2');
 require( 'select2/dist/css/select2.min.css');
+require('ckeditor');
 
 var jsReadyEvent;
 if (document.createEvent) {

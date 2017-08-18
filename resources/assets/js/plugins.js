@@ -1,5 +1,5 @@
-$(document).ready(function(){
-    if(isPluginLoaded($.fn.multiSelect)){
+$(document).ready(function () {
+    if (isPluginLoaded($.fn.multiSelect)) {
         $('.multiselect-dual').multiSelect();
     }
     if(isPluginLoaded($.fn.datepicker)){
@@ -33,14 +33,22 @@ $(document).ready(function(){
             $(this).select2(options);
         });
     }
+    if (isPluginLoaded($.fn.ckeditor)) {
+        $('.ckeditor').each(function () {
+            var options = {
+      
+            };
+            $(this).ckeditor(options);
+        });
+    }
 });
-$(document).on('googleGeolocReady', function(){
-    $('.quick-map').each(function(){
-        var lat = $(this).attr('data-lat')*1;
-        var lng = $(this).attr('data-lng')*1;
-        var zoom = $(this).attr('data-zoom')*1;
-        if(!isEmpty(lat) && !isEmpty(lng) && !isNaN(lat) && !isNaN(lng)){
-            if(isNaN(zoom)){
+$(document).on('googleGeolocReady', function () {
+    $('.quick-map').each(function () {
+        var lat = $(this).attr('data-lat') * 1;
+        var lng = $(this).attr('data-lng') * 1;
+        var zoom = $(this).attr('data-zoom') * 1;
+        if (!isEmpty(lat) && !isEmpty(lng) && !isNaN(lat) && !isNaN(lng)) {
+            if (isNaN(zoom)) {
                 zoom = 15;
             }
             var quickmap = new google.maps.Map(this, {
@@ -48,18 +56,18 @@ $(document).on('googleGeolocReady', function(){
                 zoom: zoom,
                 streetViewControl: false,
 //                    scrollwheel: false,
-                styles: [{      
-                    featureType: 'poi.business',
-                          stylers: [{
-                        visibility: 'off'
-                    }]     
-                },     {      
-                    featureType: 'transit',
-                          elementType: 'labels.icon',
-                          stylers: [{
-                        visibility: 'off'
-                    }]     
-                }]
+                styles: [{
+                        featureType: 'poi.business',
+                        stylers: [{
+                                visibility: 'off'
+                            }]
+                    }, {
+                        featureType: 'transit',
+                        elementType: 'labels.icon',
+                        stylers: [{
+                                visibility: 'off'
+                            }]
+                    }]
             });
             markerPosition = new google.maps.Marker({
                 position: {lat: lat, lng: lng},
