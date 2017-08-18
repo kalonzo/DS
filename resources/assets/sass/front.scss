@@ -1042,8 +1042,61 @@ form:not(.navbar-form) input[type=text]{
 #sidebar-booking.custom-sidebar{
     top: $navbarHeight;
     height: 100%;
-    height: -webkit-calc(100% + $navbarHeight);
-    height: calc(100% + $navbarHeight);
     height: -moz-calc(100%);
+    height: -webkit-calc(100% - #{$navbarHeight});
+    height: calc(100% - #{$navbarHeight});
+    padding-bottom: $navbarHeight;
     background-color: $main-dark-color;
+    border-left: 1px solid white;
+}
+
+#booking-container{
+    text-transform: uppercase;
+    h3{
+        padding: 0.5em 0.5em;  
+        background-color: #333;
+        font-size: 1.2em;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .form-horizontal{
+        .form-group{
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+    }
+    input[type='time']{
+        text-align: center;    
+    }
+    input, textarea{
+        background-color: transparent;
+        border: 1px solid $main-text-color;
+        color: $main-text-color;
+    }
+    .datepicker-inline{
+        width: 100%;
+        text-transform: initial;
+        .ui-datepicker-inline{
+            width: 100%;
+        }
+    }
+    .booking-invitation, .booking-contact{
+        textarea{
+            height: 70px;
+        }
+    }
+    .booking-validation{
+        background-color: #333;
+        padding: 15px 0px;
+        .book-button{
+            font-size: 1.2em;
+            width: 100%;
+        }
+        .validation-clause{
+            font-size: 0.8em;
+        }
+    }
+    .checkbox > label {
+        line-height: 1.6;
+    }
 }
