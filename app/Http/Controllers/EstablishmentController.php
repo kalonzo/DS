@@ -200,9 +200,6 @@ class EstablishmentController extends Controller {
                         'id_company' => 0,
             ]);
         }
-
-        //$date = str_replace('/', '-', $request->get('datetime_reservation'));
-
         if ($request->get('time.1') !== null) {
             $hour = $request->get('time.1');
         }

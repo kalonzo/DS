@@ -20,7 +20,7 @@ class StoreBooking extends \App\Http\FormRequest {
      */
     public function rules() {
         $rules = [
-            'email' => 'nullable|email',
+            'email' => 'required|email',
             //user
              'name' => 'required|min:2|max:255',
             
@@ -32,10 +32,11 @@ class StoreBooking extends \App\Http\FormRequest {
     public function messages() {
         $messages = [
             'email.email' => 'Veuillez saisir une adresse email valide.',
+            'email.required' => 'Veuillez saisir une adresse email.',
             'name.required' => 'Veuillez saisir le nom de votre restaurant.',
             'name.min' => 'Veuillez renseigner au minimum 2 caractère pour le nom de votre restaurant',
             'name.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre restaurant',
         ];
-        
+        return $messages;
     }
 }
