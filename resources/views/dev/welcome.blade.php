@@ -1,3 +1,7 @@
+@extends('layouts.front') 
+
+@section('content')
+
 <div class="panel panel-default">
     @lang('messages.bienvennue')  
     
@@ -15,7 +19,9 @@
 <div id="payment-form"></div>
 <button id="pay-button">Pay</button>
 {!! Form::text('url',$url) !!}
-<script src="jquery.js" type="text/javascript"></script>
+
+@endsection
+
 <script src="{{$url}}" type="text/javascript"></script>
 <script type="text/javascript">
 // Set here the id of the payment method configuration the customer chose.
@@ -57,7 +63,7 @@ handler.setHeightChangeCallback(function(height){
 		//Execute code
 	});
 
-handler.create(containerId)
+handler.create(containerId);
 
 /**
 $('#pay-button').on('click', function(){
