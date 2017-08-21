@@ -40,6 +40,12 @@ Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $cit
     return $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
 });
 
+Route::post('/establishment/booking/{establishment}',function(App\Models\Establishment $establishment){
+    $request = new App\Http\Requests\StoreBooking(Request::all());
+    $app = app();
+    $establishmentController = $app->make(App\Http\Controllers\EstablishmentController::class);
+    return $establishmentController->callAction('createBooking', array($request , 'establishment' => $establishment));
+});
 /******************************TEST ROUTE**************************************/
 Route::get('welcome/{locale}', function ($local) {
      Lang::setLocale($local);
