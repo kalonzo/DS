@@ -39,23 +39,23 @@
         </div>
         <br class="cleaner"/>
         <div class="col-xs-12 form-group">
-            {!! Form::label('Prénom*') !!}
+            {!! Form::label('firstname','Prénom*') !!}
             {!! Form::text('firstname', old('firstname'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('Nom*') !!}
+            {!! Form::label('lastname','Nom*') !!}
             {!! Form::text('lastname',old('lastname'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('Email*') !!}
+            {!! Form::label('email','Email*') !!}
             {!! Form::text('email',old('email'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('Portable*') !!}
+            {!! Form::label('phone_number','Portable*') !!}
             {!! Form::text('phone_number',old('phone_number'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('Ajouter une demande particulière*') !!}
+            {!! Form::label('comment','Ajouter une demande particulière*') !!}
             {!! Form::textarea('comment', old('content'), ['class' => 'form-control', 'placeholder' => 'Allergie/habitude alimentaire']) !!}  
         </div>
     </div>
@@ -66,7 +66,7 @@
             {!! Form::textarea('invited_emails', old('invited_emails'), ['class' => 'form-control']) !!}  
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('Message de l\'invitation') !!}
+            {!! Form::label('message','Message de l\'invitation') !!}
             {!! Form::textarea('message', old('message'), ['class' => 'form-control', 'placeholder' => 'Votre message']) !!}  
         </div>
         <div class="col-xs-12 checkbox">

@@ -11,18 +11,18 @@
         <div class="panel-body container">
             <div class="row"> 
                 <div class="col-xs-12 col-sm-12 form-group">
-                    {!! Form::label('Veuillez télécharger les informations de votre équipe') !!}	
+                    {!! Form::label('info_staff','Veuillez télécharger les informations de votre équipe') !!}	
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <div class="row"> 
                         <div class="col-xs-6 col-sm-10 form-group ">
-                            {!! Form::label('Ajouter votre image') !!}	
+                            {!! Form::label('logo','Ajouter votre image') !!}	
                             {!! Form::file('logo', old('logo'),['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                         </div>
                         <div class="col-xs-6 col-sm-2 form-group ">
-                            {!! Form::label('Nom / Prénom') !!}
+                            {!! Form::label('complete_name','Nom / Prénom') !!}
                             {!! Form::text('complete_name', old('complete_name'), ['class' => 'form-control']) !!}
                         </div>      
                     </div>
@@ -31,18 +31,18 @@
                             <div class="row">
                                 <div class="col-xs-6 col-sm-10 form-group ">
                                     {!! Form::radio('job_title', old('job_type'), ['class' => 'form-control']) !!}
-                                    {!! Form::label('Chef de cuisine') !!}
+                                    {!! Form::label('job_title','Chef de cuisine') !!}
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-xs-6 col-sm-10 form-group ">
                                     {!! Form::radio('job_title', old('job_type'), ['class' => 'form-control']) !!}
-                                    {!! Form::label('Commis') !!}
+                                    {!! Form::label('job_title','Commis') !!}
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-6 col-sm-2 form-group ">
-                            {!! Form::label('Titre') !!}
+                            {!! Form::label('position','Titre') !!}
                             {!! Form::text('position', old('position'), ['class' => 'form-control']) !!}
                         </div>      
                     </div>

@@ -14,9 +14,9 @@
 <ul id="payment-errors"></ul>
 <div id="payment-form"></div>
 <button id="pay-button">Pay</button>
-
+{!! Form::text('url',$url) !!}
 <script src="jquery.js" type="text/javascript"></script>
-<script src="{ JavaScript URL }" type="text/javascript"></script>
+<script src="{{$url}}" type="text/javascript"></script>
 <script type="text/javascript">
 // Set here the id of the payment method configuration the customer chose.
 var paymentMethodConfigurationId = 616;
@@ -33,7 +33,8 @@ handler.setValidationCallback(
 
 		if (validationResult.success) {
 			// Create the order within the shop and eventually update the transaction.
-			$.ajax('http://your-shop-backend.com/create-order', {
+                        alert('chekpoint');
+			$.ajax('http://dinerscope/welcome', {
 				success: function(){
 					handler.submit();
 				}
@@ -58,8 +59,8 @@ handler.setHeightChangeCallback(function(height){
 
 handler.create(containerId)
 
-
+/**
 $('#pay-button').on('click', function(){
 	handler.validate();
-});
+});*/
 </script>

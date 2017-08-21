@@ -11,45 +11,45 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('* Société / Etablissement') !!}
+                    {!! Form::label('address[company_name]','* Société / Etablissement') !!}
                     {!! Form::text('address[company_name]', old('company_name'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('* Prénom') !!}
+                    {!! Form::label('bills[prename]','* Prénom') !!}
                     {!! Form::text('bills[prename]', old('address_additional'), ['class' => 'form-control']) !!}
                 </div>
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('* Nom') !!}
+                    {!! Form::label('bills[name]','* Nom') !!}
                     {!! Form::text('bills[name]', old('district'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-8 col-sm-10 form-group {{ $errors->has('street') ? 'has-error' : '' }}">
-                    {!! Form::label('* Adresse') !!}	
+                    {!! Form::label('address[street]','* Adresse') !!}	
                     {!! Form::text('address[street]', old('street'),['class' => 'form-control',]) !!}
                 </div>
                 <div class="col-xs-4 col-sm-2 form-group {{ $errors->has('street_number') ? 'has-error' : '' }}">
-                    {!! Form::label('* N° Rue') !!}
+                    {!! Form::label('address[street_number]','* N° Rue') !!}
                     {!! Form::text('address[street_number]', old('street_number'), ['class' => 'form-control']) !!}
                 </div>  
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('* P.O. BOX') !!}
+                    {!! Form::label('address[po_box]','* P.O. BOX') !!}
                     {!! Form::text('address[po_box]', old('district'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    {!! Form::label('* NPA') !!}
+                    {!! Form::label('address[postal_code]','* NPA') !!}
                     <div class="form-group {{ $errors->has('postal_code') ? 'has-error' : '' }}">
                         {!! Form::text('address[postal_code]', old('postal_code'), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="col-md-8">
-                    {!! Form::label('* Localité') !!}
+                    {!! Form::label('address[city]','* Localité') !!}
                     <div class="form-group {{ $errors->has('city') ? 'has-error' : '' }}">
                         {!! Form::text('address[city]', old('city'), ['class' => 'form-control',]) !!}
                     </div>
@@ -57,7 +57,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 form-group">
-                    {!! Form::label('* Pays') !!}
+                    {!! Form::label('address[id_country]','* Pays') !!}
                     <div class="form-group {{ $errors->has('id_country') ? 'has-error' : '' }}">
                         {!! Form::select('address[id_country]', $form_data['country_ids'], $form_values['id_country'], ['class' => 'form-control select2']) !!}
                     </div>
@@ -74,7 +74,7 @@
             <div class="row">
                 @foreach($callNumbersAvailable as $typeNumber => $label)
                 <div class="col-md-6">
-                    {!! Form::label($label) !!}
+                    {!! Form::label($label,$label) !!}
                     <div class="form-group form-inline {{ $errors->has('call_number['.$typeNumber.']') ? 'has-error' : '' }}">
                         @php
                         $selectedPrefix = old('id_country_prefix['.$typeNumber.']');
@@ -98,7 +98,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 accordion-inner">
-                    {!! Form::label(' e-mail') !!}
+                    {!! Form::label('email',' e-mail') !!}
                     <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                         {!! Form::text('email', old('email'), ['class' => 'form-control']) !!}
                     </div>

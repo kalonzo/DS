@@ -15,7 +15,7 @@
                         @foreach($form_data['business_tools'] as $businessTool => $label)
                             <div class="row">
                                 <div class="col-sm-6 form-group">
-                                    {!! Form::label($label) !!}
+                                    {!! Form::label($label,$label) !!}
                                 </div>
                             </div>
                         @endforeach

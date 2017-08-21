@@ -14,7 +14,7 @@
                     <div> 
                         @foreach($form_data['payment_methods'] as $paymentMethod => $label)   
                             <div class="col-sm-6 form-group">
-                                {!! Form::label($label) !!}
+                                {!! Form::label($label,$label) !!}
                                {!! Form::radio('btn', 'value', true, array('class' => 'name')) !!}
                             </div>                       
                         @endforeach

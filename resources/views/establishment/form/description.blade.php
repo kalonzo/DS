@@ -11,7 +11,7 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-md-12">
-                    {!! Form::label('Description :') !!}
+                    {!! Form::label('description','Description :') !!}
                     <div class="form-group">
                         {!! Form::textarea('description', old('description'), ['class' => 'form-control ckeditor', 
                             'placeholder' => 'Mettez en valeur votre établissement (Paragraphe : Qui somme nous.)']) !!}  

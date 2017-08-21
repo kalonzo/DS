@@ -20,7 +20,7 @@
                         $medias = [$establishment->logo()->first()];
                         @endphp
                     @endif
-                    {{ Form::label('Sélectionnez votre logo') }}
+                    {{ Form::label('logo','Sélectionnez votre logo') }}
                     @component('components.file-input', 
                                         ['name' => 'logo',
                                         'class' => 'form-control',
@@ -48,7 +48,7 @@
                         $medias = $establishment->homePictures()->get();
                         @endphp
                     @endif
-                    {{ Form::label("Images page d'accueil") }}
+                    {{ Form::label('home_picture','Images page d\'accueil') }}
                     @component('components.file-input', 
                                         ['name' => 'home_pictures',
                                         'class' => 'form-control',

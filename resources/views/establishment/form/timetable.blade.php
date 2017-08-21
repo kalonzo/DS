@@ -71,7 +71,7 @@
                             {!! Form::select("openingHours[".$dayIndex."][2][start]", $form_data['timetable'], $startTimePm,['placeholder' => 'Début', 'disabled' => $noBreakValue]) !!}
                             {!! Form::select("openingHours[".$dayIndex."][2][end]", $form_data['timetable'], $endTimePm,['placeholder' => 'Fin', 'disabled' => $noBreakValue]) !!}
                             <div class="timetable-action-nobreak">
-                                {!! Form::label('Non stop') !!}
+                                {!! Form::label('no_stop','Non stop') !!}
                                 <br/>
                                 {!! Form::checkbox("openingHours[".$dayIndex."][2][no_break]", '1', $noBreakValue, ['class' => '', 'onchange' => 'toggleNoBreak(this);']) !!}
                             </div>

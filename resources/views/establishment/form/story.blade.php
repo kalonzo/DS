@@ -18,7 +18,7 @@
                         {!! Form::file('logo', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                     </div>
                     <div class="col-md-8 form-group">
-                        {!! Form::label('Titre') !!}
+                        {!! Form::label('title','Titre') !!}
                         {!! Form::text('title') !!}
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                         {!! Form::selectYear('year', 1800, 2018); !!} 
                     </div>
                     <div class="col-md-4 form-group">
-                        {!! Form::label('Description :') !!}
+                        {!! Form::label('content','Description :') !!}
                         {!! Form::textarea('content', old('content'), ['class' => 'form-control', 
                         'placeholder' => 'Mettez en valeur l\'historique de votre établissement (Ouverture/fermeture/Ajout du restaureant dans le guide Dinerscope)']) !!}  
                     </div>

@@ -16,11 +16,11 @@
             </div>
             <div class="row"> 
                 <div class="col-xs-8 col-sm-8 form-group">
-                    {!! Form::label('Nom de votre menu') !!}	
+                    {!! Form::label('name','Nom de votre menu') !!}	
                     {!! Form::text('name', old('name'),['class' => 'form-control',]) !!}
                 </div>
                 <div class="col-xs-4 col-sm-4 form-group {{ $errors->has('logo_menu') ? 'has-error' : '' }}">
-                    {!! Form::label('Image pour votre menu') !!}	
+                    {!! Form::label('logo_menu','Image pour votre menu') !!}	
                     {!! Form::file('logo_menu', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                 </div>      
             </div>
@@ -92,27 +92,27 @@
                 <div class="col-xd-12 form-group">
                     <div class="row"> 
                         <div class="col-xs-8  form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                            {!! Form::label('Nom de l\'assiette') !!}	
+                            {!! Form::label('name','Nom de l\'assiette') !!}	
                             {!! Form::text('name', old('name'),['class' => 'form-control',]) !!}
                         </div>
                         <div class="col-xs-4  form-group {{ $errors->has('logo_assiette') ? 'has-error' : '' }}">
-                            {!! Form::label('Image pour votre assiette') !!}
+                            {!! Form::label('logo_assiette','Image pour votre assiette') !!}
                             {!! Form::file('logo_assiette', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                         </div>      
                     </div> 
                     <div class="row"> 
                         <div class="col-xs-12  form-group {{ $errors->has('description') ? 'has-error' : '' }}">
-                            {!! Form::label('Description de l\'assiette') !!}	
+                            {!! Form::label('description','Description de l\'assiette') !!}	
                             {!! Form::text('description', old('label'),['class' => 'form-control',]) !!}
                         </div>   
                     </div> 
                     <div class="row"> 
                         <div class="col-xs-6  form-group {{ $errors->has('price') ? 'has-error' : '' }}">
-                            {!! Form::label('Prix') !!}	
+                            {!! Form::label('price','Prix') !!}	
                             {!! Form::text('price', old('prix'),['class' => 'form-control',]) !!}
                         </div>      
                         <div class="col-xs-6  form-group {{ $errors->has('currency') ? 'has-error' : '' }}">
-                            {!! Form::label('Monnaie') !!}	
+                            {!! Form::label('currency','Monnaie') !!}	
                             {!! Form::text('currency', old('currency'),['class' => 'form-control',]) !!}
                         </div>      
                     </div> 

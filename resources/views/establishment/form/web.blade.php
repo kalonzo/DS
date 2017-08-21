@@ -11,11 +11,11 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-md-12 accordion-inner">
-                    {!! Form::label(' e-mail') !!}
+                    {!! Form::label('email',' e-mail') !!}
                     <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                         {!! Form::text('email', old('email'), ['class' => 'form-control']) !!}
                     </div>
-                    {!! Form::label(' Site web de votre restaurant') !!}
+                    {!! Form::label('site_url',' Site web de votre restaurant') !!}
                     <div class="form-group">
                         {!! Form::text('site_url', old('site_url'), ['class' => 'form-control', 'placeholder' => 'Enter Message']) !!}
                     </div>
