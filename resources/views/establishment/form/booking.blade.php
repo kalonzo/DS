@@ -80,7 +80,7 @@
         <div class="col-xs-12">
             <div class="row ">
                 <div class="col-xs-12">
-                    {!! Form::button('Valider votre réservation', ['class' => 'book-button', 'type' => 'submit']) !!}
+                    {!! Form::button('Valider votre réservation', ['class' => 'book-button form-data-button', 'type' => 'button']) !!}
                 </div>
             </div>
             <br class="cleaner"/>

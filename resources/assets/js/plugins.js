@@ -41,6 +41,8 @@ $(document).ready(function () {
             $(this).ckeditor(options);
         });
     }
+    
+    
 });
 $(document).on('googleGeolocReady', function () {
     $('.quick-map').each(function () {

@@ -35,6 +35,21 @@ a.disabled{
     
 }
 
+$inputErrorColor: #a94442;
+.has-error {
+    .form-control {
+        border-color: $inputErrorColor !important;
+    }
+    .tooltip{
+        .tooltip-arrow{
+            border-top-color: $inputErrorColor;
+        }
+        .tooltip-inner{
+            color: $inputErrorColor;
+        }
+    }
+}
+
 select:not(.select2){
         color: $main-text-color !important;
         border: 1px solid $main-text-color !important;
@@ -96,6 +111,7 @@ select:not(.select2){
         }
     }
 }
+
 
 #navbar {
     height: $navbarHeight;
