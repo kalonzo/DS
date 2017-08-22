@@ -24,7 +24,10 @@ Route::match(['get', 'post'], '/search', 'SearchController@search');
 
 // ESTABLISHMENT
 Route::get('/establishment/create', 'EstablishmentController@create');          // create
-Route::put('/establishment', 'EstablishmentController@store');                  // store
+Route::put('/establishment', 'EstablishmentController@store');    
+
+Route::get('/establishment/excel/import', 'ImportRestaurantController@show');  
+Route::post('/establishment/excel', 'ImportRestaurantController@storeFile');  // store
 
 Route::get('/establishment/register', 'UserProController@create');          // register
 //Route::put('/establishment', 'UserProController@store');                  // store
@@ -53,6 +56,8 @@ Route::get('welcome/{locale}', function ($local) {
      Lang::setLocale($local);
      return view('dev.welcome');  
 });
+
+  
 
 Route::get('/checkout', 'WalleeController@show');                  
 /****************************** ADMIN *****************************************/
