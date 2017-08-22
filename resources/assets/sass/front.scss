@@ -503,7 +503,7 @@ select:not(.select2){
     }
 }
 
-#search-results-filters, #filterModal{
+#search-results-filters, #filterModal, #checkoutModal{
     background: $main-dark-color;
     border: 1px solid white;
     @include borderRadius(0px);
@@ -606,10 +606,16 @@ select:not(.select2){
     }
 }
 
-#filterModal{
+#filterModal, #checkoutModal{
     .modal-content{
         background: $main-dark-color;
         border: 1px solid white;
+    }
+    .modal-header{
+        .close{
+            color: $main-text-color;
+            @include opacity(1);
+        }
     }
     .filter-list-see-more{
         display: none;
@@ -1098,5 +1104,20 @@ form:not(.navbar-form) input[type=text]{
     }
     .checkbox > label {
         line-height: 1.6;
+    }
+}
+
+#checkoutModal{
+    .modal-body{
+        padding: 20px;
+        .row{
+            margin: 0px;
+        }
+        #pay-button{
+            width: 100%;
+        }
+    }
+    .loading-spinner{
+        margin: 20px auto;
     }
 }

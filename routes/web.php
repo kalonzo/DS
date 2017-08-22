@@ -40,13 +40,17 @@ Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $cit
     return $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
 });
 
+// CHECKOUT
+Route::post('/start_checkout', 'WalleeController@startCheckout');
+Route::post('/create_order', 'WalleeController@createOrder');
+Route::match(['get', 'post'], '/complete_order', 'WalleeController@createOrder');
+
 /******************************TEST ROUTE**************************************/
-Route::get('welcome/{locale}', function ($local) {
+Route::get('/welcome/{locale}', function ($local) {
      Lang::setLocale($local);
      return view('dev.welcome');  
 });
 
-Route::get('/checkout', 'WalleeController@show');                  
 /****************************** ADMIN *****************************************/
 
 Route::get('/admin', 'AdminController@index');

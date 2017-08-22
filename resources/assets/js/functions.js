@@ -67,6 +67,19 @@ function reloadPage(extraParams, doneCallback){
         });
     }
 };
+
+function getParamsArrayFromUrl(url){
+    var paramsArray = null;
+    if(!isEmpty(url)){
+        var paramsIndex = url.indexOf('?');
+        if(paramsIndex >= 0){
+            paramsIndex += 1;
+            var params = url.substring(paramsIndex);
+            paramsArray = JSON.parse('{"' + decodeURI(params.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}')
+        }
+    }
+    return paramsArray;
+}
     
 /*
     var searchRadius = 500;
