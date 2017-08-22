@@ -61,35 +61,35 @@ class EstablishmentController extends Controller {
      */
     public function show(Establishment $establishment, $page = null) {
         $data = array();
-        
-        switch($page){
+
+        switch ($page) {
             case 'menu':
             case 'photos':
             default :
                 // Business categories
                 $data['cooking_type'] = '-';
                 $mainCookingType = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_COOKING_TYPE)->first();
-                if($mainCookingType instanceof BusinessCategory){
+                if ($mainCookingType instanceof BusinessCategory) {
                     $data['cooking_type'] = $mainCookingType->getName();
                 }
                 $data['specialties'] = array();
                 $specialties = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_FOOD_SPECIALTY)->orderBy('name')->get();
-                foreach($specialties as $specialty){
-                    if($specialty instanceof BusinessCategory){
+                foreach ($specialties as $specialty) {
+                    if ($specialty instanceof BusinessCategory) {
                         $data['specialties'][] = $specialty->getName();
                     }
                 }
                 $data['services'] = array();
                 $services = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_SERVICES)->orderBy('name')->get();
-                foreach($services as $service){
-                    if($service instanceof BusinessCategory){
+                foreach ($services as $service) {
+                    if ($service instanceof BusinessCategory) {
                         $data['services'][] = $service->getName();
                     }
                 }
                 $data['ambiences'] = array();
                 $ambiences = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_RESTAURANT_AMBIENCE)->orderBy('name')->get();
-                foreach($ambiences as $ambience){
-                    if($ambience instanceof BusinessCategory){
+                foreach ($ambiences as $ambience) {
+                    if ($ambience instanceof BusinessCategory) {
                         $data['ambiences'][] = $ambience->getName();
                     }
                 }
@@ -97,15 +97,15 @@ class EstablishmentController extends Controller {
                 // Opening hours
                 $etsOpeningHours = $establishment->openingHours()->orderBy('day', 'ASC')->orderBy('day_order', 'ASC')->get();
                 $data['timetable'] = array();
-                if(!empty($etsOpeningHours)){
-                    foreach($etsOpeningHours as $openingHour){
-                        if($openingHour instanceof OpeningHour){
+                if (!empty($etsOpeningHours)) {
+                    foreach ($etsOpeningHours as $openingHour) {
+                        if ($openingHour instanceof OpeningHour) {
                             $time = '';
-                            if($openingHour->getClosed()){
+                            if ($openingHour->getClosed()) {
                                 $time = "Fermé";
                             } else {
-                                $time = date('H:i', strtotime($openingHour->getStartTime())).' - '.date('H:i', strtotime($openingHour->getEndTime()));
-                                if($openingHour->getNoBreak()){
+                                $time = date('H:i', strtotime($openingHour->getStartTime())) . ' - ' . date('H:i', strtotime($openingHour->getEndTime()));
+                                if ($openingHour->getNoBreak()) {
                                     $time .= ' non-stop';
                                 }
                             }
@@ -120,12 +120,12 @@ class EstablishmentController extends Controller {
                 $data['address'] = $establishment->address()->first()->getDisplayable();
                 $data['phone_number'] = null;
                 $callNumber = $establishment->callNumbers()->where('type', '=', CallNumber::TYPE_PHONE_NUMBER_RESERVATION)->first();
-                if(checkModel($callNumber)){
+                if (checkModel($callNumber)) {
                     $data['phone_number'] = $callNumber->getDisplayable();
                 }
-            break;
+                break;
         }
-        
+
         $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page);
 
         return $view;
@@ -157,6 +157,73 @@ class EstablishmentController extends Controller {
     public function update(StoreEstablishment $request, Establishment $establishment) {
         $establishment = $this->updateEstablishment($request, $establishment);
         return redirect('/admin');
+    }
+
+    /**
+     * 
+     * @param \App\Http\Requests\StoreBooking $request
+     * @param Establishment $establishment
+     */
+    public function createBooking(\App\Http\Requests\StoreBooking $request, Establishment $establishment) {
+        $this->storeBooking($request, $establishment);
+    }
+
+    /**
+     * 
+     * @param \App\Http\Requests\StoreBooking $request
+     * @param Establishment $establishment
+     */
+    public function storeBooking(\App\Http\Requests\StoreBooking $request, Establishment $establishment) {
+        $user = User::where('email', $request->get('email'))->first();
+
+        if (checkModel($user)) {
+            $userId = $user->id;
+            $address = Address::where('id_object_related', $userId)->first();
+            if (checkModel($address)) {
+                $addressId = $address->getId();
+            } else {
+                //l'utilisateur donnée n'as pas encore renseigné son adresse.
+                $addressId = 0;
+            }
+        } else {
+            // Create booking user
+            $userId = \App\Utilities\UuidTools::generateUuid();
+            $addressId = 0;
+            $user = User::create([
+                        'id' => $userId,
+                        'name' => $request->get('firstname'),
+                        'type' => User::TYPE_USER_AUTO_INSERTED,
+                        'email' => $request->get('email'),
+                        'gender' => 0,
+                        'id_address' => $addressId,
+                        'id_inbox' => 0,
+                        'id_company' => 0,
+            ]);
+        }
+        if ($request->get('time.1') !== null) {
+            $hour = $request->get('time.1');
+        }
+        if ($request->get('time.2') !== null) {
+            $hour = $request->get('time.2');
+        }
+        //chaîne de caractère au format datime de mysql
+        $datetime = $request->get('datetime_reservation') . $hour;
+
+        $bookingReservation = \App\Models\Booking::create([
+                    'id' => \App\Utilities\UuidTools::generateUuid(),
+                    'status' => 0,
+                    'lastname' => $request->get('lastname'),
+                    'firstname' => $request->get('firstname'),
+                    'email' => $request->get('email'),
+                    'phone_number' => $request->get('phone_number'),
+                    'datetime_reservation' => date('Y-m-d H:i', strtotime($datetime)),
+                    'comment' => $request->get('comment'),
+                    'nb_adults' => $request->get('nb_adults'),
+                    'id_user' => $userId,
+                    'id_establishment' => $establishment->getId(),
+        ]);
+
+        die('réservation enregistrer');
     }
 
     /**
@@ -221,7 +288,7 @@ class EstablishmentController extends Controller {
                 ->where('prefix', '>', 0)
                 ->orderBy('label')
                 ->get();
-        $countriesData->map(function($item, $key){
+        $countriesData->map(function($item, $key) {
             // Translate country name
             $item->label = __($item->label);
             return $item;
@@ -240,7 +307,7 @@ class EstablishmentController extends Controller {
             for ($j = 0; $j <= 55; $j += 30) {
                 $hours = sprintf('%02d', $i);
                 $minutes = sprintf('%02d', $j);
-                $timetable[$hours.':'.$minutes] = $hours. ':' . $minutes;
+                $timetable[$hours . ':' . $minutes] = $hours . ':' . $minutes;
             }
         }
         $timetable[-1] = 'Fermé';
@@ -274,29 +341,29 @@ class EstablishmentController extends Controller {
     public function buildEditFormValues(Establishment $establishment) {
         // Default ID country
         $idCountry = UuidTools::getUuid($establishment->address()->first()->getIdCountry());
-        
+
         // Call numbers
         $callNumbers = $establishment->callNumbers()->get();
         $callNumbersData = array();
-        foreach($callNumbers as $callNumber){
-            if($callNumber instanceof CallNumber){
+        foreach ($callNumbers as $callNumber) {
+            if ($callNumber instanceof CallNumber) {
                 $callNumbersData[$callNumber->getType()]['id_country_prefix'] = UuidTools::getUuid($callNumber->getIdCountry());
                 $callNumbersData[$callNumber->getType()]['number'] = $callNumber->getNumber();
             }
         }
-        
+
         // Business categories
         $businessCategories = $establishment->businessCategoryLinks()->selectRaw(DbQueryTools::genRawSqlForGettingUuid('id_business_category'))->get();
         $businessCategoryIds = $businessCategories->pluck('uuid');
-        
+
         // Opening hours
         $etsOpeningHours = $establishment->openingHours()->orderBy('day', 'ASC')->orderBy('day_order', 'ASC')->get();
         $openingHours = array();
-        if(!empty($etsOpeningHours)){
-            foreach($etsOpeningHours as $openingHour){
-                if($openingHour instanceof OpeningHour){
+        if (!empty($etsOpeningHours)) {
+            foreach ($etsOpeningHours as $openingHour) {
+                if ($openingHour instanceof OpeningHour) {
                     $startTime = null;
-                    if($openingHour->getClosed()){
+                    if ($openingHour->getClosed()) {
                         $startTime = -1;
                     } else {
                         $startTime = date('H:i', strtotime($openingHour->getStartTime()));
@@ -304,7 +371,7 @@ class EstablishmentController extends Controller {
                     $openingHours[$openingHour->getDay()][$openingHour->getDayOrder()]['start']['time'] = $startTime;
 
                     $endTime = null;
-                    if($openingHour->getClosed()){
+                    if ($openingHour->getClosed()) {
                         $endTime = -1;
                     } else {
                         $endTime = date('H:i', strtotime($openingHour->getEndTime()));
@@ -314,7 +381,7 @@ class EstablishmentController extends Controller {
                 }
             }
         }
-        
+
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
         StorageHelper::getInstance()->add('feed_establishment.form_values.call_numbers', $callNumbersData);
         StorageHelper::getInstance()->add('feed_establishment.form_values.business_categories', $businessCategoryIds);
@@ -423,7 +490,7 @@ class EstablishmentController extends Controller {
                             $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_SERVICES));
                             // Create food specialties
                             $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
-                            
+
                             // Create opening hours
                             $createdObjects = array_merge($createdObjects, $this->feedOpeningHours($request, $establishment));
 
@@ -434,12 +501,12 @@ class EstablishmentController extends Controller {
                                 $establishment->setIdLogo($logo->getId());
                                 $establishment->save();
                             }
-                            
+
                             $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, null);
                             if (!empty($homePictures)) {
                                 $createdObjects[] = $homePictures;
                             }
-                            
+
                             return $establishment;
                         } else {
                             throw new Exception("L'établissement n'a pu être enregistré.");
@@ -536,7 +603,7 @@ class EstablishmentController extends Controller {
                         if (checkModel($establishment)) {
                             // Update phone numbers
                             $this->feedCallNumbers($request, $establishment);
-                            
+
                             // Update cooking types
                             $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_COOKING_TYPE);
                             // Update ambiences
@@ -547,7 +614,7 @@ class EstablishmentController extends Controller {
                             $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
                             //Update opening hours
                             $this->feedOpeningHours($request, $establishment);
-                            
+
                             // Update medias
                             if ($request->file('logo')) {
                                 $logo = $establishment->logo()->first();
@@ -558,7 +625,7 @@ class EstablishmentController extends Controller {
                                     $createdObjects[] = $logo;
                                 }
                             }
-                            
+
                             if ($request->file('home_pictures')) {
                                 $homePictures = $establishment->homePictures()->get();
                                 $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, $homePictures);
@@ -601,35 +668,35 @@ class EstablishmentController extends Controller {
     public function feedLinkBusinessCategories($request, $establishment, $typeBusinessCategory) {
         $businessCategoriesQuery = $establishment->businessCategoryLinks()
                 ->join(BusinessCategory::TABLENAME, BusinessCategory::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
-                ->where(BusinessCategory::TABLENAME.'.type', '=', $typeBusinessCategory);
+                ->where(BusinessCategory::TABLENAME . '.type', '=', $typeBusinessCategory);
         $links = array();
-        $submittedBusinessCategoryUuids = $request->get('businessCategories.'.$typeBusinessCategory);
-        try{
-            if(empty($submittedBusinessCategoryUuids)){
+        $submittedBusinessCategoryUuids = $request->get('businessCategories.' . $typeBusinessCategory);
+        try {
+            if (empty($submittedBusinessCategoryUuids)) {
                 $businessCategoriesQuery->delete();
             } else {
                 $businessCategoryLinks = $businessCategoriesQuery->get();
                 foreach ($submittedBusinessCategoryUuids as $uuidCategory) {
                     $idCategory = UuidTools::getId($uuidCategory);
                     $existingLink = $businessCategoryLinks->where('id_business_category', $idCategory)->first();
-                    if(!checkModel($existingLink)){
+                    if (!checkModel($existingLink)) {
                         $links[] = EstablishmentBusinessCategory::create([
-                            'id' => UuidTools::generateUuid(),
-                            'id_establishment' => $establishment->getId(),
-                            'id_business_category' => $idCategory
+                                    'id' => UuidTools::generateUuid(),
+                                    'id_establishment' => $establishment->getId(),
+                                    'id_business_category' => $idCategory
                         ]);
                     }
                 }
                 // Delete existing links removed by the user
                 $businessCategoriesQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_business_category', $submittedBusinessCategoryUuids, '', true))->delete();
             }
-        } catch(Exception $e){
+        } catch (Exception $e) {
             print_r($e->getMessage());
             die();
         }
         return $links;
     }
-    
+
     /**
      * 
      * @param StoreEstablishment $request
@@ -639,25 +706,25 @@ class EstablishmentController extends Controller {
     public function feedLinkBusinessCategoriesWithTagging($request, $establishment, $typeBusinessCategory) {
         $links = array();
         $businessCategories = array();
-        try{
-            $requestInputKey = 'businessCategories.'.$typeBusinessCategory;
+        try {
+            $requestInputKey = 'businessCategories.' . $typeBusinessCategory;
             $submittedBusinessCategoryValues = $request->get($requestInputKey);
-            if(!empty($submittedBusinessCategoryValues)){
-                foreach($submittedBusinessCategoryValues as $value){
-                    if(!empty($value) && !checkHexUuid($value)){
+            if (!empty($submittedBusinessCategoryValues)) {
+                foreach ($submittedBusinessCategoryValues as $value) {
+                    if (!empty($value) && !checkHexUuid($value)) {
                         // Create tagged business category
                         $businessCategory = BusinessCategory::create([
-                            'id' => UuidTools::generateUuid(),
-                            'name' => $value,
-                            'type' => $typeBusinessCategory
+                                    'id' => UuidTools::generateUuid(),
+                                    'name' => $value,
+                                    'type' => $typeBusinessCategory
                         ]);
                         $businessCategories[] = $businessCategory;
                     }
                 }
-                if(!empty($businessCategories)){
-                    foreach($businessCategories as $businessCategory){
+                if (!empty($businessCategories)) {
+                    foreach ($businessCategories as $businessCategory) {
                         $index = array_search($businessCategory->getName(), $submittedBusinessCategoryValues);
-                        if($index !== false){
+                        if ($index !== false) {
                             $submittedBusinessCategoryValues[$index] = $businessCategory->getUuid();
                         }
                     }
@@ -667,7 +734,7 @@ class EstablishmentController extends Controller {
                 }
             }
             $links = $this->feedLinkBusinessCategories($request, $establishment, $typeBusinessCategory);
-        } catch(Exception $e){
+        } catch (Exception $e) {
             print_r($e->getMessage());
             die();
         }
@@ -684,25 +751,25 @@ class EstablishmentController extends Controller {
      */
     public function feedOpeningHours($request, $establishment) {
         $openingHours = array();
-        try{
+        try {
             $etsOpeningHours = $establishment->openingHours()->get();
-            foreach($request->get('openingHours') as $day => $dayData){
-                foreach($dayData as $dayOrder => $timeslotData){
+            foreach ($request->get('openingHours') as $day => $dayData) {
+                foreach ($dayData as $dayOrder => $timeslotData) {
                     $start = null;
-                    if(isset($timeslotData['start'])){
+                    if (isset($timeslotData['start'])) {
                         $start = $timeslotData['start'];
                     }
                     $end = null;
-                    if(isset($timeslotData['end'])){
+                    if (isset($timeslotData['end'])) {
                         $end = $timeslotData['end'];
                     }
                     $noBreak = null;
-                    if($dayOrder == 1 && isset($dayData[2]['no_break'])){
+                    if ($dayOrder == 1 && isset($dayData[2]['no_break'])) {
                         $noBreak = true;
-                    } else if(isset($timeslotData['no_break'])){
+                    } else if (isset($timeslotData['no_break'])) {
                         $noBreak = true;
                     }
-                    if((!empty($start) && !empty($end)) || $noBreak){
+                    if ((!empty($start) && !empty($end)) || $noBreak) {
                         $openingHour = $etsOpeningHours->where('day', $day)->where('day_order', $dayOrder)->first();
                         $attributes = [
                             'day' => $day,
@@ -710,8 +777,8 @@ class EstablishmentController extends Controller {
                             'id_establishment' => $establishment->getId(),
                             'no_break' => $noBreak
                         ];
-                        
-                        if($start == -1 || $end == -1){
+
+                        if ($start == -1 || $end == -1) {
                             $attributes['start_time'] = null;
                             $attributes['end_time'] = null;
                             $attributes['closed'] = true;
@@ -720,8 +787,8 @@ class EstablishmentController extends Controller {
                             $attributes['end_time'] = date('H:i', strtotime($end));
                             $attributes['closed'] = false;
                         }
-                                
-                        if(checkModel($openingHour)){
+
+                        if (checkModel($openingHour)) {
                             $attributes['day_order'] = $openingHour->getDayOrder();
                             $openingHour->update($attributes);
                         } else {
@@ -731,7 +798,7 @@ class EstablishmentController extends Controller {
                     }
                 }
             }
-        } catch(Exception $e){
+        } catch (Exception $e) {
             print_r($e->getMessage());
             die();
         }
@@ -750,20 +817,20 @@ class EstablishmentController extends Controller {
         // Get all country ids matching each selected number prefix
         $prefixCountryIds = array();
         foreach ($request->get('id_country_prefix') as $typeNumber => $idPrefix) {
-            if (!empty($request->get('call_number.'.$typeNumber)) && checkModelId($idPrefix)) {
+            if (!empty($request->get('call_number.' . $typeNumber)) && checkModelId($idPrefix)) {
                 $prefixCountryIds[$idPrefix] = $idPrefix;
             } else {
                 $numberTypesToDelete[] = $typeNumber;
             }
         }
         // Delete existing number removed by the user
-        if(!empty($numberTypesToDelete)){
+        if (!empty($numberTypesToDelete)) {
             $establishment->callNumbers()->whereIn('type', $numberTypesToDelete)->delete();
         }
-        if(!empty($prefixCountryIds)){
+        if (!empty($prefixCountryIds)) {
             // Get all countries data matching each selected number prefix
             $prefixCountries = DB::table(Country::TABLENAME)->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $prefixCountryIds))
-                            ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', prefix, id')->get();
+                            ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', prefix, id')->get();
             foreach ($prefixCountries as $countryData) {
                 $prefixByIdCountry[$countryData->uuid] = $countryData->prefix;
             }
@@ -787,12 +854,12 @@ class EstablishmentController extends Controller {
                         $numberLabel = 'Téléphone mobile';
                         break;
                 }
-                $prefixCountryUuid = $request->get('id_country_prefix.'.$typeNumber);
+                $prefixCountryUuid = $request->get('id_country_prefix.' . $typeNumber);
                 if (isset($prefixByIdCountry[$prefixCountryUuid])) {
                     $prefix = $prefixByIdCountry[$prefixCountryUuid];
                 }
 
-                if(!empty($typeNumber) && !empty($prefix) && !empty($number)){
+                if (!empty($typeNumber) && !empty($prefix) && !empty($number)) {
                     $callNumber = $establishment->callNumbers()->where('type', '=', $typeNumber)->first();
                     $attributes = [
                         'main' => $isMain,
@@ -804,7 +871,7 @@ class EstablishmentController extends Controller {
                         'id_establishment' => $establishment->getId(),
                     ];
 
-                    try{
+                    try {
                         if (!checkModel($callNumber)) {
                             $attributes['id'] = UuidTools::generateUuid();
                             $callNumber = CallNumber::create($attributes);
@@ -812,7 +879,7 @@ class EstablishmentController extends Controller {
                             $callNumber->update($attributes);
                         }
                         $callNumbers[] = $callNumber;
-                    } catch(Exception $e){
+                    } catch (Exception $e) {
                         print_r($e->getMessage());
                         die();
                     }
@@ -833,7 +900,7 @@ class EstablishmentController extends Controller {
      * @return type
      */
     public function feedCallNumber($establishment, $main, $label, $type, $uuidCountry, $prefix, $number) {
-        
+
         return $callNumber;
     }
 

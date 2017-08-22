@@ -1,5 +1,5 @@
 <div class="container-fluid" id="booking-container">
-    {!! Form::open(['url' => '/establishment/booking/{{ $establishment->getUuid() }}']) !!}
+    {!! Form::open(['url' => '/establishment/booking/'.$establishment->getUuid(),'method' => 'POST']) !!}
     <div class="row form-group">
         <div class="col-xs-12">
             <h3 class="row">Choisissez <strong>une date</strong></h3>
