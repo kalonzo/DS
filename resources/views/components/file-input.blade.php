@@ -22,6 +22,8 @@ if(!isset($fileType)){
 }
 switch($fileType){
     default:
+        $fileExtensions = null;
+    break;
     case 'image':
         $fileExtensions = ['jpg', 'png'];
     break;

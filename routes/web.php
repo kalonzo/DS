@@ -21,6 +21,13 @@ Auth::routes();
 Route::get('/', 'HomeController@index');
 Route::match(['get', 'post'], '/search', 'SearchController@search');
 
+// PRO USER
+// create 
+Route::get('/establishment/register', 'UserProController@create'); 
+// store
+//Route::put('/establishment', 'UserProController@store');                  
+
+
 // ESTABLISHMENT
 // create
 Route::get('/establishment/create', 'EstablishmentController@create');          
@@ -39,17 +46,9 @@ Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $cit
     return $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
 });
 
-Route::get('/establishment/excel/import', 'ImportRestaurantController@show');  
-Route::post('/establishment/excel', 'ImportRestaurantController@storeFile');  // store
-
 // store booking
 Route::post('/establishment/booking/{establishment}','EstablishmentController@createBooking');
     
-// PRO USER
-// create 
-Route::get('/establishment/register', 'UserProController@create'); 
-// store
-//Route::put('/establishment', 'UserProController@store');                  
 
 // CHECKOUT
 Route::post('/start_checkout', 'WalleeController@startCheckout');
@@ -66,6 +65,11 @@ Route::get('/welcome/{locale}', function ($local) {
 
 Route::get('/admin', 'AdminController@index');
 
+// IMPORT
+// upload file
+Route::get('/admin/establishment/import', 'ImportRestaurantController@index');  
+// import excel
+Route::post('/admin/establishment/import', 'ImportRestaurantController@import');
 
 /**************************** AJAX CALLS **************************************/
 

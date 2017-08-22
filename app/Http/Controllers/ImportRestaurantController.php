@@ -3,54 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Request;
-use App\Http\Requests\StoreEstablishment;
-use App\Models\Address;
-use App\Models\BusinessCategory;
-use App\Models\CallNumber;
-use App\Models\Country;
-use App\Models\Establishment;
-use App\Models\EstablishmentBusinessCategory;
-use App\Models\LocationIndex;
-use App\Models\Model;
-use App\Models\OpeningHour;
-use App\Models\Restaurant;
-use App\Models\User;
-use App\php;
-use App\Utilities\DateTools;
-use App\Utilities\DbQueryTools;
-use App\Utilities\StorageHelper;
-use App\Utilities\UuidTools;
-use Exception;
-use Illuminate\Http\Response;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use View;
 
 class ImportRestaurantController extends Controller {
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index() {
-        
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create() {
-        
-    }
-
-    /**
      * 
      * @return View
      */
-    public function show() {
+    public function index() {
         $view = View::make('establishment.import');
         return $view;
     }
@@ -60,19 +23,37 @@ class ImportRestaurantController extends Controller {
      * @param Request $request
      * @return type
      */
-    public function storeFile(Request $request) {
-
-        $xlsx = FileController::storeFile('csv', \App\Models\Media::TYPE_CSV, 'test', null);
-        $path = substr($xlsx->getLocalPath(),1); 
-
-       $excel =  \Maatwebsite\Excel\Facades\Excel::load($path);
-        
-        
-        foreach ($excel as $row ){
-            
-            print_r($row);
+    public function import(Request $request) {
+        $file = \Illuminate\Support\Facades\Request::file('excel');
+        if(!empty($file)){
+            if ($file->isValid()) {
+                $relPath = $file->store('/import_tmp');
+                $absolutePath = Storage::path($relPath);
+                
+                Excel::load($absolutePath, function($reader) {
+                    $sheets = $reader->all();
+                    if(!empty($sheets)){
+                        foreach($sheets as $sheet){
+                            foreach($sheet as $numRow => $row){
+                                if($numRow > 0){
+                                    foreach($row as $col_slug => $cellContent){
+                                        switch($col_slug){
+                                            case 'nom_etab.':
+                                                echo $cellContent;
+                                                break;
+                                        }
+                                    }
+                                    echo '<br/>';
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                Storage::delete($relPath);
+            }
         }
-        \Illuminate\Support\Facades\Storage::delete($xlsx->getLocalPath());
+        die();
     }
 
 }
