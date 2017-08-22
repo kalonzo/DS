@@ -14,6 +14,8 @@ class SessionController {
     private $typeEts = null;
     private $searchFilterValues = null;
     
+    private $idTransactionProUser = null;
+    
     function getUserLng() {
         if($this->userLng === null){
             $this->userLng = \Illuminate\Support\Facades\Request::session()->get('user.lng');
@@ -29,11 +31,25 @@ class SessionController {
     }
 
     function setUserLng($userLng) {
+        $this->userLng = $userLng;
         \Illuminate\Support\Facades\Request::session()->put('user.lng', $userLng);
     }
 
     function setUserLat($userLat) {
+        $this->userLat = $userLat;
         \Illuminate\Support\Facades\Request::session()->put('user.lat', $userLat);
+    }
+
+    function getIdTransactionProUser() {
+        if($this->idTransactionProUser === null){
+            $this->idTransactionProUser = \Illuminate\Support\Facades\Request::session()->get('user.id_transaction');
+        }
+        return $this->idTransactionProUser;
+    }
+
+    function setIdTransactionProUser($id_transaction) {
+        $this->idTransactionProUser = $id_transaction;
+        \Illuminate\Support\Facades\Request::session()->put('user.id_transaction', $id_transaction);
     }
 
     function getUserTypeEts() {

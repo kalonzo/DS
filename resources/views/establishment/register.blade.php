@@ -2,16 +2,16 @@
 
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
-<link href="/libraries/bootstrap-fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/css/loading-spinner.css" rel="stylesheet">
 @endsection
 
 @section('content')
 
 <div id="map"> </div>
 @if(checkModel($establishment))
-{!! Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/establishment/'.$establishment->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
+{!! Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/establishment/register/'.$establishment->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
 @else
-{!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment', 'method' => 'put', 'files' => true]) !!}
+{!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment/register/', 'method' => 'put', 'files' => true]) !!}
 @endif
 <div class="container-fluid no-gutter">
     <div id="ets-heading" class="row no-gutter no-margin"> 
@@ -47,86 +47,134 @@
 
         @component('establishment.form.info_bill', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
         @endcomponent   
-
+    </div>
+    <div class="row no-margin text-center">
+        {!! Form::submit('Valider', array('id' => 'validToPayment', 'class'=>'btn')) !!}
     </div>
 </div>
-<div id="formControlBottomBand">
-    {!! Form::submit('Valider', array('class'=>'btn pull-right')) !!}
-</div>
 {!! form::close() !!}
+
+<!-- Modal -->
+<div id="checkoutModal" class="modal fade" role="dialog">
+   <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Checkout</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="payment-form">
+                    @component('components.loading_spinner')
+                    @endcomponent   
+                </div>
+                <div class="row" id="iframe-ext-footer" style="display: none;">
+                    <ul id="payment-errors"></ul>
+                    <button type="button" id="pay-button" class="btn btn-default">Valider le paiement</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+   </div>
+</div>
+
 @endsection
 
 <script type="text/javascript">
-    addressGeocoded = false;
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        $('body').on('click', '#validToPayment', function(){
+            $('#checkoutModal').modal('show');
+            
+            var ajaxParams = {};
+//            ajaxParams[filterName] = value;
 
-    function geocodeAddress(triggerELement) {
-        var $form = $(triggerELement).parentsInclude('form');
-        var city = $form.find('input[name="address[city]"]').val();
-        var street = $form.find('input[name="address[street]"]').val();
-        var street_number = $form.find('input[name="address[street_number]"]').val();
-        var postal_code = $form.find('input[name="address[postal_code]"]').val();
-        var country = $form.find('select[name="address[country]"]').children('option:selected').text();
+            $.ajax({
+                url: '/start_checkout',
+                data: ajaxParams,
+                method: 'POST'
+            })
+            .done(function( data ) {
+                if(data.success){
+                    if(data.url){
+                        var iframeScriptUrl = data.url;
+                        var counter = 0;
+                        var myLoop = null;
+                        
+                        loadPaymentIframe = function(){
+                            counter += 200;
+                            if(typeof window.IframeCheckoutHandler != 'undefined'){
+                                clearInterval(myLoop);
+                                // Set here the id of the payment method configuration the customer chose.
+                                var paymentMethodConfigurationId = 616;
 
-        var address = street + ' ' + street_number + ', ' + postal_code + ' ' + city + ' ' + country;
-        if (!isEmpty(address)) {
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                'address': address
-            }, function (results, status) {
-                if (status === 'OK') {
-                    addressGeocoded = true;
-                    var lat = results[0].geometry.location.lat();
-                    var lng = results[0].geometry.location.lng();
+                                // Set here the id of the HTML element the payment iframe should be appended to.
+                                var containerId = 'payment-form';
 
-                    $form.find('input[name=latitude]').val(lat);
-                    $form.find('input[name=longitude]').val(lng);
-                    if (!isEmpty(lat) && !isEmpty(lng)) {
-                        relocateMapPosition(lat, lng);
-                    }
+                                var handler = window.IframeCheckoutHandler(paymentMethodConfigurationId);
 
-                    if (results[0]) {
-                        var result = results[0];
-//                        console.log(results);
-                        for (var i = 0; i < result.address_components.length; i++) {
-                            var ac = result.address_components[i];
-                            if (typeof ac.types[0] != 'undefined') {
-                                switch (ac.types[0]) {
-                                    case 'locality':
-                                        $form.find('input[name="address[city]"]').val(ac.long_name);
-                                        break;
-                                    case 'street_number':
-                                        $form.find('input[name="address[street_number]"]').val(ac.long_name);
-                                        break;
-                                    case 'route':
-                                        $form.find('input[name="address[street]"]').val(ac.long_name);
-                                        break;
-                                    case 'country':
-                                        $form.find('input[name="address[country]"]').val(ac.long_name);
-                                        break;
-                                    case 'postal_code':
-                                        $form.find('input[name="address[postal_code]"]').val(ac.long_name);
-                                        break;
-                                    case 'administrative_area_level_1':
-                                        $form.find('input[name="address[region]"]').val(ac.long_name);
-                                        break;
-                                    case 'administrative_area_level_2':
-//                                        $form.find('input[name="address[district]"]').val(ac.long_name);
-                                        break;
-                                    case 'sublocality_level_1':
-                                        $form.find('input[name="address[city]"]').val(ac.long_name);
-                                        break;
-                                }
+                                handler.setValidationCallback(
+                                    function (validationResult) {
+                                        // Reset payment errors
+                                        $('#payment-errors').html('');
+
+                                        if (validationResult.success) {
+                                            // Create the order within the shop and eventually update the transaction.
+                                            $.ajax('/create_order', {
+                                                method: 'POST',
+                                                success: function () {
+                                                    handler.submit();
+                                                },
+                                                error: function (jqXHR, textStatus, errorThrown) {
+                                                    console.log("Error processing order creation : " + textStatus);
+                                                    console.log(errorThrown);
+                                                },
+                                            });
+                                        } else {
+                                            // Display errors to customer
+                                            $.each(validationResult.errors, function (index, errorMessage) {
+                                                $('#payment-errors').append('<li>' + errorMessage + '</li>');
+                                            });
+                                        }
+                                    }
+                                );
+
+                                //Set the optional initialize callback
+                                handler.setInitializeCallback(function () {
+                                    //Execute initialize code
+                                    $('#payment-form .loading-spinner').remove();
+                                    $('#iframe-ext-footer').show();
+                                });
+
+                                //Set the optional height change callback
+                                handler.setHeightChangeCallback(function (height) {
+                                    //Execute code
+                                });
+
+                                handler.create(containerId);
+
+                                $('#pay-button').on('click', function(){
+                                    handler.validate();
+                                });
+                            } else if(counter > 2000){
+                                clearInterval(myLoop);
+                                $('#payment-form .loading-spinner').remove();
+                                $('#payment-form').html("Une erreur est survenue avec le service de paiement.");
                             }
                         }
-                    } else {
-                        window.alert('No results found');
+                        $(document).ready(function(){
+                            myLoop = setInterval(loadPaymentIframe, 200);
+                        });
+
+                        $('body').append("<script type=\"text\/javascript\" src=\""+iframeScriptUrl+"\"><\/script>");
                     }
-                } else {
-                    window.alert('Geocoder failed due to: ' + status);
                 }
             });
-        }
-    }
+            return false;
+        });
+    });
+    
 
     function goToNextAccordion(triggerElement) {
         var $currentPanel = $(triggerElement).parentsInclude('.panel');
@@ -134,122 +182,9 @@
             $currentPanel.next('.panel').find('a[data-toggle=collapse]').click();
         }
     }
-
-    function relocateMapPosition(lat, lng) {
-        var latLng = new google.maps.LatLng(lat, lng);
-        if (typeof map !== 'undefined') {
-            markerPosition.setPosition(latLng);
-            map.setCenter(latLng);
-        }
-    }
-
-
-    var autoCompleteArea;
-    document.addEventListener("DOMContentLoaded", function (event) {
-        $(document).on('googleGeolocReady', function () {
-            var $form = $('#feed-establishment');
-            if (checkExist($form)) {
-                var lat = $form.find('[name=latitude]').val() * 1;
-                var lng = $form.find('[name=longitude]').val() * 1;
-                if (!isEmpty(lat) && !isEmpty(lng)) {
-                    addressGeocoded = true;
-                    relocateMapPosition(lat, lng);
-                }
-            }
-
-            $form.on('change', 'input, select', function () {
-                addressGeocoded = false;
-            });
-
-            $form.on('submit', function () {
-                if (!addressGeocoded) {
-                    var callbacks = $.Callbacks();
-                    callbacks.add(
-                            geocodeAddress($form.children().get(0))
-                            );
-                    callbacks.add(function () {
-                        if (!addressGeocoded) {
-                            return false;
-                        } else {
-                            $form.submit();
-                        }
-                    });
-                    callbacks.fire();
-                }
-                return true;
-            });
-
-            var $areaAutoCompleteInput = $('[name="address[district]"]');
-            if (!isEmpty($areaAutoCompleteInput)) {
-                var service = new google.maps.places.AutocompleteService();
-                var placeIds = [];
-                var sourceArray = [];
-                $areaAutoCompleteInput.autocomplete({
-                    source: function (request, response) {
-                        sourceArray = [];
-                        placeIds = [];
-                        var city = $areaAutoCompleteInput.parentsInclude('form').find('[name="address[city]"]').val();
-                        var country = $areaAutoCompleteInput.parentsInclude('form').find('select[name="address[country]"]').children('option:selected').text()
-                        var lat = $areaAutoCompleteInput.parentsInclude('form').find('[name=latitude]').val() * 1;
-                        var lng = $areaAutoCompleteInput.parentsInclude('form').find('[name=longitude]').val() * 1;
-                        var inputValue = city + ' ' + country + ' ' + request.term;
-                        var options = {
-                            input: inputValue,
-                            types: ['geocode'],
-                        };
-                        service.getQueryPredictions(options, function (predictions, status) {
-//                            console.log(predictions);
-                            if (status != google.maps.places.PlacesServiceStatus.OK) {
-                                console.log(status);
-                            } else {
-                                predictions.forEach(function (prediction) {
-                                    if (typeof prediction.types != 'undefined' && typeof prediction.types[0] != 'undefined') {
-                                        var type = prediction.types[0];
-                                        switch (type) {
-                                            case 'neighborhood':
-                                            case 'colloquial_area':
-                                            case 'sublocality_level_1':
-                                            case 'sublocality_level_2':
-                                            case 'sublocality_level_3':
-                                            case 'sublocality_level_4':
-                                            case 'sublocality_level_5':
-                                                var placeId = prediction.place_id;
-                                                if (typeof placeIds[placeId] == 'undefined') {
-                                                    placeIds[placeId] = placeId;
-                                                    sourceArray.push(prediction.structured_formatting.main_text);
-                                                }
-                                                break;
-                                        }
-                                    }
-                                });
-                            }
-                            if (sourceArray.length === 0) {
-                                sourceArray.push("Aucune correspondance trouvée pour la ville et le pays sélectionnés");
-                            }
-                            response(sourceArray);
-                        });
-                    },
-                    minLength: 2,
-                    delay: 0,
-                }).autocomplete("instance")._create = function () {
-                    this._super();
-                    this.widget().menu({
-                        items: ".ui-menu-item"
-                    });
-                }._renderMenu = function (ul, items) {
-                    var that = this;
-                    $(ul).attr('id', 'searchAreaDropdown');
-                    $.each(items, function (index, item) {
-                        that._renderItemData(ul, item);
-                    });
-                };
-            }
-        });
-    });
+    
 </script>
 
 @section('js_imports_footer')
-<script src="/js/google-map.js"></script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
-<script src="/libraries/bootstrap-fileinput/js/fileinput.min.js"></script>
+
 @endsection

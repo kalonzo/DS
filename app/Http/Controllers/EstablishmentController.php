@@ -165,19 +165,11 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function createBooking(\App\Http\Requests\StoreBooking $request, Establishment $establishment) {
-        $this->storeBooking($request, $establishment);
-    }
-
-    /**
-     * 
-     * @param \App\Http\Requests\StoreBooking $request
-     * @param Establishment $establishment
-     */
-    public function storeBooking(\App\Http\Requests\StoreBooking $request, Establishment $establishment) {
+        
         $user = User::where('email', $request->get('email'))->first();
 
         if (checkModel($user)) {
-            $userId = $user->id;
+            $userId = $user->getId();
             $address = Address::where('id_object_related', $userId)->first();
             if (checkModel($address)) {
                 $addressId = $address->getId();

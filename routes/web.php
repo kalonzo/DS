@@ -21,21 +21,17 @@ Auth::routes();
 Route::get('/', 'HomeController@index');
 Route::match(['get', 'post'], '/search', 'SearchController@search');
 
-
 // ESTABLISHMENT
-Route::get('/establishment/create', 'EstablishmentController@create');          // create
-Route::put('/establishment', 'EstablishmentController@store');    
-
-Route::get('/establishment/excel/import', 'ImportRestaurantController@show');  
-Route::post('/establishment/excel', 'ImportRestaurantController@storeFile');  // store
-
-Route::get('/establishment/register', 'UserProController@create');          // register
-//Route::put('/establishment', 'UserProController@store');                  // store
-
-Route::get('/establishment/{establishment}','EstablishmentController@edit');    // edit
-Route::put('/establishment/{establishment}','EstablishmentController@update');  // update
-
-Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        // view
+// create
+Route::get('/establishment/create', 'EstablishmentController@create');          
+// store
+Route::put('/establishment', 'EstablishmentController@store');              
+// edit
+Route::get('/establishment/{establishment}','EstablishmentController@edit');    
+// update
+Route::put('/establishment/{establishment}','EstablishmentController@update');  
+// view
+Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        
     $establishment = \App\Models\Establishment::where('slug', '=', $slug)->where('url_id', '=', $url_id)->first();
     
     $app = app();
@@ -43,23 +39,29 @@ Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $cit
     return $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
 });
 
+Route::get('/establishment/excel/import', 'ImportRestaurantController@show');  
+Route::post('/establishment/excel', 'ImportRestaurantController@storeFile');  // store
+
+// store booking
 Route::post('/establishment/booking/{establishment}','EstablishmentController@createBooking');
-/**
-Route::post('/establishment/booking/{establishment}',function(App\Models\Establishment $establishment){
-    $request = new App\Http\Requests\StoreBooking(Request::all());
-    $app = app();
-    $establishmentController = $app->make(App\Http\Controllers\EstablishmentController::class);
-    return $establishmentController->callAction('createBooking', array($request , 'establishment' => $establishment));
-});*/
+    
+// PRO USER
+// create 
+Route::get('/establishment/register', 'UserProController@create'); 
+// store
+//Route::put('/establishment', 'UserProController@store');                  
+
+// CHECKOUT
+Route::post('/start_checkout', 'WalleeController@startCheckout');
+Route::post('/create_order', 'WalleeController@createOrder');
+Route::match(['get', 'post'], '/complete_order', 'WalleeController@createOrder');
+
 /******************************TEST ROUTE**************************************/
-Route::get('welcome/{locale}', function ($local) {
+Route::get('/welcome/{locale}', function ($local) {
      Lang::setLocale($local);
      return view('dev.welcome');  
 });
 
-  
-
-Route::get('/checkout', 'WalleeController@show');                  
 /****************************** ADMIN *****************************************/
 
 Route::get('/admin', 'AdminController@index');

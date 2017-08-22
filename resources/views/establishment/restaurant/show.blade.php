@@ -12,7 +12,7 @@
 @endsection
 
 @section('content')
-    <aside id="sidebar-booking" class="custom-sidebar sidebar-fixed-right" data-toggler=".sidebar-booking-toggler">
+    <aside id="sidebar-booking" class="custom-sidebar sidebar-fixed-right ref-scroller" data-toggler=".sidebar-booking-toggler">
         @component('establishment.form.booking', ['establishment' => $establishment])
 
         @endcomponent
@@ -235,5 +235,6 @@
 
 @section('js_imports_footer')
 <script src="/js/sidebar.js"></script>
+<script src="/js/form-validation.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection

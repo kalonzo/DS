@@ -9,7 +9,6 @@ use App\Models\Country;
 use App\Models\PaymentMethod;
 use App\Models\BusinessType;
 use App\Models\Establishment;
-use App\php;
 use App\Utilities\DbQueryTools;
 use App\Utilities\StorageHelper;
 use App\Utilities\UuidTools;
@@ -19,103 +18,102 @@ use Illuminate\Support\Facades\DB;
 use View;
 
 class WalleeController extends Controller {
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index() {
-        
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create() {
-        
-    }
+    
+    const API_CLIENT_KEY = 'SSh8KJebkHmR7zhQJ58jCONIX5kk64uITe8CRgccdHs=';
+    const API_CLIENT_USER_ID = 592;
+    const MAIN_SPACE_ID = 454;
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\php  $php
      * @return Response
      */
-    public function show() {
-        // Setup API client
-        $client = new \Wallee\Sdk\ApiClient('592', 'SSh8KJebkHmR7zhQJ58jCONIX5kk64uITe8CRgccdHs=');
-        //taxes
-
-        $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
+    public function startCheckout() {
+        $jsonResponse = array('success' => 0);
+        $response = response();
+        $cookies = array();
         
-        $lineItem->setSku('CH_RESTO_PRO');
-        $lineItem->setName('abonement_110');
-        $lineItem->setQuantity(1);
-       // $lineItem->setTaxes($tax);
-        $lineItem->setAmountIncludingTax(100.5);
-        $lineItem->setUniqueId(UuidTools::getUuid(UuidTools::generateUuid()));
-        $lineItem->setType(\Wallee\Sdk\Model\LineItemType::FEE);
-       
-         $transactionPending = new \Wallee\Sdk\Model\TransactionPending();
-         $transactionPending->setCurrency('CHF');
-         $transactionPending->setCustomerEmailAddress('kalonzo@bluewin.ch');
-         $transactionPending->setLineItems(array($lineItem));
+        try{
+            // Setup API client
+            $client = new \Wallee\Sdk\ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
 
-        
-        // Create API service instance
-        $service = new \Wallee\Sdk\Service\TransactionService($client);
-        $transaction =   $service->create(454, $transactionPending);
-      
-       //var_dump($transactionPending->getId());
-        $service->fetchPossiblePaymentMethods(454,$transaction->getId());
-       $url =  $service->buildJavaScriptUrl(454, $transaction->getId());
-       
-        $view = View::make('dev.welcome')->with('url', $url);
-        return $view;
+            // Create API service instance
+            $service = new \Wallee\Sdk\Service\TransactionService($client);
+
+            $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
+            $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
+            if(!$transaction->isValid() || empty($transaction->getId()) || $transaction->getState() != \Wallee\Sdk\Model\TransactionState::PENDING){
+                $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
+                $lineItem->setSku('CH_RESTO_PRO');
+                $lineItem->setName('abonement_110');
+                $lineItem->setQuantity(1);
+                $lineItem->setAmountIncludingTax(100.5);
+                $lineItem->setUniqueId(UuidTools::getUuid(UuidTools::generateUuid()));
+                $lineItem->setType(\Wallee\Sdk\Model\LineItemType::FEE);
+
+                $transactionPending = new \Wallee\Sdk\Model\TransactionPending();
+                $transactionPending->setCurrency('CHF');
+                $transactionPending->setCustomerEmailAddress('kalonzo@bluewin.ch');
+                $transactionPending->setLineItems(array($lineItem));
+                $transactionPending->setFailedUrl(url('/complete_order').'?error=1');
+                $transactionPending->setSuccessUrl(url('/complete_order').'?success=1');
+
+                $transaction = $service->create(self::MAIN_SPACE_ID, $transactionPending);
+            }
+
+    //        $paymentMethodConfiguration = $service->fetchPossiblePaymentMethods(454, $transaction->getId());
+            if(!empty($transaction) && $transaction->isValid() && !empty($transaction->getId())){
+                $url = $service->buildJavaScriptUrl(self::MAIN_SPACE_ID, $transaction->getId());
+                if(!empty($url)){
+                    SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
+                    $jsonResponse['url'] = $url;
+                    $jsonResponse['success'] = 1;
+                }
+            }
+        } catch(Exception $e){
+            $jsonResponse['error'] = $e->getMessage();
+        }
+
+        $responsePrepared = $response->json($jsonResponse);
+        foreach($cookies as $cookie){
+            $responsePrepared->withCookie($cookie);
+        }
+        return $responsePrepared;
     }
-
+    
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  StoreEstablishment  $request
-     * @return Response
+     * 
+     * @return \Illuminate\Http\Response
      */
-    public function store() {
+    public function createOrder(){
+        $jsonResponse = array('success' => 0);
+        $response = response();
+        $cookies = array();
+        $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
         
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  Establishment $establishment
-     * @return Response
-     */
-    public function edit(Establishment $establishment) {
+        if(!empty($idTransaction)){
+            $client = new \Wallee\Sdk\ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
+            $service = new \Wallee\Sdk\Service\TransactionService($client);
+            
+            $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
+            if(!$transaction->isValid()){
+                $transaction = $service->confirm(self::MAIN_SPACE_ID, $transaction);
+                if($transaction->getState() == \Wallee\Sdk\Model\TransactionState::CONFIRMED){
+                    $jsonResponse['success'] = 1;
+                }
+            }
+        }
         
+        $responsePrepared = $response->json($jsonResponse);
+        foreach($cookies as $cookie){
+            $responsePrepared->withCookie($cookie);
+        }
+        return $responsePrepared;
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Request $request
-     * @param  Establishment  $establishment
-     * @return Response
-     */
-    public function update() {
-        
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\php  $php
-     * @return Response
-     */
-    public function destroy(php $php) {
-        //
+    
+    public function completeOrder(Request $request){
+        print_r($request->all());
+        die();
     }
 
 }
