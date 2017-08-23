@@ -10,6 +10,7 @@ namespace App\Models;
 class Booking extends Model
 {
     protected $table = 'bookings';
+    const TABLENAME = 'bookings';
 
     public $timestamps = true;
 

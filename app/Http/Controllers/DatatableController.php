@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Request;
 use App\Models\Address;
 use App\Models\BusinessType;
 use App\Models\Establishment;
+use App\Models\Booking;
 use App\Utilities\UuidTools;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -17,9 +18,10 @@ use Illuminate\Support\Facades\DB;
  * @author Nico
  */
 class DatatableController {
-    
+
     const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
-    
+    const BOOKING_DATATABLE = 'booking_datatable';
+
     /**
      * 
      * @param type $id
@@ -33,7 +35,7 @@ class DatatableController {
                 $establishments = array();
 
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, '.Establishment::TABLENAME . '.id AS id_establishment'))
+                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, ' . Establishment::TABLENAME . '.id AS id_establishment'))
                         ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                 ;
                 if (!empty($typeEts)) {
@@ -69,7 +71,46 @@ class DatatableController {
                 $dtFeeder->enableAction(\App\Feeders\DatatableRowAction::ACTION_EDIT);
                 $dtFeeder->customizeAction(\App\Feeders\DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
                 break;
+            case self::BOOKING_DATATABLE:
+                $bookings = array();
+
+                $bookingsQuery = DB::table(\App\Models\Booking::TABLENAME)->select();
+
+
+                $bookingsQuery->orderBy(\App\Models\Booking::TABLENAME . '.updated_at', 'desc');
+
+                $nbElementPerPage = 10;
+                $currentPage = Request::get('page', 1);
+                $sliceStart = ($currentPage - 1) * $nbElementPerPage;
+                $nbTotalResults = $bookingsQuery->count(Booking::TABLENAME . '.id');
+
+                $bookingsQuery->offset($sliceStart)->limit($nbElementPerPage);
+                $bookingsData = $bookingsQuery->get();
+
+                foreach ($bookingsData as $bookingData) {
+                    $uuid = UuidTools::getUuid($bookingData->id);
+
+                    $bookings[$uuid]['id'] = $uuid;
+                    $bookings[$uuid]['nb_adults'] = $bookingData->nb_adults;
+                    $bookings[$uuid]['datetime_reservation'] = $bookingData->datetime_reservation;
+                    $bookings[$uuid]['comment'] = $bookingData->comment;
+                    $bookings[$uuid]['phone_number'] = $bookingData->phone_number;
+                    $bookings[$uuid]['email'] = $bookingData->email;
+                    $bookings[$uuid]['contact'] = $bookingData->phone_number.' '.$bookingData->email;
+                    $bookings[$uuid]['status'] = $bookingData->status;
+                    $bookings[$uuid]['updated_at'] = $bookingData->updated_at;
+                }
+                // Paginate results
+                $resultsPagination = new LengthAwarePaginator($bookings, $nbTotalResults, $nbElementPerPage, $currentPage);
+                $resultsPagination->setPath(Request::url());
+
+                $dtFeeder = new DatatableFeeder($id);
+                $dtFeeder->setPaginator($resultsPagination);
+                $dtFeeder->setColumns(array('nb_adults' => 'Personne', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire','contact' => 'Contact','status' => 'Etat', 'updated_at' => 'Modifié le'));
+                $dtFeeder->enableAction(\App\Feeders\DatatableRowAction::ACTION_EDIT);
+                break;
         }
         return $dtFeeder;
     }
+
 }
