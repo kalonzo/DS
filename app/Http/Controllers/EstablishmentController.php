@@ -125,30 +125,10 @@ class EstablishmentController extends Controller {
                 }
                 break;
         }
-
-        // Select for call number prefixes
-        $data['countryPrefixes'] = array();
-        $countryNames = array();
-        $countriesData = DB::table(Country::TABLENAME)
-                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
-                ->where('prefix', '>', 0)
-                ->orderBy('label')
-                ->get();
-        $countriesData->map(function($item, $key) {
-            // Translate country name
-            $item->label = __($item->label);
-            return $item;
-        });
-        foreach ($countriesData as $countryData) {
-            $data['countryPrefixes'][$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
-            $countryNames[$countryData->uuid] = $countryData->label;
-        }
-        // Sort list by translated country name
-        asort($data['countryPrefixes']);
-        asort($countryNames);
-
+        
         $this->buildFeedFormData();
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
+        
         $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData);
 
         return $view;
