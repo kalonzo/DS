@@ -1,10 +1,11 @@
 <div class="container-fluid" id="booking-container">
     {!! Form::open(['url' => '/establishment/booking/'.$establishment->getUuid(),'method' => 'POST']) !!}
-    <div class="row form-group">
+    <div class="row form-group">   
+        <input type="hidden" name="date_now" value="<?php echo date('d/m/Y'); ?> "/>
         <div class="col-xs-12">
             <h3 class="row">Choisissez <strong>une date</strong></h3>
-            <div class="datepicker-inline">
-                {!! Form::hidden('datetime_reservation', '23/12/2017', ['class' => '']) !!}
+            <div class="datepicker-inline">     
+                {!! Form::hidden('datetime_reservation', '', ['class' => '']) !!}
             </div>
         </div>
     </div>
@@ -12,15 +13,15 @@
         <h3>Choisissez <strong>l'heure</strong></h3>
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('time[1]', 'Déjeuner', ['class' => 'col-xs-6 control-label']) !!}	
+                {!! Form::label('timeAM', 'Déjeuner', ['class' => 'col-xs-6 control-label']) !!}	
                 <div class="col-xs-6">
-                    {!! Form::time('time[1]', old('time'), ['class' => 'form-control']) !!}
+                    {!! Form::time('timeAM', old('time'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('time[2]', 'Diner', ['class' => 'col-xs-6 control-label']) !!}	
+                {!! Form::label('timePM', 'Diner', ['class' => 'col-xs-6 control-label']) !!}	
                 <div class="col-xs-6">
-                    {!! Form::time('time[2]', old('time'), ['class' => 'form-control']) !!}
+                    {!! Form::time('timePM', old('time'), ['class' => 'form-control']) !!}
                 </div>
             </div>
         </div>
@@ -51,11 +52,15 @@
             {!! Form::text('email',old('email'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('phone_number','Portable*') !!}
-            {!! Form::text('phone_number',old('phone_number'), ['class' => 'form-control']) !!}
+            {!! Form::label('phone_number','Téléphone / Mobile') !!}
+            <div class="form-group form-inline {{ $errors->has('call_number[contact_number]') ? 'has-error' : '' }}">                        
+                {!! Form::select('prefix', $form_data['country_prefixes'], null, 
+                ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
+                {!! Form::text('phone_number', null, ['class' => 'form-control']) !!}
+            </div>
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('comment','Ajouter une demande particulière*') !!}
+            {!! Form::label('comment','Ajouter une demande particulière') !!}
             {!! Form::textarea('comment', old('content'), ['class' => 'form-control', 'placeholder' => 'Allergie/habitude alimentaire']) !!}  
         </div>
     </div>
