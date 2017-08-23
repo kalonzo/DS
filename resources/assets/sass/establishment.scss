@@ -79,3 +79,14 @@ $timetableRowHeight: 76px;
         }
     }
 }
+#pro_user_form_accordion{
+    .radio-inline:not(:last-child){
+        margin-right: 2em;
+    }
+}
+#validToPayment{
+    padding: 1em 3.5em;
+    font-size: 1.5em;
+    text-transform: uppercase;
+    @include borderRadius($border-radius-usual);
+}

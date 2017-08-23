@@ -90,6 +90,9 @@ select:not(.select2){
             }
         }
     }
+    select.select2.full-width + &{
+        width: 100% !important;
+    }
 }
 .select2-container{
     .select2-dropdown{
@@ -805,11 +808,14 @@ $mapThumbnailWidth: 145px;
     }
 }
 
-form:not(.navbar-form) input[type=text]{
-    color: $main-text-color;
-    border: 1px solid $main-text-color;
-    @include borderRadius(0px);
-    background: $body-bg;
+form:not(.navbar-form){
+    
+    input[type=text], input[type=password]{
+        color: $main-text-color;
+        border: 1px solid $main-text-color;
+        @include borderRadius(0px);
+        background: $body-bg;
+    }
 }
 
 .ms-container.ms-container{
@@ -1135,5 +1141,138 @@ form:not(.navbar-form) input[type=text]{
     }
     .loading-spinner{
         margin: 20px auto;
+    }
+}
+.phone-form-group{
+    label{
+        display: block;
+    }
+    .form-inline{
+        display: inline-flex;
+        width: 100%;
+        .select2{
+            flex: none;
+            width: 125px;
+        }
+        input{
+            margin-left: 5px;
+            flex-grow: 2;
+        }
+    }
+}
+.business-type-tiles{
+    .business-type-tile{
+        float: left;
+        margin-bottom: 2em;
+        text-align: center;
+        font-size: 2em;
+        height: 100px;
+        &.selected{
+            background: $main-color;
+        }
+        @media (max-width: 767px) {
+            width: 49%;
+            margin-right: 2%;
+            &:nth-child(2n){
+                margin-right: 0px;
+            }
+            &:nth-child(2n+1){
+                clear: both;
+            }
+        }
+        @media (min-width: 768px) and (max-width: 991px) {
+            width: 23.5%;
+            margin-right: 2%;
+            clear: none;
+            &:nth-child(4n){
+                margin-right: 0px;
+            }
+            &:nth-child(4n+1){
+                clear: both;
+            }
+        }
+        @media (min-width: 992px){
+            width: 15.83%;
+            margin-right: 1%;
+            clear: none;
+            &:nth-child(6n){
+                margin-right: 0px;
+            }
+            &:nth-child(6n+1){
+                clear: both;
+            }
+        }
+        > a{
+            color: inherit;
+            &:hover{
+                color: inherit;
+            }
+            .thumbnail-top{
+                position: relative;
+                .thumbnail-distance{
+                    background: rgba(0, 0, 0, 0.4); 
+                    color: white;
+                    font-weight: bold;
+                    position: absolute; 
+                    bottom: 0px; 
+                    right: 0px;
+                    padding: 0px 0.5em;
+                }
+            }
+            .thumbnail-text{
+                padding-top: 0.4em;
+                padding-bottom: 0.4em;
+                .thumbnail-label{
+                    text-transform: uppercase;
+                    height: 2*$line-height-base-px;
+                    overflow: hidden;
+                    font-weight: bold;
+                }
+                .thumbnail-info{
+                    font-size: 0.9em;
+                    height: 2*$line-height-base-px;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+}
+
+$subscriptionTileHeight: 400px;
+$subscriptionTileHeaderHeight: 100px;
+.subscription-tiles{
+    .subscription-tile{
+        margin-bottom: 2em;
+        height: $subscriptionTileHeight;
+        &.selected{
+            .subscription-body{
+                border-width: 4px;
+                border-top: 0px;
+            }
+        }
+        .subscription-header{
+            text-align: center;
+            font-size: 3em;
+            height: $subscriptionTileHeaderHeight;
+        }
+        .subscription-body{
+            border-top: 0px;
+            border-width: 0px;
+            border-style: solid;
+            background: #eee;
+            height: $subscriptionTileHeight - $subscriptionTileHeaderHeight;
+            display: flex;
+            input[type=radio]{
+                display: none;
+            }
+            .btn-select-subscription{
+                margin: 15px auto;
+                padding: 8px 18px;
+                align-self: flex-end;
+                &:hover, &:focus{
+                    color: $main-text-color;
+                }
+            }
+        }
     }
 }

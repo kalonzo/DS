@@ -40,9 +40,12 @@ class WalleeController extends Controller {
             // Create API service instance
             $service = new \Wallee\Sdk\Service\TransactionService($client);
 
+            $transaction = null;
             $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
-            $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
-            if(!$transaction->isValid() || empty($transaction->getId()) || $transaction->getState() != \Wallee\Sdk\Model\TransactionState::PENDING){
+            if(!empty($idTransaction)){
+                $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
+            }
+            if(empty($transaction) || !$transaction->isValid() || empty($transaction->getId()) || $transaction->getState() != \Wallee\Sdk\Model\TransactionState::PENDING){
                 $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
                 $lineItem->setSku('CH_RESTO_PRO');
                 $lineItem->setName('abonement_110');

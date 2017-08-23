@@ -164,13 +164,6 @@
         }
     }
     
-    function goToNextAccordion(triggerElement){
-        var $currentPanel = $(triggerElement).parentsInclude('.panel');
-        if(checkExist($currentPanel)){
-            $currentPanel.next('.panel').find('a[data-toggle=collapse]').click();
-        }
-    }
-    
     function relocateMapPosition(lat, lng){
         var latLng = new google.maps.LatLng(lat, lng);
         if(typeof map !== 'undefined'){

@@ -323,7 +323,7 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = UuidTools::getUuid(Country::where('iso', '=', 'CH')->first()->getId());
+        $idCountry = UuidTools::getUuid(Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId());
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
     }
 

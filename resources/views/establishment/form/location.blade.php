@@ -13,7 +13,7 @@
             <div class="row"> 
                 <div class="col-xs-8 col-sm-10 form-group {{ $errors->has('street') ? 'has-error' : '' }}">
                     {!! Form::label('address[street]','* Adresse') !!}	
-                    {!! Form::text('address[street]', old('street'),['class' => 'form-control',]) !!}
+                    {!! Form::text('address[street]', old('street'),['class' => 'form-control']) !!}
                 </div>
                 <div class="col-xs-4 col-sm-2 form-group {{ $errors->has('street_number') ? 'has-error' : '' }}">
                     {!! Form::label('address[street_number]','* N° Rue') !!}

@@ -8,8 +8,8 @@
 @section('content')
 
 <div id="map"> </div>
-@if(checkModel($establishment))
-{!! Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/establishment/register/'.$establishment->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
+@if(checkModel($user))
+{!! Form::model($user, ['id'=>'feed-establishment', 'url' => '/establishment/register/'.$user->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
 @else
 {!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment/register/', 'method' => 'put', 'files' => true]) !!}
 @endif
@@ -32,24 +32,36 @@
         </ul>
     </div>
     @endif
-    <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">  
-        @component('establishment.form.credentials', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+    <div class="panel-group form-accordion" id="pro_user_form_accordion" role="tablist" aria-multiselectable="true">  
+        @component('pro_user.form.credentials', ['user' => $user, 'form_data' => $form_data, 'form_values' => $form_values])
         @endcomponent   
 
-        @component('establishment.form.business_categories', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+        @component('pro_user.form.business_categories', ['user' => $user, 'form_data' => $form_data, 'form_values' => $form_values])
         @endcomponent   
 
-        @component('establishment.form.subscription', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+        @component('pro_user.form.subscription', ['user' => $user, 'form_data' => $form_data, 'form_values' => $form_values])
         @endcomponent   
 
-        @component('establishment.form.mode_payment', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+        @component('pro_user.form.mode_payment', ['user' => $user, 'form_data' => $form_data, 'form_values' => $form_values])
         @endcomponent   
 
-        @component('establishment.form.info_bill', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+        @component('pro_user.form.info_bill', ['user' => $user, 'form_data' => $form_data, 'form_values' => $form_values])
         @endcomponent   
     </div>
     <div class="row no-margin text-center">
-        {!! Form::submit('Valider', array('id' => 'validToPayment', 'class'=>'btn')) !!}
+        <div class="col-sm-4 col-sm-offset-4 col-md-3 col-md-offset-4_5">
+            <div class="checkbox">
+                <label class="text-left">
+                    {!! Form::checkbox('accept_cgv', '1', false) !!}
+                    En cochant cette case, je/nous accepte/acceptons les conditions générales d'utilisation et la politique de confidentialité.
+                </label>
+            </div>
+        </div>
+        <br class="cleaner"/><br/>
+        <div class="col-xs-12">
+            {!! Form::submit('Envoyer', array('id' => 'validToPayment', 'class'=>'btn btn-lg')) !!}
+        </div>
+        <br class="cleaner"/><br/><br/>
     </div>
 </div>
 {!! form::close() !!}
@@ -174,14 +186,6 @@
             return false;
         });
     });
-    
-
-    function goToNextAccordion(triggerElement) {
-        var $currentPanel = $(triggerElement).parentsInclude('.panel');
-        if (checkExist($currentPanel)) {
-            $currentPanel.next('.panel').find('a[data-toggle=collapse]').click();
-        }
-    }
     
 </script>
 

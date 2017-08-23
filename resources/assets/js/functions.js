@@ -80,6 +80,13 @@ function getParamsArrayFromUrl(url){
     }
     return paramsArray;
 }
+
+goToNextAccordion = function(triggerElement) {
+    var $currentPanel = $(triggerElement).parentsInclude('.panel');
+    if (checkExist($currentPanel)) {
+        $currentPanel.next('.panel').find('a[data-toggle=collapse]').click();
+    }
+}
     
 /*
     var searchRadius = 500;
