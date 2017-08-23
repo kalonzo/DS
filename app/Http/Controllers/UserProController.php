@@ -35,12 +35,13 @@ class UserProController extends Controller {
      * @return Response
      */
     public function create() {
+        $user = null; // TODO Search for matching user
         $this->buildFeedFormData();
         $this->buildCreateFormValues();
-        $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
-        $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
-        $view = View::make('establishment.register')
-                ->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', null)
+        $formData = StorageHelper::getInstance()->get('feed_user.form_data');
+        $formValues = StorageHelper::getInstance()->get('feed_user.form_values');
+        $view = View::make('pro_user.register')
+                ->with('form_data', $formData)->with('form_values', $formValues)->with('user', $user)
                 ->with('disableQuickSearch', true);
 
         return $view;
@@ -104,27 +105,27 @@ class UserProController extends Controller {
     }
 
     public function buildFeedFormData() {
-        // check box for business type
+        // Business categories
+        $businessTypes = array();
         $businessTypeData = DB::table(BusinessType::TABLENAME)
                 ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ',label')
                 ->orderBy('label')
                 ->get();
         foreach ($businessTypeData as $businessCategoryData) {   
-                    $businessTools[$businessCategoryData->uuid] = $businessCategoryData->label;
+            $businessTypes[$businessCategoryData->uuid] = $businessCategoryData->label;
         }
         
-        //chekbox payment methods
+        // Payment methods
         $paymentMethods = array();
-        $paymentMethodsData = PaymentMethod::selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', name')
-                     ->orderBy('name')
-                     ->get();
-        
+        $paymentMethodsData = DB::table(PaymentMethod::TABLENAME)
+                    ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', name')
+                    ->orderBy('name')
+                    ->get();
         foreach ($paymentMethodsData as $paymentMethod) {
             $paymentMethods[$paymentMethod->uuid] = $paymentMethod->name;
         }
-   
 
-        // Select for call number prefixes
+        // Call number prefixes
         $countryPrefixes = array();
         $countryNames = array();
         $countriesData = DB::table(Country::TABLENAME)
@@ -145,10 +146,25 @@ class UserProController extends Controller {
         asort($countryPrefixes);
         asort($countryNames);
 
-        StorageHelper::getInstance()->add('feed_establishment.form_data.business_tools', $businessTools);
-        StorageHelper::getInstance()->add('feed_establishment.form_data.payment_methods', $paymentMethods);
-        StorageHelper::getInstance()->add('feed_establishment.form_data.country_prefixes', $countryPrefixes);
-        StorageHelper::getInstance()->add('feed_establishment.form_data.country_ids', $countryNames);
+        $priceFormatter = new \NumberFormatter(\Illuminate\Support\Facades\App::getLocale(), \NumberFormatter::CURRENCY);
+        $subscriptions = array(
+            array(
+                'price' => $priceFormatter->formatCurrency(250, 'CHF'),
+                'color' => 'green',
+                'label' => 'Standard',
+            ),
+            array(
+                'price' => $priceFormatter->formatCurrency(350, 'CHF'),
+                'color' => 'brown',
+                'label' => 'Avancé',
+            )
+        );
+        
+        StorageHelper::getInstance()->add('feed_user.form_data.business_types', $businessTypes);
+        StorageHelper::getInstance()->add('feed_user.form_data.payment_methods', $paymentMethods);
+        StorageHelper::getInstance()->add('feed_user.form_data.country_prefixes', $countryPrefixes);
+        StorageHelper::getInstance()->add('feed_user.form_data.country_ids', $countryNames);
+        StorageHelper::getInstance()->add('feed_user.form_data.subscriptions', $subscriptions);
     }
 
     /**
@@ -156,164 +172,11 @@ class UserProController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = UuidTools::getUuid(Country::where('iso', '=', 'CH')->first()->getId());
-        StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
-    }
-
-    /**
-     * 
-     * @param Establishment $establishment
-     */
-    public function buildEditFormValues(Establishment $establishment) {
-        // Default ID country
-        $idCountry = UuidTools::getUuid($establishment->address()->first()->getIdCountry());
+        $idCountry = Country::where('iso', 'LIKE', \Illuminate\Support\Facades\App::getLocale())->first()->getUuid();
         
-        // Call numbers
-        $callNumbers = $establishment->callNumbers()->get();
-        $callNumbersData = array();
-        foreach($callNumbers as $callNumber){
-            if($callNumber instanceof CallNumber){
-                $callNumbersData[$callNumber->getType()]['id_country_prefix'] = UuidTools::getUuid($callNumber->getIdCountry());
-                $callNumbersData[$callNumber->getType()]['number'] = $callNumber->getNumber();
-            }
-        }
         
-        // Business categories
-        $businessCategories = $establishment->businessCategoryLinks()->selectRaw(DbQueryTools::genRawSqlForGettingUuid('id_business_category'))->get();
-        $businessCategoryIds = $businessCategories->pluck('uuid');
-        
-        StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
-        StorageHelper::getInstance()->add('feed_establishment.form_values.call_numbers', $callNumbersData);
-        StorageHelper::getInstance()->add('feed_establishment.form_values.business_categories', $businessCategoryIds);
-    }  
-
-    /**
-     * 
-     * @param StoreEstablishment $request
-     * @param Establishment $establishment
-     */
-    public function feedCallNumbers($request, $establishment) {
-        $callNumbers = array();
-        $prefixByIdCountry = array();
-        $numberTypesToDelete = array();
-        // Get all country ids matching each selected number prefix
-        $prefixCountryIds = array();
-        foreach ($request->get('id_country_prefix') as $typeNumber => $idPrefix) {
-            if (!empty($request->get('call_number.'.$typeNumber)) && checkModelId($idPrefix)) {
-                $prefixCountryIds[$idPrefix] = $idPrefix;
-            } else {
-                $numberTypesToDelete[] = $typeNumber;
-            }
-        }
-        // Delete existing number removed by the user
-        if(!empty($numberTypesToDelete)){
-            $establishment->callNumbers()->whereIn('type', $numberTypesToDelete)->delete();
-        }
-        if(!empty($prefixCountryIds)){
-            // Get all countries data matching each selected number prefix
-            $prefixCountries = DB::table(Country::TABLENAME)->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $prefixCountryIds))
-                            ->selectRaw(DbQueryTools::genRawSqlForGettingUuid().', prefix, id')->get();
-            foreach ($prefixCountries as $countryData) {
-                $prefixByIdCountry[$countryData->uuid] = $countryData->prefix;
-            }
-
-            foreach ($request->get('call_number') as $typeNumber => $number) {
-                $numberLabel = null;
-                $prefix = null;
-                $isMain = false;
-                switch ($typeNumber) {
-                    case CallNumber::TYPE_PHONE_NUMBER_RESERVATION:
-                        $numberLabel = 'Téléphone utilisé pour les réservations';
-                        break;
-                    case CallNumber::TYPE_PHONE_CONTACT:
-                        $numberLabel = 'Téléphone principal';
-                        $isMain = true;
-                        break;
-                    case CallNumber::TYPE_FAX:
-                        $numberLabel = 'Numéro de fax';
-                        break;
-                    case CallNumber::TYPE_MOBILE:
-                        $numberLabel = 'Téléphone mobile';
-                        break;
-                }
-                $prefixCountryUuid = $request->get('id_country_prefix.'.$typeNumber);
-                if (isset($prefixByIdCountry[$prefixCountryUuid])) {
-                    $prefix = $prefixByIdCountry[$prefixCountryUuid];
-                }
-
-                if(!empty($typeNumber) && !empty($prefix) && !empty($number)){
-                    $callNumber = $establishment->callNumbers()->where('type', '=', $typeNumber)->first();
-                    $attributes = [
-                        'main' => $isMain,
-                        'label' => $numberLabel,
-                        'type' => $typeNumber,
-                        'prefix' => $prefix,
-                        'id_country' => UuidTools::getId($prefixCountryUuid),
-                        'number' => $number,
-                        'id_establishment' => $establishment->getId(),
-                    ];
-
-                    try{
-                        if (!checkModel($callNumber)) {
-                            $attributes['id'] = UuidTools::generateUuid();
-                            $callNumber = CallNumber::create($attributes);
-                        } else {
-                            $callNumber->update($attributes);
-                        }
-                        $callNumbers[] = $callNumber;
-                    } catch(Exception $e){
-                        print_r($e->getMessage());
-                        die();
-                    }
-                }
-            }
-        }
-        return $callNumbers;
-    }
-
-    /**
-     * 
-     * @param Establishment $establishment
-     * @param type $main
-     * @param type $label
-     * @param type $type
-     * @param type $uuidCountry
-     * @param type $number
-     * @return type
-     */
-    public function feedCallNumber($establishment, $main, $label, $type, $uuidCountry, $prefix, $number) {
-        
-        return $callNumber;
-    }
-
-    /**
-     * 
-     * @param type $name
-     * @param type $lat
-     * @param type $lng
-     * @return boolean
-     */
-    public function isUniqueEstablishment($name, $lat, $lng) {
-        $bool = false;
-        if (isset($name) & isset($lat) & isset($lng)) {
-            $name = DB::table('Establishment')
-                            ->where('name', $name)->first();
-            $lat = DB::table('Establishment')
-                            ->where('latitude', $lat)->first();
-            $lng = DB::table('Establishment')
-                            ->where('longitude', $lng)->first();
-        } else {
-            $bool = false;
-        }
-
-        if (isset($name->name) & isset($lat->latitude) & isset($lng->longitude)) {
-            $bool = false;
-        } else {
-
-            $bool = true;
-        }
-
-        return $bool;
+        StorageHelper::getInstance()->add('feed_user.form_values.id_country', $idCountry);
+        StorageHelper::getInstance()->add('feed_user.form_values.business_type', BusinessType::TYPE_BUSINESS_RESTAURANT);
     }
 
 }

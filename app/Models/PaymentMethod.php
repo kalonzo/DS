@@ -10,6 +10,7 @@ namespace App\Models;
 class PaymentMethod extends Model
 {
     protected $table = 'payment_methods';
+    const TABLENAME = 'payment_methods';
 
     public $timestamps = true;
 

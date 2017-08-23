@@ -53,7 +53,7 @@ Route::post('/establishment/booking/{establishment}','EstablishmentController@cr
 // CHECKOUT
 Route::post('/start_checkout', 'WalleeController@startCheckout');
 Route::post('/create_order', 'WalleeController@createOrder');
-Route::match(['get', 'post'], '/complete_order', 'WalleeController@createOrder');
+Route::match(['get', 'post'], '/complete_order', 'WalleeController@completeOrder');
 
 /******************************TEST ROUTE**************************************/
 Route::get('/welcome/{locale}', function ($local) {
