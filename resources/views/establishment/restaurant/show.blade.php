@@ -13,9 +13,8 @@
 
 @section('content')
     <aside id="sidebar-booking" class="custom-sidebar sidebar-fixed-right ref-scroller" data-toggler=".sidebar-booking-toggler">
-        @component('establishment.form.booking', ['establishment' => $establishment])
-
-        @endcomponent
+           @component('establishment.form.booking', ['establishment' => $establishment, 'form_data' => $form_data])
+           @endcomponent
     </aside>
     <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">

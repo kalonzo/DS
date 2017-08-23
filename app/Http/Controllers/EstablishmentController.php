@@ -125,8 +125,11 @@ class EstablishmentController extends Controller {
                 }
                 break;
         }
-
-        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page);
+        
+        $this->buildFeedFormData();
+        $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
+        
+        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData);
 
         return $view;
     }
@@ -165,9 +168,7 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function createBooking(\App\Http\Requests\StoreBooking $request, Establishment $establishment) {
-        
         $user = User::where('email', $request->get('email'))->first();
-
         if (checkModel($user)) {
             $userId = $user->getId();
             $address = Address::where('id_object_related', $userId)->first();
@@ -192,14 +193,14 @@ class EstablishmentController extends Controller {
                         'id_company' => 0,
             ]);
         }
-        if ($request->get('time.1') !== null) {
-            $hour = $request->get('time.1');
+        if ($request->get('timeAM') !== null) {
+            $hour = $request->get('timeAM');
         }
-        if ($request->get('time.2') !== null) {
-            $hour = $request->get('time.2');
+        if ($request->get('timePM') !== null) {
+            $hour = $request->get('timePM');
         }
         //chaîne de caractère au format datime de mysql
-        $datetime = $request->get('datetime_reservation') . $hour;
+        $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$hour);
 
         $bookingReservation = \App\Models\Booking::create([
                     'id' => \App\Utilities\UuidTools::generateUuid(),
@@ -208,7 +209,7 @@ class EstablishmentController extends Controller {
                     'firstname' => $request->get('firstname'),
                     'email' => $request->get('email'),
                     'phone_number' => $request->get('phone_number'),
-                    'datetime_reservation' => date('Y-m-d H:i', strtotime($datetime)),
+                    'datetime_reservation' => $date->format('Y-m-d H:i'),
                     'comment' => $request->get('comment'),
                     'nb_adults' => $request->get('nb_adults'),
                     'id_user' => $userId,
