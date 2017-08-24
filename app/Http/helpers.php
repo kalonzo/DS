@@ -113,3 +113,9 @@ function getMediaUrlForInputFile($medias, $jsonEncoded = true){
         return $mediaUrls;
     }
 }
+
+function formatPrice($price, $currency = null){
+    $kernelDSPriceFormatter = new NumberFormatter(Illuminate\Support\Facades\App::getLocale(), NumberFormatter::CURRENCY);
+    $formattedPrice = $kernelDSPriceFormatter->formatCurrency($price, $currency);
+    return $formattedPrice;
+}

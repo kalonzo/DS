@@ -436,7 +436,7 @@ class EstablishmentController extends Controller {
                             'country' => $country->getLabel(),
                             'id_location_index' => $idLocation,
                             'id_object_related' => $idEstablishment,
-                            'type_object_related' => Establishment::TYPE_OBJECT_ESTABLISHMENT,
+                            'type_object_related' => Establishment::TYPE_GLOBAL_OBJECT,
                 ]);
                 if (checkModel($address)) {
                     $createdObjects[] = $address;

@@ -10,7 +10,7 @@
     <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
         <div class="panel-body container">
             <div class="row subscription-tiles">
-                @foreach($form_data['subscriptions'] as $idSubscription => $subscriptionData)
+                @foreach($form_data['subscriptions'] as $subscription)
                     @php
                     $disabled = false;
                     $selected = false;
@@ -19,15 +19,20 @@
                     }
                     @endphp
                     <div class="subscription-tile col-xs-6 col-sm-3 @if($disabled) disabled @endif @if($selected) selected @endif">
-                        <div class="subscription-header div-table" style="background-color: {{ $subscriptionData['color'] }};">
+                        <div class="subscription-header div-table" style="background-color: {{ $subscription->getColor() }};">
                             <div class="div-cell">
-                                {{ $subscriptionData['price'] }}
+                                {{ formatPrice($subscription->getNetPrice(), 'CHF') }}
                             </div>
                         </div>
-                        <div class="subscription-body" style="border-color: {{ $subscriptionData['color'] }};">
-                            <button type="button" class="btn btn-primary btn-select-subscription"
-                                    style="background-color: {{ $subscriptionData['color'] }};">Sélectionner</button>
-                            {!! Form::radio('id_subscription', $idSubscription, $selected, ['disabled' => $disabled]) !!}
+                        <div class="subscription-body" style="border-color: {{ $subscription->getColor() }};">
+                            <div class="col-xs-12">
+                                <h3>{{ $subscription->getDesignation() }}</h3>
+                            </div>
+                             <div class="tile-footer">
+                                <button type="button" class="btn btn-primary btn-select-subscription"
+                                        style="background-color: {{ $subscription->getColor() }};">Sélectionner</button>
+                                {!! Form::radio('id_subscription', $subscription->getUuid(), $selected, ['disabled' => $disabled]) !!}
+                             </div>
                         </div>
                     </div>
                 @endforeach

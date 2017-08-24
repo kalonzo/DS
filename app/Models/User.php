@@ -7,17 +7,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 /**
  * Class Usere
  */
-class User extends Authenticatable {
+class User extends Authenticatable implements GlobalObjectManageable{
 
     use ExtendModelTrait;
     use \Illuminate\Notifications\Notifiable;
 
+    const TYPE_GLOBAL_OBJECT = self::TYPE_OBJECT_USER;
     protected $table = 'users';
     public $timestamps = true;
 
     const TYPE_USER_ADMIN_PRO = 1;
     const TYPE_USER = 2;
     const TYPE_USER_AUTO_INSERTED = 3;
+    const TYPE_USER_PRO = 4;
     const TYPE_GENDER_WOMAN = 1;
     const TYPE_GENDER_MAN = 2;
 

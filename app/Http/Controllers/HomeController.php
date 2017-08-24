@@ -57,7 +57,7 @@ class HomeController extends Controller {
                     $establishments[$uuid]['name'] = $establishmentData->name;
                     $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
                     $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = $establishmentData->country;
+                    $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
                     $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;

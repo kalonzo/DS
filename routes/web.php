@@ -41,8 +41,7 @@ Route::put('/establishment/{establishment}','EstablishmentController@update');
 Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        
     $establishment = \App\Models\Establishment::where('slug', '=', $slug)->where('url_id', '=', $url_id)->first();
     
-    $app = app();
-    $establishmentController = $app->make(App\Http\Controllers\EstablishmentController::class);
+    $establishmentController = Illuminate\Support\Facades\App::make(App\Http\Controllers\EstablishmentController::class);
     return $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
 });
 

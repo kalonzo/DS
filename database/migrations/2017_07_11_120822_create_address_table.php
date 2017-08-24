@@ -22,8 +22,7 @@ class CreateAddressTable extends Migration {
                     $table->string('po_box')->nullable();
                     $table->integer('postal_code')->nullable();
                     $table->string('city')->nullable();
-                    $table->binary('id_country', 16)->nullable()->index('fk_address_country_idx');
-                    $table->string('country')->nullable();
+                    $table->integer('id_country')->nullable()->index('fk_address_country_idx');
                     $table->float('latitude', 10, 0)->nullable();
                     $table->float('longitude', 10, 0)->nullable();
                     $table->string('label')->nullable();

@@ -56,7 +56,7 @@ class DatatableController {
                     $establishments[$uuid]['type'] = BusinessType::getLabelFromType($establishmentData->id_business_type);
                     $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
                     $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = $establishmentData->country;
+                    $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['updated_at'] = $establishmentData->updated_at;
                 }
                 // Paginate results
