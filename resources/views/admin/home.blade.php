@@ -17,4 +17,8 @@
 
 @endcomponent
 
+@component('components.tile', ['title' => 'Réservation', 'tabledata' => $booking_datatable])
+
+@endcomponent
+
 @endsection
