@@ -5,11 +5,11 @@ namespace App\Models;
 /**
  * Class Establishment
  */
-class Establishment extends Model {
-
+class Establishment extends Model implements GlobalObjectManageable{
+    
     protected $table = 'establishments';
     const TABLENAME = 'establishments';
-    const TYPE_OBJECT_ESTABLISHMENT = 1;
+    const TYPE_GLOBAL_OBJECT = self::TYPE_OBJECT_ESTABLISHMENT;
 
     const TYPE_BUSINESS_RESTAURANT = 1;
 

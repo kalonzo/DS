@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-
-
 /**
  * Class Cart
  */
-class Cart extends Model
-{
+class Cart extends Model {
+
     protected $table = 'carts';
+    const TABLENAME = 'carts';
 
+    const STATUS_PENDING = 1;
+    const STATUS_CHECKEDOUT = 2;
+    
     public $timestamps = true;
-
     protected $fillable = [
         'status',
         'price_HT',
@@ -21,142 +22,240 @@ class Cart extends Model
         'discount_amount',
         'discount_percent',
         'shipping_amount',
-        'total_price'
+        'total_price',
+        'id_currency',
+        'id_user'
     ];
-
     protected $guarded = [];
 
+    /**
+     * 
+     * @param type $cartLine
+     * @param type $autoSetId
+     * @return Cart
+     */
+    public function addLine($cartLine, $autoSetId = true){
+        $this->setPriceHT($this->getPriceHT() + $cartLine->getPriceHT());
+        $this->setPriceTTC($this->getPriceTTC() + $cartLine->getPriceTTC());
+        if($autoSetId){
+            $cartLine->setIdCart($this->getId());
+            $cartLine->save();
+        }
+        return $this;
+    }
+
+    /**
+     * 
+     * @return Payment
+     */
+    public function getOrCreatePayment(){
+        $payment = $this->payments()->where('status', '=', Payment::STATUS_START_CHECKOUT)->orderBy('updated_at')->first();
+        if(!checkModel($payment)){
+            $payment = Payment::create([
+                'id' => UuidTools::generateUuid(),
+                'status' => Payment::STATUS_START_CHECKOUT,
+                'amount' => $this->getTotalPrice(false),
+                'id_currency' => $this->getIdCurrency(),
+                'id_user' => $this->getIdUser(),
+                'id_cart' => $this->getId()
+            ]);
+        }
+        return $payment;
+    }
     
-	/**
-	 * @return mixed
-	 */
-	public function getStatus() {
-		return $this->status;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getPriceHT() {
-		return $this->price_HT;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getPriceTTC() {
-		return $this->price_TTC;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getVatAmount() {
-		return $this->vat_amount;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getDiscountAmount() {
-		return $this->discount_amount;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getDiscountPercent() {
-		return $this->discount_percent;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getShippingAmount() {
-		return $this->shipping_amount;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getTotalPrice() {
-		return $this->total_price;
-	}
-
-
+    public function getLastPayment(){
+        $payment = $this->payments()->whereIn('status', Payment::getFinalStatuses())->orderBy('updated_at')->first();
+        return $payment;
+    }
     
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setStatus($value) {
-		$this->status = $value;
-		return $this;
-	}
+    public function getCurrencyLabel(){
+        return Currency::getCurrencyLabel($this->getIdCurrency());
+    }
+    /**
+     * 
+     * @return Payment
+     */
+    public function payments(){
+        return $this->hasMany(Payment::class, 'id_cart', 'id');
+    }
+    
+    /**
+     * 
+     * @return CartLine
+     */
+    public function cartLines(){
+        return $this->hasMany(CartLine::class, 'id_cart', 'id');
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getStatus() {
+        return $this->status;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setPriceHT($value) {
-		$this->price_HT = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getPriceHT() {
+        return $this->price_HT;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setPriceTTC($value) {
-		$this->price_TTC = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getPriceTTC() {
+        return $this->price_TTC;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setVatAmount($value) {
-		$this->vat_amount = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getVatAmount() {
+        return $this->vat_amount;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setDiscountAmount($value) {
-		$this->discount_amount = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDiscountAmount() {
+        return $this->discount_amount;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setDiscountPercent($value) {
-		$this->discount_percent = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDiscountPercent() {
+        return $this->discount_percent;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setShippingAmount($value) {
-		$this->shipping_amount = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getShippingAmount() {
+        return $this->shipping_amount;
+    }
+    
+    public function getTotalPrice() {
+        return $this->total_price;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setTotalPrice($value) {
-		$this->total_price = $value;
-		return $this;
-	}
+    /**
+     * Update all calculable cart fields from its cart lines
+     * @return Cart
+     */
+    public function updateAmounts($updatesLines = true) {
+        $cartLines = $this->cartLines();
+        $amount = 0;
+        $vat_amount = 0;
+        foreach($cartLines as $cartLine){
+            if($updatesLines){
+                $cartLine->updateAmounts();
+            }
+            $amount += $cartLine->getNetPrice();
+            $vat_amount += $cartLine->getVatRate() * $cartLine->getNetPrice();
+        }
+        if(!empty($this->getDiscountAmount())){
+            $amount -= $this->getDiscountAmount();
+        }
+        if(!empty($this->getDiscountPercent())){
+            $amount = $amount * (1 - $this->getDiscountPercent() / 100);
+        }
+        if(!empty($this->getShippingAmount())){
+            $amount += $this->getShippingAmount();
+        }
+        $this->setVatAmount($vat_amount);
+        $this->setTotalPrice($amount);
+        $this->save();
+        return $this;
+    }
 
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setStatus($value) {
+        $this->status = $value;
+        return $this;
+    }
 
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setPriceHT($value) {
+        $this->price_HT = $value;
+        return $this;
+    }
 
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setPriceTTC($value) {
+        $this->price_TTC = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setVatAmount($value) {
+        $this->vat_amount = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setDiscountAmount($value) {
+        $this->discount_amount = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setDiscountPercent($value) {
+        $this->discount_percent = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setShippingAmount($value) {
+        $this->shipping_amount = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setTotalPrice($value) {
+        $this->total_price = $value;
+        return $this;
+    }
+
+    function getIdUser() {
+        return $this->id_user;
+    }
+
+    function setIdUser($id_user) {
+        $this->id_user = $id_user;
+    }
+    
+    function getIdCurrency() {
+        return $this->id_currency;
+    }
+
+    function setIdCurrency($id_currency) {
+        $this->id_currency = $id_currency;
+        return $this;
+    }
 }

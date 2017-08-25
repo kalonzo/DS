@@ -121,8 +121,8 @@ class Address extends Model {
     /**
      * @return mixed
      */
-    public function getCountry() {
-        return $this->country;
+    public function getCountryLabel() {
+        return Country::getCountryLabel($this->getIdCountry());
     }
 
     /**
@@ -252,15 +252,6 @@ class Address extends Model {
      */
     public function setCity($value) {
         $this->city = $value;
-        return $this;
-    }
-
-    /**
-     * @param $value
-     * @return $this
-     */
-    public function setCountry($value) {
-        $this->country = $value;
         return $this;
     }
 

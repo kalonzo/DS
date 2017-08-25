@@ -13,7 +13,7 @@
                 <div class="col-xs-12 form-group text-center">
                     @foreach($form_data['payment_methods'] as $paymentMethod => $label)  
                         <label class="radio-inline">
-                            {!! Form::radio('type_payment', $paymentMethod) !!}
+                            {!! Form::radio('payment_method', $paymentMethod) !!}
                             {{ $label }}
                         </label>        
                     @endforeach

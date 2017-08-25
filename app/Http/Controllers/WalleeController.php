@@ -25,63 +25,64 @@ class WalleeController extends Controller {
 
     /**
      * Display the specified resource.
-     *
-     * @return Response
+     * @param \App\Models\Payment $payment
+     * @param \App\Models\Cart $cart
+     * @param \App\Models\User $user
      */
-    public function startCheckout() {
+    public function startCheckout($payment, $cart, $user) {
         $jsonResponse = array('success' => 0);
-        $response = response();
-        $cookies = array();
-        
-        try{
-            // Setup API client
-            $client = new \Wallee\Sdk\ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
+        if(checkModel($payment) && checkModel($cart) && checkModel($user)){
+            try{
+                // Setup API client
+                $client = new \Wallee\Sdk\ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
 
-            // Create API service instance
-            $service = new \Wallee\Sdk\Service\TransactionService($client);
+                // Create API service instance
+                $service = new \Wallee\Sdk\Service\TransactionService($client);
 
-            $transaction = null;
-            $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
-            if(!empty($idTransaction)){
-                $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
-            }
-            if(empty($transaction) || !$transaction->isValid() || empty($transaction->getId()) || $transaction->getState() != \Wallee\Sdk\Model\TransactionState::PENDING){
-                $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
-                $lineItem->setSku('CH_RESTO_PRO');
-                $lineItem->setName('abonement_110');
-                $lineItem->setQuantity(1);
-                $lineItem->setAmountIncludingTax(100.5);
-                $lineItem->setUniqueId(UuidTools::getUuid(UuidTools::generateUuid()));
-                $lineItem->setType(\Wallee\Sdk\Model\LineItemType::FEE);
-
-                $transactionPending = new \Wallee\Sdk\Model\TransactionPending();
-                $transactionPending->setCurrency('CHF');
-                $transactionPending->setCustomerEmailAddress('kalonzo@bluewin.ch');
-                $transactionPending->setLineItems(array($lineItem));
-                $transactionPending->setFailedUrl(url('/complete_order').'?error=1');
-                $transactionPending->setSuccessUrl(url('/complete_order').'?success=1');
-
-                $transaction = $service->create(self::MAIN_SPACE_ID, $transactionPending);
-            }
-
-    //        $paymentMethodConfiguration = $service->fetchPossiblePaymentMethods(454, $transaction->getId());
-            if(!empty($transaction) && $transaction->isValid() && !empty($transaction->getId())){
-                $url = $service->buildJavaScriptUrl(self::MAIN_SPACE_ID, $transaction->getId());
-                if(!empty($url)){
-                    SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
-                    $jsonResponse['url'] = $url;
-                    $jsonResponse['success'] = 1;
+                $transaction = null;
+                $idTransaction = $payment->getIdTransaction();//SessionController::getInstance()->getIdTransactionProUser();
+                if(!empty($idTransaction)){
+                    $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
                 }
-            }
-        } catch(Exception $e){
-            $jsonResponse['error'] = $e->getMessage();
-        }
+                if(empty($transaction) || !$transaction->isValid() || empty($transaction->getId())){
+                    $lineItems = array();
 
-        $responsePrepared = $response->json($jsonResponse);
-        foreach($cookies as $cookie){
-            $responsePrepared->withCookie($cookie);
+                    foreach($cart->cartLines() as $cartLine){
+                        $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
+                        $lineItem->setSku(str_slug($cartLine->getDesignation()));
+                        $lineItem->setName($cartLine->getDesignation());
+                        $lineItem->setQuantity($cartLine->getQty());
+                        $lineItem->setAmountIncludingTax($cartLine->getNetPrice());
+                        $lineItem->setUniqueId($cartLine->getUuid());
+                        $lineItem->setType(\Wallee\Sdk\Model\LineItemType::PRODUCT);
+                        $lineItems[] = $lineItem;
+                    }
+
+                    $transactionPending = new \Wallee\Sdk\Model\TransactionPending();
+                    $transactionPending->setCurrency($cart->getCurrencyLabel());
+                    $transactionPending->setCustomerEmailAddress($user->getEmail());
+                    $transactionPending->setLineItems($lineItems);
+                    $transactionPending->setFailedUrl(url('/complete_order').'?error=1');
+                    $transactionPending->setSuccessUrl(url('/complete_order').'?success=1');
+
+                    $transaction = $service->create(self::MAIN_SPACE_ID, $transactionPending);
+                }
+
+        //        $paymentMethodConfiguration = $service->fetchPossiblePaymentMethods(454, $transaction->getId());
+                if(!empty($transaction) && $transaction->isValid() && !empty($transaction->getId())){
+                    $payment->setIdTransaction($transaction->getId())->save();
+                    $url = $service->buildJavaScriptUrl(self::MAIN_SPACE_ID, $transaction->getId());
+                    if(!empty($url)){
+                        SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
+                        $jsonResponse['url'] = $url;
+                        $jsonResponse['success'] = 1;
+                    }
+                }
+            } catch(Exception $e){
+                $payment->setStatus(\App\Models\Payment::STATUS_ERROR_CHECKOUT)->save();
+            }
         }
-        return $responsePrepared;
+        return $jsonResponse;
     }
     
     /**

@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Feeders\DatatableFeeder;
-use Illuminate\Support\Facades\Request;
+use App\Feeders\DatatableRowAction;
 use App\Models\Address;
-use App\Models\BusinessType;
-use App\Models\Establishment;
 use App\Models\Booking;
+use App\Models\BusinessType;
+use App\Models\Country;
+use App\Models\Establishment;
 use App\Utilities\UuidTools;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Description of DatatableController
@@ -18,10 +20,10 @@ use Illuminate\Support\Facades\DB;
  * @author Nico
  */
 class DatatableController {
-
+    
     const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
     const BOOKING_DATATABLE = 'booking_datatable';
-
+    
     /**
      * 
      * @param type $id
@@ -35,7 +37,7 @@ class DatatableController {
                 $establishments = array();
 
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, ' . Establishment::TABLENAME . '.id AS id_establishment'))
+                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, '.Establishment::TABLENAME . '.id AS id_establishment'))
                         ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                 ;
                 if (!empty($typeEts)) {
@@ -58,7 +60,7 @@ class DatatableController {
                     $establishments[$uuid]['type'] = BusinessType::getLabelFromType($establishmentData->id_business_type);
                     $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
                     $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = $establishmentData->country;
+                    $establishments[$uuid]['country'] = Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['updated_at'] = $establishmentData->updated_at;
                 }
                 // Paginate results
@@ -68,16 +70,16 @@ class DatatableController {
                 $dtFeeder = new DatatableFeeder($id);
                 $dtFeeder->setPaginator($resultsPagination);
                 $dtFeeder->setColumns(array('name' => 'Nom', 'type' => 'Type', 'city' => 'Ville', 'updated_at' => 'Modifié le'));
-                $dtFeeder->enableAction(\App\Feeders\DatatableRowAction::ACTION_EDIT);
-                $dtFeeder->customizeAction(\App\Feeders\DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
+                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
                 break;
             case self::BOOKING_DATATABLE:
                 $bookings = array();
 
-                $bookingsQuery = DB::table(\App\Models\Booking::TABLENAME)->select();
+                $bookingsQuery = DB::table(Booking::TABLENAME)->select();
 
 
-                $bookingsQuery->orderBy(\App\Models\Booking::TABLENAME . '.updated_at', 'desc');
+                $bookingsQuery->orderBy(Booking::TABLENAME . '.updated_at', 'desc');
 
                 $nbElementPerPage = 10;
                 $currentPage = Request::get('page', 1);
@@ -107,10 +109,9 @@ class DatatableController {
                 $dtFeeder = new DatatableFeeder($id);
                 $dtFeeder->setPaginator($resultsPagination);
                 $dtFeeder->setColumns(array('nb_adults' => 'Personne', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire','contact' => 'Contact','status' => 'Etat', 'updated_at' => 'Modifié le'));
-                $dtFeeder->enableAction(\App\Feeders\DatatableRowAction::ACTION_EDIT);
+                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 break;
         }
         return $dtFeeder;
     }
-
 }

@@ -1262,15 +1262,25 @@ $subscriptionTileHeaderHeight: 100px;
             background: #eee;
             height: $subscriptionTileHeight - $subscriptionTileHeaderHeight;
             display: flex;
+            align-content: space-between;
+            flex-direction: column;
             input[type=radio]{
                 display: none;
             }
-            .btn-select-subscription{
-                margin: 15px auto;
-                padding: 8px 18px;
+            > *{
+                flex: 1;
+            }
+            .tile-footer{
                 align-self: flex-end;
-                &:hover, &:focus{
-                    color: $main-text-color;
+                flex: none;
+                width: 100%;
+                text-align: center;
+                .btn-select-subscription{
+                    margin: 15px auto;
+                    padding: 8px 18px;
+                    &:hover, &:focus{
+                        color: $main-text-color;
+                    }
                 }
             }
         }
