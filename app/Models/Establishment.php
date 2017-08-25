@@ -13,6 +13,9 @@ class Establishment extends Model {
 
     const TYPE_BUSINESS_RESTAURANT = 1;
 
+    const STATUS_INCOMPLETE = 2;
+    const STATUS_ACTIVE = 1;
+    
     public $timestamps = true;
     protected $fillable = [
         'status',
