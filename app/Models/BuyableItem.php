@@ -53,7 +53,7 @@ class BuyableItem extends Model {
             'price_TTC' => $this->getPriceTTC(),
             'discount_amount' => $this->getDiscountAmount(),
             'discount_percent' => $this->getDiscountPercent(),
-            'net_price' => $this->getNetPrice(),
+            'net_price_TTC' => $this->getNetPrice(),
             'id_buyable_item' => $this->getId()
         ]);
         return $cartLine;

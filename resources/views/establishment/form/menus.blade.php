@@ -16,8 +16,8 @@
             </div>
             <div class="row"> 
                 <div class="col-xs-8 col-sm-8 form-group">
-                    {!! Form::label('name','Nom de votre menu') !!}	
-                    {!! Form::text('name', old('name'),['class' => 'form-control',]) !!}
+                    {!! Form::label('menu_name','Nom de votre menu') !!}	
+                    {!! Form::text('menu_name', old('menu_name'),['class' => 'form-control',]) !!}
                 </div>
                 <div class="col-xs-4 col-sm-4 form-group {{ $errors->has('logo_menu') ? 'has-error' : '' }}">
                     {!! Form::label('logo_menu','Image pour votre menu') !!}	
@@ -92,8 +92,8 @@
                 <div class="col-xd-12 form-group">
                     <div class="row"> 
                         <div class="col-xs-8  form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                            {!! Form::label('name','Nom de l\'assiette') !!}	
-                            {!! Form::text('name', old('name'),['class' => 'form-control',]) !!}
+                            {!! Form::label('dish_name','Nom de l\'assiette') !!}	
+                            {!! Form::text('dish_name', old('dish_name'),['class' => 'form-control',]) !!}
                         </div>
                         <div class="col-xs-4  form-group {{ $errors->has('logo_assiette') ? 'has-error' : '' }}">
                             {!! Form::label('logo_assiette','Image pour votre assiette') !!}

@@ -151,7 +151,6 @@ class Currency extends Model {
     const TZS = 139;
     const UAH = 140;
     const UGX = 141;
-    const USD = 142;
     const UYI = 143;
     const UZS = 144;
     const VEF = 145;

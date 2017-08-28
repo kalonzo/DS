@@ -277,7 +277,7 @@ class EstablishmentController extends Controller {
         $countryPrefixes = array();
         $countryNames = array();
         $countriesData = DB::table(Country::TABLENAME)
-                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
+                ->select(['id', 'label', 'prefix'])
                 ->where('prefix', '>', 0)
                 ->orderBy('label')
                 ->get();
@@ -287,8 +287,8 @@ class EstablishmentController extends Controller {
             return $item;
         });
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
-            $countryNames[$countryData->uuid] = $countryData->label;
+            $countryPrefixes[$countryData->id] = $countryData->label . " | +" . $countryData->prefix;
+            $countryNames[$countryData->id] = $countryData->label;
         }
         // Sort list by translated country name
         asort($countryPrefixes);
@@ -323,7 +323,7 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = UuidTools::getUuid(Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId());
+        $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
     }
 
@@ -333,14 +333,14 @@ class EstablishmentController extends Controller {
      */
     public function buildEditFormValues(Establishment $establishment) {
         // Default ID country
-        $idCountry = UuidTools::getUuid($establishment->address()->first()->getIdCountry());
+        $idCountry = $establishment->address()->first()->getIdCountry();
 
         // Call numbers
         $callNumbers = $establishment->callNumbers()->get();
         $callNumbersData = array();
         foreach ($callNumbers as $callNumber) {
             if ($callNumber instanceof CallNumber) {
-                $callNumbersData[$callNumber->getType()]['id_country_prefix'] = UuidTools::getUuid($callNumber->getIdCountry());
+                $callNumbersData[$callNumber->getType()]['id_country_prefix'] = $callNumber->getIdCountry();
                 $callNumbersData[$callNumber->getType()]['number'] = $callNumber->getNumber();
             }
         }
@@ -389,16 +389,13 @@ class EstablishmentController extends Controller {
         $createdObjects = array();
         try {
             $idLocation = 0;
-            $idCountry = 0;
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
-            $uuidCountry = $request->get('address.id_country');
+            $idCountry = $request->get('address.id_country');
             $latitude = $request->get('latitude');
             $longitude = $request->get('longitude');
 
-            $country = \App\Models\Country::findUuid($uuidCountry);
-            if (!empty($postalCode) && !empty($city) && checkModelId($uuidCountry)) {
-                $idCountry = UuidTools::getId($uuidCountry);
+            if (!empty($postalCode) && !empty($city) && !empty($idCountry)) {
                 $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
                 if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
@@ -433,7 +430,6 @@ class EstablishmentController extends Controller {
                             'latitude' => $request->get('latitude'),
                             'longitude' => $request->get('longitude'),
                             'id_country' => $idCountry,
-                            'country' => $country->getLabel(),
                             'id_location_index' => $idLocation,
                             'id_object_related' => $idEstablishment,
                             'type_object_related' => Establishment::TYPE_GLOBAL_OBJECT,
@@ -536,16 +532,13 @@ class EstablishmentController extends Controller {
         try {
             if (checkModel($establishment)) {
                 $idLocation = 0;
-                $idCountry = 0;
                 $postalCode = $request->get('address.postal_code');
                 $city = $request->get('address.city');
-                $uuidCountry = $request->get('address.id_country');
+                $idCountry = $request->get('address.id_country');
                 $latitude = $request->get('latitude');
                 $longitude = $request->get('longitude');
 
-                $country = \App\Models\Country::findUuid($uuidCountry);
-                if (!empty($postalCode) && !empty($city) && checkModelId($uuidCountry)) {
-                    $idCountry = UuidTools::getId($uuidCountry);
+                if (!empty($postalCode) && !empty($city) && !empty($idCountry)) {
                     $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
                     if (checkModel($locationIndex)) {
                         $idLocation = $locationIndex->getId();
@@ -578,8 +571,7 @@ class EstablishmentController extends Controller {
                             'city' => $request->get('address.city'),
                             'latitude' => $request->get('latitude'),
                             'longitude' => $request->get('longitude'),
-                            'id_country' => $country->getId(),
-                            'country' => $country->getLabel(),
+                            'id_country' => $idCountry,
                             'id_location_index' => $idLocation,
                         ]);
 
@@ -822,10 +814,10 @@ class EstablishmentController extends Controller {
         }
         if (!empty($prefixCountryIds)) {
             // Get all countries data matching each selected number prefix
-            $prefixCountries = DB::table(Country::TABLENAME)->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $prefixCountryIds))
-                            ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', prefix, id')->get();
+            $prefixCountries = DB::table(Country::TABLENAME)->whereIn('id', $prefixCountryIds)
+                            ->select(['prefix', 'id'])->get();
             foreach ($prefixCountries as $countryData) {
-                $prefixByIdCountry[$countryData->uuid] = $countryData->prefix;
+                $prefixByIdCountry[$countryData->id] = $countryData->prefix;
             }
 
             foreach ($request->get('call_number') as $typeNumber => $number) {
@@ -859,7 +851,7 @@ class EstablishmentController extends Controller {
                         'label' => $numberLabel,
                         'type' => $typeNumber,
                         'prefix' => $prefix,
-                        'id_country' => UuidTools::getId($prefixCountryUuid),
+                        'id_country' => $prefixCountryUuid,
                         'number' => $number,
                         'id_establishment' => $establishment->getId(),
                     ];
@@ -880,21 +872,6 @@ class EstablishmentController extends Controller {
             }
         }
         return $callNumbers;
-    }
-
-    /**
-     * 
-     * @param Establishment $establishment
-     * @param type $main
-     * @param type $label
-     * @param type $type
-     * @param type $uuidCountry
-     * @param type $number
-     * @return type
-     */
-    public function feedCallNumber($establishment, $main, $label, $type, $uuidCountry, $prefix, $number) {
-
-        return $callNumber;
     }
 
     /**

@@ -63,6 +63,38 @@ class Cart extends Model {
         return $payment;
     }
     
+    /**
+     * Update all calculable cart fields from its cart lines
+     * @return Cart
+     */
+    public function updateAmounts($updatesLines = true) {
+        $cartLines = $this->cartLines();
+        $amountHT = 0;
+        foreach($cartLines as $cartLine){
+            if($updatesLines){
+                $cartLine->updateAmounts();
+            }
+            $amountHT += $cartLine->getNetPriceHT();
+        }
+        if(!empty($this->getDiscountAmount())){
+            $amountHT -= $this->getDiscountAmount();
+        }
+        if(!empty($this->getDiscountPercent())){
+            $amountHT = $amountHT * (1 - $this->getDiscountPercent() / 100);
+        }
+        
+        $vat_amount = $amountHT * $cartLine->getVatRate() / 100;
+        $this->setVatAmount($vat_amount);
+        
+        $totalPrice = $amountHT + $vat_amount;
+        if(!empty($this->getShippingAmount())){
+            $totalPrice += $this->getShippingAmount();
+        }
+        $this->setTotalPrice($totalPrice);
+        $this->save();
+        return $this;
+    }
+
     public function getLastPayment(){
         $payment = $this->payments()->whereIn('status', Payment::getFinalStatuses())->orderBy('updated_at')->first();
         return $payment;
@@ -138,36 +170,6 @@ class Cart extends Model {
     
     public function getTotalPrice() {
         return $this->total_price;
-    }
-
-    /**
-     * Update all calculable cart fields from its cart lines
-     * @return Cart
-     */
-    public function updateAmounts($updatesLines = true) {
-        $cartLines = $this->cartLines();
-        $amount = 0;
-        $vat_amount = 0;
-        foreach($cartLines as $cartLine){
-            if($updatesLines){
-                $cartLine->updateAmounts();
-            }
-            $amount += $cartLine->getNetPrice();
-            $vat_amount += $cartLine->getVatRate() * $cartLine->getNetPrice();
-        }
-        if(!empty($this->getDiscountAmount())){
-            $amount -= $this->getDiscountAmount();
-        }
-        if(!empty($this->getDiscountPercent())){
-            $amount = $amount * (1 - $this->getDiscountPercent() / 100);
-        }
-        if(!empty($this->getShippingAmount())){
-            $amount += $this->getShippingAmount();
-        }
-        $this->setVatAmount($vat_amount);
-        $this->setTotalPrice($amount);
-        $this->save();
-        return $this;
     }
 
     /**

@@ -21,12 +21,15 @@ class CartLine extends Model {
         'price_TTC',
         'discount_amount',
         'discount_percent',
-        'net_price',
+        'net_price_HT',
+        'net_price_TTC',
         'id_currency',
         'id_cart',
         'id_buyable_item'
     ];
     protected $guarded = [];
+    public $net_price_HT;
+    public $net_price_TTC;
 
     /**
      * Update all calculable cart lines
@@ -51,14 +54,16 @@ class CartLine extends Model {
         $amount = $this->getUnitPriceTTC() * $this->getQty();
         $this->setPriceTTC($amount);
         
-        $netPrice = $this->getPriceTTC();
+        $netPriceHT = $this->getPriceHT();
         if(!empty($this->getDiscountAmount())){
-            $netPrice -= $this->getDiscountAmount();
+            $netPriceHT -= $this->getDiscountAmount();
         }
         if(!empty($this->getDiscountPercent())){
-            $netPrice = $netPrice * (1 - $this->getDiscountPercent() / 100);
+            $netPriceHT = $netPriceHT * (1 - $this->getDiscountPercent() / 100);
         }
-        $this->setNetPrice($netPrice);
+        $this->setNetPriceHT($netPriceHT);
+        $netPriceTTC = $netPriceHT * (1 + $this->getVatRate() / 100);
+        $this->setNetPriceTTC($netPriceTTC);
         $this->save();
         return $this;
     }
@@ -263,5 +268,24 @@ class CartLine extends Model {
         $this->id_currency = $id_currency;
         return $this;
     }
+
+    function getNetPriceHT() {
+        return $this->net_price_HT;
+    }
+
+    function getNetPriceTTC() {
+        return $this->net_price_TTC;
+    }
+
+    function setNetPriceHT($net_price_HT) {
+        $this->net_price_HT = $net_price_HT;
+        return $this;
+    }
+
+    function setNetPriceTTC($net_price_TTC) {
+        $this->net_price_TTC = $net_price_TTC;
+        return $this;
+    }
+
 
 }

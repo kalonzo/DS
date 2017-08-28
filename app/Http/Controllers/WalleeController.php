@@ -52,7 +52,7 @@ class WalleeController extends Controller {
                         $lineItem->setSku(str_slug($cartLine->getDesignation()));
                         $lineItem->setName($cartLine->getDesignation());
                         $lineItem->setQuantity($cartLine->getQty());
-                        $lineItem->setAmountIncludingTax($cartLine->getNetPrice());
+                        $lineItem->setAmountIncludingTax($cartLine->getNetPriceTTC());
                         $lineItem->setUniqueId($cartLine->getUuid());
                         $lineItem->setType(\Wallee\Sdk\Model\LineItemType::PRODUCT);
                         $lineItems[] = $lineItem;
