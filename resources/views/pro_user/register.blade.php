@@ -2,7 +2,6 @@
 
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
-<link href="/css/loading-spinner.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -13,6 +12,8 @@
 @else
 {!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment/register/', 'method' => 'put', 'files' => true]) !!}
 @endif
+{!! Form::hidden('id_user', old('id_user')) !!}
+
 <div class="container-fluid no-gutter">
     <div id="ets-heading" class="row no-gutter no-margin"> 
 
@@ -77,8 +78,15 @@
             </div>
             <div class="modal-body">
                 <div class="row" id="payment-form">
-                    @component('components.loading_spinner')
-                    @endcomponent   
+                    
+                </div>
+                <div class="progress loading-bar">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                      <!--<span class="sr-only">-->Chargement en cours...<!--</span>-->
+                    </div>
+                </div>
+                <div class="form-error">
+                    
                 </div>
                 <div class="row" id="iframe-ext-footer" style="display: none;">
                     <ul id="payment-errors"></ul>
@@ -101,6 +109,11 @@
             var form = $(this).parentsInclude('form');
 
             if(checkExist(form)){
+                $('#checkoutModal .loading-bar').show();
+                $('#checkoutModal .form-error').hide();
+                $('#iframe-ext-footer').hide();
+                $('#payment-form').empty();
+                
                 $.ajax({
                     url: $(form).attr('action'),
                     data: $(form).serialize(),
@@ -108,6 +121,9 @@
                     method: 'POST'
                 })
                 .done(function( data ) {
+                    if(!isEmpty(data.id_user)){
+                        $(form).find('[name=id_user]').val(data.id_user);
+                    }
                     if(data.success){
                         if(data.url){
                             var iframeScriptUrl = data.url;
@@ -155,7 +171,7 @@
                                     //Set the optional initialize callback
                                     handler.setInitializeCallback(function () {
                                         //Execute initialize code
-                                        $('#payment-form .loading-spinner').remove();
+                                        $('#checkoutModal .loading-bar').hide();
                                         $('#iframe-ext-footer').show();
                                     });
 
@@ -171,7 +187,7 @@
                                     });
                                 } else if(counter > 2000){
                                     clearInterval(myLoop);
-                                    $('#payment-form .loading-spinner').remove();
+                                    $('#checkoutModal .loading-bar').hide();
                                     $('#payment-form').html("Une erreur est survenue avec le service de paiement.");
                                 }
                             }
@@ -181,6 +197,8 @@
 
                             $('body').append("<script type=\"text\/javascript\" src=\""+iframeScriptUrl+"\"><\/script>");
                         }
+                    } else {
+                        $('#checkoutModal .form-error').content(data.error).show();
                     }
                 });
             }

@@ -15,6 +15,7 @@ class User extends Authenticatable implements GlobalObjectManageable{
     const TYPE_GLOBAL_OBJECT = self::TYPE_OBJECT_USER;
     protected $table = 'users';
     public $timestamps = true;
+    public $incrementing = false;
 
     const TYPE_USER_ADMIN_PRO = 1;
     const TYPE_USER = 2;
@@ -50,6 +51,18 @@ class User extends Authenticatable implements GlobalObjectManageable{
     protected $hidden = [
         'password', 'remember_token',
     ];
+    
+    public function getCurrentPendingCart(){
+        return $this->hasMany(Cart::class, 'id_user', 'id')->where('status', '=', Cart::STATUS_PENDING)->orderBy('updated_at', 'DESC')->first();
+    }
+    
+    public function company(){
+        return $this->hasOne(Company::class, 'id', 'id_company');
+    }
+    
+    public function address(){
+        return $this->hasOne(Address::class, 'id', 'id_address');
+    }
 
     /**
      * @return mixed

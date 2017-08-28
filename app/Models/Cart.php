@@ -43,6 +43,10 @@ class Cart extends Model {
         }
         return $this;
     }
+    
+    public function removeAllLines(){
+        $this->cartLines()->delete();
+    }
 
     /**
      * 
@@ -52,12 +56,14 @@ class Cart extends Model {
         $payment = $this->payments()->where('status', '=', Payment::STATUS_START_CHECKOUT)->orderBy('updated_at')->first();
         if(!checkModel($payment)){
             $payment = Payment::create([
-                'id' => UuidTools::generateUuid(),
+                'id' => \App\Utilities\UuidTools::generateUuid(),
                 'status' => Payment::STATUS_START_CHECKOUT,
                 'amount' => $this->getTotalPrice(false),
                 'id_currency' => $this->getIdCurrency(),
                 'id_user' => $this->getIdUser(),
-                'id_cart' => $this->getId()
+                'id_cart' => $this->getId(),
+                'id_payment_method' => 0,
+                'id_bill' => 0,
             ]);
         }
         return $payment;
@@ -70,11 +76,13 @@ class Cart extends Model {
     public function updateAmounts($updatesLines = true) {
         $cartLines = $this->cartLines();
         $amountHT = 0;
+        $vat_amount = 0;
         foreach($cartLines as $cartLine){
             if($updatesLines){
                 $cartLine->updateAmounts();
             }
             $amountHT += $cartLine->getNetPriceHT();
+            $vat_amount += $cartLine->getNetPriceTTC() - $cartLine->getNetPriceHT();
         }
         if(!empty($this->getDiscountAmount())){
             $amountHT -= $this->getDiscountAmount();
@@ -83,7 +91,6 @@ class Cart extends Model {
             $amountHT = $amountHT * (1 - $this->getDiscountPercent() / 100);
         }
         
-        $vat_amount = $amountHT * $cartLine->getVatRate() / 100;
         $this->setVatAmount($vat_amount);
         
         $totalPrice = $amountHT + $vat_amount;

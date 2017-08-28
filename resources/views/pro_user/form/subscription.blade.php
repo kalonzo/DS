@@ -47,6 +47,7 @@
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function(event) { 
                     $('body').on('click', 'button.btn-select-subscription', function(){
+                        $('.subscription-tile.selected').find('input[name=id_subscription]').removeAttr('checked');
                         $(this).next('input[name=id_subscription]').attr('checked', 'checked');
                         
                         $('.subscription-tile.selected').removeClass('selected');

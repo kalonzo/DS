@@ -75,21 +75,27 @@ class UserProController extends Controller {
         try {
             $uuidSubscription = $request->get('id_subscription');
             $businessType = $request->get('business_type');
+            $uuidUser = $request->get('id_user');
+            $idCountry = $request->get('address.id_country');
 
+            $user = User::findUuid($uuidUser);
             $subscriptionItem = \App\Models\BuyableItem::findUuid($uuidSubscription);
             if (checkModel($subscriptionItem)) {
-                $company = Company::where('name', '=', $request->get('company.name'))->first();
-                if (!checkModel($company) && !empty($request->get('company.name'))) {
-                    $company = Company::create([
-                                'id' => UuidTools::generateUuid(),
-                                'name' => $request->get('company.name')
-                    ]);
-                    $createdObjects[] = $company;
-                }
-                $userId = UuidTools::generateUuid();
-
-                $country = Country::findUuid($request->get('address.id_country'));
-                if (checkModel($country)) {
+                $company = null;
+                if(checkModel($user)){
+                    $company = $user->company()->first();
+                    $address = $user->address()->first();
+                } else {
+                    $userId = UuidTools::generateUuid();
+                    if (!empty($request->get('company.name'))) {
+                        $company = Company::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'name' => $request->get('company.name'),
+                                    'id_logo' => 0
+                        ]);
+                        $createdObjects[] = $company;
+                    }
+                    
                     $address = Address::create([
                                 'id' => UuidTools::generateUuid(),
                                 'firstname' => $request->get('address.firstname'),
@@ -99,10 +105,10 @@ class UserProController extends Controller {
                                 'postal_code' => $request->get('address.postal_code'),
                                 'po_box' => $request->get('address.po_box'),
                                 'city' => $request->get('address.city'),
-                                'id_country' => $request->get('address.id_country'),
-                                'country' => $country->getLabel(),
+                                'id_country' => $idCountry,
                                 'id_object_related' => $userId,
                                 'type_object_related' => User::TYPE_GLOBAL_OBJECT,
+                                'id_location_index' => 0,
                     ]);
                     $createdObjects[] = $address;
 
@@ -111,6 +117,7 @@ class UserProController extends Controller {
                                     'id' => $userId,
                                     'type' => User::TYPE_USER_PRO,
                                     'gender' => $request->get('gender'),
+                                    'name' => $request->get('email'),
                                     'firstname' => $request->get('firstname'),
                                     'lastname' => $request->get('lastname'),
                                     'email' => $request->get('email'),
@@ -120,39 +127,43 @@ class UserProController extends Controller {
                                     'id_inbox' => 0,
                         ]);
                         $createdObjects[] = $user;
+                    }
+                }
 
-                        if (checkModel($user)) {
-                            $jsonResponse['id_user'] = $user->getUuid();
-                            
-                            $cart = \App\Models\Cart::create([
-                                    'id' => UuidTools::generateUuid(),
-                                    'id_user' => $user->getId(),
-                                    'status' => \App\Models\Cart::STATUS_PENDING,
-                                    'id_currency' => \App\Utilities\CurrencyTools::getCurrencyFromLocale()
-                            ]);
-                            $createdObjects[] = $cart;
+                if(checkModel($user)) {
+                    $jsonResponse['id_user'] = $user->getUuid();
 
-                            if(checkModel($cart)){
-                                $cartLine = $subscriptionItem->convertToCartLine();
-                                $createdObjects[] = $cartLine;
-                                $cart->addLine($cartLine);
-                                $cart->updateAmounts();
-                                
-                                $payment = $cart->getOrCreatePayment();
-                                if(checkModel($payment)){
-                                    $createdObjects[] = $payment;
-                                    $paymentMethod = $request->get('payment_method');
-                                    $payment->setIdPaymentMethod($paymentMethod)->save();
-                                    try {
-                                        $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
-                                        if ($walleeController instanceof WalleeController) {
-                                            $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
-                                            $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
-                                        }
-                                    } catch (Exception $ex) {
-                                        $jsonResponse['error'] = $e->getMessage();
-                                    }
+                    $cart = $user->getCurrentPendingCart();
+                    if(!checkModel($cart)){
+                        $cart = \App\Models\Cart::create([
+                                'id' => UuidTools::generateUuid(),
+                                'id_user' => $user->getId(),
+                                'status' => \App\Models\Cart::STATUS_PENDING,
+                                'id_currency' => \App\Utilities\CurrencyTools::getIdCurrencyFromLocale()
+                        ]);
+                        $createdObjects[] = $cart;
+                    } else {
+                        $cart->removeAllLines();
+                    }
+                    if(checkModel($cart)){
+                        $cartLine = $subscriptionItem->convertToCartLine();
+                        $createdObjects[] = $cartLine;
+                        $cart->addLine($cartLine);
+                        $cart->updateAmounts();
+
+                        $payment = $cart->getOrCreatePayment();
+                        if(checkModel($payment)){
+                            $createdObjects[] = $payment;
+                            $paymentMethod = $request->get('payment_method');
+                            $payment->setIdPaymentMethod($paymentMethod)->save();
+                            try {
+                                $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
+                                if ($walleeController instanceof WalleeController) {
+                                    $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
+                                    $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
                                 }
+                            } catch (Exception $ex) {
+                                $jsonResponse['error'] = $e->getMessage();
                             }
                         }
                     }
@@ -161,11 +172,20 @@ class UserProController extends Controller {
         } catch (Exception $e) {
             // TODO Report error in log system
             print_r($e->getMessage());
-
-            foreach ($createdObjects as $createdObject) {
-                if ($createdObject instanceof Model) {
-                    $createdObject->delete();
+//            print_r($e->getTraceAsString());
+            try{
+                print_r($createdObjects);
+                foreach ($createdObjects as $createdObject) {
+                    if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
+                        $deleted = $createdObject->delete();
+                        var_dump($deleted);
+                    } else {
+                        print_r($createdObject);
+                    }
                 }
+            } catch(Exception $ex){
+                print_r($e->getMessage());
+                print_r($e->getTraceAsString());
             }
             die();
         }
@@ -233,7 +253,7 @@ class UserProController extends Controller {
         $countryPrefixes = array();
         $countryNames = array();
         $countriesData = DB::table(Country::TABLENAME)
-                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', label, prefix')
+                ->select(['id', 'label', 'prefix'])
                 ->where('prefix', '>', 0)
                 ->orderBy('label')
                 ->get();
@@ -243,15 +263,20 @@ class UserProController extends Controller {
             return $item;
         });
         foreach ($countriesData as $countryData) {
-            $countryPrefixes[$countryData->uuid] = $countryData->label . " | +" . $countryData->prefix;
-            $countryNames[$countryData->uuid] = $countryData->label;
+            $countryPrefixes[$countryData->id] = $countryData->label . " | +" . $countryData->prefix;
+            $countryNames[$countryData->id] = $countryData->label;
         }
         // Sort list by translated country name
         asort($countryPrefixes);
         asort($countryNames);
 
         $subscriptions = \App\Models\BuyableItem::selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', id, designation, net_price, color')
-                        ->where('type', '=', \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION)->where('status', '=', \App\Models\BuyableItem::STATUS_ACTIVE)
+                        ->whereIn('type', [
+                                            \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL1,
+                                            \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL2,
+                                            \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL3,
+                                            \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL4
+                        ])->where('status', '=', \App\Models\BuyableItem::STATUS_ACTIVE)
                         ->orderBy('net_price', 'ASC')->get();
 
         StorageHelper::getInstance()->add('feed_user.form_data.business_types', $businessTypes);
@@ -266,7 +291,7 @@ class UserProController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = Country::where('iso', 'LIKE', App::getLocale())->first()->getUuid();
+        $idCountry = Country::where('iso', 'LIKE', App::getLocale())->first()->getId();
 
 
         StorageHelper::getInstance()->add('feed_user.form_values.id_country', $idCountry);

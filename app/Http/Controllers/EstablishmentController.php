@@ -514,7 +514,7 @@ class EstablishmentController extends Controller {
             print_r($e->getMessage());
 
             foreach ($createdObjects as $createdObject) {
-                if ($createdObject instanceof Model) {
+                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
                     $createdObject->delete();
                 }
             }
@@ -637,7 +637,7 @@ class EstablishmentController extends Controller {
             print_r($e->getMessage());
 
             foreach ($createdObjects as $createdObject) {
-                if ($createdObject instanceof Model) {
+                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
                     $createdObject->delete();
                 }
             }

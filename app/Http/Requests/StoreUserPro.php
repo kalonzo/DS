@@ -27,11 +27,11 @@ class StoreUserPro extends \App\Http\FormRequest {
             'lastname' => 'required|min:3|max:255',
             'email' => 'required|email',
             'phoneNumber.number' => 'required|min:11|numeric',
-            'password' => 'required|confirmed:password_confirm',
+//            'password' => 'required|confirmed:password_confirm',
             //Business categories
             'business_type' => 'required',
             //subscription
-            'id_subscription' => 'required',
+//            'id_subscription' => 'required',
             //Payments methode
             'payment_method' => 'required',
             //Info bill
@@ -40,7 +40,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'address.lastname' => 'required|min:2|max:255',
             'address.street' => 'required|min:3|max:255',
             'address.street_number' => 'required|max:45',
-            'address.po_box' => 'required|max:11',
+            'address.po_box' => 'max:11',
             'address.postal_code' => 'required|max:11',
             'address.city' => 'required|max:255',
             'address.id_country' => 'required',
@@ -91,7 +91,6 @@ class StoreUserPro extends \App\Http\FormRequest {
             'address.postal_code.required' => 'Vous devez spécifier un code postal.',
             'address.street_number.required' => '|max:45',
             'address.street_number.max' => '|max:45',
-            'address.po_box.required' => 'required|max:11',
             'address.po_box.max' => 'required|max:11',
             'address.postal_code.required' => '|max:11',
             'address.postal_code.max' => '|max:11',

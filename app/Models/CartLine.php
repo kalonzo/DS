@@ -134,13 +134,6 @@ class CartLine extends Model {
     /**
      * @return mixed
      */
-    public function getNetPrice() {
-        return $this->net_price;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getIdCart() {
         return $this->id_cart;
     }
@@ -230,15 +223,6 @@ class CartLine extends Model {
      */
     public function setDiscountPercent($value) {
         $this->discount_percent = $value;
-        return $this;
-    }
-
-    /**
-     * @param $value
-     * @return $this
-     */
-    public function setNetPrice($value) {
-        $this->net_price = $value;
         return $this;
     }
 
