@@ -13,9 +13,6 @@ class UpdateCart extends Migration
      */
     public function up()
     {
-        Schema::table(\App\Models\Cart::TABLENAME, function(Blueprint $table) {
-            $table->integer('id_user')->index('cart_id_user_idx');
-        });
         Schema::table(\App\Models\BuyableItem::TABLENAME, function(Blueprint $table) {
             $table->string('color', 100);
         });
@@ -28,9 +25,6 @@ class UpdateCart extends Migration
      */
     public function down()
     {
-        Schema::table(\App\Models\Cart::TABLENAME, function(Blueprint $table) {
-            $table->dropColumn('id_user');
-        });
         Schema::table(\App\Models\BuyableItem::TABLENAME, function(Blueprint $table) {
             $table->dropColumn('color');
         });
