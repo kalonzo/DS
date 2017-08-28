@@ -18,7 +18,9 @@ class Country extends Model {
     const ATG = 7;
     const ARG = 8;
     const ARM = 9;
-    const AUS = 10;
+    const AUS_ACI = 10;
+    const AUS_CSI = 287;
+    const AUS_A = 288;
     const AZE_NK = 12;
     const AZE_A = 282;
     const BHS = 13;
@@ -73,9 +75,9 @@ class Country extends Model {
     const FRA = 61;
     const GAB = 62;
     const GMB = 63;
-    const GEO_A = 64;       
-    const GEO_SO = 280;       
-    const GEO_G = 281;       
+    const GEO_A = 64;
+    const GEO_SO = 280;
+    const GEO_G = 281;
     const DEU = 65;
     const GHA = 66;
     const GRC = 67;
@@ -172,7 +174,8 @@ class Country extends Model {
     const SVK = 157;
     const SVN = 158;
     const SLB = 159;
-    const SOM = 160;
+    const SOM_L = 160;
+    const SOM_S = 286;
     const ZAF = 161;
     const ESP = 162;
     const LKA = 163;
@@ -213,10 +216,12 @@ class Country extends Model {
     const HMD = 206;
     const NFK = 207;
     const NCL = 208;
-    const PYF = 209;
+    const PYF_FP = 209;
+    const PYF_CI = 289;
     const MYT = 210;
-    const GLPM = 211;
-    const GLPB = 270;
+    const GLP_SB = 211;
+    const GLP_SM = 270;
+    const GLP_G = 290;
     const SPM = 213;
     const WLF = 214;
     const ATF = 215;
@@ -294,7 +299,7 @@ class Country extends Model {
             self::ATG => 'Antigua and Barbuda',
             self::ARG => 'Argentina',
             self::ARM => 'Armenia',
-            self::AUS => 'Australia',
+            self::AUS_A => 'Australia',
             self::AUT => 'Austria',
             self::AZE_A => 'Azerbaijan',
             self::BHS => 'Bahamas',
@@ -444,7 +449,7 @@ class Country extends Model {
             self::SVK => 'Slovakia',
             self::SVN => 'Slovenia',
             self::SLB => 'Solomon Islands',
-            self::SOM => 'Somalia',
+            self::SOM_S => 'Somalia',
             self::ZAF => 'South Africa',
             self::ESP => 'Spain',
             self::LKA => 'Sri Lanka',
@@ -484,23 +489,24 @@ class Country extends Model {
             self::AZE_NK => 'Nagorno-Karabakh',
             self::CYP_NC => 'Northern Cyprus',
             self::MDA_PT => 'Pridnestrovie',
-            self::SOM => 'Somaliland',
+            self::SOM_L => 'Somaliland',
             self::GEO_SO => 'South Ossetia',
-            self::AUS => 'Ashmore and Cartier Islands',
+            self::AUS_ACI => 'Ashmore and Cartier Islands',
             self::CXR => 'Christmas Island',
             self::CCK => 'Cocos (Keeling) Islands',
-            self::AUS => 'Coral Sea Islands',
+            self::AUS_CSI => 'Coral Sea Islands',
             self::HMD => 'Heard Island and McDonald Islands',
             self::NFK => 'Norfolk Island',
             self::NCL => 'New Caledonia',
-            self::PYF => 'French Polynesia',
+            self::PYF_FP => 'French Polynesia',
             self::MYT => 'Mayotte',
-            self::GLP => 'Saint Barthelemy',
-            self::GLP => 'Saint Martin',
+            self::GLP_SB => 'Saint Barthelemy',
+            self::GLP_SM => 'Saint Martin',
+            self::GLP_G => 'Guadeloupe',
             self::SPM => 'Saint Pierre and Miquelon',
             self::WLF => 'Wallis and Futuna',
             self::ATF => 'French Southern and Antarctic Lands',
-            self::PYF => 'Clipperton Island',
+            self::PYF_CI => 'Clipperton Island',
             self::BVT => 'Bouvet Island',
             self::COK => 'Cook Islands',
             self::NIU => 'Niue',
@@ -539,7 +545,6 @@ class Country extends Model {
             self::FRO => 'Faroe Islands',
             self::GRL => 'Greenland',
             self::GUF => 'French Guiana',
-            self::GLP => 'Guadeloupe',
             self::MTQ => 'Martinique',
             self::REU => 'Reunion',
             self::ALA => 'Aland',
@@ -553,8 +558,6 @@ class Country extends Model {
             self::ATA_PI => 'Peter I Island',
             self::ATA_QML => 'Queen Maud Land',
             self::ATA_BAT => 'British Antarctic Territory',
-
-
         ];
         return $countriesById;
     }
