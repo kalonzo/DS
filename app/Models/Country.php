@@ -13,7 +13,7 @@ class Country extends Model {
     const AFG = 2;
     const ALB = 3;
     const DZA = 4;
-    //const AND = 5;
+    const ANDO = 5;
     const AGO = 6;
     const ATG = 7;
     const ARG = 8;
@@ -270,7 +270,7 @@ class Country extends Model {
             self::AFG => 'Afghanistan',
             self::ALB => 'Albania',
             self::DZA => 'Algeria',
-           // self::AND => 'Andorra',
+            self::ANDO => 'Andorra',
             self::AGO => 'Angola',
             self::ATG => 'Antigua and Barbuda',
             self::ARG => 'Argentina',
@@ -492,7 +492,6 @@ class Country extends Model {
             self::AIA => 'Anguilla',
             self::BMU => 'Bermuda',
             self::IOT => 'British Indian Ocean Territory',
-            //self:: => 'British Sovereign Base Areas',
             self::VGB => 'British Virgin Islands',
             self::CYM => 'Cayman Islands',
             self::FLK => 'Falkland Islands (Islas Malvinas)',

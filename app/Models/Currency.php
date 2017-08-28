@@ -114,7 +114,7 @@ class Currency extends Model {
     const NPR = 102;
     const NZD = 103;
     const OMR = 104;
-//const USD = 105;
+    const USD_PAB = 105;
     const PEN = 106;
     const PGK = 107;
     const PHP = 108;
@@ -137,7 +137,7 @@ class Currency extends Model {
     const SOS = 125;
     const SRD = 126;
     const STD = 127;
-//const USD = 128;
+    const USD_SVC = 128;
     const SYP = 129;
     const SZL = 130;
     const THB = 131;
@@ -145,13 +145,13 @@ class Currency extends Model {
     const TMT = 133;
     const TND = 134;
     const TOP = 135;
-//const TRY = 136;
+    const TRYL = 136;
     const TTD = 137;
     const TWD = 138;
     const TZS = 139;
     const UAH = 140;
     const UGX = 141;
-//const USD = 142;
+    const USD = 142;
     const UYI = 143;
     const UZS = 144;
     const VEF = 145;
@@ -249,7 +249,7 @@ class Currency extends Model {
         self::HKD => 'HKD',
         self::HNL => 'HNL',
         self::HRK => 'HRK',
-        //self::USD => 'HTG USD',
+        self::USD_HTG => 'HTG USD',
         self::HUF => 'HUF',
         self::IDR => 'IDR',
         self::ILS => 'ILS',
@@ -297,7 +297,7 @@ class Currency extends Model {
         self::NPR => 'NPR',
         self::NZD => 'NZD',
         self::OMR => 'OMR',
-        //self::USD => 'PAB USD',
+        self::USD_PAB => 'PAB USD',
         self::PEN => 'PEN',
         self::PGK => 'PGK',
         self::PHP => 'PHP',
@@ -320,7 +320,7 @@ class Currency extends Model {
         self::SOS => 'SOS',
         self::SRD => 'SRD',
         self::STD => 'STD',
-        //self::USD => 'SVC USD',
+        self::USD_SVC => 'SVC USD',
         self::SYP => 'SYP',
         self::SZL => 'SZL',
         self::THB => 'THB',
@@ -328,7 +328,7 @@ class Currency extends Model {
         self::TMT => 'TMT',
         self::TND => 'TND',
         self::TOP => 'TOP',
-        //self::TRY => 'TRY',
+        self::TRYL => 'TRY',
         self::TTD => 'TTD',
         self::TWD => 'TWD',
         self::TZS => 'TZS',
