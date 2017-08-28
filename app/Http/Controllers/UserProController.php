@@ -222,7 +222,7 @@ class UserProController extends Controller {
         // Payment methods
         $paymentMethods = array();
         $paymentMethodsData = DB::table(PaymentMethod::TABLENAME)
-                ->select(['id, name'])
+                ->select('id', 'name')
                 ->orderBy('name')
                 ->get();
         foreach ($paymentMethodsData as $paymentMethod) {
