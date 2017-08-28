@@ -10,7 +10,10 @@ class BuyableItem extends Model {
     protected $table = 'buyable_items';
 
     const TABLENAME = 'buyable_items';
-    const TYPE_PRO_SUBSCRIPTION = 1;
+    const TYPE_PRO_SUBSCRIPTION_LEVEL1 = 1;
+    const TYPE_PRO_SUBSCRIPTION_LEVEL2 = 2;
+    const TYPE_PRO_SUBSCRIPTION_LEVEL3 = 3;
+    const TYPE_PRO_SUBSCRIPTION_LEVEL4 = 4;
     const STATUS_ACTIVE = 1;
 
     public $timestamps = true;
@@ -54,7 +57,8 @@ class BuyableItem extends Model {
             'discount_amount' => $this->getDiscountAmount(),
             'discount_percent' => $this->getDiscountPercent(),
             'net_price_TTC' => $this->getNetPrice(),
-            'id_buyable_item' => $this->getId()
+            'id_buyable_item' => $this->getId(),
+            'id_currency' => \App\Utilities\CurrencyTools::getIdCurrencyFromLocale(),
         ]);
         return $cartLine;
     }

@@ -12,7 +12,7 @@ trait ExtendModelTrait{
     public static $hasUuid = true;
     
     public function save(array $options = array()) {
-        if(!$this->exists){
+        if(!checkModelId($this->id) && $this->hasUuid()){
             $this->id = \App\Utilities\UuidTools::generateUuid();
         }
         return parent::save($options);

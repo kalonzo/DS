@@ -25,7 +25,11 @@ Route::match(['get', 'post'], '/search', 'SearchController@search');
 // create 
 Route::get('/establishment/register', 'UserProController@create'); 
 // store
-//Route::put('/establishment', 'UserProController@store');                  
+Route::put('/establishment/register', 'UserProController@store'); 
+//Route::put('/establishment/register', function(){
+//    $userProController = Illuminate\Support\Facades\App::make(App\Http\Controllers\UserProController::class);
+//    return $userProController->callAction('store');
+//});                  
 
 
 // ESTABLISHMENT
