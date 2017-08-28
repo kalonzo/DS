@@ -17,6 +17,7 @@ class UpdateCartline extends Migration
         {
             $table->float('net_price_HT', 10, 0)->nullable();
             $table->float('net_price_TTC', 10, 0)->nullable();
+            $table->dropColumn('net_price');
         });
     }
 
@@ -29,7 +30,9 @@ class UpdateCartline extends Migration
     {
         Schema::table(\App\Models\CartLine::TABLENAME, function($table)
         {
-            $table->dropColumn('net_price');
+            $table->dropColumn('net_price_HT');
+            $table->dropColumn('net_price_TTC');
+            $table->float('net_price', 10, 0)->nullable();
         });
     }
 }
