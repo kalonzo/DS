@@ -19,8 +19,8 @@ class Country extends Model {
     const ARG = 8;
     const ARM = 9;
     const AUS = 10;
-    const AUT = 11;
-    const AZE = 12;
+    const AZE_NK = 12;
+    const AZE_A = 282;
     const BHS = 13;
     const BHR = 14;
     const BGD = 15;
@@ -54,7 +54,8 @@ class Country extends Model {
     const CIV = 43;
     const HRV = 44;
     const CUB = 45;
-    const CYP = 46;
+    const CYP_C = 46;
+    const CYP_NC = 284;
     const CZE = 47;
     const DNK = 48;
     const DJI = 49;
@@ -72,7 +73,9 @@ class Country extends Model {
     const FRA = 61;
     const GAB = 62;
     const GMB = 63;
-    const GEO = 64;
+    const GEO_A = 64;       
+    const GEO_SO = 280;       
+    const GEO_G = 281;       
     const DEU = 65;
     const GHA = 66;
     const GRC = 67;
@@ -123,7 +126,8 @@ class Country extends Model {
     const MUS = 112;
     const MEX = 113;
     const FSM = 114;
-    const MDA = 115;
+    const MDA_PT = 115;
+    const MDA_M = 285;
     const MCO = 116;
     const MNG = 117;
     const MNE = 118;
@@ -211,7 +215,8 @@ class Country extends Model {
     const NCL = 208;
     const PYF = 209;
     const MYT = 210;
-    const GLP = 211;
+    const GLPM = 211;
+    const GLPB = 270;
     const SPM = 213;
     const WLF = 214;
     const ATF = 215;
@@ -237,7 +242,16 @@ class Country extends Model {
     const MNP = 237;
     const PRI = 238;
     const ASM = 239;
-    const UMI = 240;
+    const UMI_BI = 240;
+    const UMI_HI = 271;
+    const UMI_JI = 272;
+    const UMI_JA = 273;
+    const UMI_KR = 274;
+    const UMI_MI = 275;
+    const UMI_NA = 276;
+    const UMI_NI = 277;
+    const UMI_PA = 278;
+    const UMI_WI = 279;
     const GUM = 241;
     const VIR = 249;
     const HKG = 251;
@@ -253,7 +267,12 @@ class Country extends Model {
     const SJM = 262;
     const ASC = 263;
     const TAA = 264;
-    const ATA = 265;
+    const ATA_AAT = 265;
+    const ATA_RD = 266;
+    const ATA_PI = 267;
+    const ATA_QML = 268;
+    const ATA_BAT = 269;
+    const AUT = 283;
 
     public $timestamps = true;
     protected $fillable = [
@@ -277,8 +296,8 @@ class Country extends Model {
             self::ARM => 'Armenia',
             self::AUS => 'Australia',
             self::AUT => 'Austria',
-            self::AZE => 'Azerbaijan',
-            self::BHS => 'Bahamas, The',
+            self::AZE_A => 'Azerbaijan',
+            self::BHS => 'Bahamas',
             self::BHR => 'Bahrain',
             self::BGD => 'Bangladesh',
             self::BRB => 'Barbados',
@@ -311,7 +330,7 @@ class Country extends Model {
             self::CIV => 'Ivory Coast',
             self::HRV => 'Croatia',
             self::CUB => 'Cuba',
-            self::CYP => 'Cyprus',
+            self::CYP_C => 'Cyprus',
             self::CZE => 'Czech Republic',
             self::DNK => 'Denmark',
             self::DJI => 'Djibouti',
@@ -329,7 +348,7 @@ class Country extends Model {
             self::FRA => 'France',
             self::GAB => 'Gabon',
             self::GMB => 'Gambia, The',
-            self::GEO => 'Georgia',
+            self::GEO_G => 'Georgia',
             self::DEU => 'Germany',
             self::GHA => 'Ghana',
             self::GRC => 'Greece',
@@ -380,7 +399,7 @@ class Country extends Model {
             self::MUS => 'Mauritius',
             self::MEX => 'Mexico',
             self::FSM => 'Micronesia',
-            self::MDA => 'Moldova',
+            self::MDA_M => 'Moldova',
             self::MCO => 'Monaco',
             self::MNG => 'Mongolia',
             self::MNE => 'Montenegro',
@@ -460,13 +479,13 @@ class Country extends Model {
             self::YEM => 'Yemen',
             self::ZMB => 'Zambia',
             self::ZWE => 'Zimbabwe',
-            self::GEO => 'Abkhazia',
+            self::GEO_A => 'Abkhazia',
             self::TWN => 'China, Republic of (Taiwan)',
-            self::AZE => 'Nagorno-Karabakh',
-            self::CYP => 'Northern Cyprus',
-            self::MDA => 'Pridnestrovie',
+            self::AZE_NK => 'Nagorno-Karabakh',
+            self::CYP_NC => 'Northern Cyprus',
+            self::MDA_PT => 'Pridnestrovie',
             self::SOM => 'Somaliland',
-            self::GEO => 'South Ossetia',
+            self::GEO_SO => 'South Ossetia',
             self::AUS => 'Ashmore and Cartier Islands',
             self::CXR => 'Christmas Island',
             self::CCK => 'Cocos (Keeling) Islands',
@@ -506,15 +525,15 @@ class Country extends Model {
             self::ASM => 'American Samoa',
             self::UMI => 'Baker Island',
             self::GUM => 'Guam',
-            self::UMI => 'Howland Island',
-            self::UMI => 'Jarvis Island',
-            self::UMI => 'Johnston Atoll',
-            self::UMI => 'Kingman Reef',
-            self::UMI => 'Midway Islands',
-            self::UMI => 'Navassa Island',
-            self::UMI => 'Palmyra Atoll',
+            self::UMI_HI => 'Howland Island',
+            self::UMI_JI => 'Jarvis Island',
+            self::UMI_JA => 'Johnston Atoll',
+            self::UMI_KR => 'Kingman Reef',
+            self::UMI_MI => 'Midway Islands',
+            self::UMI_NI => 'Navassa Island',
+            self::UMI_PA => 'Palmyra Atoll',
             self::VIR => 'U.S. Virgin Islands',
-            self::UMI => 'Wake Island',
+            self::UMI_WI => 'Wake Island',
             self::HKG => 'Hong Kong',
             self::MAC => 'Macau',
             self::FRO => 'Faroe Islands',
@@ -529,11 +548,11 @@ class Country extends Model {
             self::SJM => 'Svalbard',
             self::ASC => 'Ascension',
             self::TAA => 'Tristan da Cunha',
-            self::ATA => 'Australian Antarctic Territory',
-            self::ATA => 'Ross Dependency',
-            self::ATA => 'Peter I Island',
-            self::ATA => 'Queen Maud Land',
-            self::ATA => 'British Antarctic Territory',
+            self::ATA_AAT => 'Australian Antarctic Territory',
+            self::ATA_RD => 'Ross Dependency',
+            self::ATA_PI => 'Peter I Island',
+            self::ATA_QML => 'Queen Maud Land',
+            self::ATA_BAT => 'British Antarctic Territory',
 
 
         ];
