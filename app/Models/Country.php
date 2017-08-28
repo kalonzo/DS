@@ -529,7 +529,7 @@ class Country extends Model {
             self::MNP => 'Northern Mariana Islands',
             self::PRI => 'Puerto Rico',
             self::ASM => 'American Samoa',
-            self::UMI => 'Baker Island',
+            self::UMI_BI => 'Baker Island',
             self::GUM => 'Guam',
             self::UMI_HI => 'Howland Island',
             self::UMI_JI => 'Jarvis Island',

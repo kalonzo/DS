@@ -209,11 +209,12 @@ class CountriesTableSeeder extends Seeder {
         self::insertCurrency(Currency::NAD, '', 'NAD', 'Rand Namibia Dollar');
         self::insertCurrency(Currency::ZMK, '', 'ZMK', 'Zambian Kwacha');
         self::insertCurrency(Currency::ZWL, '', 'ZWL', 'Zimbabwe Dollar');
-        self::insertCountries(Country::AFG, 'AF', 'AFG', 'Afghanistan', 93, 0);
-        self::insertCountries(Country::ALB, 'AL', 'ALB', 'Albania', 355, 0);
-        self::insertCountries(Country::DZA, 'DZ', 'DZA', 'Algeria', 213, 0);
-        self::insertCountries(Country::ANDO, 'AD', 'AND', 'Andorra', 376, 0);
-        self::insertCountries(Country::AGO, 'AO', 'AGO', 'Angola', 244, 0);
+        
+        self::insertCountries(Country::AFG, 'AF', 'AFG', 'Afghanistan', 93, Currency::AFN);
+        self::insertCountries(Country::ALB, 'AL', 'ALB', 'Albania', 355, Currency::ALL);
+        self::insertCountries(Country::DZA, 'DZ', 'DZA', 'Algeria', 213, Currency::DZD);
+        self::insertCountries(Country::ANDO, 'AD', 'AND', 'Andorra', 376, Currency::ANG);
+        self::insertCountries(Country::AGO, 'AO', 'AGO', 'Angola', 244, Currency::AOA);
         self::insertCountries(Country::ATG, 'AG', 'ATG', 'Antigua and Barbuda', -267, 0);
         self::insertCountries(Country::ARG, 'AR', 'ARG', 'Argentina', 54, 0);
         self::insertCountries(Country::ARM, 'AM', 'ARM', 'Armenia', 374, 0);

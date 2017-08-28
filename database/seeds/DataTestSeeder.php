@@ -215,18 +215,16 @@ class DataTestSeeder extends Seeder {
         $id_user_owner = \App\Utilities\UuidTools::generateUuid();
         $id_establishment = \App\Utilities\UuidTools::generateUuid();
         $id_address = \App\Utilities\UuidTools::generateUuid();
-
         $idLocationIndex = $this->getIdLocationIndex($postal_code, $city, $latitude, $longitude, $country);
         $countryId = null;
         switch ($country) {
-       
             case 'Switzerland': $countryId = App\Models\Country::CHE;
                 break;
             case 'France': $countryId = App\Models\Country::FRA;
                 break;
         }
 
-        DB::table('address')->insert([
+       $address = \App\Models\Address::create([
             'id' => $id_address,
             'street_number' => $street_number,
             'street' => $street,
@@ -240,24 +238,11 @@ class DataTestSeeder extends Seeder {
             'id_country' => $countryId
         ]);
 
-        DB::table('users')->insert([
-            'id' => $id_user_owner,
-            'gender' => 1, //créer une constante pour le genre 
-            'name' => str_random(10),
-            'lastname' => str_random(10),
-            'password' => 'admin1234',
-            'id_address' => $id_address,
-            'id_inbox' => 0, //Créer la inbox
-            'latitude' => 0,
-            'longitude' => 0,
-            'id_company' => 0
-        ]);
-
-        DB::table('establishments')->insert([
+       $ets =  \App\Models\Establishment::create([
             'id' => $id_establishment,
             'name' => $non_etab,
             'email' => $email,
-            'id_address' => $id_address,
+            'id_address' => $address->getId(),
             'latitude' => $latitude,
             'longitude' => $longitude,
             'DS_ranking' => 2,
@@ -268,7 +253,7 @@ class DataTestSeeder extends Seeder {
             'Description' => '',
             'average_price_min' => 10,
             'average_price_max' => 60,
-            'id_user_owner' => $id_user_owner,
+            'id_user_owner' => 0,
             'id_business_type' => 1,
             'url_id' => \App\Models\Establishment::generateStaticUrlId(\App\Utilities\UuidTools::getUuid($id_establishment)),
             'slug' => str_slug($non_etab),
@@ -277,9 +262,9 @@ class DataTestSeeder extends Seeder {
         $idBusinessCategory = self::getBusinessCategoryId($type_cuisine, 1);
 
 
-        DB::table('establishment_business_categories')->insert([
+        \App\Models\EstablishmentBusinessCategory::create([
             'id' => \App\Utilities\UuidTools::generateUuid(),
-            'id_establishment' => $id_establishment,
+            'id_establishment' => $ets->getId(),
             'id_business_category' => $idBusinessCategory
         ]);
     }
@@ -309,7 +294,7 @@ class DataTestSeeder extends Seeder {
                 case 'France': $countryId = App\Models\Country::FRA;
                     break;                
             }
-            $locationIndex = App\Models\LocationIndex::insert([
+            $locationIndex = App\Models\LocationIndex::create([
                         'id' => \App\Utilities\UuidTools::generateUuid(),
                         'postal_code' => $postalCode,
                         'city' => $city,
