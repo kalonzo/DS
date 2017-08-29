@@ -42,6 +42,10 @@ class ImportRestaurantController extends Controller {
                     $sheets = $reader->all();
                     if (!empty($sheets)) {
                         foreach ($sheets as $sheet) {
+                            
+                            /**
+                             * Pourquoi initialiser les variables en 2 fois?
+                             */
                             $nameEstablishment = null;
                             $street = null;
                             $streetNumber = null;
@@ -157,16 +161,27 @@ class ImportRestaurantController extends Controller {
                                         }
                                     }
                                 }
-
+                                
+                                /**
+                                 * Rechercher l'établissement avec jointure establishement-address et vérification sur establishment.name, address.city, address.country,
+                                 * address.postal_code
+                                 */
                                 $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
                                                 ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
+                                
+                                /**
+                                 * Faire des !empty plutot que isset
+                                 */
                                 if ((!checkModel($addressEstablishment) && isset($nameEstablishment) && isset($street) && isset($streetNumber) && isset($postalCode) && isset($city))) {//&& isset($country)
                                     $data = self::getLatLng($nameEstablishment, $street, $streetNumber, $postalCode, $country, $city);
                                     if (isset($data['results'][0]['geometry']['location']['lat'])) {
                                         $lat = $data['results'][0]['geometry']['location']['lat'];
                                         $lng = $data['results'][0]['geometry']['location']['lng'];
+                                        /**
+                                         * Reprendre le formatage de l'adresse provenant de Google
+                                         */
                                         //$streetNumber = $data['results'][0]['address_components'][0]['short_name'];
                                         //$street = $data['results'][0]['address_components'][1]['short_name'];
                                         //$city = $data['results'][0]['address_components'][2]['short_name'];
@@ -174,8 +189,16 @@ class ImportRestaurantController extends Controller {
                                         // $country = $data['results'][0]['address_components'][5]['long_name'];
                                         // $postalCode = $data['results'][0]['address_components'][6]['long_name'];
                                         //die($data['results'][0]['address_components'][6]['short_name']);
+                                        
+                                        /**
+                                         * Refaire un check en BDD pour voir si l'adresse formatée par Google n'a vraiment pas de correspondance déjà existante 
+                                         */
+                                        
                                         $status = Establishment::STATUS_ACTIVE;
-                                        //TODO insertion de la ligne dans la base 
+                                        
+                                        /**
+                                         * Mettre le code à la ligne quand ça dépasse 2 fois la largeur!!!!!!!!
+                                         */
                                         self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $ambiance, $status);
                                     } else {
                                         $status = Establishment::STATUS_INCOMPLETE;
@@ -224,8 +247,14 @@ class ImportRestaurantController extends Controller {
         $idAddress = UuidTools::generateUuid();
         $countryId = 0;
         $idLocationIndex = 0;
-
+        
+        /**
+         * Faire référence à la constante
+         */
         if ($status == 1) {
+            /**
+             * Récupérer l'idCountry une seule fois (cf. getIdLocationIndex), on n'a pas besoin du label du pays
+             */
             $idLocationIndex = $this->getIdLocationIndex($postalCode, $city, $lat, $lng, $country);
             $countryId = Country::where('label', $country)->first()->getId();
         }
@@ -245,7 +274,10 @@ class ImportRestaurantController extends Controller {
             'id_location_index' => $idLocationIndex,
             'id_country' => $countryId
         ]);
-
+        
+        /**
+         * Pourquoi créer une adresse et la rechercher à nouveau ensuite?
+         */
         $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
                         ->where('street_number', '=', $streetNumber)->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
 
@@ -253,6 +285,9 @@ class ImportRestaurantController extends Controller {
             'id' => $idEstablishment,
             'name' => $nameEstablishment,
             'email' => $email,
+            /**
+             * Appeler le getter
+             */
             'id_address' => $addressEstablishment->id,
             'latitude' => $lat,
             'longitude' => $lng,
@@ -367,6 +402,9 @@ class ImportRestaurantController extends Controller {
 
     function getBusinessCategoryId($name, $type) {
         $idBusinessCategory = 0;
+        /**
+         * La méthode where attend un opérateur comme 2ème param, le where sans opérateur est utilisé sur l'objet Collection (voir doc si besoin)
+         */
         $business_category = \App\Models\BusinessCategory::where('name', $name)
                         ->where('type', $type)->first();
         if (checkModel($business_category)) {
