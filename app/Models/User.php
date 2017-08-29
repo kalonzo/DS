@@ -21,6 +21,11 @@ class User extends Authenticatable implements GlobalObjectManageable{
     const TYPE_USER = 2;
     const TYPE_USER_AUTO_INSERTED = 3;
     const TYPE_USER_PRO = 4;
+    
+    const STATUS_CREATION_PENDING = 1;
+    const STATUS_CREATED = 2;
+    const STATUS_ACTIVE = 3;
+    
     const TYPE_GENDER_WOMAN = 1;
     const TYPE_GENDER_MAN = 2;
 

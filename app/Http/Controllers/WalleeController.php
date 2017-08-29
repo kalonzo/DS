@@ -3,19 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Request;
-use App\Http\Requests\StoreEstablishment;
-use App\Models\CallNumber;
-use App\Models\Country;
-use App\Models\PaymentMethod;
-use App\Models\BusinessType;
-use App\Models\Establishment;
-use App\Utilities\DbQueryTools;
-use App\Utilities\StorageHelper;
-use App\Utilities\UuidTools;
+use App\Models\Cart;
+use App\Models\Payment;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use View;
+use Wallee\Sdk\ApiClient;
+use Wallee\Sdk\Model\LineItemCreate;
+use Wallee\Sdk\Model\LineItemType;
+use Wallee\Sdk\Model\TransactionPending;
+use Wallee\Sdk\Model\TransactionState;
+use Wallee\Sdk\Service\TransactionService;
 
 class WalleeController extends Controller {
     
@@ -25,19 +23,19 @@ class WalleeController extends Controller {
 
     /**
      * Display the specified resource.
-     * @param \App\Models\Payment $payment
-     * @param \App\Models\Cart $cart
-     * @param \App\Models\User $user
+     * @param Payment $payment
+     * @param Cart $cart
+     * @param User $user
      */
     public function startCheckout($payment, $cart, $user) {
         $jsonResponse = array('success' => 0);
         if(checkModel($payment) && checkModel($cart) && checkModel($user)){
             try{
                 // Setup API client
-                $client = new \Wallee\Sdk\ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
+                $client = new ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
 
                 // Create API service instance
-                $service = new \Wallee\Sdk\Service\TransactionService($client);
+                $service = new TransactionService($client);
 
                 $transaction = null;
                 $idTransaction = $payment->getIdTransaction();//SessionController::getInstance()->getIdTransactionProUser();
@@ -47,18 +45,25 @@ class WalleeController extends Controller {
                 if(empty($transaction) || !$transaction->isValid() || empty($transaction->getId())){
                     $lineItems = array();
 
-                    foreach($cart->cartLines() as $cartLine){
-                        $lineItem = new \Wallee\Sdk\Model\LineItemCreate();
-                        $lineItem->setSku(str_slug($cartLine->getDesignation()));
-                        $lineItem->setName($cartLine->getDesignation());
-                        $lineItem->setQuantity($cartLine->getQty());
-                        $lineItem->setAmountIncludingTax($cartLine->getNetPriceTTC());
-                        $lineItem->setUniqueId($cartLine->getUuid());
-                        $lineItem->setType(\Wallee\Sdk\Model\LineItemType::PRODUCT);
-                        $lineItems[] = $lineItem;
+                    foreach($cart->cartLines()->get() as $cartLine){
+                        if($cartLine instanceof \App\Models\CartLine){
+                            $tax = new \Wallee\Sdk\Model\TaxCreate();
+                            $tax->setRate($cartLine->getVatRate());
+                            $tax->setTitle("Standard");
+                            
+                            $lineItem = new LineItemCreate();
+                            $lineItem->setSku(str_slug($cartLine->getDesignation()));
+                            $lineItem->setName($cartLine->getDesignation());
+                            $lineItem->setQuantity($cartLine->getQty());
+                            $lineItem->setTaxes($tax);
+                            $lineItem->setAmountIncludingTax($cartLine->getNetPriceTTC());
+                            $lineItem->setUniqueId($cartLine->getUuid());
+                            $lineItem->setType(LineItemType::PRODUCT);
+                            $lineItems[] = $lineItem;
+                        }
                     }
 
-                    $transactionPending = new \Wallee\Sdk\Model\TransactionPending();
+                    $transactionPending = new TransactionPending();
                     $transactionPending->setCurrency($cart->getCurrencyLabel());
                     $transactionPending->setCustomerEmailAddress($user->getEmail());
                     $transactionPending->setLineItems($lineItems);
@@ -76,34 +81,49 @@ class WalleeController extends Controller {
                         SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
                         $jsonResponse['url'] = $url;
                         $jsonResponse['success'] = 1;
+                    } else {
+                        $jsonResponse['error'] = "Le formulaire de paiement n'a pas pu être affiché";
                     }
+                } else {
+                    $jsonResponse['error'] = "La transaction n'a pu être générée correctement";
                 }
             } catch(Exception $e){
-                $payment->setStatus(\App\Models\Payment::STATUS_ERROR_CHECKOUT)->save();
+                $payment->setStatus(Payment::STATUS_ERROR_CHECKOUT)->save();
+                $jsonResponse['error'] = $e->getMessage();
+                throw $e;
             }
+        } else {
+            $jsonResponse['error'] = "Le processus de paiement n'a pu aboutir car les données sont incomplètes";
         }
         return $jsonResponse;
     }
     
     /**
      * 
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function createOrder(){
         $jsonResponse = array('success' => 0);
         $response = response();
         $cookies = array();
+        $idUser = SessionController::getInstance()->getIdPendingUser();
         $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
         
-        if(!empty($idTransaction)){
-            $client = new \Wallee\Sdk\ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
-            $service = new \Wallee\Sdk\Service\TransactionService($client);
+        if(!empty($idTransaction) && !empty($idUser)){
+            $payment = Payment::where('id_transaction', '=', $idTransaction)->first();
             
-            $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
-            if(!$transaction->isValid()){
-                $transaction = $service->confirm(self::MAIN_SPACE_ID, $transaction);
-                if($transaction->getState() == \Wallee\Sdk\Model\TransactionState::CONFIRMED){
-                    $jsonResponse['success'] = 1;
+            if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUser){
+                $payment->setStatus(Payment::STATUS_VALID_CHECKOUT)->save();
+                $client = new ApiClient(self::API_CLIENT_USER_ID, self::API_CLIENT_KEY);
+                $service = new TransactionService($client);
+
+                $transaction = $service->read(self::MAIN_SPACE_ID, $idTransaction);
+                if(!$transaction->isValid()){
+                    $transaction = $service->confirm(self::MAIN_SPACE_ID, $transaction);
+                    if($transaction->getState() == TransactionState::CONFIRMED){
+                        $payment->setStatus(Payment::STATUS_PROCESSING)->save();
+                        $jsonResponse['success'] = 1;
+                    }
                 }
             }
         }
@@ -116,6 +136,19 @@ class WalleeController extends Controller {
     }
     
     public function completeOrder(Request $request){
+        $idUser = SessionController::getInstance()->getIdPendingUser();
+        $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
+        
+        if(!empty($idTransaction) && !empty($idUser)){
+            $payment = Payment::where('id_transaction', '=', $idTransaction)->first();
+            if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUser){
+                if($request->get('success')){
+                    $payment->setStatus(Payment::STATUS_AUTHORIZED)->save();
+                } else {
+                    $payment->setStatus(Payment::STATUS_DENIED)->save();
+                }
+            }
+        }
         print_r($request->all());
         die();
     }

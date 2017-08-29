@@ -31,7 +31,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             //Business categories
             'business_type' => 'required',
             //subscription
-//            'id_subscription' => 'required',
+            'id_subscription' => 'required',
             //Payments methode
             'payment_method' => 'required',
             //Info bill

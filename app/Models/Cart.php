@@ -34,18 +34,22 @@ class Cart extends Model {
      * @param type $autoSetId
      * @return Cart
      */
-    public function addLine($cartLine, $autoSetId = true){
+    public function addLine($cartLine, $autoSetId = true, $autoCartSave = true){
         $this->setPriceHT($this->getPriceHT() + $cartLine->getPriceHT());
         $this->setPriceTTC($this->getPriceTTC() + $cartLine->getPriceTTC());
         if($autoSetId){
             $cartLine->setIdCart($this->getId());
             $cartLine->save();
         }
+        if($autoCartSave){
+            $this->save();
+        }
         return $this;
     }
     
     public function removeAllLines(){
         $this->cartLines()->delete();
+        $this->updateAmounts();
     }
 
     /**
@@ -74,7 +78,7 @@ class Cart extends Model {
      * @return Cart
      */
     public function updateAmounts($updatesLines = true) {
-        $cartLines = $this->cartLines();
+        $cartLines = $this->cartLines()->get();
         $amountHT = 0;
         $vat_amount = 0;
         foreach($cartLines as $cartLine){
@@ -91,9 +95,12 @@ class Cart extends Model {
             $amountHT = $amountHT * (1 - $this->getDiscountPercent() / 100);
         }
         
+        $this->setPriceHT($amountHT);
         $this->setVatAmount($vat_amount);
+        $amountTTC = $amountHT + $vat_amount;
+        $this->setPriceTTC($amountTTC);
         
-        $totalPrice = $amountHT + $vat_amount;
+        $totalPrice = $amountTTC;
         if(!empty($this->getShippingAmount())){
             $totalPrice += $this->getShippingAmount();
         }

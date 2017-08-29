@@ -46,7 +46,7 @@ class BuyableItem extends Model {
      * @return \App\Models\CartLine
      */
     public function convertToCartLine(){
-        $cartLine = new CartLine([
+        $cartLine = CartLine::create([
             'designation' => $this->getDesignation(),
             'qty' => 1,
             'unit_price_HT' => $this->getUnitPriceHT(),
@@ -59,6 +59,7 @@ class BuyableItem extends Model {
             'net_price_TTC' => $this->getNetPrice(),
             'id_buyable_item' => $this->getId(),
             'id_currency' => \App\Utilities\CurrencyTools::getIdCurrencyFromLocale(),
+            'id_cart' => 0
         ]);
         return $cartLine;
     }

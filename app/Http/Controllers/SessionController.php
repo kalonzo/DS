@@ -15,6 +15,7 @@ class SessionController {
     private $searchFilterValues = null;
     
     private $idTransactionProUser = null;
+    private $idPendingUser = null;
     
     function getUserLng() {
         if($this->userLng === null){
@@ -50,6 +51,18 @@ class SessionController {
     function setIdTransactionProUser($id_transaction) {
         $this->idTransactionProUser = $id_transaction;
         \Illuminate\Support\Facades\Request::session()->put('user.id_transaction', $id_transaction);
+    }
+
+    function getIdPendingUser() {
+        if($this->idPendingUser === null){
+            $this->idPendingUser = \Illuminate\Support\Facades\Request::session()->get('user.id_pending_user');
+        }
+        return $this->idPendingUser;
+    }
+
+    function setIdPendingUser($id_pending_user) {
+        $this->idPendingUser = $id_pending_user;
+        \Illuminate\Support\Facades\Request::session()->put('user.id_pending_user', $id_pending_user);
     }
 
     function getUserTypeEts() {

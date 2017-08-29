@@ -34,7 +34,7 @@ class DataTestSeeder extends Seeder {
 
 
         /*         * **************************** PAYMENT METHODS *************************************************************************** */
-        App\Models\BuyableItem::insert([
+        App\Models\BuyableItem::create([
             'id' => \App\Utilities\UuidTools::generateUuid(),
             'designation' => 'Standard',
             'status' => App\Models\BuyableItem::STATUS_ACTIVE,
@@ -56,7 +56,7 @@ class DataTestSeeder extends Seeder {
             'id_currency' => App\Models\Currency::CHF
         ]);
 
-        App\Models\BuyableItem::insert([
+        App\Models\BuyableItem::create([
             'id' => \App\Utilities\UuidTools::generateUuid(),
             'designation' => 'Silver',
             'status' => App\Models\BuyableItem::STATUS_ACTIVE,
@@ -78,7 +78,7 @@ class DataTestSeeder extends Seeder {
             'id_currency' => App\Models\Currency::CHF
         ]);
 
-        App\Models\BuyableItem::insert([
+        App\Models\BuyableItem::create([
             'id' => \App\Utilities\UuidTools::generateUuid(),
             'designation' => 'Gold',
             'status' => App\Models\BuyableItem::STATUS_ACTIVE,
@@ -100,7 +100,7 @@ class DataTestSeeder extends Seeder {
             'id_currency' => App\Models\Currency::CHF
         ]);
 
-        App\Models\BuyableItem::insert([
+        App\Models\BuyableItem::create([
             'id' => \App\Utilities\UuidTools::generateUuid(),
             'designation' => 'Premium',
             'status' => App\Models\BuyableItem::STATUS_ACTIVE,

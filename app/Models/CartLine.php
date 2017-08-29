@@ -28,8 +28,6 @@ class CartLine extends Model {
         'id_buyable_item'
     ];
     protected $guarded = [];
-    public $net_price_HT;
-    public $net_price_TTC;
 
     /**
      * Update all calculable cart lines

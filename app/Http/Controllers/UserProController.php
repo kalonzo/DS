@@ -72,6 +72,7 @@ class UserProController extends Controller {
         $response = response();
         $jsonResponse = array('success' => 0);
         $createdObjects = array();
+        $payment = null;
         try {
             $uuidSubscription = $request->get('id_subscription');
             $businessType = $request->get('business_type');
@@ -81,10 +82,32 @@ class UserProController extends Controller {
             $user = User::findUuid($uuidUser);
             $subscriptionItem = \App\Models\BuyableItem::findUuid($uuidSubscription);
             if (checkModel($subscriptionItem)) {
-                $company = null;
+                if(!checkModel($user)){
+                    $user = User::where('status', '=', User::STATUS_CREATION_PENDING)->where('email', 'LIKE', $request->get('email'))->first();
+                } 
                 if(checkModel($user)){
                     $company = $user->company()->first();
                     $address = $user->address()->first();
+                    $company->update([
+                        'name' => $request->get('company.name'),
+                    ]);
+                    $address->update([
+                        'firstname' => $request->get('address.firstname'),
+                        'lastname' => $request->get('address.lastname'),
+                        'street' => $request->get('address.street'),
+                        'street_number' => $request->get('address.street_number'),
+                        'postal_code' => $request->get('address.postal_code'),
+                        'po_box' => $request->get('address.po_box'),
+                        'city' => $request->get('address.city'),
+                        'id_country' => $idCountry,
+                    ]);
+                    $user->update([
+                        'gender' => $request->get('gender'),
+                        'name' => $request->get('email'),
+                        'firstname' => $request->get('firstname'),
+                        'lastname' => $request->get('lastname'),
+                        'password' => bcrypt($request->get('password')), // TODO Auth user activation
+                    ]);
                 } else {
                     $userId = UuidTools::generateUuid();
                     if (!empty($request->get('company.name'))) {
@@ -116,6 +139,7 @@ class UserProController extends Controller {
                         $user = User::create([
                                     'id' => $userId,
                                     'type' => User::TYPE_USER_PRO,
+                                    'status' => User::STATUS_CREATION_PENDING,
                                     'gender' => $request->get('gender'),
                                     'name' => $request->get('email'),
                                     'firstname' => $request->get('firstname'),
@@ -127,10 +151,13 @@ class UserProController extends Controller {
                                     'id_inbox' => 0,
                         ]);
                         $createdObjects[] = $user;
+                    } else {
+                        $jsonResponse['error'] = "Aucune adresse valide";
                     }
                 }
 
                 if(checkModel($user)) {
+                    SessionController::getInstance()->setIdPendingUser($user->getId());
                     $jsonResponse['id_user'] = $user->getUuid();
 
                     $cart = $user->getCurrentPendingCart();
@@ -154,20 +181,25 @@ class UserProController extends Controller {
                         $payment = $cart->getOrCreatePayment();
                         if(checkModel($payment)){
                             $createdObjects[] = $payment;
-                            $paymentMethod = $request->get('payment_method');
-                            $payment->setIdPaymentMethod($paymentMethod)->save();
-                            try {
-                                $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
-                                if ($walleeController instanceof WalleeController) {
-                                    $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
-                                    $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
-                                }
-                            } catch (Exception $ex) {
-                                $jsonResponse['error'] = $e->getMessage();
+                            $idPaymentMethod = $request->get('payment_method');
+                            $payment->setIdPaymentMethod($idPaymentMethod)->save();
+                            
+                            $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
+                            if ($walleeController instanceof WalleeController) {
+                                $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
+                                $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
                             }
+                        } else {
+                            $jsonResponse['error'] = "Le processus de paiement n'a pas pu être initié";
                         }
+                    } else {
+                        $jsonResponse['error'] = "Le panier n'a pas pu être créé";
                     }
+                } else {
+                    $jsonResponse['error'] = "Les données saisies ne permettent pas de créer correctement le compte utilisateur";
                 }
+            } else {
+                $jsonResponse['error'] = "Aucun abonnement sélectionné";
             }
         } catch (Exception $e) {
             // TODO Report error in log system
@@ -184,15 +216,17 @@ class UserProController extends Controller {
                     }
                 }
             } catch(Exception $ex){
-                print_r($e->getMessage());
-                print_r($e->getTraceAsString());
+                print_r($ex->getMessage());
+                print_r($ex->getTraceAsString());
             }
             die();
+        }
+        if(!$jsonResponse['success'] && checkModel($payment)){
+            $payment->setStatus(\App\Models\Payment::STATUS_ERROR_CHECKOUT)->save();
         }
         
         $responsePrepared = $response->json($jsonResponse);
         return $responsePrepared;
-//        return redirect('/establishment/create');
     }
 
     /**
