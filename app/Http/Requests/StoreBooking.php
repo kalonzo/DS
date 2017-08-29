@@ -20,7 +20,6 @@ class StoreBooking extends \App\Http\FormRequest {
      */
     public function rules() {
         $dateNow = date('d/m/Y');
-
         $rules = [
             'email' => 'required|email',
             'firstname' => 'required|min:2|max:255',
@@ -36,16 +35,16 @@ class StoreBooking extends \App\Http\FormRequest {
 
     function messages() {
         $messages = [
-            'email.email' => 'Veuillez saisir une adresse email valide.',
-            'email.required' => 'Veuillez saisir une adresse email.',
+            'email.email' => 'Veuillez saisir une adresse e mail valide.',
+            'email.required' => 'Veuillez saisir une adresse e mail.',
             'firstname.required' => 'Veuillez saisir votre prénom.',
-            'firstname.min' => 'Veuillez renseigner au minimum 2 caractère pour votre prénom',
+            'firstname.min' => 'Veuillez renseigner au minimum 2 caractères pour votre prénom',
             'firstname.max' => 'Merci de ne pas saisir plus de 255 caractères pour votre prénom',
             'lastname.required' => 'Veuillez saisir votre nom.',
-            'lastname.min' => 'Veuillez renseigner au minimum 2 caractère pour votre nom',
+            'lastname.min' => 'Veuillez renseigner au minimum 2 caractères pour votre nom',
             'lastname.max' => 'Merci de ne pas renseigner plus de 255 caractères pour votre nom',
             'timeAM.required_without' => 'Veuillez saisir une heure pour votre réservation',
-            'datetime_reservation.after_or_equal' => 'La date pour votre résérvation est passé de date',
+            'datetime_reservation.after_or_equal' => 'La date pour votre réservation est passée de date',
         ];
         return $messages;
     }
