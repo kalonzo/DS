@@ -24,6 +24,8 @@ class CreateCartsTable extends Migration {
 			$table->float('discount_percent', 10, 0)->nullable();
 			$table->float('shipping_amount', 10, 0)->nullable();
 			$table->float('total_price', 10, 0)->nullable();
+                        $table->binary('id_user', 16)->index('cart_id_user_idx')->nullable();
+                        $table->string('id_session', 255)->index('cart_id_session_idx')->nullable();
 		});
 	}
 
