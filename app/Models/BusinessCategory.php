@@ -14,6 +14,8 @@ class BusinessCategory extends Model {
     const TYPE_FOOD_SPECIALTY = 2;
     const TYPE_RESTAURANT_AMBIENCE = 3;
     const TYPE_SERVICES = 4;
+    
+    const STATUS_TO_CHECK = 5;
 
     public $timestamps = true;
     protected $fillable = [
