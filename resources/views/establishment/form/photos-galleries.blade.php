@@ -43,10 +43,15 @@
                                 'name' => 'gallery['.$gallery->getUuid().']',
                                 'class' => 'form-control',
                                 'multiple' => true,
-                                'medias' => $gallery->medias()->get(),
+                                'medias' => $gallery->medias()->orderBy('created_at')->get(),
                                 'fileType' => 'image',
-                                'showRemove' => 'false'
+                                'showRemove' => 'false',
+                                'directUpload' => 'true',
+                                'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
                                 ])
+                @slot('extraData')
+                    {'action': 'add_media_to_gallery', 'id_gallery': '{!!$gallery->getUuid()!!}'}
+                @endslot
             @endcomponent
         </div>
     </div>

@@ -681,6 +681,27 @@ class EstablishmentController extends Controller {
                         }
                     }
                     break;
+                case 'add_media_to_gallery':
+                    $filesToUpload = $request->allFiles();
+                    if(isset($filesToUpload['gallery']) && !empty($filesToUpload['gallery'])){
+                        foreach($filesToUpload['gallery'] as $uuidGallery => $uploadedFiles){
+//                            var_dump(\Illuminate\Support\Facades\Request::file('gallery.'.$uuidGallery));die();
+                            $gallery = \App\Models\Gallery::findUuid($uuidGallery);
+                            if(checkModel($gallery)){
+                                $galleryMedias = FileController::storeFileMultiple('gallery.'.$uuidGallery, \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM, $gallery);
+                                if(count($galleryMedias) === count($uploadedFiles)){
+                                    $medias = $gallery->medias()->orderBy('created_at')->get();
+                                    $existingFiles = getMediaUrlForInputFile($medias, false);
+                                    $existingFilesConfig = getMediaConfigForInputFile($medias, false);
+
+                                    $jsonResponse['success'] = 1;
+                                    $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                                    $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
         } catch (Exception $e) {
             // TODO Report error in log system

@@ -34,6 +34,10 @@ switch($fileType){
 $fileType = json_encode($fileType);
 $fileExtensions = json_encode($fileExtensions);
 
+if(!isset($directUpload)){
+    $directUpload = false;
+}
+
 @endphp
 <input type="file" name="{!! $name !!}" class="bootstrap-file-input {{ $class }}" @if($multiple) multiple @endif />
 <script type="text/javascript">
@@ -42,8 +46,9 @@ $fileExtensions = json_encode($fileExtensions);
     @endif
         if(isPluginLoaded($.fn.fileinput)){
             $(".bootstrap-file-input[name='{!! $name !!}']").each(function(){
-                $(this).fileinput({
-                    @if(isset($uploadUrl))
+                var $input = $(this);
+                $input.fileinput({
+                    @if(isset($uploadUrl) && !$directUpload)
                         showUpload: true,
                     @else
                         showUpload: false,
@@ -68,16 +73,27 @@ $fileExtensions = json_encode($fileExtensions);
                     @if(isset($extraData))
                     uploadExtraData: {{ $extraData }},
                     @endif
-                }).on('filebeforedelete', function(event, key, data) {
+                })
+                .on('filebeforedelete', function(event, key, data) {
                     return false;
-                }).on('filesorted', function(event, params) {
+                })
+                .on('filesorted', function(event, params) {
                     console.log('File sorted ', params.previewId, params.oldIndex, params.newIndex, params.stack);
-                }).on('filedeleted', function(event, key, jqXHR, data) {
-                    console.log(data);
-                });
-//                $(this).on('filepredelete', function(event, key, jqXHR, data) {
-//                    console.log(data);
-//                });
+                })
+                @if($directUpload)
+                .on("filebatchselected", function(event, files) {
+                    $input.fileinput("upload");
+                })
+                .on("fileuploaded", function(event, data, previewId, index) {
+                    var response = data.response;
+                    var inputData = response.inputData;
+                    if(typeof inputData != 'undefined'){
+                        console.log(inputData);
+                        $input.fileinput("refresh", inputData);
+                    }
+                })
+                @endif
+                ;
             });
         }
     @if(!Request::ajax())
