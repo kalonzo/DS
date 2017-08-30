@@ -459,7 +459,7 @@ class EstablishmentController extends Controller {
                                     'longitude' => $request->get('longitude'),
                                     'email' => $request->get('email'),
                                     'site_url' => $request->get('site_url'),
-                                    'description' => $request->get('description'),
+                                    'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
                                     'id_location_index' => $idLocation,
                                     'id_user_owner' => $user->getId(),
                                     'id_address' => $address->getId(),
@@ -582,7 +582,7 @@ class EstablishmentController extends Controller {
                             'longitude' => $request->get('longitude'),
                             'email' => $request->get('email'),
                             'site_url' => $request->get('site_url'),
-                            'description' => $request->get('description'),
+                            'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
                             'id_location_index' => $idLocation,
                         ]);
                         if (checkModel($establishment)) {
@@ -610,7 +610,6 @@ class EstablishmentController extends Controller {
                                     $createdObjects[] = $logo;
                                 }
                             }
-
                             if ($request->file('home_pictures')) {
                                 $homePictures = $establishment->homePictures()->get();
                                 $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, $homePictures);
@@ -644,6 +643,60 @@ class EstablishmentController extends Controller {
         }
     }
 
+    public function ajax(\Illuminate\Http\Request $request, Establishment $establishment) {
+        $response = response();
+        $jsonResponse = array('success' => 0);
+        $createdObjects = array();
+        
+        try {
+            $action = $request->get('action');
+
+            switch ($action){
+                case 'add_gallery':
+                    $gallery = \App\Models\Gallery::create([
+                        'id' => UuidTools::generateUuid(),
+                        'status' => \App\Models\Gallery::STATUS_PENDING,
+                        'name' => $request->get('new_gallery_name'),
+                        'type' => \App\Models\Gallery::TYPE_ESTABLISHMENT_GALLERY,
+                        'id_establishment' => $establishment->getId()
+                    ]);
+
+                    if (checkModel($gallery) && $request->file('new_gallery')) {
+                        $newGalleryMedias = FileController::storeFileMultiple('new_gallery', \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM, $gallery);
+
+                        $view = View::make('establishment.form.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
+                        $jsonResponse['content'] = $view->render();
+                        $jsonResponse['success'] = 1;
+                    }
+                    break;
+                case 'delete_gallery':
+                    $uuidGallery = $request->get('id_gallery');
+                    $gallery = \App\Models\Gallery::findUuid($uuidGallery);
+                    if(checkModel($gallery)){
+                        $deleted = $gallery->delete();
+                        if($deleted){
+                            $view = View::make('establishment.form.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
+                            $jsonResponse['content'] = $view->render();
+                            $jsonResponse['success'] = 1;
+                        }
+                    }
+                    break;
+            }
+        } catch (Exception $e) {
+            // TODO Report error in log system
+            print_r($e->getMessage());
+
+            foreach ($createdObjects as $createdObject) {
+                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
+                    $createdObject->delete();
+                }
+            }
+        }
+        
+        $responsePrepared = $response->json($jsonResponse);
+        return $responsePrepared;
+    }
+    
     /**
      * 
      * @param StoreEstablishment $request

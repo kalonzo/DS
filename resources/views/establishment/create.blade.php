@@ -67,7 +67,7 @@
             @component('establishment.form.ambiences', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.galleries', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.form.photos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
             @component('establishment.form.videos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
@@ -314,5 +314,7 @@
 @section('js_imports_footer')
 <script src="/js/google-map.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
-<script src="/libraries/bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="/libraries/bootstrap-fileinput/js/plugins/sortable.min.js"></script>
+<script src="/libraries/bootstrap-fileinput/js/fileinput.js"></script>
+<script src="/libraries/ckeditor/ckeditor.js"></script>
 @endsection

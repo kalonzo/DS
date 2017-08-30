@@ -90,3 +90,23 @@ $timetableRowHeight: 76px;
     text-transform: uppercase;
     @include borderRadius($border-radius-usual);
 }
+
+#establishment_form_accordion{
+    #ets-photos{
+        .file-input{
+            .file-preview{
+                border: 0px;
+                @include borderRadius(0);
+                background-color: darken($main-dark-color, 20);
+            }
+        }
+        h5{
+            font-weight: bold;
+            font-size: 1.7em;
+            padding: 0.5em 20px;
+            border-top: 2px solid lighten($main-dark-color, 35);
+            border-bottom: 2px solid lighten($main-dark-color, 35);
+            margin-bottom: 1em;
+        }
+    }
+}

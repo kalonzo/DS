@@ -80,7 +80,7 @@ trait ExtendModelTrait{
     public static function find($id, $columns = ['*']){
         if(self::$hasUuid){
             if (is_array($id) || $id instanceof Arrayable) {
-                return self::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $id))->get($columns);
+                return self::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $id))->get($columns)->get();
             }
             return self::findUuid($id, $columns);
         } else {

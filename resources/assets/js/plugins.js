@@ -44,6 +44,7 @@ $(document).ready(function () {
     
     
 });
+
 $(document).on('googleGeolocReady', function () {
     $('.quick-map').each(function () {
         var lat = $(this).attr('data-lat') * 1;

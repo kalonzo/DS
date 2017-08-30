@@ -79,11 +79,15 @@ function getMediaConfigForInputFile($medias, $jsonEncoded = true){
     }
     if(!empty($medias)){
         foreach($medias as $media){
-            $mediaConfig[] = array(
+            $instanceConfig = array(
                 'caption' => $media->getFilename(),
                 'size' => $media->getSize(),
-                'key' => $media->getUuid()
+                'key' => $media->getUuid(),
             );
+            if($media instanceof App\Models\Media){
+                $instanceConfig['url'] = '/delete/'.$media::TABLENAME.'/'.$media->getUuid();
+            }
+            $mediaConfig[] = $instanceConfig;
         }
     }
     if($jsonEncoded){

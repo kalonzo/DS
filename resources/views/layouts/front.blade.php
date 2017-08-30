@@ -14,9 +14,12 @@
         <link href="/css/sticky-footer.css" rel="stylesheet">
         <link href="/css/front.css" rel="stylesheet">
         @show
-        
+        <script type="text/javascript">
+//            var CKEDITOR_BASEPATH = '/js/';
+        </script>
         @yield('css_imports')
         
+        <script src="/js/kernelFunctions.js"></script>
         @yield('js_imports_head')
     </head>
     <body>
@@ -119,7 +122,6 @@
         </footer>
         
         <script src="/js/app.js"></script>
-        <script src="/js/kernelFunctions.js"></script>
         <script src="/js/extendMethods.js"></script>
         <script src="/js/functions.js"></script>
         <script src="/js/plugins.js"></script>    

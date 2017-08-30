@@ -15,6 +15,7 @@ class Media extends Model {
     
     const TYPE_USE_ETS_LOGO = 1;
     const TYPE_USE_ETS_HOME_PICS = 2;
+    const TYPE_USE_ETS_GALLERY_ITEM = 3;
     
     const DRIVE_LOCAL = 'local';
     const DRIVE_S3 = 's3';
@@ -43,6 +44,28 @@ class Media extends Model {
             \Illuminate\Support\Facades\Storage::delete($this->getLocalPath());
         }
         return parent::delete();
+    }
+    
+    public static function getAllClassByTablename(){
+        $classByTablename = array();
+        $classByTablename[EstablishmentMedia::TABLENAME] = EstablishmentMedia::class;
+        $classByTablename[CvMedia::TABLENAME] = CvMedia::class;
+        
+        return $classByTablename;
+    }
+    
+    /**
+     * 
+     * @param type $tablename
+     * @return Media
+     */
+    public static function getClassFromTablename($tablename){
+        $class = null;
+        $classByTablename = self::getAllClassByTablename();
+        if(isset($classByTablename[$tablename])){
+            $class = $classByTablename[$tablename];
+        }
+        return $class;
     }
 
     /**

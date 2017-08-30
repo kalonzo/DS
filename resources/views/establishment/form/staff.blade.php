@@ -18,8 +18,8 @@
                 <div class="col-md-12">
                     <div class="row"> 
                         <div class="col-xs-6 col-sm-10 form-group ">
-                            {!! Form::label('logo','Ajouter votre image') !!}	
-                            {!! Form::file('logo', old('logo'),['class' => 'form-control bootstrap-file-input file-input-single']) !!}
+                            {!! Form::label('logo_staff','Ajouter votre image') !!}	
+                            {!! Form::file('logo_staff', old('logo_staff'),['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                         </div>
                         <div class="col-xs-6 col-sm-2 form-group ">
                             {!! Form::label('complete_name','Nom / Prénom') !!}
