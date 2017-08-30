@@ -143,8 +143,8 @@ class ImportRestaurantController extends Controller {
                                         $street = $data['results'][0]['address_components'][1]['short_name'];
                                         $city = $data['results'][0]['address_components'][2]['short_name'];
                                         $department = $data['results'][0]['address_components'][3]['short_name'];
-                                        $country = $data['results'][0]['address_components'][5]['long_name'];
-                                        $postalCode = $data['results'][0]['address_components'][6]['long_name'];
+                                       //$country = $data['results'][0]['address_components'][5]['long_name'];
+                                        //$postalCode = $data['results'][0]['address_components'][6]['long_name'];
                                         //print_r('$department->' . $department . ' $country->' . $country . ' city->' . $postalCode);
                                         $status = Establishment::STATUS_ACTIVE;
                                         
@@ -343,7 +343,7 @@ class ImportRestaurantController extends Controller {
         if (checkModel($locationIndex)) {
             $idLocationIndex = $locationIndex->getId();
         } else {
-            $countryId = null;
+            $countryId = 0;
             switch ($countryName) {
                 case 'Switzerland': $countryId = Country::CHE;
                     break;
