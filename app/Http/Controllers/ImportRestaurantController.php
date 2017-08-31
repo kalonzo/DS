@@ -32,6 +32,7 @@ class ImportRestaurantController extends Controller {
      */
     public function import(Request $request) {
         $file = \Illuminate\Support\Facades\Request::file('excel');
+        
         if (!empty($file)) {
             if ($file->isValid()) {
                 $relPath = $file->store('/import_tmp');
@@ -39,7 +40,13 @@ class ImportRestaurantController extends Controller {
 
                 Excel::load($absolutePath, function($reader) {
                     $sheets = $reader->all();
-                    if (!empty($sheets)) {
+                    $stop = false;
+                    if (!empty($sheets)) {   
+                            $nbError= 0;
+                            $nbSucces = 0;
+                            $nbRest = 0;
+                            $nbMaj = 0;
+                            $i = 0;
                         foreach ($sheets as $sheet) {
                             $nameEstablishment = null;
                             $street = null;
@@ -138,6 +145,7 @@ class ImportRestaurantController extends Controller {
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
                                 if ((!checkModel($establishmentName) && !checkModel($establishment) && !checkModel($addressEstablishment) && isset($nameEstablishment) 
                                         && isset($street) && isset($streetNumber) && isset($postalCode) && isset($city))) {
+                                    $i= $i + 1;
                                     $data = self::getLatLng($nameEstablishment, $street, $streetNumber, $postalCode, $country, $city);
                                     if (isset($data['results'][0]['geometry']['location']['lat'])) {
                                         $lat = $data['results'][0]['geometry']['location']['lat'];
@@ -156,31 +164,62 @@ class ImportRestaurantController extends Controller {
                                             self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
                                                     $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
                                                     $phonePro, $status, null, null);
-                                            print_r('La ligne ' . $nameEstablishment . ' est insérer<br>');
+                                                    $nbSucces = $nbSucces + 1;
+                                                    $stop = false;
+                                           // print_r('La ligne ' . $nameEstablishment . ' est insérer<br>');
                                         }
                                     } else {
-                                        print_r('La ligne ' . $nameEstablishment . ' doit être localiser<br>');
+                                       // echo ('<h1>Busy API</h1><br>');
+                                        //echo('La ligne ' . $nameEstablishment . ' n\'as pas été enregistré en base <br>');
+                                        $nbRest = $nbRest + 1;
+                                        $stop = true;
+                                        /**
+                                         * print_r('La ligne ' . $nameEstablishment . ' doit être localiser<br>');
                                         $status = Establishment::STATUS_TO_LOCALIZE;
                                         self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
                                                 $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
                                                 $phonePro, $status, null, null);
+                                         * 
+                                         */
                                     }
                                 } elseif ((!checkModel($addressEstablishment) && isset($nameEstablishment))) {
+                                    $i= $i + 1;
+                                    $nbError = $nbError + 1;
                                     $status = Establishment::STATUS_INCOMPLETE;
                                     self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
                                             $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
                                             $phonePro, $status, null, null);
                                 } elseif (checkModel($addressEstablishment)) {
+                                    $i = $i + 1;
+                                    $nbMaj = $nbMaj + 1 ;
                                     $establishment = Establishment::where('id_address', '=', $addressEstablishment->getId())->first();
                                     if (checkModel($establishment)) {
                                         self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
                                                 $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
                                                 $phonePro, $status, $establishment, $addressEstablishment);
-                                        print_r('La ligne ' . $nameEstablishment . ' à été mise à jour<br>');
+                                       // print_r('La ligne ' . $nameEstablishment . ' à été mise à jour<br>');
                                     }
+                                }elseif(isset($nameEstablishment) && $stop === true){
+                                    $i = $i + 1;
+                                    $nbRest = $nbRest + 1;
+                                   // print_r('La ligne ' . $nameEstablishment . ' n\'as pas pu être traité <br>');
                                 }
                             }
                         }
+                        
+                        echo '<h2> Résultat pour cette Import</h2>';
+                        
+                        print_r('Nombre de ligne insérer Actif '.$nbSucces.'<br>');
+                        print_r('Nombre de ligne à compléter '.$nbRest.'<br>');
+                        print_r('Nombre de ligne incompléte '.$nbError.'<br>');
+                        print_r('Nombre de ligne mise à jour '.$nbMaj.'<br>');
+                        print_r('Nombre de ligne traité '.$i.'<br>');
+                      ?> 
+                            <a type="button" name="nom" value="Retour à la séléction Excel"  href="https://dinerscope/admin/establishment/import" >
+                                retour
+                            </a>
+                                <input type="button" value="Rafraichir" id="refresh" onclick="{location.reload()}" />
+                      <?php
                     }
                 });
                 Storage::delete($relPath);
