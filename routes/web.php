@@ -75,6 +75,9 @@ Route::get('/welcome/{locale}', function ($local) {
      return view('dev.welcome');  
 });
 
+//Verbose corector
+Route::get('/admin/establishment/verbose', 'verboseController@create');          
+
 /****************************** ADMIN *****************************************/
 
 Route::get('/admin', 'AdminController@index');
