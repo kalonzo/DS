@@ -71,7 +71,7 @@ class ImportRestaurantController extends Controller {
                             $samedi = null;
                             $dimanche = null;
                             foreach ($sheet as $numRow => $row) {
-                                if ($numRow > 0) {
+                                if ($numRow > 0) { //&& $numRow < 10
                                     foreach ($row as $col_slug => $cellContent) {
                                         if ($col_slug === 'nom_etab.') {
                                             $nameEstablishment = $cellContent;
@@ -133,10 +133,11 @@ class ImportRestaurantController extends Controller {
                                                 ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
                                 //la jointure peut créer des doublons dans le cas d'erreur de saisie dans le fichier
                                 $establishment = Establishment::where('name','=',$nameEstablishment)->where('status','=',Establishment::STATUS_ACTIVE)->first();
+                                $establishmentName = Establishment::where('name','=',$nameEstablishment)->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
-                                if (!checkModel($establishment) && (!checkModel($addressEstablishment) && !empty($nameEstablishment) && !empty($street) 
-                                        && !empty($streetNumber) && !empty($postalCode) && !empty($city))) {
+                                if ((!checkModel($establishmentName) && !checkModel($establishment) && !checkModel($addressEstablishment) && isset($nameEstablishment) 
+                                        && isset($street) && isset($streetNumber) && isset($postalCode) && isset($city))) {
                                     $data = self::getLatLng($nameEstablishment, $street, $streetNumber, $postalCode, $country, $city);
                                     if (isset($data['results'][0]['geometry']['location']['lat'])) {
                                         $lat = $data['results'][0]['geometry']['location']['lat'];
