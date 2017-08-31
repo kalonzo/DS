@@ -139,7 +139,8 @@ class ImportRestaurantController extends Controller {
                                 $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
                                                 ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
                                 //la jointure peut créer des doublons dans le cas d'erreur de saisie dans le fichier
-                                $establishment = Establishment::where('name','=',$nameEstablishment)->where('status','=',Establishment::STATUS_ACTIVE)->first();
+                                $establishment = Establishment::where('name','=',$nameEstablishment)->where('status','=',
+                                        Establishment::STATUS_ACTIVE)->first();
                                 $establishmentName = Establishment::where('name','=',$nameEstablishment)->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
@@ -360,22 +361,22 @@ class ImportRestaurantController extends Controller {
 
         if (isset($cookingType)) {
             foreach ($cookingType as $business) {
-                self::linkBusinessCategory($ets->getId(), $business);
+                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_COOKING_TYPE);
             }
         }
         if (isset($speciality)) {
             foreach ($speciality as $business) {
-                self::linkBusinessCategory($ets->getId(), $business);
+                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_FOOD_SPECIALTY);
             }
         }
         if (isset($ambiance)) {
             foreach ($ambiance as $business) {
-                self::linkBusinessCategory($ets->getId(), $business);
+                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_RESTAURANT_AMBIENCE);
             }
         }
         if (isset($service)) {
             foreach ($service as $business) {
-                self::linkBusinessCategory($ets->getId(), $business);
+                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_SERVICES);
             }
         }
     }
@@ -408,15 +409,16 @@ class ImportRestaurantController extends Controller {
         return $idLocationIndex;
     }
 
-    function linkBusinessCategory($idEstablishment, $name) {
-        $businessModel = \App\Models\BusinessCategory::where('name', '=', $name)->first();
+    function linkBusinessCategory($idEstablishment, $name,$type) {
+        $businessModel = \App\Models\BusinessCategory::where('name', '=', $name)->where('type','=',$type)->first();
         if (checkModel($businessModel)) {
             self::feedEstablishmentBusinessCategory($businessModel->getId(), $idEstablishment);
         } else {
             $specialityModel = \App\Models\BusinessCategory::create([
                         'id' => UuidTools::generateUuid(),
                         'name' => $name,
-                        'type' => BusinessCategory::STATUS_TO_CHECK,
+                        'type' => $type,
+                         'status' => BusinessCategory::STATUS_TO_CHECK
             ]);
             self::feedEstablishmentBusinessCategory($specialityModel->getId(), $idEstablishment);
         }

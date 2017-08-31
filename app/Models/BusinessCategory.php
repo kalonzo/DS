@@ -15,12 +15,13 @@ class BusinessCategory extends Model {
     const TYPE_RESTAURANT_AMBIENCE = 3;
     const TYPE_SERVICES = 4;
     
-    const STATUS_TO_CHECK = 5;
+    const STATUS_TO_CHECK = 2;
 
     public $timestamps = true;
     protected $fillable = [
         'name',
-        'type'
+        'type',
+        'status'
     ];
     protected $guarded = [];
 
@@ -46,6 +47,13 @@ class BusinessCategory extends Model {
     public function getType() {
         return $this->type;
     }
+    
+    /**
+     * @return mixed
+     */
+    public function getStatus() {
+        return $this->status;
+    }
 
     /**
      * @param $value
@@ -62,6 +70,15 @@ class BusinessCategory extends Model {
      */
     public function setType($value) {
         $this->type = $value;
+        return $this;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setStatus($value) {
+        $this->status = $value;
         return $this;
     }
 
