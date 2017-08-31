@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Request;
@@ -70,7 +71,7 @@ class ImportRestaurantController extends Controller {
                             $samedi = null;
                             $dimanche = null;
                             foreach ($sheet as $numRow => $row) {
-                                if ($numRow > 0) { //&& $numRow < 10
+                                if ($numRow > 0) {
                                     foreach ($row as $col_slug => $cellContent) {
                                         if ($col_slug === 'nom_etab.') {
                                             $nameEstablishment = $cellContent;
@@ -101,15 +102,15 @@ class ImportRestaurantController extends Controller {
                                         } elseif ($col_slug === 'site_web') {
                                             $siteWeb = $cellContent;
                                         } elseif ($col_slug === 'type_de_cuisine') {
-                                            $cookingType = explode(';', $cellContent) ;
+                                            $cookingType = explode(';', $cellContent);
                                         } elseif ($col_slug === 'specialites') {
-                                            $speciality = explode(';', $cellContent) ;
+                                            $speciality = explode(';', $cellContent);
                                         } elseif ($col_slug === 'description_detaillee') {
                                             $description = $cellContent;
                                         } elseif ($col_slug === 'services') {
-                                            $service = explode(';', $cellContent) ;
+                                            $service = explode(';', $cellContent);
                                         } elseif ($col_slug === 'cadre_ambiance') {
-                                            $ambiance = explode(';',$cellContent) ;
+                                            $ambiance = explode(';', $cellContent);
                                         } elseif ($col_slug === 'lundi') {
                                             $lundi = $cellContent;
                                         } elseif ($col_slug === 'mardi') {
@@ -130,49 +131,50 @@ class ImportRestaurantController extends Controller {
 
                                 $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
                                                 ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
+                                //la jointure peut créer des doublons dans le cas d'erreur de saisie dans le fichier
+                                $establishment = Establishment::where('name','=',$nameEstablishment)->where('status','=',Establishment::STATUS_ACTIVE)->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
-                                if ((!checkModel($addressEstablishment) && isset($nameEstablishment) && isset($street) && isset($streetNumber) 
-                                        && isset($postalCode) && isset($city))) {
+                                if (!checkModel($establishment) && (!checkModel($addressEstablishment) && !empty($nameEstablishment) && !empty($street) 
+                                        && !empty($streetNumber) && !empty($postalCode) && !empty($city))) {
                                     $data = self::getLatLng($nameEstablishment, $street, $streetNumber, $postalCode, $country, $city);
                                     if (isset($data['results'][0]['geometry']['location']['lat'])) {
                                         $lat = $data['results'][0]['geometry']['location']['lat'];
                                         $lng = $data['results'][0]['geometry']['location']['lng'];
                                         $streetNumber = $data['results'][0]['address_components'][0]['short_name'];
                                         $street = $data['results'][0]['address_components'][1]['short_name'];
-                                        $city = $data['results'][0]['address_components'][2]['short_name'];
-                                        $department = $data['results'][0]['address_components'][3]['short_name'];
-                                       //$country = $data['results'][0]['address_components'][5]['long_name'];
+                                        // $city = $data['results'][0]['address_components'][2]['short_name'];
+                                        //$department = $data['results'][0]['address_components'][3]['short_name'];
+                                        //$country = $data['results'][0]['address_components'][5]['long_name'];
                                         //$postalCode = $data['results'][0]['address_components'][6]['long_name'];
                                         //print_r('$department->' . $department . ' $country->' . $country . ' city->' . $postalCode);
-                                        $status = Establishment::STATUS_ACTIVE;
-                                        
+
                                         $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
-                                                ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first(); 
-                                        if(!checkModel($addressEstablishment)){
-                                             self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, 
-                                                $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, 
-                                                $ambiance, $phonePro, $status, null, null);
-                                                print_r('La ligne ' . $nameEstablishment . ' est insérer<br>');
+                                                        ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
+                                        if (!checkModel($addressEstablishment)) {
+                                            self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
+                                                    $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
+                                                    $phonePro, $status, null, null);
+                                            print_r('La ligne ' . $nameEstablishment . ' est insérer<br>');
                                         }
                                     } else {
-                                        print_r('La ligne ' . $nameEstablishment . ' est incomplete<br>');
-                                        $status = Establishment::STATUS_INCOMPLETE;
-                                        self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, 
-                                                $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, 
-                                                $ambiance, $phonePro, $status, null, null);
+                                        print_r('La ligne ' . $nameEstablishment . ' doit être localiser<br>');
+                                        $status = Establishment::STATUS_TO_LOCALIZE;
+                                        self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
+                                                $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
+                                                $phonePro, $status, null, null);
                                     }
                                 } elseif ((!checkModel($addressEstablishment) && isset($nameEstablishment))) {
                                     $status = Establishment::STATUS_INCOMPLETE;
-                                    self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, 
-                                            $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, 
-                                            $ambiance, $phonePro, $status, null, null);
+                                    self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
+                                            $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
+                                            $phonePro, $status, null, null);
                                 } elseif (checkModel($addressEstablishment)) {
                                     $establishment = Establishment::where('id_address', '=', $addressEstablishment->getId())->first();
                                     if (checkModel($establishment)) {
-                                        self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, 
-                                                $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, 
-                                                $ambiance, $phonePro, $status, $establishment, $addressEstablishment);
+                                        self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
+                                                $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
+                                                $phonePro, $status, $establishment, $addressEstablishment);
                                         print_r('La ligne ' . $nameEstablishment . ' à été mise à jour<br>');
                                     }
                                 }
@@ -219,8 +221,7 @@ class ImportRestaurantController extends Controller {
      * @param Establishment $establishment
      * @param Address $address
      */
-    function insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, 
-            $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, $phone, $status, $establishment, $address) {
+    function insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, $phone, $status, $establishment, $address) {
         $idEstablishment = UuidTools::generateUuid();
         $idAddress = UuidTools::generateUuid();
         $idLocationIndex = 0;
@@ -275,49 +276,31 @@ class ImportRestaurantController extends Controller {
                         'status' => $status,
                         'slug' => str_slug($nameEstablishment),
             ]);
-            
-             //Cooking type
-        //Food speciality
-        foreach ($cookingType as $business){
-            self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_COOKING_TYPE);
-        }
-        //Food speciality
-        foreach ($speciality as $business){
-            self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_FOOD_SPECIALTY);
-        }
-        //Ambiances
-        foreach ($ambiance as $business){
-            self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_RESTAURANT_AMBIENCE);
-        }
-        //Service
-        foreach ($service as $business){
-            self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_SERVICES);
-        }
-        
-        //Insertion numéro principal PRO
-                $callNumber = \App\Models\CallNumber::where('number','=',$phone)->where('id_establishment','=',$ets->getId())->first(); 
-            if(!checkModel($callNumber)){
-                            \App\Models\CallNumber::create([
-                            'id' => UuidTools::generateUuid(),
-                            'label' => 'PRO',
-                            'type' => \App\Models\CallNumber::TYPE_PHONE_PRO,
-                            'main' => 1,
-                            'id_country' => $countryId,
-                            'prefix' => $prefix,
-                            'number' => $phone,
-                            'id_establishment' => $ets->getId()
+
+            //Insertion numéro principal PRO
+            $callNumber = \App\Models\CallNumber::where('number', '=', $phone)->where('id_establishment', '=', $ets->getId())->first();
+            if (!checkModel($callNumber)) {
+                \App\Models\CallNumber::create([
+                    'id' => UuidTools::generateUuid(),
+                    'label' => 'PRO',
+                    'type' => \App\Models\CallNumber::TYPE_PHONE_PRO,
+                    'main' => 1,
+                    'id_country' => $countryId,
+                    'prefix' => $prefix,
+                    'number' => $phone,
+                    'id_establishment' => $ets->getId()
                 ]);
-            }else{
+            } else {
                 $callNumber->update([
-                            'label' => 'PRO',
-                            'type' => \App\Models\CallNumber::TYPE_PHONE_PRO,
-                            'main' => 1,
-                            'id_country' => $countryId,
-                            'prefix' => $prefix,
-                            'number' => $phone,
-                            'id_establishment' => $ets->getId()
+                    'label' => 'PRO',
+                    'type' => \App\Models\CallNumber::TYPE_PHONE_PRO,
+                    'main' => 1,
+                    'id_country' => $countryId,
+                    'prefix' => $prefix,
+                    'number' => $phone,
+                    'id_establishment' => $ets->getId()
                 ]);
-            }  
+            }
         } else {
             // Update establishment
             $ets = $establishment;
@@ -333,6 +316,27 @@ class ImportRestaurantController extends Controller {
                 'url_id' => Establishment::generateStaticUrlId(UuidTools::getUuid($ets->getId())),
                 'slug' => str_slug($nameEstablishment),
             ]);
+        }
+
+        if (isset($cookingType)) {
+            foreach ($cookingType as $business) {
+                self::linkBusinessCategory($ets->getId(), $business);
+            }
+        }
+        if (isset($speciality)) {
+            foreach ($speciality as $business) {
+                self::linkBusinessCategory($ets->getId(), $business);
+            }
+        }
+        if (isset($ambiance)) {
+            foreach ($ambiance as $business) {
+                self::linkBusinessCategory($ets->getId(), $business);
+            }
+        }
+        if (isset($service)) {
+            foreach ($service as $business) {
+                self::linkBusinessCategory($ets->getId(), $business);
+            }
         }
     }
 
@@ -364,9 +368,8 @@ class ImportRestaurantController extends Controller {
         return $idLocationIndex;
     }
 
-    function linkBusinessCategory($idEstablishment, $name, $type) {
-        $businessModel = \App\Models\BusinessCategory::where('name', '=', $name)
-                        ->where('type', '=', $type)->first();
+    function linkBusinessCategory($idEstablishment, $name) {
+        $businessModel = \App\Models\BusinessCategory::where('name', '=', $name)->first();
         if (checkModel($businessModel)) {
             self::feedEstablishmentBusinessCategory($businessModel->getId(), $idEstablishment);
         } else {
@@ -380,10 +383,9 @@ class ImportRestaurantController extends Controller {
     }
 
     public function feedEstablishmentBusinessCategory($idBusinessCategory, $idEstablishment) {
-        $businessCategory = DB::table(\App\Models\EstablishmentBusinessCategory::TABLENAME)->where('id_establishment', '=', $idEstablishment)
+        $businessCategory = \App\Models\EstablishmentBusinessCategory::where('id_establishment', '=', $idEstablishment)
                         ->where('id_business_category', '=', $idBusinessCategory)->first();
         if (!checkModel($businessCategory)) {
-            print_r('');
             \App\Models\EstablishmentBusinessCategory::create([
                 'id' => UuidTools::generateUuid(),
                 'id_establishment' => $idEstablishment,
@@ -391,5 +393,4 @@ class ImportRestaurantController extends Controller {
             ]);
         }
     }
-
 }

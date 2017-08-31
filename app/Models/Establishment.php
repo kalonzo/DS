@@ -15,6 +15,7 @@ class Establishment extends Model implements GlobalObjectManageable{
 
     const STATUS_INCOMPLETE = 2;
     const STATUS_ACTIVE = 1;
+    const STATUS_TO_LOCALIZE = 3;
     
     public $timestamps = true;
     protected $fillable = [
