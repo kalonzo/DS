@@ -41,6 +41,7 @@ Route::put('/establishment', 'EstablishmentController@store');
 Route::get('/establishment/{establishment}','EstablishmentController@edit');    
 // update
 Route::put('/establishment/{establishment}','EstablishmentController@update');  
+Route::post('/establishment/{establishment}/ajax/','EstablishmentController@ajax');  
 // view
 Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        
     $establishment = \App\Models\Establishment::where('slug', '=', $slug)->where('url_id', '=', $url_id)->first();
@@ -52,6 +53,16 @@ Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $cit
 // store booking
 Route::post('/establishment/booking/{establishment}','EstablishmentController@createBooking');
     
+// MEDIA
+Route::post('/delete/{media_type}/{id_media}', function($media_type, $id_media){
+    $media = null;
+    $mediaClass = App\Models\Media::getClassFromTablename($media_type);
+    if($mediaClass !== null){
+        $media = $mediaClass::find(\App\Utilities\UuidTools::getUuid($id_media));
+    }
+    $mediaController = Illuminate\Support\Facades\App::make(App\Http\Controllers\MediaController::class);
+    return $mediaController->callAction('destroy', array('media' => $media));
+});//->where('media_type', '[a-z_]*');//'_medias$');  
 
 // CHECKOUT
 //Route::post('/start_checkout', 'WalleeController@startCheckout');

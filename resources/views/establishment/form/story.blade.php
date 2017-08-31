@@ -15,7 +15,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-4 form-group">
-                        {!! Form::file('logo', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
+                        {!! Form::file('logo_story', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
                     </div>
                     <div class="col-md-8 form-group">
                         {!! Form::label('title','Titre') !!}

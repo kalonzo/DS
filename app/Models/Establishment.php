@@ -100,6 +100,10 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
     }
     
+    public function galleries(){
+        return $this->hasMany(Gallery::class, 'id_establishment', 'id');
+    }
+    
     protected $url = null;
     public function getUrl($lazy = true){
         if($this->url === null || !$lazy){

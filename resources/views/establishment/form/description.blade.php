@@ -13,7 +13,7 @@
                 <div class="col-md-12">
                     {!! Form::label('description','Description :') !!}
                     <div class="form-group">
-                        {!! Form::textarea('description', old('description'), ['class' => 'form-control ckeditor', 
+                        {!! Form::textarea('description', old('description'), ['class' => '', 
                             'placeholder' => 'Mettez en valeur votre établissement (Paragraphe : Qui somme nous.)']) !!}  
                     </div>
                 </div>

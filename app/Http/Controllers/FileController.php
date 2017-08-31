@@ -173,6 +173,15 @@ class FileController {
                     $resolved = true;
                 }
                 break;
+            case \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM:
+                if($relatedObject instanceof \App\Models\Gallery){
+                    $ets = $relatedObject->establishment()->first();
+                    if(checkModel($ets)){
+                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/gallery/'.$relatedObject->getUuid();
+                        $resolved = true;
+                    }
+                }
+                break;
         }
         if(!$resolved){
             $path = null;
@@ -190,6 +199,7 @@ class FileController {
         switch($fileType){
             case \App\Models\Media::TYPE_USE_ETS_LOGO:
             case \App\Models\Media::TYPE_USE_ETS_HOME_PICS:
+            case \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM:
                 $instance = new \App\Models\EstablishmentMedia();
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);

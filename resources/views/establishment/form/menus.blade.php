@@ -102,8 +102,8 @@
                     </div> 
                     <div class="row"> 
                         <div class="col-xs-12  form-group {{ $errors->has('description') ? 'has-error' : '' }}">
-                            {!! Form::label('description','Description de l\'assiette') !!}	
-                            {!! Form::text('description', old('label'),['class' => 'form-control',]) !!}
+                            {!! Form::label('description_dish','Description de l\'assiette') !!}	
+                            {!! Form::text('description_dish', old('description_dish'),['class' => 'form-control',]) !!}
                         </div>   
                     </div> 
                     <div class="row"> 

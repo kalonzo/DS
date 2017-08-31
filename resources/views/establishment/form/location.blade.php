@@ -9,7 +9,6 @@
     </div>
     <div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading1">
         <div class="panel-body container">
-            <!-- Saisie de l'adresse de l'établissement-->
             <div class="row"> 
                 <div class="col-xs-8 col-sm-10 form-group {{ $errors->has('street') ? 'has-error' : '' }}">
                     {!! Form::label('address[street]','* Adresse') !!}	
@@ -30,6 +29,9 @@
                     {!! Form::text('address[district]', old('district'), ['class' => 'form-control']) !!}
                 </div>
             </div>
+            <?php
+            // TODO Gicler les errors->has, et regrouper Form::label et Form::text comme pour le bloc "Quartier"
+            ?>
             <div class="row">
                 <div class="col-md-4">
                     {!! Form::label('address[postal_code]','* NPA') !!}
