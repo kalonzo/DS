@@ -153,6 +153,47 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="row form-group" id="ets-daily-menu">
+                <div class="col-xs-12">
+                    <h5>Menu du jour</h5>
+                    <div class="col-xs-12 no-gutter highlight-container">
+                        <div class="col-xs-12 form-group">
+                            @php
+                            $dailyMenuMedia = null;
+                            $dailyMenu = $establishment->dailyMenu()->first();
+                            if(checkModel($dailyMenu)){
+                                $dailyMenuMedia = $dailyMenu->media()->first();
+                            }
+                            @endphp
+                            @component('components.file-input', 
+                                        ['name' => 'new_daily_menu',
+                                        'class' => 'form-control',
+                                        'medias' => $dailyMenuMedia,
+                                        'filetype' => ['image', 'text'],
+                                        'uploadLabel' => 'Ajouter votre menu',
+                                        'browseLabel' => 'Choisir un fichier',
+                                        'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                        'fileRefreshOnUpload' => 'true',
+                                        'showCaption' => 'true',
+                                        'showRemove' => 'false',
+                                ])
+                                @slot('extraData')
+                                    function(){
+                                        return {'action': 'add_daily_menu'}
+                                    }
+                                @endslot
+                                @slot('fileuploaded')
+                                    $('#ets-daily-menu .kv-fileinput-caption').hide();
+                                @endslot
+                                @slot('filebatchselected')
+                                    $('#ets-daily-menu .kv-fileinput-caption').show();
+                                @endslot
+                            @endcomponent
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
