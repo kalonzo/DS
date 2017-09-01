@@ -774,6 +774,34 @@ class EstablishmentController extends Controller {
                         $jsonResponse['success'] = 1;
                     }
                     break;
+                case 'add_daily_menu':
+                    $dailyMenu = $establishment->dailyMenu()->first();
+                    if(!checkModel($dailyMenu)){
+                        $dailyMenu = \App\Models\Menu::create([
+                            'id' => UuidTools::generateUuid(),
+                            'name' => "Menu du jour",
+                            'status' => \App\Models\Menu::STATUS_ACTIVE,
+                            'id_establishment' => $establishment->getId(),
+                            'is_daily_menu' => true,
+                            'id_file' => 0
+                        ]);
+                    }
+
+                    if (checkModel($dailyMenu) && $request->file('new_daily_menu')) {
+                        $newMenuMedia = FileController::storeFile('new_daily_menu', \App\Models\Media::TYPE_USE_ETS_MENU, $dailyMenu, $dailyMenu->media()->first());
+                        if(checkModel($newMenuMedia)){
+                            $dailyMenu->setIdFile($newMenuMedia->getId())->save();
+                        } else {
+                            $dailyMenu->delete();
+                        }
+                        
+                        $existingFiles = getMediaUrlForInputFile($newMenuMedia, false);
+                        $existingFilesConfig = getMediaConfigForInputFile($newMenuMedia, false);
+                        $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                        $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                        $jsonResponse['success'] = 1;
+                    }
+                    break;
             }
         } catch (Exception $e) {
             // TODO Report error in log system

@@ -109,8 +109,19 @@ class Establishment extends Model implements GlobalObjectManageable{
      * 
      * @return Menu
      */
-    public function menus(){
-        return $this->hasMany(Menu::class, 'id_establishment', 'id');
+    public function menus($excludeDaily = true){
+        $menus = $this->hasMany(Menu::class, 'id_establishment', 'id');
+        if($excludeDaily){
+            $menus->where('is_daily_menu', '!=', true);
+        }
+        return $menus;
+    }
+    /**
+     * 
+     * @return Menu
+     */
+    public function dailyMenu(){
+        return $this->hasOne(Menu::class, 'id_establishment', 'id')->where('is_daily_menu', '=', true)->orderBy('created_at', 'DESC');
     }
     
     /**
