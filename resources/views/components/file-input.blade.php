@@ -8,8 +8,12 @@ if(!isset($multiple)){
 }
 
 if(isset($medias) && !empty($medias)){
-    $existingFiles = getMediaUrlForInputFile($medias);
-    $existingFilesConfig = getMediaConfigForInputFile($medias);
+    if(!isset($existingFiles)){
+        $existingFiles = getMediaUrlForInputFile($medias);
+    }
+    if(!isset($existingFilesConfig)){
+        $existingFilesConfig = getMediaConfigForInputFile($medias);
+    }
 } else {
     $existingFiles = '[]';
     $existingFilesConfig = '[]';
@@ -34,8 +38,17 @@ switch($fileType){
 $fileType = json_encode($fileType);
 $fileExtensions = json_encode($fileExtensions);
 
+if(!isset($fileRefreshOnUpload)){
+    $fileRefreshOnUpload = false;
+}
 if(!isset($directUpload)){
     $directUpload = false;
+}
+if(!isset($uploadLabel)){
+    $uploadLabel = __('Upload');
+}
+if(!isset($browseLabel)){
+    $browseLabel = __('Parcourir');
 }
 
 @endphp
@@ -54,13 +67,25 @@ if(!isset($directUpload)){
                         showUpload: false,
                     @endif
                     @if(isset($showRemove))
-                        showRemove: {{ $showRemove }},
+                        showRemove: {!! $showRemove !!},
+                    @endif
+                    @if(isset($showCaption))
+                        showCaption: {!! $showCaption !!},
+                    @endif
+                    @if(isset($showClose))
+                        showClose: {!! $showClose !!},
+                    @endif
+                    @if(isset($showPreview))
+                        showPreview: {!! $showPreview !!},
+                    @endif
+                    @if(isset($required))
+                        required: {!! $required !!},
                     @endif
                     allowedFileTypes: {!! $fileType !!},
                     allowedFileExtensions: {!! $fileExtensions !!},
-                    browseLabel: "@lang('Parcourir')",
+                    browseLabel: "{!! $browseLabel !!}",
                     removeLabel: "@lang('Supprimer')",
-                    uploadLabel: "@lang('Upload')",
+                    uploadLabel: "{!! $uploadLabel !!}",
                     maxFileSize: 5000,
                     overwriteInitial: false,
                     previewFileType: 'any',
@@ -73,26 +98,70 @@ if(!isset($directUpload)){
                     @if(isset($extraData))
                     uploadExtraData: {{ $extraData }},
                     @endif
-                })
-                .on('filebeforedelete', function(event, key, data) {
-                    return false;
+                    dropZoneEnabled: false,
                 })
                 .on('filesorted', function(event, params) {
                     console.log('File sorted ', params.previewId, params.oldIndex, params.newIndex, params.stack);
                 })
-                @if($directUpload)
+                @if($directUpload || isset($filebatchselected))
                 .on("filebatchselected", function(event, files) {
+                    @if($directUpload)
                     $input.fileinput("upload");
+                    @endif
+                    
+                    @if(isset($filebatchselected))
+                    {!! $filebatchselected !!}
+                    @endif                   
                 })
+                @endif
+                @if($fileRefreshOnUpload || isset($fileuploaded))
                 .on("fileuploaded", function(event, data, previewId, index) {
+                    @if(isset($fileuploaded))
+                    {!! $fileuploaded !!}
+                    @endif
+                    
+                    @if(isset($fileRefreshOnUpload))
                     var response = data.response;
                     var inputData = response.inputData;
                     if(typeof inputData != 'undefined'){
-                        console.log(inputData);
                         $input.fileinput("refresh", inputData);
                     }
+                    @endif
+                    $(this).fileinput('unlock');
                 })
                 @endif
+                @if(isset($filepreupload))
+                .on('filepreupload', function(event, data, previewId, index) {
+                    {!! $filepreupload !!}
+                })
+                @endif
+                @if(isset($filepreajax))
+                .on('filepreajax', function(event, previewId, index) {
+                    {!! $filepreajax !!}
+                })
+                @endif
+                @if(isset($filebatchpreupload))
+                .on('filebatchpreupload', function(event, data, previewId, index) {
+                    {!! $filebatchpreupload !!}
+                })
+                @endif
+                /* TODO stop the deletion once the confirm is canceled */
+                .on('filebeforedelete', function(event, key, data) {
+                    var aborted = !window.confirm('Veuillez confirmer la suppression de ce fichier.');
+                    if(aborted){
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }
+                    return aborted;
+                })
+//                .on('filepredelete', function(event, key, jqXHR, data) {
+//                    var aborted = !window.confirm('Veuillez confirmer la suppression de ce fichier2.');
+//                    if(aborted){
+//                        event.stopPropagation();
+//                        event.preventDefault();
+//                    }
+//                    return aborted;
+//                })
                 ;
             });
         }

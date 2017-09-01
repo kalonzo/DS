@@ -92,7 +92,7 @@ $timetableRowHeight: 76px;
 }
 
 #establishment_form_accordion{
-    #ets-photos{
+    #ets-photos, #ets-menus{
         .file-input{
             .file-preview{
                 border: 0px;
@@ -109,4 +109,19 @@ $timetableRowHeight: 76px;
             margin-bottom: 1em;
         }
     }
+    #ets-menus{
+        .kv-preview-thumb:not(.file-preview-initial){
+            display: none;
+        }
+        .kv-fileinput-caption{
+            display: none;
+        }
+    }
+    #ets-avg-prices{
+        input[type=text]{
+            width: 80px;
+            margin: 0px 0.4em;
+        }
+    }
+    
 }

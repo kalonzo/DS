@@ -16,11 +16,17 @@ class Media extends Model {
     const TYPE_USE_ETS_LOGO = 1;
     const TYPE_USE_ETS_HOME_PICS = 2;
     const TYPE_USE_ETS_GALLERY_ITEM = 3;
+    const TYPE_USE_ETS_MENU = 4;
+    const TYPE_USE_ETS_DISH = 5;
+    
+    const STATUS_PENDING = 1;
+    const STATUS_VALIDATED = 2;
     
     const DRIVE_LOCAL = 'local';
     const DRIVE_S3 = 's3';
     
     protected $fillable = [
+        'status',
         'type',
         'type_use',
         'filename',
@@ -38,9 +44,16 @@ class Media extends Model {
     ];
     protected $guarded = [];
     
-    
     public function delete() {
         if(checkModel($this)){
+            switch($this->getTypeUse()){
+                case self::TYPE_USE_ETS_MENU:
+                    $this->menu()->delete();
+                    break;
+                case self::TYPE_USE_ETS_DISH:
+                    $this->dish()->delete();
+                    break;
+            }
             \Illuminate\Support\Facades\Storage::delete($this->getLocalPath());
         }
         return parent::delete();
@@ -66,6 +79,22 @@ class Media extends Model {
             $class = $classByTablename[$tablename];
         }
         return $class;
+    }
+    
+    public function menu(){
+        $menu = null;
+        if($this->getTypeUse() == self::TYPE_USE_ETS_MENU){
+            $menu = $this->hasOne(Menu::class, 'id', 'id_object_related');
+        }
+        return $menu;
+    }
+    
+    public function dish(){
+        $dish = null;
+        if($this->getTypeUse() == self::TYPE_USE_ETS_DISH){
+            $dish = $this->hasOne(Dish::class, 'id', 'id_object_related');
+        }
+        return $dish;
     }
 
     /**
@@ -258,6 +287,15 @@ class Media extends Model {
 
     function setTypeUse($type_use) {
         $this->type_use = $type_use;
+    }
+
+    function getStatus() {
+        return $this->status;
+    }
+
+    function setStatus($status) {
+        $this->status = $status;
+        return $this;
     }
 
 

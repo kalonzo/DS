@@ -35,6 +35,7 @@ class Establishment extends Model implements GlobalObjectManageable{
         'description',
         'average_price_min',
         'average_price_max',
+        'id_currency',
         'id_banking_info',
         'id_user_owner',
         'id_business_type',
@@ -102,6 +103,22 @@ class Establishment extends Model implements GlobalObjectManageable{
     
     public function galleries(){
         return $this->hasMany(Gallery::class, 'id_establishment', 'id');
+    }
+    
+    /**
+     * 
+     * @return Menu
+     */
+    public function menus(){
+        return $this->hasMany(Menu::class, 'id_establishment', 'id');
+    }
+    
+    /**
+     * 
+     * @return Dish
+     */
+    public function dishes(){
+        return $this->hasMany(Dish::class, 'id_establishment', 'id');
     }
     
     protected $url = null;
@@ -507,4 +524,14 @@ class Establishment extends Model implements GlobalObjectManageable{
     function setUrlId($url_id) {
         $this->url_id = $url_id;
     }
+    
+    function getIdCurrency() {
+        return $this->id_currency;
+    }
+
+    function setIdCurrency($id_currency) {
+        $this->id_currency = $id_currency;
+    }
+
+
 }

@@ -293,6 +293,8 @@ class EstablishmentController extends Controller {
         // Sort list by translated country name
         asort($countryPrefixes);
         asort($countryNames);
+        
+        $currencies = \App\Models\Currency::getCurrenciesById();
 
         // Select for time
         $timetable = array();
@@ -316,6 +318,7 @@ class EstablishmentController extends Controller {
         StorageHelper::getInstance()->add('feed_establishment.form_data.timetable', $timetable);
         StorageHelper::getInstance()->add('feed_establishment.form_data.days', $days);
         StorageHelper::getInstance()->add('feed_establishment.form_data.country_ids', $countryNames);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.currency_ids', $currencies);
     }
 
     /**
@@ -324,7 +327,9 @@ class EstablishmentController extends Controller {
      */
     public function buildCreateFormValues() {
         $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
+        $idCurrency = \App\Utilities\CurrencyTools::getIdCurrencyFromLocale();
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
+        StorageHelper::getInstance()->add('feed_establishment.form_values.id_currency', $idCurrency);
     }
 
     /**
@@ -375,7 +380,13 @@ class EstablishmentController extends Controller {
             }
         }
 
+        $idCurrency = \App\Utilities\CurrencyTools::getIdCurrencyFromLocale();
+        if(!empty($establishment->getIdCurrency())){
+            $idCurrency = $establishment->getIdCurrency();
+        }
+        
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
+        StorageHelper::getInstance()->add('feed_establishment.form_values.id_currency', $idCurrency);
         StorageHelper::getInstance()->add('feed_establishment.form_values.call_numbers', $callNumbersData);
         StorageHelper::getInstance()->add('feed_establishment.form_values.business_categories', $businessCategoryIds);
         StorageHelper::getInstance()->add('feed_establishment.form_values.opening_hours', $openingHours);
@@ -700,6 +711,67 @@ class EstablishmentController extends Controller {
                                 }
                             }
                         }
+                    }
+                    break;
+                case 'add_menu':
+                    $menu = \App\Models\Menu::create([
+                        'id' => UuidTools::generateUuid(),
+                        'name' => $request->get('menu_name'),
+                        'status' => \App\Models\Menu::STATUS_ACTIVE,
+                        'id_establishment' => $establishment->getId(),
+                        'id_file' => 0
+                    ]);
+
+                    if (checkModel($menu) && $request->file('new_menu')) {
+                        $newMenuMedia = FileController::storeFile('new_menu', \App\Models\Media::TYPE_USE_ETS_MENU, $menu);
+                        if(checkModel($newMenuMedia)){
+                            $menu->setIdFile($newMenuMedia->getId())->save();
+                        } else {
+                            $menu->delete();
+                        }
+                        
+                        $menusMedias = array();
+                        foreach($establishment->menus()->orderBy('created_at')->get() as $menu){
+                            $menusMedias[] = $menu->media()->first();
+                        }
+                        $existingFiles = getMediaUrlForInputFile($menusMedias, false);
+                        $existingFilesConfig = getMediaConfigForInputFile($menusMedias, false);
+                        $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                        $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                        $jsonResponse['success'] = 1;
+                    }
+                    break;
+                case 'add_dish':
+                    $price = $request->get('new_dish_price') + ($request->get('new_dish_price_cents') / 100);
+                    $dish = \App\Models\Dish::create([
+                        'id' => UuidTools::generateUuid(),
+                        'name' => $request->get('new_dish_name'),
+                        'description' => $request->get('new_dish_description'),
+                        'status' => \App\Models\Dish::STATUS_ACTIVE,
+                        'price' => $price,
+                        'currency' => $request->get('new_dish_price_currency'),
+                        'id_establishment' => $establishment->getId(),
+                        'id_photo' => 0
+                    ]);
+
+                    if (checkModel($dish) && $request->file('new_dish')) {
+                        $newDishMedia = FileController::storeFile('new_dish', \App\Models\Media::TYPE_USE_ETS_DISH, $dish);
+                        if(checkModel($newDishMedia)){
+                            $dish->setIdPhoto($newDishMedia->getId())->save();
+                        } else {
+                            $dish->delete();
+                        }
+                        
+                        $dishes = $establishment->dishes()->orderBy('created_at')->get();
+                        $dishesMedias = array();
+                        foreach($dishes as $dish){
+                            $dishesMedias[] = $dish->media()->first();
+                        }
+                        $existingFiles = getMediaUrlForInputFile($dishesMedias, false);
+                        $existingFilesConfig = \App\Models\Dish::getMediaConfigForInputFile($dishes, false);
+                        $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                        $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                        $jsonResponse['success'] = 1;
                     }
                     break;
             }
