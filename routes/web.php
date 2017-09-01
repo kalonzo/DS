@@ -31,6 +31,22 @@ Route::put('/establishment/register', 'UserProController@store');
 //    return $userProController->callAction('store');
 //});                  
 
+// BusinessCategory
+Route::get('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@edit');
+Route::put('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@update');
+//destroy        
+Route::get('/admin/delete/{table_name}/{id}', function($table_name, $id){
+    $controllerClass = null;
+   
+    switch ($table_name){
+        case App\Models\BusinessCategory::TABLENAME: 
+            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\BusinessCategoryController::class); 
+        break;
+    }   
+    if(!empty($controllerClass)){
+        return $controllerClass->callAction('destroy',array('id' => $id));
+    }
+});
 
 // ESTABLISHMENT
 // create
@@ -75,8 +91,6 @@ Route::get('/welcome/{locale}', function ($local) {
      return view('dev.welcome');  
 });
 
-//Verbose corector
-Route::get('/admin/establishment/verbose', 'verboseController@create');          
 
 /****************************** ADMIN *****************************************/
 
@@ -85,8 +99,6 @@ Route::get('/admin', 'AdminController@index');
 // IMPORT
 // upload file
 Route::get('/admin/establishment/import', 'ImportRestaurantController@index');  
-// import excel
-Route::post('/admin/establishment/import', 'ImportRestaurantController@import');
 
 /**************************** AJAX CALLS **************************************/
 
