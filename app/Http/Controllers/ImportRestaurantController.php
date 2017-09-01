@@ -341,6 +341,7 @@ class ImportRestaurantController extends Controller {
                     'number' => $phone,
                     'id_establishment' => $ets->getId()
                 ]);
+                $callNumber->save();
             }
         } else {
             // Update establishment
@@ -357,6 +358,7 @@ class ImportRestaurantController extends Controller {
                 'url_id' => Establishment::generateStaticUrlId(UuidTools::getUuid($ets->getId())),
                 'slug' => str_slug($nameEstablishment),
             ]);
+            $ets->save();
         }
 
         if (isset($cookingType)) {

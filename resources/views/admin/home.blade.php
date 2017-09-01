@@ -21,4 +21,8 @@
 
 @endcomponent
 
+@component('components.tile', ['title' => 'Type de catégorie restaurant', 'tabledata' => $business_category_datatable])
+
+@endcomponent
+
 @endsection

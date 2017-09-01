@@ -9,6 +9,7 @@ namespace App\Feeders;
  */
 class DatatableRowAction {
     const ACTION_EDIT = 1;
+    const ACTION_REMOVE = 2;
     
     protected $type;
     protected $icon;
@@ -23,6 +24,11 @@ class DatatableRowAction {
                 $action->setType($actionType);
                 $action->setIcon('glyphicon-pencil');
                 $action->setTitle('Editer');
+               break;
+            case self::ACTION_REMOVE:
+                $action->setType($actionType);
+                $action->setIcon('glyphicon-trash');
+                $action->setTitle('Effacer');
                 break;
         }
         return $action;
