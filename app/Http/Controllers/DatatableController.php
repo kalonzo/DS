@@ -117,9 +117,8 @@ class DatatableController {
                 $businessCategory = array();
 
                 $businessQuery = DB::table(BusinessCategory::TABLENAME)->select();
-
-
-                $businessQuery->orderBy(BusinessCategory::TABLENAME . '.status', 'desc');
+                $businessQuery->orderBy(BusinessCategory::TABLENAME . '.updated_at', 'desc');
+                //$businessQuery->orderBy(BusinessCategory::TABLENAME . '.status', 'desc');
 
                 $nbElementPerPage = 10;
                 $currentPage = Request::get('page', 1);
@@ -136,7 +135,7 @@ class DatatableController {
                     $businessCategory[$uuid]['name'] = $businessCategoryData->name;
                     switch ($businessCategoryData->type){
                         case BusinessCategory::TYPE_COOKING_TYPE :
-                                $businessCategory[$uuid]['type'] = 'Type de cuisinne';
+                                $businessCategory[$uuid]['type'] = 'Type de cuisine';
                             break;
                         case BusinessCategory::TYPE_FOOD_SPECIALTY :
                                 $businessCategory[$uuid]['type'] = 'Spécialité';
@@ -145,7 +144,7 @@ class DatatableController {
                                 $businessCategory[$uuid]['type'] = 'Cadre et ambiance';
                             break;
                         case BusinessCategory::TYPE_SERVICES :
-                                $businessCategory[$uuid]['type'] = 'Type de cuisinne';
+                                $businessCategory[$uuid]['type'] = 'Service';
                             break;
                     }
                     $businessCategory[$uuid]['status'] = $businessCategoryData->status;

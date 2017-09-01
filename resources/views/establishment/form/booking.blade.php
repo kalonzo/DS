@@ -53,7 +53,7 @@
         </div>
         <div class="col-xs-12 form-group">
             {!! Form::label('phone_number','Téléphone / Mobile') !!}
-            <div class="form-group form-inline {{ $errors->has('call_number[contact_number]') ? 'has-error' : '' }}">                        
+            <div class="form-group form-inline">                        
                 {!! Form::select('prefix', $form_data['country_prefixes'], null, 
                 ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
                 {!! Form::text('phone_number', null, ['class' => 'form-control']) !!}
