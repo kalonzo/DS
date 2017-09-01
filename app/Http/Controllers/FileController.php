@@ -36,10 +36,10 @@ class FileController {
                     $fileMimeType = $file->getMimeType();
                     $resolvedMimeType = self::resolveFileType($fileMimeType);
                     $fileSize = $file->getClientSize();
-                    $fileName = $file->getClientOriginalName();
+                    $fileName = self::resolveFileName($fileType, $relatedObject, $file);
                     $fileExtension = $file->getClientOriginalExtension();
 
-                    $media = self::resolveMediaInstance($fileType);
+                    $media = self::resolveMediaInstance($fileType, $relatedObject);
                     if($media instanceof \App\Models\Media){
                         $options = array();
                         if($media->getPublic() && $media->getDrive(\App\Models\Media::DRIVE_LOCAL)){
@@ -99,11 +99,11 @@ class FileController {
                 $fileMimeType = $file->getMimeType();
                 $resolvedMimeType = self::resolveFileType($fileMimeType);
                 $fileSize = $file->getClientSize();
-                $fileName = $file->getClientOriginalName();
+                $fileName = self::resolveFileName($fileType, $relatedObject, $file);
                 $fileExtension = $file->getClientOriginalExtension();
                 
                 if(!checkModel($media)){
-                    $media = self::resolveMediaInstance($fileType);
+                    $media = self::resolveMediaInstance($fileType, $relatedObject);
                 } else {
                     // Check if file is different from previous saved media
                     if($media->getExtension() == $fileExtension && $media->getSize() == $fileSize && $media->getType() === $resolvedMimeType){
@@ -155,7 +155,7 @@ class FileController {
     /**
      * 
      * @param type $fileType
-     * @param \App\Models\Establishment $relatedObject
+     * @param \App\Models\Model $relatedObject
      * @return type
      */
     public static function resolveFilePath($fileType, $relatedObject){
@@ -182,6 +182,24 @@ class FileController {
                     }
                 }
                 break;
+            case \App\Models\Media::TYPE_USE_ETS_MENU:
+                if($relatedObject instanceof \App\Models\Menu){
+                    $ets = $relatedObject->establishment()->first();
+                    if(checkModel($ets)){
+                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/menus/'.$relatedObject->getUuid();
+                        $resolved = true;
+                    }
+                }
+                break;
+            case \App\Models\Media::TYPE_USE_ETS_DISH:
+                if($relatedObject instanceof \App\Models\Menu){
+                    $ets = $relatedObject->establishment()->first();
+                    if(checkModel($ets)){
+                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/dishes/'.$relatedObject->getUuid();
+                        $resolved = true;
+                    }
+                }
+                break;
         }
         if(!$resolved){
             $path = null;
@@ -192,9 +210,10 @@ class FileController {
     /**
      * 
      * @param type $fileType
+     * @param \App\Models\Model $relatedObject
      * @return \App\Models\EstablishmentMedia
      */
-    public static function resolveMediaInstance($fileType){
+    public static function resolveMediaInstance($fileType, $relatedObject){
         $instance = null;
         switch($fileType){
             case \App\Models\Media::TYPE_USE_ETS_LOGO:
@@ -204,6 +223,15 @@ class FileController {
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
                 $instance->setTypeUse($fileType);
+                $instance->setStatus(\App\Models\Media::STATUS_PENDING);
+            break;
+            case \App\Models\Media::TYPE_USE_ETS_MENU:
+            case \App\Models\Media::TYPE_USE_ETS_DISH:
+                $instance = new \App\Models\EstablishmentMedia();
+                $instance->setPublic(TRUE);
+                $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
+                $instance->setTypeUse($fileType);
+                $instance->setStatus(\App\Models\Media::STATUS_VALIDATED);
             break;
         }
         return $instance;
@@ -230,5 +258,27 @@ class FileController {
             }
         }
         return $fileType;
+    }
+    
+    /**
+     * 
+     * @param type $fileType
+     * @param \App\Models\Model $relatedObject
+     * @param \Illuminate\Http\UploadedFile $file
+     * @return type
+     */
+    public static function resolveFileName($fileType, $relatedObject, $file){
+        $filename = null;
+        switch($fileType){
+            default :
+                $filename = $file->getClientOriginalName();
+                break;
+            case \App\Models\Media::TYPE_USE_ETS_MENU:
+                if($relatedObject instanceof \App\Models\Menu){
+                    $filename = $relatedObject->getName();
+                }
+                break;
+        }
+        return $filename;
     }
 }

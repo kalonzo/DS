@@ -1296,7 +1296,8 @@ textarea{
 
 .highlight-container{
     background-color: lighten($main-dark-color, 35);
-    padding: 15px 0px;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .gallery-item{

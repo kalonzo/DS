@@ -62,7 +62,7 @@ Route::post('/delete/{media_type}/{id_media}', function($media_type, $id_media){
     }
     $mediaController = Illuminate\Support\Facades\App::make(App\Http\Controllers\MediaController::class);
     return $mediaController->callAction('destroy', array('media' => $media));
-});//->where('media_type', '[a-z_]*');//'_medias$');  
+})->where('media_type', '[a-z_]*medias$');
 
 // CHECKOUT
 //Route::post('/start_checkout', 'WalleeController@startCheckout');
