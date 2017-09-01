@@ -7,22 +7,12 @@ use App\Utilities\UuidTools;
 use App\Models\BusinessCategory;
 
 class BusinessCategoryController extends Controller {
-
-    /**
-     * 
-     * @return View
-     */
-    public function index() {
-        
-    }
-
     /**
      * 
      * @param BusinessCategory $businessCategory
      * @return type
      */
     public function edit(BusinessCategory $businessCategory) {
-        
         switch ($businessCategory->status) {
             case BusinessCategory::STATUS_TO_CHECK :
                 $status = array();
@@ -45,25 +35,24 @@ class BusinessCategoryController extends Controller {
      * @param BusinessCategory $businessCategory
      * @return type
      */
-    public function update(\Illuminate\Http\Request $request, BusinessCategory $businessCategory) {        
+    public function update(\Illuminate\Http\Request $request, BusinessCategory $businessCategory) {
         $businessCategory->update([
             'name' => $request->get('name'),
             'type' => $request->get('type'),
             'status' => null,
         ]);
         $businessCategory->save();
-       // $establishment = $this->updateEstablishment($request, $establishment);
         return redirect('/admin');
     }
-    
-    public function destroy( $id) {        
-        $businessCategory = BusinessCategory::where('id','=',$id)->first();
-        if(checkModel($businessCategory)){
+
+    public function destroy($id) {
+        $businessCategory = BusinessCategory::where('id', '=', $id)->first();
+        if (checkModel($businessCategory)) {
             $businessCategory->delete();
         }
         return redirect('/admin');
     }
-    
+
     /**
      * 
      * @param type $idEstablishment
