@@ -25,6 +25,14 @@ class BusinessCategory extends Model {
     ];
     protected $guarded = [];
 
+    public static function getLabelByType(){
+        $labelByType = array();
+        $labelByType[self::TYPE_COOKING_TYPE] = 'Type de cuisine';
+        $labelByType[self::TYPE_FOOD_SPECIALTY] = 'Spécialité';
+        $labelByType[self::TYPE_RESTAURANT_AMBIENCE] = 'Cadre et ambiance';
+        $labelByType[self::TYPE_SERVICES] = 'Service';
+        return $labelByType;
+    }
     
     public function establishmentLinks(){
         return $this->hasMany(EstablishmentBusinessCategory::class, 'id_business_category', 'id');
@@ -33,6 +41,11 @@ class BusinessCategory extends Model {
     public function establishments(){
         return $this->belongsToMany(Establishment::class, EstablishmentBusinessCategory::TABLENAME, 'id_business_category', 'id_establishment');
     }    
+    
+    public function delete() {
+        $this->establishmentLinks()->delete();
+        return parent::delete();
+    }
     
     /**
      * @return mixed

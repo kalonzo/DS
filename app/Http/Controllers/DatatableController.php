@@ -13,6 +13,7 @@ use App\Utilities\UuidTools;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use \App\Models\BusinessCategory;
 
 /**
  * Description of DatatableController
@@ -23,6 +24,7 @@ class DatatableController {
     
     const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
     const BOOKING_DATATABLE = 'booking_datatable';
+    const BUSINESS_CATEGORIES_DATATABLE = 'business_category_datatable';
     
     /**
      * 
@@ -110,6 +112,58 @@ class DatatableController {
                 $dtFeeder->setPaginator($resultsPagination);
                 $dtFeeder->setColumns(array('nb_adults' => 'Personne', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire','contact' => 'Contact','status' => 'Etat', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+                break;
+            case self::BUSINESS_CATEGORIES_DATATABLE:
+                $businessCategory = array();
+
+                $businessQuery = DB::table(BusinessCategory::TABLENAME)->select();
+
+
+                $businessQuery->orderBy(BusinessCategory::TABLENAME . '.status', 'desc');
+
+                $nbElementPerPage = 10;
+                $currentPage = Request::get('page', 1);
+                $sliceStart = ($currentPage - 1) * $nbElementPerPage;
+                $nbTotalResults = $businessQuery->count(BusinessCategory::TABLENAME . '.id');
+
+                $businessQuery->offset($sliceStart)->limit($nbElementPerPage);
+                $BusinessCategoriesData = $businessQuery->get();
+
+                foreach ($BusinessCategoriesData as $businessCategoryData) {
+                    $uuid = UuidTools::getUuid($businessCategoryData->id);
+
+                    $businessCategory[$uuid]['id'] = $uuid;
+                    $businessCategory[$uuid]['name'] = $businessCategoryData->name;
+                    switch ($businessCategoryData->type){
+                        case BusinessCategory::TYPE_COOKING_TYPE :
+                                $businessCategory[$uuid]['type'] = 'Type de cuisinne';
+                            break;
+                        case BusinessCategory::TYPE_FOOD_SPECIALTY :
+                                $businessCategory[$uuid]['type'] = 'Spécialité';
+                            break;
+                        case BusinessCategory::TYPE_RESTAURANT_AMBIENCE :
+                                $businessCategory[$uuid]['type'] = 'Cadre et ambiance';
+                            break;
+                        case BusinessCategory::TYPE_SERVICES :
+                                $businessCategory[$uuid]['type'] = 'Type de cuisinne';
+                            break;
+                    }
+                    $businessCategory[$uuid]['status'] = $businessCategoryData->status;
+                    $businessCategory[$uuid]['updated_at'] = $businessCategoryData->updated_at;
+                }
+                // Paginate results
+                $resultsPagination = new LengthAwarePaginator($businessCategory, $nbTotalResults, $nbElementPerPage, $currentPage);
+                $resultsPagination->setPath(Request::url());
+
+                $dtFeeder = new DatatableFeeder($id);
+                $dtFeeder->setPaginator($resultsPagination);
+                $dtFeeder->setColumns(array('name' => 'Nom de la catégorie', 'type' => 'type', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
+                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+                $dtFeeder->enableAction(DatatableRowAction::ACTION_REMOVE);
+                
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/'.BusinessCategory::TABLENAME.'/{{id}}');
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_REMOVE)->setHref('/admin/delete/'.BusinessCategory::TABLENAME.'/{{id}}');
+
                 break;
         }
         return $dtFeeder;
