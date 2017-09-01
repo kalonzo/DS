@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Request;
 use View;
-use App\Models\Establishment;
 use App\Utilities\UuidTools;
 use App\Models\BusinessCategory;
 
@@ -59,7 +57,10 @@ class BusinessCategoryController extends Controller {
     }
     
     public function destroy( $id) {        
-        die('Destroy');
+        $businessCategory = BusinessCategory::where('id','=',$id)->first();
+        if(checkModel($businessCategory)){
+            $businessCategory->delete();
+        }
         return redirect('/admin');
     }
     
