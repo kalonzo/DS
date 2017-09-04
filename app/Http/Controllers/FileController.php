@@ -167,6 +167,13 @@ class FileController {
                     $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/logos';
                     $resolved = true;
                 }
+                break;
+            case \App\Models\Media::TYPE_USE_ETS_VIDEO:
+                if($relatedObject instanceof \App\Models\Establishment){
+                    $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/video';
+                    $resolved = true;
+                }
+                break;
             case \App\Models\Media::TYPE_USE_ETS_HOME_PICS:
                 if($relatedObject instanceof \App\Models\Establishment){
                     $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/home_pics';
@@ -235,6 +242,7 @@ class FileController {
         $instance = null;
         switch($fileType){
             case \App\Models\Media::TYPE_USE_ETS_LOGO:
+            case \App\Models\Media::TYPE_USE_ETS_VIDEO:
             case \App\Models\Media::TYPE_USE_ETS_HOME_PICS:
             case \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM:
                 $instance = new \App\Models\EstablishmentMedia();
@@ -274,6 +282,9 @@ class FileController {
             switch($type){
                 case 'image':
                     $fileType = \App\Models\Media::TYPE_IMAGE;
+                break;
+                case 'video':
+                    $fileType = \App\Models\Media::TYPE_VIDEO;
                 break;
             }
         }

@@ -27,12 +27,15 @@ if(!isset($fileType)){
 switch($fileType){
     default:
         $fileExtensions = null;
+        $maxFileSize= 5000;
     break;
     case 'image':
         $fileExtensions = ['jpg', 'png'];
+        $maxFileSize= 5000;
     break;
     case 'video':
         $fileExtensions = ['mp4', 'avi', 'mpeg'];
+        $maxFileSize= 20000;
     break;
 }
 $fileType = json_encode($fileType);
@@ -86,7 +89,7 @@ if(!isset($browseLabel)){
                     browseLabel: "{!! $browseLabel !!}",
                     removeLabel: "@lang('Supprimer')",
                     uploadLabel: "{!! $uploadLabel !!}",
-                    maxFileSize: 5000,
+                    maxFileSize: {!! $maxFileSize !!},
                     overwriteInitial: false,
                     previewFileType: 'any',
                     initialPreview: {!! $existingFiles !!},

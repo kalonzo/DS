@@ -900,6 +900,22 @@ class EstablishmentController extends Controller {
                         $jsonResponse['success'] = 1;
                     }
                     break;
+                case 'add_video':
+                    if ($request->file('video')) {
+                        $video = $establishment->video()->first();
+                        $video = FileController::storeFile('video', \App\Models\Media::TYPE_USE_ETS_VIDEO, $establishment, $video);
+                        if (checkModel($video)) {
+                            $establishment->setIdVideo($video->getId());
+                            $establishment->save();
+                            
+                            $existingFiles = getMediaUrlForInputFile($video, false);
+                            $existingFilesConfig = getMediaConfigForInputFile($video, false);
+                            $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                            $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                            $jsonResponse['success'] = 1;
+                        }
+                    }
+                    break;
             }
         } catch (Exception $e) {
             // TODO Report error in log system

@@ -12,6 +12,7 @@ class Media extends Model {
     public $timestamps = true;
     
     const TYPE_IMAGE = 1;
+    const TYPE_VIDEO = 2;
     
     const TYPE_USE_ETS_LOGO = 1;
     const TYPE_USE_ETS_HOME_PICS = 2;
@@ -20,6 +21,7 @@ class Media extends Model {
     const TYPE_USE_ETS_DISH = 5;
     const TYPE_USE_ETS_EMPLOYEE = 6;
     const TYPE_USE_ETS_STORY = 7;
+    const TYPE_USE_ETS_VIDEO = 8;
     
     const STATUS_PENDING = 1;
     const STATUS_VALIDATED = 2;
@@ -73,6 +75,33 @@ class Media extends Model {
         $classByTablename[CvMedia::TABLENAME] = CvMedia::class;
         
         return $classByTablename;
+    }
+    
+    public static function getAllTypeLabel(){
+        $types = array();
+        $types[self::TYPE_IMAGE] = 'image';
+        $types[self::TYPE_VIDEO] = 'video';
+        
+        return $types;
+    }
+    
+    public function getTypeLabel(){
+        $types = self::getAllTypeLabel();
+        $typeLabel = '';
+        if(isset($types[$this->getType()])){
+            $typeLabel = $types[$this->getType()];
+        }
+        return $typeLabel;
+    }
+    
+    public function getMimeType(){
+        $mimetype = null;
+        $type = $this->getTypeLabel();
+        $ext = $this->getExtension();
+        if(!empty($type) && !empty($ext)){
+            $mimetype = $type.'/'.$ext;
+        }
+        return $mimetype;
     }
     
     /**

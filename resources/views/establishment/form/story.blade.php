@@ -9,6 +9,7 @@
     </div>
     <div id="collapse14" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading14">
         <div class="panel-body container">
+            @if(checkModel($establishment))
             <div class="row form-group" id='ets-story'>
                 <div class="col-xs-12">
                     <p>
@@ -18,7 +19,7 @@
                     <div class="col-xs-12 highlight-container">
                         <div class="col-xs-4 col-sm-3 col-md-2 form-group">
                             {!! Form::label('new_story_year','Année') !!}
-                            {!! Form::selectRange('new_story_year', 1900, date('Y'), null, ['class' => 'form-control select2']) !!}
+                            {!! Form::selectRange('new_story_year', 1900, date('Y'), 2000, ['class' => 'form-control select2']) !!}
                         </div>
                         <div class="col-xs-8 col-sm-9 col-md-10 form-group">
                             {!! Form::label('new_story_title','Titre') !!}
@@ -76,6 +77,17 @@
                     </div>
                 </div>
             </div>
+            
+            @else
+            <div class="row incomplete-sheet-disclaimer">
+                <div class="col-xs-12">
+                    <p>
+                        La saisie de l'histoire de l(établissement sera accessible une fois votre établissement enregistré avec les informations minimales requises.
+                    </p>
+                </div>
+            </div>
+            @endif
+            
         </div>                    
     </div>
 </div>

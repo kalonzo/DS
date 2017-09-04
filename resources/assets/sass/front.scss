@@ -759,7 +759,7 @@ $mapThumbnailWidth: 145px;
     padding: 10px;
     z-index: 2;
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .form-accordion{
@@ -1075,7 +1075,6 @@ form:not(.navbar-form){
     height: calc(100% - #{$navbarHeight});
     padding-bottom: $navbarHeight;
     background-color: $main-dark-color;
-    border-left: 1px solid white;
 }
 
 #booking-container{

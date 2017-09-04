@@ -3,6 +3,7 @@
 @endif
     <div class="col-xs-12">
         <h5>Galeries</h5>
+        @if(checkModel($establishment))
         <div class="col-xs-12 no-gutter">
             <p>
                 Donnez un nom de galerie et ajoutez une ou plusieurs photos pour créer une nouvelle galerie.
@@ -29,37 +30,49 @@
                 </div>
             </div>
         </div>
-    </div>
-    @foreach($establishment->galleries()->orderBy('created_at')->get() as $gallery)
-    <div class="col-xs-12 gallery-item">
-        <div class="gallery-inner">
-            <div class="gallery-header">
-                <h6 class="gallery-title">{{ $gallery->getName() }}</h6>
-                <span class="glyphicon glyphicon-remove gallery-remove" aria-hidden="true" title="Supprimer cette galerie" 
-                      onclick="removeCollectionItem(this, '{!! $gallery->getUuid() !!}', 'delete_gallery')" data-subform-reloader="#gallery-reloader"></span>
+        
+        @else
+        <div class="row incomplete-sheet-disclaimer">
+            <div class="col-xs-12">
+                <p>
+                    L'ajout de galerie sera accessible une fois votre établissement enregistré avec les informations minimales requises.
+                </p>
             </div>
-            @component('components.file-input', 
-                                [
-                                'name' => 'gallery['.$gallery->getUuid().']',
-                                'class' => 'form-control',
-                                'multiple' => true,
-                                'medias' => $gallery->medias()->orderBy('created_at')->get(),
-                                'fileType' => 'image',
-                                'showRemove' => 'false',
-                                'directUpload' => 'true',
-                                'fileRefreshOnUpload' => 'true',
-                                'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
-                                ])
-                @slot('extraData')
-                    {'action': 'add_media_to_gallery', 'id_gallery': '{!!$gallery->getUuid()!!}'}
-                @endslot
-                @slot('fileuploaded')
-                    $('#gallery-reloader input[name=new_gallery_name]').val('');
-                @endslot
-            @endcomponent
         </div>
+        @endif
     </div>
-    @endforeach
+    @if(checkModel($establishment))
+        @foreach($establishment->galleries()->orderBy('created_at')->get() as $gallery)
+        <div class="col-xs-12 gallery-item">
+            <div class="gallery-inner">
+                <div class="gallery-header">
+                    <h6 class="gallery-title">{{ $gallery->getName() }}</h6>
+                    <span class="glyphicon glyphicon-remove gallery-remove" aria-hidden="true" title="Supprimer cette galerie" 
+                          onclick="removeCollectionItem(this, '{!! $gallery->getUuid() !!}', 'delete_gallery')" data-subform-reloader="#gallery-reloader"></span>
+                </div>
+                @component('components.file-input', 
+                                    [
+                                    'name' => 'gallery['.$gallery->getUuid().']',
+                                    'class' => 'form-control',
+                                    'multiple' => true,
+                                    'medias' => $gallery->medias()->orderBy('created_at')->get(),
+                                    'fileType' => 'image',
+                                    'showRemove' => 'false',
+                                    'directUpload' => 'true',
+                                    'fileRefreshOnUpload' => 'true',
+                                    'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                    ])
+                    @slot('extraData')
+                        {'action': 'add_media_to_gallery', 'id_gallery': '{!!$gallery->getUuid()!!}'}
+                    @endslot
+                    @slot('fileuploaded')
+                        $('#gallery-reloader input[name=new_gallery_name]').val('');
+                    @endslot
+                @endcomponent
+            </div>
+        </div>
+        @endforeach
+    @endif
 @if(!isset($reloaded) || !$reloaded)
 </div>
 @endif

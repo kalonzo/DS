@@ -28,6 +28,7 @@ class Establishment extends Model implements GlobalObjectManageable{
         'id_address',
         'DS_ranking',
         'id_logo',
+        'id_video',
         'star',
         'nb_last_week_visits',
         'accept_voucher',
@@ -79,6 +80,10 @@ class Establishment extends Model implements GlobalObjectManageable{
     
     public function logo(){
         return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
+    }
+    
+    public function video(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_video');
     }
     
     public function homePictures(){
@@ -556,5 +561,14 @@ class Establishment extends Model implements GlobalObjectManageable{
         $this->id_currency = $id_currency;
     }
 
+    function getIdVideo() {
+        return $this->id_video;
+    }
 
+    function setIdVideo($id_video) {
+        $this->id_video = $id_video;
+    }
+
+
+    
 }

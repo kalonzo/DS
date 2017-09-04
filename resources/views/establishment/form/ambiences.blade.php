@@ -9,8 +9,8 @@
     </div>
     <div id="collapse8" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading8">
         <div class="panel-body container">
-            <div class="row">
-                <section class="col-md-12 container-fluid">
+            <div class="row form-group">
+                <div class="col-xs-12 container-fluid">
                     <div>
                         @php
                         $selectedValues = old('business_categories[3][]');
@@ -22,7 +22,7 @@
                         {!! Form::select('businessCategories[3][]', $form_data['ambiences'], $selectedValues, 
                                         array('multiple' => true, 'class' => 'multiselect-dual')) !!}
                     </div>
-                </section>   
+                </div>   
             </div>
             <div class="row">
                 <div class="col-xs-12">
