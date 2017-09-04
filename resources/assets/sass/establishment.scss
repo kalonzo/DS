@@ -92,7 +92,7 @@ $timetableRowHeight: 76px;
 }
 
 #establishment_form_accordion{
-    #ets-photos, #ets-menus{
+    #ets-photos, #ets-menus, #ets-staff, #ets-story{
         .file-input{
             .file-preview{
                 border: 0px;
@@ -114,7 +114,7 @@ $timetableRowHeight: 76px;
         border-bottom: 2px solid lighten($main-dark-color, 35);
         margin-bottom: 1em;
     }
-    #ets-menus, #ets-staff{
+    #ets-menus, #ets-staff, #ets-story{
         .kv-preview-thumb:not(.file-preview-initial){
             display: none;
         }

@@ -19,6 +19,7 @@ class Media extends Model {
     const TYPE_USE_ETS_MENU = 4;
     const TYPE_USE_ETS_DISH = 5;
     const TYPE_USE_ETS_EMPLOYEE = 6;
+    const TYPE_USE_ETS_STORY = 7;
     
     const STATUS_PENDING = 1;
     const STATUS_VALIDATED = 2;
@@ -56,6 +57,9 @@ class Media extends Model {
                     break;
                 case self::TYPE_USE_ETS_EMPLOYEE:
                     $this->employee()->delete();
+                    break;
+                case self::TYPE_USE_ETS_STORY:
+                    $this->story()->delete();
                     break;
             }
             \Illuminate\Support\Facades\Storage::delete($this->getLocalPath());
@@ -107,6 +111,14 @@ class Media extends Model {
             $employee = $this->hasOne(Employee::class, 'id', 'id_object_related');
         }
         return $employee;
+    }
+    
+    public function story(){
+        $story = null;
+        if($this->getTypeUse() == self::TYPE_USE_ETS_STORY){
+            $story = $this->hasOne(EstablishmentHistory::class, 'id', 'id_object_related');
+        }
+        return $story;
     }
 
     /**

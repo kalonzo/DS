@@ -810,7 +810,7 @@ $mapThumbnailWidth: 145px;
 
 form:not(.navbar-form){
     
-    input[type=text], input[type=password], input[type=date]{
+    input[type=text], input[type=password], input[type=date], textarea{
         color: $main-text-color;
         border: 1px solid $main-text-color;
         @include borderRadius(0px);

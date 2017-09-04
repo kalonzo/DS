@@ -113,6 +113,10 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->hasMany(Employee::class, 'id_establishment', 'id');
     }
     
+    public function stories(){
+        return $this->hasMany(EstablishmentHistory::class, 'id_establishment', 'id');
+    }
+    
     /**
      * 
      * @return Menu

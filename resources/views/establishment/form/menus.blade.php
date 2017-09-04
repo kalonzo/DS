@@ -72,10 +72,6 @@
                             <span>&nbsp;-&nbsp;</span>
                             {!! Form::text('average_price_max', old('average_price_max'), ['class' => 'form-control']) !!}
                             {!! Form::select("id_currency", $form_data['currency_ids'], $form_values['id_currency'], ['class' => 'form-control select2']) !!}
-                            
-                            <button type="button" class="btn btn-md pull-right text-uppercase">
-                                Enregistrer
-                            </button>
                         </div>
                     </div>
                 </div>

@@ -474,6 +474,8 @@ class EstablishmentController extends Controller {
                                     'site_url' => $request->get('site_url'),
                                     'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
                                     'id_location_index' => $idLocation,
+                                    'average_price_min' => $request->get('average_price_min'),
+                                    'average_price_max' => $request->get('average_price_max'),
                                     'id_user_owner' => $user->getId(),
                                     'id_address' => $address->getId(),
                                     'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
@@ -597,6 +599,8 @@ class EstablishmentController extends Controller {
                             'site_url' => $request->get('site_url'),
                             'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
                             'id_location_index' => $idLocation,
+                            'average_price_min' => $request->get('average_price_min'),
+                            'average_price_max' => $request->get('average_price_max'),
                         ]);
                         if (checkModel($establishment)) {
                             // Update phone numbers
@@ -861,6 +865,36 @@ class EstablishmentController extends Controller {
                         }
                         $existingFiles = getMediaUrlForInputFile($employeesMedias, false);
                         $existingFilesConfig = \App\Models\Employee::getMediaConfigForInputFile($employees, false);
+                        $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                        $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                        $jsonResponse['success'] = 1;
+                    }
+                    break;
+                case 'add_story':
+                    $story = \App\Models\EstablishmentHistory::create([
+                        'id' => UuidTools::generateUuid(),
+                        'year' => $request->get('new_story_year'),
+                        'title' => $request->get('new_story_title'),
+                        'content' => $request->get('new_story_description'),
+                        'id_establishment' => $establishment->getId(),
+                        'id_photo' => 0
+                    ]);
+
+                    if (checkModel($story)) {
+                        $newStoryMedia = FileController::storeFile('new_story', \App\Models\Media::TYPE_USE_ETS_STORY, $story);
+                        if(checkModel($newStoryMedia)){
+                            $story->setIdPhoto($newStoryMedia->getId())->save();
+                        } else {
+                            $story->delete();
+                        }
+                        
+                        $stories = $establishment->stories()->orderBy('created_at')->get();
+                        $storiesMedias = array();
+                        foreach($stories as $story){
+                            $storiesMedias[] = $story->media()->first();
+                        }
+                        $existingFiles = getMediaUrlForInputFile($storiesMedias, false);
+                        $existingFilesConfig = \App\Models\EstablishmentHistory::getMediaConfigForInputFile($stories, false);
                         $jsonResponse['inputData']['initialPreview'] = $existingFiles;
                         $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
                         $jsonResponse['success'] = 1;

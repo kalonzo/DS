@@ -35,13 +35,13 @@ class Employee extends Model {
     
     /**
      * 
-     * @param Dish $employees
+     * @param Employee $employees
      * @param type $jsonEncoded
      * @return string
      */
     public static function getMediaConfigForInputFile($employees, $jsonEncoded = true) {
         $mediaConfig = array();
-        if ($employees instanceof App\Models\Employee) {
+        if ($employees instanceof Employee) {
             $employees = array($employees);
         }
         if (!empty($employees)) {
@@ -66,6 +66,15 @@ class Employee extends Model {
             return $mediaConfig;
         }
     }
+    
+    /**
+     * 
+     * @return Establishment
+     */
+    public function establishment(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_establishment');
+    }
+    
     /**
      * 
      * @return Media
