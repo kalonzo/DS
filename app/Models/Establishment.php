@@ -101,6 +101,10 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
     }
     
+    public function closePeriods(){
+        return $this->hasMany(ClosePeriod::class, 'id_establishment', 'id');
+    }
+    
     public function galleries(){
         return $this->hasMany(Gallery::class, 'id_establishment', 'id');
     }

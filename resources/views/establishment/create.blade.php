@@ -195,6 +195,8 @@
 
         var startTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][start]"]').val();
         var endTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][end]"]').val();
+
+        var hasNoBreakRef = $timetableGrid.find('input[name="openingHours[1][2][no_break]"]').is(':checked');
         
         for(var $i=2; $i<=7; $i++){
             $timetableGrid.find('select[name="openingHours['+$i+'][1][start]"]').val(startTimeAmRef);
@@ -202,6 +204,11 @@
         
             $timetableGrid.find('select[name="openingHours['+$i+'][2][start]"]').val(startTimePmRef);
             $timetableGrid.find('select[name="openingHours['+$i+'][2][end]"]').val(endTimePmRef);
+            
+            var currentHasNoBreak = $timetableGrid.find('input[name="openingHours['+$i+'][2][no_break]"]').is(':checked');
+            if(currentHasNoBreak !== hasNoBreakRef){
+                $timetableGrid.find('input[name="openingHours['+$i+'][2][no_break]"]').click();
+            }
         }
     }
 
@@ -309,6 +316,67 @@
             }
         });
     });
+    
+    function addCollectionItem(triggerButton){
+        var $form = $(triggerButton).parentsInclude('form');
+        var $container = $(triggerButton).parentsInclude('.subform-collection');
+        var $reloader = $($container.attr('data-subform-reloader'));
+
+        if(checkExist($reloader)){
+            var fd = new FormData();
+            $container.find('input').each(function(){
+                if($(this).attr('type') === 'file'){
+                    var fileInputName = $(this).attr('name');
+                    $.each($(this)[0].files, function(i, file) {
+                        fd.append(fileInputName, file);
+                    });
+                } else {
+                    fd.append($(this).attr('name'), $(this).val());
+                }
+            });
+            fd.append('action', $container.attr('data-subform-action'));
+            $.ajax({
+                url: $form.attr('action') + "/ajax",
+                method: "POST",
+                data: fd,
+                contentType: false,
+                processData: false,
+                dataType: "json",
+                success: function (data) {
+                    if(data.success){
+                        $reloader.empty().append(data.content);
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+    }
+
+    function removeCollectionItem(triggerButton, idItem, action){
+        var $form = $(triggerButton).parentsInclude('form');
+        var $reloader = $($(triggerButton).attr('data-subform-reloader'));
+
+        if(checkExist($reloader)){
+            $.ajax({
+                url: $form.attr('action') + "/ajax",
+                method: "POST",
+                data: {
+                    action: action, 
+                    id_item: idItem, 
+                },
+                success: function (data) {
+                    if(data.success){
+                        $reloader.empty().append(data.content);
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+    }
 </script>
 
 @section('js_imports_footer')

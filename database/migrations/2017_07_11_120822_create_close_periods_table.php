@@ -17,7 +17,7 @@ class CreateClosePeriodsTable extends Migration {
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
 			$table->string('label')->nullable();
-			$table->date('start date')->nullable();
+			$table->date('start_date')->nullable();
 			$table->date('end_date')->nullable();
 			$table->binary('id_establishment', 16)->index('fk_close_period_establishments1_idx');
 		});

@@ -100,14 +100,19 @@ $timetableRowHeight: 76px;
                 background-color: darken($main-dark-color, 20);
             }
         }
-        h5{
-            font-weight: bold;
-            font-size: 1.7em;
-            padding: 0.5em 20px;
-            border-top: 2px solid lighten($main-dark-color, 35);
-            border-bottom: 2px solid lighten($main-dark-color, 35);
-            margin-bottom: 1em;
+    }
+    #ets-time{
+        h6{
+            font-size: 1.3em;
         }
+    }
+    h5{
+        font-weight: bold;
+        font-size: 1.7em;
+        padding: 0.5em 20px;
+        border-top: 2px solid lighten($main-dark-color, 35);
+        border-bottom: 2px solid lighten($main-dark-color, 35);
+        margin-bottom: 1em;
     }
     #ets-menus{
         .kv-preview-thumb:not(.file-preview-initial){
@@ -123,5 +128,24 @@ $timetableRowHeight: 76px;
             margin: 0px 0.4em;
         }
     }
-    
+    #ets-close-periods{
+        .form-group > *:not(button){
+            line-height: 34px;
+        }
+        .close-periods-list{
+            padding-left: 3em;
+            .close-periods-item{
+                padding-bottom: 0.8em;
+                line-height: 23px;
+                .close-periods-remove{
+                    float: right;
+                    margin-right: 0.5em;
+                    border: 2px solid $main-text-color;
+                    @include borderRadius(100%);
+                    padding: 3px;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
 }

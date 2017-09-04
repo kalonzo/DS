@@ -199,7 +199,6 @@ class EstablishmentController extends Controller {
         if ($request->get('timePM') !== null) {
             $hour = $request->get('timePM');
         }
-        //chaîne de caractère au format datime de mysql
         $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$hour);
 
         $bookingReservation = \App\Models\Booking::create([
@@ -681,7 +680,7 @@ class EstablishmentController extends Controller {
                     }
                     break;
                 case 'delete_gallery':
-                    $uuidGallery = $request->get('id_gallery');
+                    $uuidGallery = $request->get('id_item');
                     $gallery = \App\Models\Gallery::findUuid($uuidGallery);
                     if(checkModel($gallery)){
                         $deleted = $gallery->delete();
@@ -800,6 +799,36 @@ class EstablishmentController extends Controller {
                         $jsonResponse['inputData']['initialPreview'] = $existingFiles;
                         $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
                         $jsonResponse['success'] = 1;
+                    }
+                    break;
+                case 'add_close_period':
+                    $closeStartDate = new \DateTime($request->get('close_start'));
+                    $closeEndDate = new \DateTime($request->get('close_end'));
+
+                    $closePeriod = \App\Models\ClosePeriod::create([
+                        'id' => UuidTools::generateUuid(),
+                        'label' => $request->get('close_name'),
+                        'start_date' => $closeStartDate->format('Y-m-d'),
+                        'end_date' => $closeEndDate->format('Y-m-d'),
+                        'id_establishment' => $establishment->getId()
+                    ]);
+
+                    if (checkModel($closePeriod)) {
+                        $view = View::make('establishment.form.timetable-close')->with('establishment', $establishment)->with('reloaded', true);
+                        $jsonResponse['content'] = $view->render();
+                        $jsonResponse['success'] = 1;
+                    }
+                    break;
+                case 'delete_close_period':
+                    $uuidClosePeriod = $request->get('id_item');
+                    $closePeriod = \App\Models\ClosePeriod::findUuid($uuidClosePeriod);
+                    if(checkModel($closePeriod)){
+                        $deleted = $closePeriod->delete();
+                        if($deleted){
+                            $view = View::make('establishment.form.timetable-close')->with('establishment', $establishment)->with('reloaded', true);
+                            $jsonResponse['content'] = $view->render();
+                            $jsonResponse['success'] = 1;
+                        }
                     }
                     break;
             }

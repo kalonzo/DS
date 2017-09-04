@@ -77,66 +77,6 @@
                 </div>
             </div>
             <script type="text/javascript">
-                function addGallery(triggerButton){
-                    var $form = $(triggerButton).parentsInclude('form');
-                    var $container = $(triggerButton).parentsInclude('.highlight-container');
-                    var $reloader = $($container.attr('data-subform-reloader'));
-                    
-                    if(checkExist($reloader)){
-                        var fd = new FormData();
-                        $container.find('input').each(function(){
-                            if($(this).attr('type') === 'file'){
-                                var fileInputName = $(this).attr('name');
-                                $.each($(this)[0].files, function(i, file) {
-                                    fd.append(fileInputName, file);
-                                });
-                            } else {
-                                fd.append($(this).attr('name'), $(this).val());
-                            }
-                        });
-                        fd.append('action', $container.attr('data-subform-action'));
-                        $.ajax({
-                            url: $form.attr('action') + "/ajax",
-                            method: "POST",
-                            data: fd,
-                            contentType: false,
-                            processData: false,
-                            dataType: "json",
-                            success: function (data) {
-                                if(data.success){
-                                    $reloader.empty().append(data.content);
-                                }
-                            },
-                            error: function (data) {
-                                console.log(data);
-                            }
-                        });
-                    }
-                }
-                
-                function removeGallery(triggerButton, idGallery){
-                    var $form = $(triggerButton).parentsInclude('form');
-                    var $reloader = $($(triggerButton).attr('data-subform-reloader'));
-                    
-                    if(checkExist($reloader)){
-                        $.ajax({
-                            url: $form.attr('action') + "/ajax",
-                            method: "POST",
-                            data: {
-                                action: 'delete_gallery', 
-                                id_gallery: idGallery, 
-                            },
-                            success: function (data) {
-                                if(data.success){
-                                    $reloader.empty().append(data.content);
-                                }
-                            },
-                            error: function (data) {
-                                console.log(data);
-                            }
-                        });
-                    }
-                }
             </script>
         </div> 
     </div>
