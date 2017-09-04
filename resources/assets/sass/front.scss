@@ -10,7 +10,9 @@ html{
 body{
     padding-top: 50px;
     color: $main-text-color;
-    margin-bottom: $footerHeight + $prefooterHeight;
+    &:not([data-footer=hidden]){
+        margin-bottom: $footerHeight + $prefooterHeight;
+    }
 }
 
 a.disabled{

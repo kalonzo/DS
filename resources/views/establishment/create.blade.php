@@ -219,6 +219,8 @@
             if(checkExist($form)){
                 var lat = $form.find('[name=latitude]').val()*1;
                 var lng = $form.find('[name=longitude]').val()*1;
+                console.log(lat);
+                console.log(lng);
                 if(!isNaN(lat) && !isNaN(lng)){
                     addressGeocoded = true;
                     relocateMapPosition(lat, lng);
