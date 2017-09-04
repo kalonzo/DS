@@ -114,7 +114,7 @@ $timetableRowHeight: 76px;
         border-bottom: 2px solid lighten($main-dark-color, 35);
         margin-bottom: 1em;
     }
-    #ets-menus{
+    #ets-menus, #ets-staff{
         .kv-preview-thumb:not(.file-preview-initial){
             display: none;
         }

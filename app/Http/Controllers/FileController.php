@@ -183,21 +183,21 @@ class FileController {
                 }
                 break;
             case \App\Models\Media::TYPE_USE_ETS_MENU:
-                if($relatedObject instanceof \App\Models\Menu){
-                    $ets = $relatedObject->establishment()->first();
-                    if(checkModel($ets)){
-                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/menus/'.$relatedObject->getUuid();
-                        $resolved = true;
-                    }
+                if($relatedObject instanceof \App\Models\Establishment){
+                    $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/menus';
+                    $resolved = true;
                 }
                 break;
             case \App\Models\Media::TYPE_USE_ETS_DISH:
-                if($relatedObject instanceof \App\Models\Menu){
-                    $ets = $relatedObject->establishment()->first();
-                    if(checkModel($ets)){
-                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/dishes/'.$relatedObject->getUuid();
-                        $resolved = true;
-                    }
+                if($relatedObject instanceof \App\Models\Establishment){
+                    $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/dishes';
+                    $resolved = true;
+                }
+                break;
+            case \App\Models\Media::TYPE_USE_ETS_EMPLOYEE:
+                if($relatedObject instanceof \App\Models\Establishment){
+                    $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/employees';
+                    $resolved = true;
                 }
                 break;
         }
@@ -227,6 +227,7 @@ class FileController {
             break;
             case \App\Models\Media::TYPE_USE_ETS_MENU:
             case \App\Models\Media::TYPE_USE_ETS_DISH:
+            case \App\Models\Media::TYPE_USE_ETS_EMPLOYEE:
                 $instance = new \App\Models\EstablishmentMedia();
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
