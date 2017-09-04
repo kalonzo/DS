@@ -308,6 +308,8 @@ class EstablishmentController extends Controller {
 
         // Helper array for days
         $days = DateTools::getDaysArray();
+        
+        $jobTypes = \App\Models\JobType::getLabelByType();
 
         StorageHelper::getInstance()->add('feed_establishment.form_data.cooking_types', $cookingTypes);
         StorageHelper::getInstance()->add('feed_establishment.form_data.food_specialties', $foodSpecialties);
@@ -318,6 +320,7 @@ class EstablishmentController extends Controller {
         StorageHelper::getInstance()->add('feed_establishment.form_data.days', $days);
         StorageHelper::getInstance()->add('feed_establishment.form_data.country_ids', $countryNames);
         StorageHelper::getInstance()->add('feed_establishment.form_data.currency_ids', $currencies);
+        StorageHelper::getInstance()->add('feed_establishment.form_data.job_types', $jobTypes);
     }
 
     /**
@@ -471,6 +474,8 @@ class EstablishmentController extends Controller {
                                     'site_url' => $request->get('site_url'),
                                     'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
                                     'id_location_index' => $idLocation,
+                                    'average_price_min' => $request->get('average_price_min'),
+                                    'average_price_max' => $request->get('average_price_max'),
                                     'id_user_owner' => $user->getId(),
                                     'id_address' => $address->getId(),
                                     'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
@@ -594,6 +599,8 @@ class EstablishmentController extends Controller {
                             'site_url' => $request->get('site_url'),
                             'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
                             'id_location_index' => $idLocation,
+                            'average_price_min' => $request->get('average_price_min'),
+                            'average_price_max' => $request->get('average_price_max'),
                         ]);
                         if (checkModel($establishment)) {
                             // Update phone numbers
@@ -753,7 +760,7 @@ class EstablishmentController extends Controller {
                         'id_photo' => 0
                     ]);
 
-                    if (checkModel($dish) && $request->file('new_dish')) {
+                    if (checkModel($dish)) {
                         $newDishMedia = FileController::storeFile('new_dish', \App\Models\Media::TYPE_USE_ETS_DISH, $dish);
                         if(checkModel($newDishMedia)){
                             $dish->setIdPhoto($newDishMedia->getId())->save();
@@ -786,7 +793,7 @@ class EstablishmentController extends Controller {
                         ]);
                     }
 
-                    if (checkModel($dailyMenu) && $request->file('new_daily_menu')) {
+                    if (checkModel($dailyMenu)) {
                         $newMenuMedia = FileController::storeFile('new_daily_menu', \App\Models\Media::TYPE_USE_ETS_MENU, $dailyMenu, $dailyMenu->media()->first());
                         if(checkModel($newMenuMedia)){
                             $dailyMenu->setIdFile($newMenuMedia->getId())->save();
@@ -829,6 +836,68 @@ class EstablishmentController extends Controller {
                             $jsonResponse['content'] = $view->render();
                             $jsonResponse['success'] = 1;
                         }
+                    }
+                    break;
+                case 'add_employee':
+                    $employee = \App\Models\Employee::create([
+                        'id' => UuidTools::generateUuid(),
+                        'firstname' => $request->get('new_employee_firstname'),
+                        'lastname' => $request->get('new_employee_lastname'),
+                        'id_job_type' => $request->get('job_type'),
+                        'position' => $request->get('new_employee_position'),
+                        'status' => \App\Models\Employee::STATUS_ACTIVE,
+                        'id_establishment' => $establishment->getId(),
+                        'id_photo' => 0
+                    ]);
+
+                    if (checkModel($employee)) {
+                        $newEmployeeMedia = FileController::storeFile('new_employee', \App\Models\Media::TYPE_USE_ETS_EMPLOYEE, $employee);
+                        if(checkModel($newEmployeeMedia)){
+                            $employee->setIdPhoto($newEmployeeMedia->getId())->save();
+                        } else {
+                            $employee->delete();
+                        }
+                        
+                        $employees = $establishment->employees()->orderBy('created_at')->get();
+                        $employeesMedias = array();
+                        foreach($employees as $employee){
+                            $employeesMedias[] = $employee->media()->first();
+                        }
+                        $existingFiles = getMediaUrlForInputFile($employeesMedias, false);
+                        $existingFilesConfig = \App\Models\Employee::getMediaConfigForInputFile($employees, false);
+                        $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                        $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                        $jsonResponse['success'] = 1;
+                    }
+                    break;
+                case 'add_story':
+                    $story = \App\Models\EstablishmentHistory::create([
+                        'id' => UuidTools::generateUuid(),
+                        'year' => $request->get('new_story_year'),
+                        'title' => $request->get('new_story_title'),
+                        'content' => $request->get('new_story_description'),
+                        'id_establishment' => $establishment->getId(),
+                        'id_photo' => 0
+                    ]);
+
+                    if (checkModel($story)) {
+                        $newStoryMedia = FileController::storeFile('new_story', \App\Models\Media::TYPE_USE_ETS_STORY, $story);
+                        if(checkModel($newStoryMedia)){
+                            $story->setIdPhoto($newStoryMedia->getId())->save();
+                        } else {
+                            $story->delete();
+                        }
+                        
+                        $stories = $establishment->stories()->orderBy('created_at')->get();
+                        $storiesMedias = array();
+                        foreach($stories as $story){
+                            $storiesMedias[] = $story->media()->first();
+                        }
+                        $existingFiles = getMediaUrlForInputFile($storiesMedias, false);
+                        $existingFilesConfig = \App\Models\EstablishmentHistory::getMediaConfigForInputFile($stories, false);
+                        $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                        $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                        $jsonResponse['success'] = 1;
                     }
                     break;
             }

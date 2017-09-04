@@ -9,52 +9,71 @@
     </div>
     <div id="collapse14" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading14">
         <div class="panel-body container">
-            <div class="row"> 
-                Veuillez insérer une brief histoire sur votre établissement
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-4 form-group">
-                        {!! Form::file('logo_story', ['class' => 'form-control bootstrap-file-input file-input-single']) !!}
-                    </div>
-                    <div class="col-md-8 form-group">
-                        {!! Form::label('title','Titre') !!}
-                        {!! Form::text('title') !!}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4 form-group">
-                        {!! Form::selectYear('year', 1800, 2018); !!} 
-                    </div>
-                    <div class="col-md-4 form-group">
-                        {!! Form::label('content','Description :') !!}
-                        {!! Form::textarea('content', old('content'), ['class' => 'form-control', 
-                        'placeholder' => 'Mettez en valeur l\'historique de votre établissement (Ouverture/fermeture/Ajout du restaureant dans le guide Dinerscope)']) !!}  
-                    </div>
-                </div>
-            </div>
-            <!-- Example d'historique -->
-            <div class="row">
-                <div class="col-md-4 form-group">
-                    <img src="" width="30" height="30"/>
-                    2001 Ouverture du restaurant
-                </div>
-                <div class="col-md-4 form-group">
-                    <img src="" width="30" height="30"/>
-                    2002 Le restaurant prend feu
-                </div>
-                <div class="col-md-4 form-group">
-                    <img src="" width="30" height="30"/>
-                    2018 Rien ne nous arréterra
-                </div>
-            </div>
-            <!--------->
-
-            <div class="row">
+            <div class="row form-group" id='ets-story'>
                 <div class="col-xs-12">
-                    <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
-                        Suivant
-                    </button>
+                    <p>
+                        @lang('Veuillez insérer une histoire brève sur votre établissement') 
+                    </p>
+                    <br/>
+                    <div class="col-xs-12 highlight-container">
+                        <div class="col-xs-4 col-sm-3 col-md-2 form-group">
+                            {!! Form::label('new_story_year','Année') !!}
+                            {!! Form::selectRange('new_story_year', 1900, date('Y'), null, ['class' => 'form-control select2']) !!}
+                        </div>
+                        <div class="col-xs-8 col-sm-9 col-md-10 form-group">
+                            {!! Form::label('new_story_title','Titre') !!}
+                            {!! Form::text('new_story_title', old('new_story_title'), ['class' => 'form-control']) !!}
+                        </div>
+                        <div class="col-xs-12">
+                            {!! Form::label('new_story_description', 'Texte (limité à 180 caractères)') !!}
+                            <div class="form-group">
+                                {!! Form::textarea('new_story_description', old('new_story_description'), ['class' => '', 'style' => 'height: 60px;', 'maxlength' => 180]) !!}  
+                            </div>
+                        </div>
+                        <div class="col-xs-12 form-group">
+                            @php
+                            $storyMedias = array();
+                            $stories = $establishment->stories()->orderBy('year')->get();
+                            foreach($stories as $story){
+                                $storyMedias[] = $story->media()->first();
+                            }
+                            @endphp
+                            @component('components.file-input', 
+                                        ['name' => 'new_story',
+                                        'class' => 'form-control',
+                                        'medias' => $storyMedias,
+                                        'filetype' => ['image', 'text'],
+                                        'uploadLabel' => 'Ajouter',
+                                        'browseLabel' => 'Ajouter une photo',
+                                        'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                        'fileRefreshOnUpload' => 'true',
+                                        'showCaption' => 'true',
+                                        'showRemove' => 'false',
+                                        'existingFilesConfig' => \App\Models\EstablishmentHistory::getMediaConfigForInputFile($stories),
+                                        ])
+                                @slot('extraData')
+                                    function(){
+                                        var params = {
+                                            'action': 'add_story'
+                                        };
+                                        $('#ets-story').find('input, select, textarea').each(function(){
+                                            params[$(this).attr('name')] = $(this).val();
+                                        });
+                                        return params;
+                                    }
+                                @endslot
+                                @slot('fileuploaded')
+                                    $('#ets-story').find('input, select').each(function(){
+                                        $(this).val('');
+                                    });
+                                    $('#ets-story .kv-fileinput-caption').hide();
+                                @endslot
+                                @slot('filebatchselected')
+                                    $('#ets-story .kv-fileinput-caption').show();
+                                @endslot
+                            @endcomponent
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>                    

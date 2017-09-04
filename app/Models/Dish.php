@@ -69,6 +69,14 @@ class Dish extends Model {
         return $this->hasOne(EstablishmentMedia::class, 'id', 'id_photo');
     }
     
+    /**
+     * 
+     * @return Establishment
+     */
+    public function establishment(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_establishment');
+    }
+    
     public function getCurrencyLabel(){
         return Currency::getCurrencyLabel($this->getCurrency());
     }

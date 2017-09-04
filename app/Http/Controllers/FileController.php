@@ -192,10 +192,28 @@ class FileController {
                 }
                 break;
             case \App\Models\Media::TYPE_USE_ETS_DISH:
-                if($relatedObject instanceof \App\Models\Menu){
+                if($relatedObject instanceof \App\Models\Dish){
                     $ets = $relatedObject->establishment()->first();
                     if(checkModel($ets)){
                         $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/dishes/'.$relatedObject->getUuid();
+                        $resolved = true;
+                    }
+                }
+                break;
+            case \App\Models\Media::TYPE_USE_ETS_EMPLOYEE:
+                if($relatedObject instanceof \App\Models\Employee){
+                    $ets = $relatedObject->establishment()->first();
+                    if(checkModel($ets)){
+                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/employees/'.$relatedObject->getUuid();
+                        $resolved = true;
+                    }
+                }
+                break;
+            case \App\Models\Media::TYPE_USE_ETS_STORY:
+                if($relatedObject instanceof \App\Models\EstablishmentHistory){
+                    $ets = $relatedObject->establishment()->first();
+                    if(checkModel($ets)){
+                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/stories/'.$relatedObject->getUuid();
                         $resolved = true;
                     }
                 }
@@ -227,6 +245,8 @@ class FileController {
             break;
             case \App\Models\Media::TYPE_USE_ETS_MENU:
             case \App\Models\Media::TYPE_USE_ETS_DISH:
+            case \App\Models\Media::TYPE_USE_ETS_EMPLOYEE:
+            case \App\Models\Media::TYPE_USE_ETS_STORY:
                 $instance = new \App\Models\EstablishmentMedia();
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
