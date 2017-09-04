@@ -99,6 +99,8 @@ Route::get('/admin', 'AdminController@index');
 // IMPORT
 // upload file
 Route::get('/admin/establishment/import', 'ImportRestaurantController@index');  
+// import excel
+Route::post('/admin/establishment/import', 'ImportRestaurantController@import');
 
 /**************************** AJAX CALLS **************************************/
 

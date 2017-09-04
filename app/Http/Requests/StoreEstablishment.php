@@ -19,36 +19,62 @@ class StoreEstablishment extends \App\Http\FormRequest {
      * @return array
      */
     public function rules() {
-        $rules = [
-            // Location
-            'name' => 'required|min:2|max:255',
-            'address.street' => 'required|min:3|max:255',
-            'address.street_number' => 'required|max:45',
-            'address.postal_code' => 'required|max:11',
-            'address.region' => 'required|max:255',
-            'address.city' => 'required|max:255',
-            'address.id_country' => 'required',
-            // Call numbers
-            'call_number.1' => 'required|min:11|numeric',
-            'call_number.4' => 'required|min:11|numeric',
-            'call_number.3' => 'nullable|min:11|numeric',
-            'call_number.2' => 'nullable|min:11|numeric',
-            //Web 
-            'site_url' => 'nullable|regex:/^(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-            'email' => 'nullable|email',
-            // Cooking types
-            'businessCategories.1' => 'required|array|min:1',
-        ];
-        // Opening hours
-        foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
-            $rules['openingHours.' . $dayIndex . '.1.start'] = 'required'; //|before_or_equal:openingHours.'.$dayIndex.'.1.end';
-            $rules['openingHours.' . $dayIndex . '.1.end'] = 'required';
+        if ($this->ajax() === true) {
+            $rules = array();
+            
+            switch ($this->get('action')) {
+                case 'add_gallery':
+                    echo 'Add gallery';
+                    $rules[] = [
+                        'new_gallery_name' => 'required|min:2|max:255',
+                        'new_gallery' => 'nullable|required_with:new_gallery_name',
+                    ];
+                    break;
+                case 'delete_gallery':
 
-            $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end'
-            ; //.'before_or_equal:openingHours.'.$dayIndex.'.2.end';
-            $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1';
+                    break;
+                case 'add_media_to_gallery':
+
+                    break;
+                case 'add_menu':
+                    
+                    break;
+            }
+            
+            return $rules;
+  
+        } else {
+            $rules = [
+                // Location
+                'name' => 'required|min:2|max:255',
+                'address.street' => 'required|min:3|max:255',
+                'address.street_number' => 'required|max:45',
+                'address.postal_code' => 'required|max:11',
+                'address.region' => 'required|max:255',
+                'address.city' => 'required|max:255',
+                'address.id_country' => 'required',
+                // Call numbers
+                'call_number.1' => 'required|min:11|numeric',
+                'call_number.4' => 'required|min:11|numeric',
+                'call_number.3' => 'nullable|min:11|numeric',
+                'call_number.2' => 'nullable|min:11|numeric',
+                //Web 
+                'site_url' => 'nullable|regex:/^(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+                'email' => 'nullable|email',
+                // Cooking types
+                'businessCategories.1' => 'required|array|min:1',
+            ];
+            // Opening hours
+            foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
+                $rules['openingHours.' . $dayIndex . '.1.start'] = 'required'; //|before_or_equal:openingHours.'.$dayIndex.'.1.end';
+                $rules['openingHours.' . $dayIndex . '.1.end'] = 'required';
+
+                $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end'
+                ; //.'before_or_equal:openingHours.'.$dayIndex.'.2.end';
+                $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1';
+            }
+            return $rules;
         }
-        return $rules;
     }
 
     public function messages() {
@@ -83,6 +109,9 @@ class StoreEstablishment extends \App\Http\FormRequest {
             //cooking type
             'businessCategories.1.required' => 'Veuillez sélectionner au minimum un types de cuisine pour être correctement référencer par l\'application',
             'businessCategories.1.array' => 'Veuillez spécifier au minimum un type de cuisine',
+            //Validation Ajax (gallery)
+            'new_gallery_name.required' => 'Veuillez spécifier un nom pour votre gallerie',
+            'new_gallery.required_with' => 'Veuillez saisir un nom pour votre gallerie',
         ];
         // Opening hours
         foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {

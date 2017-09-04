@@ -20,7 +20,8 @@
         "rafis/schema-extended": "~1.0",
         "laravelcollective/html":"^5.3.0",
         "wallee/sdk":"^1.1.0",
-        "maatwebsite/excel": "^2.1.0"
+        "maatwebsite/excel": "^2.1.0",
+        "barryvdh/laravel-translation-manager": "0.2.x"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

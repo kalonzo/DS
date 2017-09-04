@@ -660,7 +660,7 @@ class EstablishmentController extends Controller {
         }
     }
 
-    public function ajax(\Illuminate\Http\Request $request, Establishment $establishment) {
+    public function ajax(StoreEstablishment $request, Establishment $establishment) {
         $response = response();
         $jsonResponse = array('success' => 0);
         $createdObjects = array();
