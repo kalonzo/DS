@@ -14,7 +14,7 @@ class UpdateEstablishmentCurrency extends Migration
     public function up()
     {
         Schema::table(\App\Models\Establishment::TABLENAME, function(Blueprint $table) {
-            $table->integer('id_currency')->index('establishment_id_currency_idx');
+            $table->integer('id_currency')->index('establishment_id_currency_idx')->nullable();
         });
     }
 
