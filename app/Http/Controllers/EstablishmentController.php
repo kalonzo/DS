@@ -129,7 +129,8 @@ class EstablishmentController extends Controller {
         $this->buildFeedFormData();
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
         
-        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData);
+        $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData)
+                ->with('footerHidden', true);;
 
         return $view;
     }
@@ -146,7 +147,7 @@ class EstablishmentController extends Controller {
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
         $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', $establishment)
-                ->with('disableQuickSearch', true);
+                ->with('disableQuickSearch', true)->with('footerHidden', true);
         return $view;
     }
 

@@ -22,7 +22,7 @@
         <script src="/js/kernelFunctions.js"></script>
         @yield('js_imports_head')
     </head>
-    <body>
+    <body @if(isset($footerHidden) && $footerHidden) data-footer='hidden' @endif>
         <nav class="navbar navbar-inverse navbar-fixed-top" id="navbar">
             <div class="container-fluid">
                 <div class="navbar-collapse collapse">
@@ -81,6 +81,7 @@
         
         @yield('content')
                 
+        @if(!isset($footerHidden) || !$footerHidden)
         <div class="pre-footer">
             <div class="container">
                 <div class="col col-sm-4">
@@ -120,6 +121,7 @@
                 </p>
             </div>
         </footer>
+        @endif
         
         <script src="/js/app.js"></script>
         <script src="/js/extendMethods.js"></script>
