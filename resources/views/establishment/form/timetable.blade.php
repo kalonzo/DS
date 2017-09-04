@@ -1,4 +1,4 @@
-<div class="panel panel-default">
+<div class="panel panel-default" id='ets-time'>
     <div class="panel-heading" role="tab" id="heading10">
         <a role="button" data-toggle="collapse" data-parent="#establishment_form_accordion" href="#collapse12" 
            aria-expanded="true" aria-controls="collapse12">
@@ -11,18 +11,18 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-xs-12 no-gutter">
-                    <h5>Veuillez indiquer vos horaires d'ouverture</h5>
-                </div>    
+                    <h5>Horaires d'ouverture</h5> 
+                </div>      
             </div>
             <div class="row">
                 <div class="col-xs-5_5 col-sm-2">
                     &nbsp;
                 </div> 
                 <div class="col-xs-5_5 col-sm-4 text-center">
-                    <h5>Déjeuner</h5>
+                    <h6>Déjeuner</h6>
                 </div>    
                 <div class="hidden-xs col-xs-5_5 col-sm-4 col-sm-offset-0_5 text-center">
-                    <h5>Diner</h5>
+                    <h6>Diner</h6>
                 </div>    
             </div>
             <div id="timetable-grid">
@@ -90,11 +90,10 @@
                 @endforeach
             </div>
             <div class="cleaner"></div>
-            <div class="row">
-                <div class="col-md-12">
-                    <h5> Fermeture exceptionnelle</h5> 
-                </div>      
-            </div>
+            @if(checkModel($establishment))
+                @component('establishment.form.timetable-close', ['establishment' => $establishment])
+                @endcomponent
+            @endif
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">

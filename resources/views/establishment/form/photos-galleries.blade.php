@@ -8,7 +8,7 @@
                 Donnez un nom de galerie et ajoutez une ou plusieurs photos pour créer une nouvelle galerie.
             </p>
             <br/>
-            <div class="col-xs-12 highlight-container" data-subform-action="add_gallery" data-subform-reloader="#gallery-reloader">
+            <div class="col-xs-12 highlight-container subform-collection" data-subform-action="add_gallery" data-subform-reloader="#gallery-reloader">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('new_gallery_name','Nom de la galerie') !!}
                     {!! Form::text('new_gallery_name', old('new_gallery_name'), ['class' => 'form-control']) !!}
@@ -23,7 +23,7 @@
                     @endcomponent
                 </div>
                 <div class="col-xs-12">
-                    <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="addGallery(this);">
+                    <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="addCollectionItem(this);">
                         Enregistrer
                     </button>
                 </div>
@@ -36,7 +36,7 @@
             <div class="gallery-header">
                 <h6 class="gallery-title">{{ $gallery->getName() }}</h6>
                 <span class="glyphicon glyphicon-remove gallery-remove" aria-hidden="true" title="Supprimer cette galerie" 
-                      onclick="removeGallery(this, '{!! $gallery->getUuid() !!}')" data-subform-reloader="#gallery-reloader"></span>
+                      onclick="removeCollectionItem(this, '{!! $gallery->getUuid() !!}', 'delete_gallery')" data-subform-reloader="#gallery-reloader"></span>
             </div>
             @component('components.file-input', 
                                 [
