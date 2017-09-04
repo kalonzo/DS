@@ -90,10 +90,8 @@
                 @endforeach
             </div>
             <div class="cleaner"></div>
-            @if(checkModel($establishment))
-                @component('establishment.form.timetable-close', ['establishment' => $establishment])
-                @endcomponent
-            @endif
+            @component('establishment.form.timetable-close', ['establishment' => $establishment])
+            @endcomponent
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">

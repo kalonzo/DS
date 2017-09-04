@@ -9,8 +9,8 @@
     </div>
     <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading4">
         <div class="panel-body container">
-            <div class="row">
-                <div class="col-xs-12 form-group">
+            <div class="row form-group">
+                <div class="col-xs-12">
                     @php
                     $selectedValues = old('business_categories[1][]');
                     if(isset($form_values['business_categories'])){

@@ -10,6 +10,7 @@
     </div>
     <div id="collapse11" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading11">
         <div class="panel-body container">
+            @if(checkModel($establishment))
             <div class="row form-group">
                 <div class="col-xs-12">
                     <h5>Menus</h5>
@@ -60,6 +61,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <div class="row form-group">
                 <div class="col-xs-12">
                     <h5>Prix moyen de votre restaurant</h5>
@@ -76,6 +78,7 @@
                     </div>
                 </div>
             </div>
+            @if(checkModel($establishment))
             <div class="row form-group" id='ets-menu-dishes'>
                 <div class="col-xs-12">
                     <h5>Assiettes</h5>
@@ -149,7 +152,9 @@
                     </div>
                 </div>
             </div>
+            @endif
             
+            @if(checkModel($establishment))
             <div class="row form-group" id="ets-daily-menu">
                 <div class="col-xs-12">
                     <h5>Menu du jour</h5>
@@ -190,6 +195,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">

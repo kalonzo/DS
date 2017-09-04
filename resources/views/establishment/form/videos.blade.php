@@ -9,6 +9,7 @@
     </div>
     <div id="collapse10" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading10">
         <div class="panel-body container">
+            @if(checkModel($establishment))
             <div class="row form-group" id='ets-video'>
                 <div class="col-xs-12">
                     <p>
@@ -39,6 +40,17 @@
                     @endcomponent
                 </div>
             </div>
+            
+            @else
+            <div class="row incomplete-sheet-disclaimer">
+                <div class="col-xs-12">
+                    <p>
+                        L'ajout de vidéo sera accessible une fois votre établissement enregistré avec les informations minimales requises.
+                    </p>
+                </div>
+            </div>
+            @endif
+            
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
