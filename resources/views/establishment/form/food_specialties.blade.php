@@ -13,7 +13,7 @@
                 <div class="col-xs-12">
                     * Vous pouvez enregistrer jusqu'à 5 spécialités
                     <br/>
-                    <div class="form-group {{ $errors->has('id_country') ? 'has-error' : '' }}">
+                    <div class="form-group">
                         @php
                         $selectedValues = old('business_categories[2][]');
                         if(isset($form_values['business_categories'])){

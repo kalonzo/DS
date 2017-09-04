@@ -21,7 +21,7 @@
             @foreach($callNumbersAvailable as $typeNumber => $label)
                 <div class="col-md-6 phone-form-group">
                     {!! Form::label($label,$label) !!}
-                    <div class="form-group form-inline {{ $errors->has('call_number['.$typeNumber.']') ? 'has-error' : '' }}">
+                    <div class="form-group form-inline">
                         @php
                         $selectedPrefix = old('id_country_prefix['.$typeNumber.']');
                         $selectedNumber = old('call_number['.$typeNumber.']');

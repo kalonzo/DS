@@ -158,7 +158,7 @@ return [
         Illuminate\Queue\QueueServiceProvider::class,
         Illuminate\Redis\RedisServiceProvider::class,
         Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
-        Illuminate\Session\SessionServiceProvider::class,
+        Illuminate\Session\SessionServiceProvider::class,      
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,	
@@ -175,6 +175,7 @@ return [
 //        Yajra\Datatables\DatatablesServiceProvider::class,
         Propaganistas\LaravelPhone\PhoneServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Barryvdh\TranslationManager\ManagerServiceProvider::class,
 
         /*
          * Application Service Providers...

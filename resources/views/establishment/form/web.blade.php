@@ -12,7 +12,7 @@
             <div class="row">
                 <div class="col-md-12 accordion-inner">
                     {!! Form::label('email',' e-mail') !!}
-                    <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+                    <div class="form-group">
                         {!! Form::text('email', old('email'), ['class' => 'form-control']) !!}
                     </div>
                     {!! Form::label('site_url',' Site web de votre restaurant') !!}
