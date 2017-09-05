@@ -319,7 +319,7 @@
         });
     });
     
-    function addCollectionItem(triggerButton){
+    function addCollectionItem(triggerButton, callback){
         var $form = $(triggerButton).parentsInclude('form');
         var $container = $(triggerButton).parentsInclude('.subform-collection');
         var $reloader = $($container.attr('data-subform-reloader'));
@@ -348,9 +348,15 @@
                     if(data.success){
                         $reloader.empty().append(data.content);
                     }
+                    if(typeof callback == 'function'){
+                        callback(data);
+                    }
                 },
                 error: function (data) {
                     console.log(data);
+                    if(typeof callback == 'function'){
+                        callback(data);
+                    }
                 }
             });
         }

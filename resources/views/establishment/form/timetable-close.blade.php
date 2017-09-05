@@ -12,7 +12,10 @@
             {!! Form::date('close_start', old('close_start'), ['class' => 'form-control col-xs-5 col-sm-1_5']) !!}
             <span class="col-xs-1 col-sm-0_5">&nbsp;au&nbsp;</span>
             {!! Form::date('close_end', old('close_end'), ['class' => 'form-control col-xs-5 col-sm-1_5']) !!}
-            <button type="button" class="btn btn-md pull-right text-uppercase col-xs-12 col-sm-2" onclick="addCollectionItem(this);">
+            <button type="button" class="btn btn-md pull-right text-uppercase col-xs-12 col-sm-2" onclick="addCollectionItem(this, 
+                        function(){
+                            $('#ets-close-periods').find('input').val('');
+                        });">
                 Ajouter
             </button>
         </div>

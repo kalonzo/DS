@@ -127,3 +127,11 @@ function formatPrice($price, $currency = null){
     $formattedPrice = $kernelDSPriceFormatter->formatCurrency($price, $currency);
     return $formattedPrice;
 }
+
+function formatDate($datetime, $dateFormat = IntlDateFormatter::GREGORIAN, $timeFormat = IntlDateFormatter::NONE){
+    if(is_string($datetime)){
+        $datetime = new DateTime($datetime);
+    }
+    $intlDateFormatter = new IntlDateFormatter(\Illuminate\Support\Facades\App::getLocale(), $dateFormat, $timeFormat);
+    return $intlDateFormatter->format($datetime);
+}

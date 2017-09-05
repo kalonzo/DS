@@ -129,7 +129,7 @@ class Establishment extends Model implements GlobalObjectManageable{
     public function menus($excludeDaily = true){
         $menus = $this->hasMany(Menu::class, 'id_establishment', 'id');
         if($excludeDaily){
-            $menus->where('is_daily_menu', '!=', true);
+            $menus->whereNull('is_daily_menu')->orWhere('is_daily_menu', '!=', 1);
         }
         return $menus;
     }
