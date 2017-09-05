@@ -87,6 +87,12 @@ goToNextAccordion = function(triggerElement) {
         $currentPanel.next('.panel').find('a[data-toggle=collapse]').click();
     }
 }
+
+selectTimelineItem = function (triggerElement){
+    var itemId = $(triggerElement).attr('data-id');
+    $(triggerElement).parentsInclude('.timeline-links').find('.selected').removeClass('selected');
+    $(triggerElement).parentsInclude('.timeline-links').find('[data-id='+itemId+']').addClass('selected');
+};
     
 /*
     var searchRadius = 500;

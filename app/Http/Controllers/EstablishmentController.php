@@ -93,7 +93,43 @@ class EstablishmentController extends Controller {
                         $data['ambiences'][] = $ambience->getName();
                     }
                 }
-
+                $data['staff'] = array();
+                $employeesWithMedia = $establishment->employees()
+                                            ->select([\App\Models\Employee::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
+                                                    , \App\Models\Employee::TABLENAME.'.id_photo')
+                                            ->orderBy(\App\Models\Employee::TABLENAME.'.created_at')
+                                            ->get();
+                foreach ($employeesWithMedia as $employeeWithMedia) {
+                    if ($employeeWithMedia instanceof \App\Models\Employee) {
+                        $data['staff'][] = array(
+                                                'name' => $employeeWithMedia->getFirstname().' '.$employeeWithMedia->getLastname(),
+                                                'position' => $employeeWithMedia->getPosition(),
+                                                'picture' => asset($employeeWithMedia->local_path),
+                                            );
+                    }
+                }
+                
+                $data['story'] = array();
+                $storiesWithMedia = $establishment->stories()
+                                            ->select([\App\Models\EstablishmentHistory::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
+                                                    , \App\Models\EstablishmentHistory::TABLENAME.'.id_photo')
+                                            ->orderBy(\App\Models\EstablishmentHistory::TABLENAME.'.year')
+                                            ->get();
+                foreach ($storiesWithMedia as $storyWithMedia) {
+                    if ($storyWithMedia instanceof \App\Models\EstablishmentHistory) {
+                        $data['story'][] = array(
+                                                'id' => $storyWithMedia->getUuid(),
+                                                'title' => $storyWithMedia->getTitle(),
+                                                'text' => $storyWithMedia->getContent(),
+                                                'label' => $storyWithMedia->getYear(),
+                                                'value' => $storyWithMedia->getYear(),
+                                                'picture' => asset($storyWithMedia->local_path),
+                                            );
+                    }
+                }
+                
                 // Opening hours
                 $etsOpeningHours = $establishment->openingHours()->orderBy('day', 'ASC')->orderBy('day_order', 'ASC')->get();
                 $data['timetable'] = array();

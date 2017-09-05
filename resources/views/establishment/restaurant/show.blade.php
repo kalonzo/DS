@@ -70,8 +70,7 @@
             @component('components.divcell', ['style' => 'height: 100%;'])
                 @slot('content')
                     <h1>{{ $establishment->getName() }}</h1>
-            {{ Route::currentRouteName() }}
-                    <h2>{{ $data['cooking_type'] }}</h2>
+                    <h2>@lang('Cuisine') {{ $data['cooking_type'] }}</h2>
                     @if(isset($data['specialties']))
                     <h3>
                         @foreach($data['specialties'] as $specialty)
@@ -88,34 +87,42 @@
         <!------------- RESTAURANT DETAILS ------------------------------------>
         <section class="container-fluid ets-details">
             <div class="container">
-                <h1>Qui <strong>sommes-nous</strong></h1>
-                <p class="description">
-                    {{ $establishment->getDescription() }}
-                </p>
-                <!--
-                VIDEO
-                -->
-                <div class="row">
-                    @if(isset($data['services']))
-                    <div class="col-sm-6">
-                        <h2>Services</h2>
-                        @foreach($data['services'] as $service)
-                        <ul class="category-list">
-                            <li>{{ $service }}</li>
-                        </ul>                            
-                        @endforeach
-                    </div>
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
+                    <h1>Qui <strong>sommes-nous</strong></h1>
+                    @if($establishment->video()->exists())
+                    <video width="100%" controls controlsList="nodownload">
+                        <source src="{{ asset($establishment->video()->first()->getLocalPath()) }}" type="{{ $establishment->video()->first()->getMimeType() }}">
+                        @lang("Votre navigateur ne supporte pas l'affichage de vidéo au standard HTML5.")
+                    </video>
                     @endif
-                    @if(isset($data['ambiences']))
-                    <div class="col-sm-6">
-                        <h2>Cadre & ambiance</h2>
-                        @foreach($data['ambiences'] as $ambience)
-                        <ul class="category-list">
-                            <li>{{ $ambience }}</li>
-                        </ul>                            
-                        @endforeach
+                    <p class="description">
+                        {{ $establishment->getDescription() }}
+                    </p>
+                    <!--
+                    VIDEO
+                    -->
+                    <div class="row">
+                        @if(isset($data['services']))
+                        <div class="col-sm-6">
+                            <h2>Services</h2>
+                            @foreach($data['services'] as $service)
+                            <ul class="category-list">
+                                <li>{{ $service }}</li>
+                            </ul>                            
+                            @endforeach
+                        </div>
+                        @endif
+                        @if(isset($data['ambiences']))
+                        <div class="col-sm-6">
+                            <h2>Cadre & ambiance</h2>
+                            @foreach($data['ambiences'] as $ambience)
+                            <ul class="category-list">
+                                <li>{{ $ambience }}</li>
+                            </ul>                            
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
         </section>
@@ -146,12 +153,46 @@
                 <h1>Notre <strong>équipe</strong></h1>
                 <div class="row">
                     @foreach($data['staff'] as $staff)
-                    <div class="col-sm-3">
-                        <!--
-                        STAFF
-                        -->
+                    <div class="col-xs-6 col-sm-4 employee-item">
+                        <img src="{{ $staff['picture'] }}" alt="{{ $staff['name'] }} picture"/>
+                        <div class="employee-name">
+                            {{ $staff['name'] }}
+                        </div>
+                        <div class="employee-position">
+                            {{ $staff['position'] }}
+                        </div>
                     </div>                    
                     @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+        <!------------- RESTAURANT HISTORY -------------------------------------->
+        @if(isset($data['story']))
+        <section class="container-fluid ets-story">
+            <div class="container">
+                <h1><strong>Notre</strong> histoire</h1>
+                <div class="row">
+                    @component('components.timeline', ['items' => $data['story'] ])
+                        @foreach($data['story'] as $story)
+                            @slot("content_".$story['id'])
+                                <div class="timeline-content-image square-container">
+                                    <div class="crop">
+                                        <img src="{!! $story['picture'] !!}" alt="story illustration"/>
+                                    </div>
+                                </div>
+                                <div class="timeline-content-body">
+                                    <div class="timeline-content-title">
+                                        {!! $story['title'] !!}
+                                    </div>
+                                    <div class="timeline-content-text">
+                                    {!! $story['text'] !!}
+                                    </div>
+                                </div>
+                            @endslot
+                        @endforeach
+                    @endcomponent
+                    <br class="cleaner"/><br/>
                 </div>
             </div>
         </section>
@@ -230,6 +271,21 @@
             </div>
         </section>
     </div>
+
+    <?php
+    if($establishment->homePictures()->exists()){
+        ?><style><?php
+        foreach($establishment->homePictures()->get() as $i => $media){
+            ?>
+            .show-page section:nth-of-type(<?php echo $i+1;?>){
+                background-image: url('<?php echo asset($media->getLocalPath());?>');
+                background-color: black;
+            }
+            <?php
+        }
+        ?></style><?php
+    }
+    ?>
 @endsection
 
 @section('js_imports_footer')
