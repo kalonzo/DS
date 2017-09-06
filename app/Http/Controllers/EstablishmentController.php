@@ -62,23 +62,149 @@ class EstablishmentController extends Controller {
     public function show(Establishment $establishment, $page = null) {
         $data = array();
 
+        // Business categories
+        $data['cooking_type'] = '-';
+        $mainCookingType = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_COOKING_TYPE)->first();
+        if ($mainCookingType instanceof BusinessCategory) {
+            $data['cooking_type'] = $mainCookingType->getName();
+        }
+        $data['specialties'] = array();
+        $specialties = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_FOOD_SPECIALTY)->orderBy('name')->get();
+        foreach ($specialties as $specialty) {
+            if ($specialty instanceof BusinessCategory) {
+                $data['specialties'][] = $specialty->getName();
+            }
+        }
+        //Contact
+        $data['address'] = $establishment->address()->first()->getDisplayable();
+        $data['phone_number'] = null;
+        $callNumber = $establishment->callNumbers()->where('type', '=', CallNumber::TYPE_PHONE_NUMBER_RESERVATION)->first();
+        if (checkModel($callNumber)) {
+            $data['phone_number'] = $callNumber->getDisplayable();
+        }
+
         switch ($page) {
             case 'menu':
-            case 'photos':
-            default :
-                // Business categories
-                $data['cooking_type'] = '-';
-                $mainCookingType = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_COOKING_TYPE)->first();
-                if ($mainCookingType instanceof BusinessCategory) {
-                    $data['cooking_type'] = $mainCookingType->getName();
-                }
-                $data['specialties'] = array();
-                $specialties = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_FOOD_SPECIALTY)->orderBy('name')->get();
-                foreach ($specialties as $specialty) {
-                    if ($specialty instanceof BusinessCategory) {
-                        $data['specialties'][] = $specialty->getName();
+                $data['menus'] = array();
+                $data['daily_menu'] = array();
+                $menusWithMedia = $establishment->menus(false)
+                                            ->select([\App\Models\Menu::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
+                                                    , \App\Models\Menu::TABLENAME.'.id_file')
+                                            ->orderBy(\App\Models\Menu::TABLENAME.'.created_at')
+                                            ->get();
+                foreach ($menusWithMedia as $menuWithMedia) {
+                    if ($menuWithMedia instanceof \App\Models\Menu) {
+                        $menuData = array(
+                                                'name' => $menuWithMedia->getName(),
+                                                'file' => asset($menuWithMedia->local_path),
+                                            );
+                        if($menuWithMedia->getIsDailyMenu()){
+                            $data['daily_menu'][] = $menuData;
+                        } else {
+                            $data['menus'][] = $menuData;
+                        }
                     }
                 }
+                
+                $data['dishes'] = array();
+                $dishesWithMedia = $establishment->dishes()
+                                            ->select([\App\Models\Dish::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path',
+                                                \App\Models\Currency::TABLENAME.'.symbol'])
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
+                                                    , \App\Models\Dish::TABLENAME.'.id_photo')
+                                            ->join(\App\Models\Currency::TABLENAME, \App\Models\Currency::TABLENAME.'.id', '='
+                                                    , \App\Models\Dish::TABLENAME.'.currency')
+                                            ->orderBy(\App\Models\Dish::TABLENAME.'.created_at')
+                                            ->get();
+                foreach ($dishesWithMedia as $dishWithMedia) {
+                    if ($dishWithMedia instanceof \App\Models\Dish) {
+                        $price = $dishWithMedia->getPrice();
+                        $currency = $dishWithMedia->symbol;
+                        $priceFormatted = formatPrice($dishWithMedia->getPrice(), $dishWithMedia->getCurrencyLabel());
+                        $priceFormatted = str_replace(chr(0xC2).chr(0xA0), ' ', $priceFormatted);
+                        $priceArray = explode(' ', $priceFormatted);
+                        if(count($priceArray) === 1){
+                            $price = $priceFormatted;
+                        } else if(count($priceArray) === 2){
+                            if($priceArray[1] === $currency){
+                                $price = $priceArray[0];
+                                $currency = $priceArray[1];
+                            } else if($priceArray[0] === $currency){
+                                $price = $priceArray[1];
+                                $currency = $priceArray[0];
+                            } 
+                        }
+                        $data['dishes'][] = array(
+                                                'name' => $dishWithMedia->getName(),
+                                                'description' => $dishWithMedia->getDescription(),
+                                                'price' => $price,
+                                                'currency' => $currency,
+                                                'picture' => asset($dishWithMedia->local_path),
+                                            );
+                    }
+                }
+                break;
+            case 'photos':
+                $data['galleries'] = array();
+                $galleriesData = $establishment->galleries()
+                                    ->select([\App\Models\Gallery::TABLENAME.'.*', DB::raw('count('.\App\Models\Gallery::TABLENAME.'.id) as nbMedias'),
+                                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', \App\Models\Gallery::TABLENAME))])
+                                    ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id_gallery', '='
+                                            , \App\Models\Gallery::TABLENAME.'.id')
+                                    ->orderBy(\App\Models\Gallery::TABLENAME.'.created_at')
+                                    ->groupBy(\App\Models\Gallery::TABLENAME.'.id')
+                                    ->get();
+                $galleriesUuids = $galleriesData->pluck('uuid')->all();
+                $galleryMedias = \App\Models\EstablishmentMedia
+                                    ::select([DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_gallery')), 'local_path'])
+//                                    ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
+                                    ->where('position', '=', 1)
+                                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_gallery', $galleriesUuids))
+                                    ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at')
+                                    ->get()
+                                ;
+                $mediaPathByGallery = $galleryMedias->mapWithKeys(function ($item) {
+                    return [$item->uuid => asset($item->local_path)];
+                });
+                foreach ($galleriesData as $galleryData) {
+                    if ($galleryData instanceof \App\Models\Gallery) {
+                        $mediaPath = null;
+                        if(isset($mediaPathByGallery[$galleryData->uuid])){
+                            $mediaPath = $mediaPathByGallery[$galleryData->uuid];
+                        }
+                        if(!empty($mediaPath)){
+                            $data['galleries'][] = array(
+                                                'name' => $galleryData->getName(),
+                                                'info' => '('.$galleryData->nbMedias.' '.__('photos').')',
+                                                'picture' => $mediaPath
+                                            );
+                        }
+                    }
+                }
+                
+                $data['last_pics'] = array();
+                $lastMedias = \App\Models\EstablishmentMedia
+                                    ::join(\App\Models\Gallery::TABLENAME, \App\Models\Gallery::TABLENAME.'.id', '=', 
+                                            \App\Models\EstablishmentMedia::TABLENAME.'.id_gallery')
+                                    ->select([\App\Models\EstablishmentMedia::TABLENAME.'.*'])
+//                                    ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
+                                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishment->getUuid(), 
+                                                                                            \App\Models\Gallery::TABLENAME))
+                                    ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at', 'DESC')
+                                    ->limit(18)
+                                    ->get()
+                                ;
+                foreach ($lastMedias as $lastMedia) {
+                    if ($lastMedia instanceof \App\Models\EstablishmentMedia) {
+                        $data['last_pics'][] = array(
+                                                'picture' => asset($lastMedia->local_path)
+                                            );
+                    }
+                }
+                break;
+            default :
+                // Business categories
                 $data['services'] = array();
                 $services = $establishment->businessCategories()->where('type', BusinessCategory::TYPE_SERVICES)->orderBy('name')->get();
                 foreach ($services as $service) {
@@ -152,13 +278,6 @@ class EstablishmentController extends Controller {
                     }
                 }
 
-                //Contact
-                $data['address'] = $establishment->address()->first()->getDisplayable();
-                $data['phone_number'] = null;
-                $callNumber = $establishment->callNumbers()->where('type', '=', CallNumber::TYPE_PHONE_NUMBER_RESERVATION)->first();
-                if (checkModel($callNumber)) {
-                    $data['phone_number'] = $callNumber->getDisplayable();
-                }
                 break;
         }
         

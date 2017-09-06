@@ -250,6 +250,9 @@ class FileController {
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
                 $instance->setTypeUse($fileType);
                 $instance->setStatus(\App\Models\Media::STATUS_PENDING);
+                if($relatedObject instanceof \App\Models\Gallery){
+                    $instance->setIdGallery($relatedObject->getId());
+                }
             break;
             case \App\Models\Media::TYPE_USE_ETS_MENU:
             case \App\Models\Media::TYPE_USE_ETS_DISH:

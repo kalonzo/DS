@@ -17,6 +17,7 @@ mix.js([
     .copyDirectory('resources/assets/js/', 'public/js')
     .copyDirectory('resources/assets/img', 'public/img')
     .copyDirectory('node_modules/ckeditor/', 'public/libraries/ckeditor')
+    .copyDirectory('node_modules/baguettebox.js/dist/', 'public/libraries/baguettebox/')
 //    .copyDirectory('resources/assets/dashboard-innovate', 'public/dashboard-innovate')
 //    .copyDirectory('vendor/kartik-v/bootstrap-fileinput', 'public/libraries/bootstrap-fileinput')
     .sass('resources/assets/sass/app.scss', 'public/css')

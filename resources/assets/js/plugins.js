@@ -41,6 +41,9 @@ $(document).ready(function () {
             $(this).ckeditor(options);
         });
     }
+    if (typeof baguetteBox != 'undefined') {
+        baguetteBox.run('.gallery');
+    }
     
     
 });

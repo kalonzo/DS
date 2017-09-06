@@ -26,4 +26,13 @@ class CurrencyTools {
         }
         return $currency;
     }
+    
+    public static function getSymbolFromCurrency($currencyIso, $locale = null){
+        if(empty($locale)){
+            $locale = Illuminate\Support\Facades\App::getLocale();
+        }
+        $fmt = new NumberFormatter( $locale."@currency=$currencyIso", NumberFormatter::CURRENCY);
+        $symbol = $fmt->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
+        return $symbol;
+    }
 }

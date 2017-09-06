@@ -223,30 +223,6 @@ $timetableRowHeight: 76px;
                 font-size: 4em;
             }
         }
-        &.ets-staff{
-            .employee-item{
-                text-align: center;
-                margin-bottom: 2em;
-                img{
-                    width: 80%;
-                    margin: 10px auto 1.5em auto;
-                    @include borderRadius(100%);
-                }
-                .employee-name{
-                    text-transform: uppercase;
-                    font-size: 1.6em;
-                    height: 33px;
-                    width: 100%;
-                    overflow: hidden;
-                }
-                .employee-position{
-                    font-size: 1.1em;
-                    height: 44px;
-                    width: 100%;
-                    overflow: hidden;
-                }
-            }
-        }
         &.ets-timetable{
             text-transform: uppercase;
             .row{
@@ -354,6 +330,119 @@ $timetableRowHeight: 76px;
                     font-weight: bold;
                     &:hover{
                         text-decoration: none;
+                    }
+                }
+            }
+        }
+        &.ets-menus{
+            .menu-button{
+                margin-top: 1em;
+                text-transform: uppercase;
+                background-color: $booking-color;
+                border: 0px;
+                width: 80%;
+                font-size: 0.9em;
+                padding: 12px 0px;
+                .glyphicon{
+                    margin-left: 0.5em;
+                }
+                &:hover, &:focus{
+                    color: $main-text-color;
+                }
+            }
+        }
+        &.ets-galleries{
+            .gallery-item{
+                .square-container{
+                    width: 100%;
+                    height: 300px;
+                }
+                .gallery-details{
+                    line-height: 30px;
+                    height: 30px;
+                    float: left;
+                    width: 100%;
+                    margin: 1em 0px;
+                    .gallery-title{
+                        float: left;
+                        text-transform: uppercase;
+                        font-size: 1.5em;
+                        font-weight: 300;
+                    }
+                    .gallery-info{
+                        float: right;
+                        font-size: 0.8em;
+                    }
+                }
+            }
+        }
+        &.ets-last-pics{
+            .last-pic-item{
+                margin-bottom: 30px;
+                background-size: cover;
+                img.square-pattern{
+                    width: 100%;
+                    @include opacity(0);
+                }
+                img.last-pic-img{
+                    display: block;
+                    position: absolute;
+                    width: 100%;
+                    top: 0px;
+                    left: 0px;
+                    right: 0px;
+                }
+            }
+        }
+        .thumbnail-item{
+            text-align: center;
+            margin-bottom: 2em;
+            img{
+                width: 80%;
+                margin: 10px auto 0px auto;
+                @include borderRadius(100%);
+            }
+            .thumbnail-name{
+                text-transform: uppercase;
+                font-size: 1.6em;
+                height: 33px;
+                width: 100%;
+                overflow: hidden;
+                margin-top: 1.5em;
+            }
+            .thumbnail-description{
+                font-size: 1.1em;
+                height: 44px;
+                width: 100%;
+                overflow: hidden;
+            }
+            .thumbnail-visual{
+                position: relative;
+            }
+            .thumbnail-badge{
+                position: absolute;
+                bottom: 0px;
+                right: 10px;
+                background-color: rgba(15, 102, 148, 0.85);
+                text-align: center;
+                display:table;
+                height: 80px;
+                width: 80px;
+                @include borderRadius(100%);
+                .thumbnail-badge-inner{
+                    display:table-cell;
+                    vertical-align:middle;
+                    padding: 0px 8px;
+                    white-space: nowrap;
+                    .currency{
+                        font-size: 0.7em;
+                        vertical-align: top;
+                        margin-top: -0.8em;
+                        display: inline-block;
+                    }
+                    .price{
+                        font-size: 1.3em;
+                        margin-left: -8px;
                     }
                 }
             }
