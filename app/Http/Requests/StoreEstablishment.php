@@ -195,6 +195,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'menu_name.required' => 'Veuillez saisir un nom pour votre menu',
             'menu_name.min' => 'le nom de votre menu est trop cout',
             'menu_name.max' => 'Le nom de votre menu est trop long',
+            'average_price_max.between' => 'Le prix maximum doit être inférieur au prix minimum',
             //video
             'video.mimes' => 'Format incorrect',
             'video.required' => 'Format incorrect',
@@ -219,13 +220,13 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'close_name.max' => 'Le nom est trop long',
             'end_date.after' => 'La date de fin doit être supérieure à la date d\'ouverture',
             //employeee
-            'new_employee_firstname.required' => '|min:2|max:255',
-            'new_employee_firstname.min' => '|min:2|max:255',
-            'new_employee_firstname.max' => '|min:2|max:255',
-            'new_employee_lastname.required' => 'required|min:2|max:255',
-            'new_employee_lastname.min' => 'required|min:2|max:255',
-            'new_employee_lastname.max' => 'required|min:2|max:255',
-            'job_type.required' => '',
+            'new_employee_firstname.required' => 'Le nom est requis',
+            'new_employee_firstname.min' => 'Le nom est trop court',
+            'new_employee_firstname.max' => 'Le nom est trop long',
+            'new_employee_lastname.required' => 'Le prenom est requis',
+            'new_employee_lastname.min' => 'Le prenom est trop court',
+            'new_employee_lastname.max' => 'Le prenom est trop long',
+            'job_type.required' => 'Veuillez choisir le type d\'employé',
             'new_employee_position.required' => '',
             //story
             'new_story_year.required' => 'Veuillez séléctionner une date',
