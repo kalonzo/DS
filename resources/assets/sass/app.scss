@@ -82,3 +82,35 @@ a.simple{
         }
     }
 }
+
+#ajax-modal-sample{
+    display: none;
+}
+.ajax-modal{
+    .modal-body{
+        padding: 20px;
+        .row{
+            margin: 0px;
+        }
+    }
+    .loading-bar{
+        margin: 20px auto;
+        .progress-bar{
+            width: 100%;
+        }
+    }
+    .modal-footer{
+        display: none;
+    }
+}
+
+.gallery-box{
+    .gallery-box-item{
+        margin-bottom: 30px;
+        background-size: cover;
+        img.square-pattern{
+            width: 100%;
+            @include opacity(0);
+        }
+    }
+}

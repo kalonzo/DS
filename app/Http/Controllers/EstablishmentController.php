@@ -175,6 +175,7 @@ class EstablishmentController extends Controller {
                         }
                         if(!empty($mediaPath)){
                             $data['galleries'][] = array(
+                                                'id' => $galleryData->getUuid(),
                                                 'name' => $galleryData->getName(),
                                                 'info' => '('.$galleryData->nbMedias.' '.__('photos').')',
                                                 'picture' => $mediaPath
@@ -288,6 +289,52 @@ class EstablishmentController extends Controller {
                 ->with('footerHidden', true);;
 
         return $view;
+    }
+    
+    public function showAjax(Request $request, Establishment $establishment, $page = null){
+        $response = response();
+        $jsonResponse = array('success' => 0);
+        $createdObjects = array();
+        
+        try {
+            $action = $request->get('action');
+
+            switch ($action){
+                default :
+                    $jsonResponse['error'] = "Le système n'a pu identifier la demande.";
+                    break;
+                case 'show_gallery':
+                    $uuidGallery = $request->get('id_gallery');
+                    if(checkModelId($uuidGallery)){
+                        $gallery = $establishment->galleries()->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $uuidGallery))
+                                ->first();
+                        if(checkModel($gallery)){
+                            $medias = $gallery->medias()/*->where('status', '=', \App\Models\Media::STATUS_VALIDATED)*/->get();
+                            
+                            $view = View::make('components.gallery-pics')->with('medias', $medias);
+                            $jsonResponse['content'] = $view->render();
+                            $jsonResponse['success'] = 1;
+                        } else {
+                            $jsonResponse['error'] = "Un problème est survenu lors du chargement de la galerie.";
+                        }
+                    } else {
+                        $jsonResponse['error'] = "Les informations de la galerie n'ont pas pu être trouvée.";
+                    }
+                break;
+            }
+        } catch (Exception $e) {
+            // TODO Report error in log system
+            print_r($e->getMessage());
+
+            foreach ($createdObjects as $createdObject) {
+                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
+                    $createdObject->delete();
+                }
+            }
+        }
+        
+        $responsePrepared = $response->json($jsonResponse);
+        return $responsePrepared;
     }
 
     /**

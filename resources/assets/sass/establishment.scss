@@ -170,11 +170,12 @@ $timetableRowHeight: 76px;
             }
             h1{
                 font-size: 6em;
-                font-weight: 300;
+                font-weight: 200;
                 color: $text-color-alt;
                 text-align: center;
                 strong{
                     color: white;
+                    font-weight: 800;
                 }
             }
             h2{
@@ -193,7 +194,7 @@ $timetableRowHeight: 76px;
             align-items: center;
             h1{
                 font-size: 6em;
-                font-weight: bold;
+                font-weight: 800;
             }
             h2{
                 font-size: 2.3em;
@@ -353,6 +354,7 @@ $timetableRowHeight: 76px;
         }
         &.ets-galleries{
             .gallery-item{
+                margin-bottom: 30px;
                 .square-container{
                     width: 100%;
                     height: 300px;

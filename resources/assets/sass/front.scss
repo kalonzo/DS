@@ -630,7 +630,7 @@ select:not(.select2){
     }
 }
 
-#filterModal, #checkoutModal{
+#filterModal, #checkoutModal, .ajax-modal{
     .modal-content{
         background: $main-dark-color;
         border: 1px solid white;

@@ -123,12 +123,16 @@
         </footer>
         @endif
         
+        @component('components.ajax-modal')
+        @endcomponent
+        
         <script src="/js/app.js"></script>
         <script src="/js/extendMethods.js"></script>
         <script src="/js/functions.js"></script>
         <script src="/js/plugins.js"></script>    
         <script src="/js/geolocation.js"></script>    
         @yield('js_imports_footer')
+        <script src="/js/js-loaded-trigger.js"></script>    
     </body>
 </html>
 @endif

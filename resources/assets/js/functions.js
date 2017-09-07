@@ -93,6 +93,44 @@ selectTimelineItem = function (triggerElement){
     $(triggerElement).parentsInclude('.timeline-links').find('.selected').removeClass('selected');
     $(triggerElement).parentsInclude('.timeline-links').find('[data-id='+itemId+']').addClass('selected');
 };
+
+getOnClickModal = function(title, url, params, modalId, modalClasses){
+    var $sampleModal = $('#ajax-modal-sample');
+    if(checkExist($sampleModal) && !isEmpty(url)){
+        var newModal = $sampleModal.clone();
+        if(isEmpty(modalId)){
+            modalId = 'modal_'+ Math.round(Math.random() * 1000000);
+        }
+        $(newModal).attr('id', modalId);
+        $(newModal).addClass(modalClasses);
+        $(newModal).find('.modal-title').html(title);
+        $('body').append(newModal);
+        $(newModal).modal('show');
+        
+        $.ajax({
+            url: url,
+            type: "post",
+            data: params,
+            dataType: 'json',
+            success: function (data) {
+                if(data.success){
+                    $(newModal).find('.loading-bar').hide();
+                    $(newModal).find('.modal-errors').hide();
+                    $(newModal).find('.modal-inner-body').empty().append(data.content);
+                }
+//                if(typeof callback == 'function'){
+//                    callback(data);
+//                }
+            },
+            error: function (data) {
+                console.log(data);
+//                if(typeof callback == 'function'){
+//                    callback(data);
+//                }
+            }
+        });
+    }
+};
     
 /*
     var searchRadius = 500;
