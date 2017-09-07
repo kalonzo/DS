@@ -106,10 +106,10 @@ class StoreEstablishment extends \App\Http\FormRequest {
             //Une regex contenant des pipe doit être validé avant ou après 
             $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
                         //format autorisé +(502)(4 à 10) ou +(41)(4 à 10) ou (0041)(4 à 10)ou (00502)(4 à 10)
-                        'call_number.1' => ['required', 'regex:/(^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-                        'call_number.4' => ['required', 'regex:/(^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-                        'call_number.2' => ['nullable', 'regex:/((^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-                        'call_number.3' => ['nullable', 'regex:/(^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
+                        'call_number.1' => ['required', 'regex:/[0-9 ]+/'],
+                        'call_number.4' => ['required', 'regex:/[0-9 ]+/'],
+                        'call_number.2' => ['nullable', 'regex:/[0-9 ]+/'],
+                        'call_number.3' => ['nullable', 'regex:/[0-9 ]+/'],
             ]);
 
             if ($validator->fails()) {
@@ -240,6 +240,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'call_number.4.regex' => 'Veuillez contrôler le format de votre numéro',
             'call_number.2.regex' => 'Veuillez contrôler le format de votre numéro', 
             'call_number.3.regex' => 'Veuillez contrôler le format de votre numéro', 
+            'call_number.1.required' => 'Veuillez saisir un numéro de réservation',
+            'call_number.4.required' => 'Veuillez saisir un numéro de contact',
         ];
         // Opening hours
         foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
