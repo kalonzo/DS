@@ -241,7 +241,7 @@ $timetableRowHeight: 76px;
             .timetable-show{
                 .timetable-day{
                     text-align: right;
-                    font-weight: bold;
+                    font-weight: 800;
                     font-size: 1.6em;
                     box-sizing: border-box;
                     line-height: 2.1em;
@@ -262,6 +262,18 @@ $timetableRowHeight: 76px;
                             padding-left: 4.16666667%;
                         }
                     }
+                }
+            }
+            .close-show{
+                h2{
+                    font-weight: 800;
+                    font-size: 1.6em;
+                    border: 0px;
+                    margin: 0px;
+                }
+                .period-label{
+                    border-left: 3px solid white;
+                    font-size: 1.5em;
                 }
             }
         }

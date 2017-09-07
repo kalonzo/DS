@@ -22,6 +22,27 @@ function checkHexUuid($uuid){
     return preg_match('/^[0-9a-f]{8}([0-9a-f]{4}){3}[0-9a-f]{12}$/', $uuid);
 }
 
+function checkFlow($flowSource, $flowIndexes){
+    $flowValid = false;
+    if(!isset($flowSource)){
+        $flowValid = false;
+        return $flowValid;
+    } else if(empty($flowSource)){
+        $flowValid = false;
+        return $flowValid;
+    }
+    if(!is_array($flowIndexes)){
+        $flowIndexes = array($flowIndexes);
+    }
+    foreach($flowIndexes as $flowIndex){
+        if(isset($flowSource[$flowIndex]) && !empty($flowSource[$flowIndex])){
+            $flowValid = true;
+            return $flowValid;
+        }
+    }
+    return $flowValid;
+}
+
 function isBinary($str) {
     return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
 }

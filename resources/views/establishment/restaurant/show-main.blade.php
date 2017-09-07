@@ -1,4 +1,5 @@
 <!------------- RESTAURANT DETAILS ------------------------------------>
+ @if(checkFlow($data, ['services', 'ambiences']) || $establishment->video()->exists() || !empty($establishment->getDescription()) )
 <section class="container-fluid ets-details">
     <div class="container">
         <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
@@ -16,7 +17,7 @@
             VIDEO
             -->
             <div class="row">
-                @if(isset($data['services']))
+                @if(isset($data['services']) && !empty($data['services']))
                 <div class="col-sm-6">
                     <h2>Services</h2>
                     @foreach($data['services'] as $service)
@@ -26,7 +27,7 @@
                     @endforeach
                 </div>
                 @endif
-                @if(isset($data['ambiences']))
+                @if(isset($data['ambiences']) && !empty($data['ambiences']))
                 <div class="col-sm-6">
                     <h2>Cadre & ambiance</h2>
                     @foreach($data['ambiences'] as $ambience)
@@ -40,6 +41,7 @@
         </div>
     </div>
 </section>
+ @endif
 <!------------- RESTAURANT EVENTS & PROMO ----------------------------->
 @if(isset($data['events']) || isset($data['promo']))
 <section class="container-fluid ets-events" id="events">
@@ -61,7 +63,7 @@
 </section>
 @endif
 <!------------- RESTAURANT STAFF -------------------------------------->
-@if(isset($data['staff']))
+@if(checkFlow($data, ['staff']))
 <section class="container-fluid ets-staff">
     <div class="container">
         <h1>Notre <strong>équipe</strong></h1>
@@ -82,7 +84,7 @@
 </section>
 @endif
 <!------------- RESTAURANT HISTORY -------------------------------------->
-@if(isset($data['story']))
+@if(checkFlow($data, ['story']))
 <section class="container-fluid ets-story">
     <div class="container">
         <h1><strong>Notre</strong> histoire</h1>
@@ -112,7 +114,7 @@
 </section>
 @endif
 <!------------- RESTAURANT TIMETABLE ---------------------------------->
-@if(isset($data['timetable']))
+@if(checkFlow($data, ['timetable', 'close_periods']))
 <section class="container-fluid ets-timetable">
     <div class="container">
         <h1><strong>Horaires</strong> d'ouverture</h1>
@@ -155,9 +157,20 @@
             @endforeach
         </div>
         @if(isset($data['close_periods']))
-        <div class="row">
-            <div class="col-xs-5_5 col-sm-3">
-                Fermeture exceptionnelle
+        <br class="cleaner"/><br/>
+        <div class="row close-show">
+            <div class="col-xs-5_5 col-sm-2_5 text-right">
+                <h2>Fermeture exceptionnelle</h2>
+            </div>   
+            <div class="col-xs-6_5 col-sm-9 col-sm-offset-0_5 period-label">
+                @foreach($data['close_periods'] as $closePeriod)
+                <div class="col-xs-6 col-sm-4 text-right">
+                    {!! $closePeriod->getLabel() !!} :
+                </div>
+                <div class="col-xs-6 col-sm-8">
+                    {!! formatDate($closePeriod->getStartDate(), IntlDateFormatter::SHORT) !!} - {!! formatDate($closePeriod->getEndDate(), IntlDateFormatter::SHORT) !!}
+                </div>
+                @endforeach
             </div>   
         </div>
         @endif

@@ -156,30 +156,32 @@ class EstablishmentController extends Controller {
                                     ->groupBy(\App\Models\Gallery::TABLENAME.'.id')
                                     ->get();
                 $galleriesUuids = $galleriesData->pluck('uuid')->all();
-                $galleryMedias = \App\Models\EstablishmentMedia
-                                    ::select([DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_gallery')), 'local_path'])
-//                                    ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
-                                    ->where('position', '=', 1)
-                                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_gallery', $galleriesUuids))
-                                    ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at')
-                                    ->get()
-                                ;
-                $mediaPathByGallery = $galleryMedias->mapWithKeys(function ($item) {
-                    return [$item->uuid => asset($item->local_path)];
-                });
-                foreach ($galleriesData as $galleryData) {
-                    if ($galleryData instanceof \App\Models\Gallery) {
-                        $mediaPath = null;
-                        if(isset($mediaPathByGallery[$galleryData->uuid])){
-                            $mediaPath = $mediaPathByGallery[$galleryData->uuid];
-                        }
-                        if(!empty($mediaPath)){
-                            $data['galleries'][] = array(
-                                                'id' => $galleryData->getUuid(),
-                                                'name' => $galleryData->getName(),
-                                                'info' => '('.$galleryData->nbMedias.' '.__('photos').')',
-                                                'picture' => $mediaPath
-                                            );
+                if(!empty($galleriesUuids)){
+                    $galleryMedias = \App\Models\EstablishmentMedia
+                                        ::select([DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_gallery')), 'local_path'])
+    //                                    ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
+                                        ->where('position', '=', 1)
+                                        ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_gallery', $galleriesUuids))
+                                        ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at')
+                                        ->get()
+                                    ;
+                    $mediaPathByGallery = $galleryMedias->mapWithKeys(function ($item) {
+                        return [$item->uuid => asset($item->local_path)];
+                    });
+                    foreach ($galleriesData as $galleryData) {
+                        if ($galleryData instanceof \App\Models\Gallery) {
+                            $mediaPath = null;
+                            if(isset($mediaPathByGallery[$galleryData->uuid])){
+                                $mediaPath = $mediaPathByGallery[$galleryData->uuid];
+                            }
+                            if(!empty($mediaPath)){
+                                $data['galleries'][] = array(
+                                                    'id' => $galleryData->getUuid(),
+                                                    'name' => $galleryData->getName(),
+                                                    'info' => '('.$galleryData->nbMedias.' '.__('photos').')',
+                                                    'picture' => $mediaPath
+                                                );
+                            }
                         }
                     }
                 }
@@ -279,6 +281,16 @@ class EstablishmentController extends Controller {
                     }
                 }
 
+                // Close periods
+                $closePeriods = $establishment->closePeriods()->whereRaw('end_date >= NOW()')->orderBy('start_date', 'ASC')->orderBy('end_date', 'ASC')->get();
+                $data['close_periods'] = array();
+                if (!empty($closePeriods)) {
+                    foreach ($closePeriods as $closePeriod) {
+                        if ($closePeriod instanceof \App\Models\ClosePeriod) {
+                            $data['close_periods'][] = $closePeriod;
+                        }
+                    }
+                }
                 break;
         }
         
