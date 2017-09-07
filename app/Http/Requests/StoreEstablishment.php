@@ -76,10 +76,6 @@ class StoreEstablishment extends \App\Http\FormRequest {
             $rules['call_number.3'] = 'nullable|regex:/[0-9 ]+/';
 
 
-            if ($validator->fails()) {
-                return $validator->getRules();
-            }
-
             //minima maxima for dishes
             $min = $this->get('average_price_min');
             $max = $this->get('average_price_max');
