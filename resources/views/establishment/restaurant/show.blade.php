@@ -107,12 +107,14 @@
                 <div class="row">
                     <button type="button" class="btn book-button sidebar-booking-toggler" >Réservez une table</button>
                 </div>
+                @if(isset($data['phone_number']))
                 <div class="row contact-number">
                     <a href="tel:{{ $data['phone_number'] }}">
                         <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span>
                         {{ $data['phone_number'] }}
                     </a>
                 </div>
+                @endif
             </div>
         </section>
     </div>
