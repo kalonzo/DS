@@ -36,7 +36,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                                 'new_dish_name' => 'required|min:2|max:255',
                                 'new_dish_description' => 'nullable|min:2|max:255',
                                 'new_dish_price' => 'required|numeric|min:2',
-                                'new_dish_price_cents' => 'nullable|max:2',
+                                'new_dish_price_cents' => 'required|max:2',
                     ]);
                     if ($validator->fails()) {
                         return $validator->getRules();
@@ -134,7 +134,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 'site_url' => 'nullable|regex:/(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.?([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
                 'email' => 'nullable|email',
                 // Cooking types
-                'businessCategories.1' => 'required|array|min:1',
+                'businessCategories.1' => 'required|array|min:1|max:5',
+                'businessCategories.2' => 'nullable|array|max:5',
                 //menu
                 //Menu average price
                 'average_price_min' => 'nullable|numeric|min:1',
@@ -185,18 +186,68 @@ class StoreEstablishment extends \App\Http\FormRequest {
             //cooking type
             'businessCategories.1.required' => 'Veuillez sélectionner au minimum un types de cuisine pour être correctement référencer par l\'application',
             'businessCategories.1.array' => 'Veuillez spécifier au minimum un type de cuisine',
+            'businessCategories.1.max' => 'Un maximum de 5 types de cuisine est accepté',
+            'businessCategories.2.max' => 'Un maximum de 5 types de spécialité est accepté',
             //Validation Ajax (gallery)
             'new_gallery_name.required' => 'Veuillez spécifier un nom pour votre gallerie',
             'new_gallery.required_with' => 'Veuillez saisir un nom pour votre gallerie',
             //menu
             'menu_name.required' => 'Veuillez saisir un nom pour votre menu',
+            'menu_name.min' => 'le nom de votre menu est trop cout',
+            'menu_name.max' => 'Le nom de votre menu est trop long',
             //video
-            'video.mimes' => 'Votre vidéo doit être au format MP4',
+            'video.mimes' => 'Format incorrect',
+            'video.required' => 'Format incorrect',
+            //Gallerie
+            'new_gallery_name.required' => 'Veuillez saisir un nom pour votre gallerie',
+            'new_gallery_name.min' => 'Le nom de votre gallerie est trop court',
+            'new_gallery_name.max' => 'Le nom de votre gallerie est trop long',
+            //dishe
+            'new_dish_name.required' => 'Veuillez saisir un nom pour votre assiette',
+            'new_dish_name.min' => 'Le nom d\'assiette est trop court',
+            'new_dish_name.max' => 'Le nom d\' assiette est trop long',
+            'new_dish_description.min' => 'La description est trop courte',
+            'new_dish_description.max' => 'La description est trop longue',
+            'new_dish_price.required' => 'Le prix est requis',
+            'new_dish_price.min' => 'Prix d\'assiette incorrecte',
+            'new_dish_price.numberic' => 'Prix d\'assiette incorrecte',
+            'new_dish_price_cents.required' => 'Prix d\'assiette incorrecte',
+            'new_dish_price_cents.max' => 'Prix d\'assiette incorrecte',
+            //add_close_period
+            'close_name.required' => 'Veuillez nommez la période de fermeture',
+            'close_name.min' => 'Le nom est trop court',
+            'close_name.max' => 'Le nom est trop long',
+            'end_date.after' => 'La date de fin doit être supérieure à la date d\'ouverture',
+            //employeee
+            'new_employee_firstname.required' => '|min:2|max:255',
+            'new_employee_firstname.min' => '|min:2|max:255',
+            'new_employee_firstname.max' => '|min:2|max:255',
+            'new_employee_lastname.required' => 'required|min:2|max:255',
+            'new_employee_lastname.min' => 'required|min:2|max:255',
+            'new_employee_lastname.max' => 'required|min:2|max:255',
+            'job_type.required' => '',
+            'new_employee_position.required' => '',
+            //story
+            'new_story_year.required' => 'Veuillez séléctionner une date',
+            'new_story_title.required' => 'Veuillez entrer un tire évoquant votre histoire',
+            'new_story_title.min' => 'Le titre est trop court',
+            'new_story_title.max' => 'Le titre est trop long',
+            'new_story_description.min' => 'La description est trop courte',
+            'new_story_description.max' => 'La description est trop longue',
+            //call number
+            'call_number.1.regex' => 'Veuillez contrôler le format de votre numéro',
+            'call_number.4.regex' => 'Veuillez contrôler le format de votre numéro',
+            'call_number.2.regex' => 'Veuillez contrôler le format de votre numéro', 
+            'call_number.3.regex' => 'Veuillez contrôler le format de votre numéro', 
         ];
         // Opening hours
         foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
             $messages['openingHours.' . $dayIndex . '.1.start.before_or_equal'] = "L'heure de fermeture du " . strtolower($dayLabel)
                     . " matin doit être supérieure à l'heure d'ouverture";
+            $messages['openingHours.' . $dayIndex . '.1.end.after_or_equal'] = "L'heure de fermeture du " . strtolower($dayLabel)
+                    . " matin doit être supérieure à l'heure d'ouverture";
+            $messages['openingHours.' . $dayIndex . '.2.end.after_or_equal'] = "L'heure de fermeture du " . strtolower($dayLabel)
+                    . " après-midi doit être supérieure à l'heure d'ouverture";
             $messages['openingHours.' . $dayIndex . '.2.start.before_or_equal'] = "L'heure de fermeture du " . strtolower($dayLabel)
                     . " après-midi doit être supérieure à l'heure d'ouverture";
             $messages['openingHours.' . $dayIndex . '.2.start.after_or_equal'] = "L'heure d'ouverture du " . strtolower($dayLabel)
