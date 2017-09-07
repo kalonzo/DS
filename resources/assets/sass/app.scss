@@ -61,3 +61,56 @@ a.simple{
         clear: both;
     }
 }
+
+.square-container{
+    display: inline-block;
+    vertical-align: top;
+    .crop{
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        > img {
+            display: block;
+            min-width: 100%;
+            min-height: 100%;
+            margin: auto;
+            position: absolute;
+            top: -100%;
+            right: -100%;
+            bottom: -100%;
+            left: -100%;
+        }
+    }
+}
+
+#ajax-modal-sample{
+    display: none;
+}
+.ajax-modal{
+    .modal-body{
+        padding: 20px;
+        .row{
+            margin: 0px;
+        }
+    }
+    .loading-bar{
+        margin: 20px auto;
+        .progress-bar{
+            width: 100%;
+        }
+    }
+    .modal-footer{
+        display: none;
+    }
+}
+
+.gallery-box{
+    .gallery-box-item{
+        margin-bottom: 30px;
+        background-size: cover;
+        img.square-pattern{
+            width: 100%;
+            @include opacity(0);
+        }
+    }
+}

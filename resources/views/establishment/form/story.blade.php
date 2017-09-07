@@ -18,7 +18,7 @@
                     <br/>
                     <div class="col-xs-12 highlight-container">
                         <div class="col-xs-4 col-sm-3 col-md-2 form-group">
-                            {!! Form::label('new_story_year','Année') !!}
+                            {!! Form::label('new_story_year','Année', ['class' => 'col-xs-12 no-gutter']) !!}
                             {!! Form::selectRange('new_story_year', 1900, date('Y'), 2000, ['class' => 'form-control select2']) !!}
                         </div>
                         <div class="col-xs-8 col-sm-9 col-md-10 form-group">
@@ -64,8 +64,8 @@
                                     }
                                 @endslot
                                 @slot('fileuploaded')
-                                    $('#ets-story').find('input, select').each(function(){
-                                        $(this).val('');
+                                    $('#ets-story').find('input, select, textarea').each(function(){
+                                        $(this).val('').change();
                                     });
                                     $('#ets-story .kv-fileinput-caption').hide();
                                 @endslot

@@ -122,8 +122,36 @@ function getMediaUrlForInputFile($medias, $jsonEncoded = true){
     }
 }
 
-function formatPrice($price, $currency = null){
-    $kernelDSPriceFormatter = new NumberFormatter(Illuminate\Support\Facades\App::getLocale(), NumberFormatter::CURRENCY);
-    $formattedPrice = $kernelDSPriceFormatter->formatCurrency($price, $currency);
+/**
+ * 
+ * @param type $price
+ * @param type $currency
+ * @param type $formatConst
+ * @param type $locale
+ * @return type
+ */
+function formatPrice($price, $currency = null, $formatConst = null, $locale = null){
+    $formattedPrice = $price;
+    if(empty($locale)){
+        $locale = Illuminate\Support\Facades\App::getLocale();
+    }
+    if(empty($formatConst)){
+        $formatConst = NumberFormatter::CURRENCY;
+    }
+    if(!empty($currency)){
+        $kernelDSPriceFormatter = new NumberFormatter($locale, $formatConst);
+        $formattedPrice = $kernelDSPriceFormatter->formatCurrency($price, $currency);
+    } else {
+        $kernelDSPriceFormatter = new NumberFormatter($locale, NumberFormatter::SCIENTIFIC);
+        $formattedPrice = $kernelDSPriceFormatter->format($price);
+    }
     return $formattedPrice;
+}
+
+function formatDate($datetime, $dateFormat = IntlDateFormatter::GREGORIAN, $timeFormat = IntlDateFormatter::NONE){
+    if(is_string($datetime)){
+        $datetime = new DateTime($datetime);
+    }
+    $intlDateFormatter = new IntlDateFormatter(\Illuminate\Support\Facades\App::getLocale(), $dateFormat, $timeFormat);
+    return $intlDateFormatter->format($datetime);
 }

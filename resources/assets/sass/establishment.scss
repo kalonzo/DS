@@ -149,3 +149,452 @@ $timetableRowHeight: 76px;
         }
     }
 }
+
+
+.show-page{
+    section{
+        &:nth-of-type(odd){
+            background-color: $body-bg;
+        }
+        &:nth-of-type(even){
+            background-color: $main-color;
+        }
+        background-size: cover;
+        background-repeat: no-repeat;
+
+        &:not(.ets-intro){
+            padding: 3em 0px;
+            h1, h2, h3, h4{
+                text-transform: uppercase;
+                margin-bottom: 0.5em;
+            }
+            h1{
+                font-size: 6em;
+                font-weight: 200;
+                color: $text-color-alt;
+                text-align: center;
+                strong{
+                    color: white;
+                    font-weight: 800;
+                }
+            }
+            h2{
+                border-bottom: 2px solid $text-color-alt;
+                padding-bottom: 0.4em;
+                margin-bottom: 1em;
+                font-weight: bold;
+            }
+        }
+        &.ets-intro{
+            text-align: center;
+            text-transform: uppercase;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            h1{
+                font-size: 6em;
+                font-weight: 800;
+            }
+            h2{
+                font-size: 2.3em;
+                padding: 0.4em 0px;
+            }
+            h3{
+                font-size: 1.5em;
+                .point-separator{
+                    padding: 0px 0.5em;
+                }
+            }
+        }
+        &.ets-details{
+            .category-list{
+                text-transform: uppercase;
+                padding-left: 15px;
+            }
+            video{
+                margin-bottom: 1em;
+            }
+            .description{
+                text-align: justify;
+            }
+        }
+        &.ets-events{
+            h1{
+                font-size: 4em;
+            }
+        }
+        &.ets-timetable{
+            text-transform: uppercase;
+            .row{
+                margin: 0px;
+            }
+            .col-label{
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.6em;
+                padding-bottom: 1em;
+                &:nth-child(3){
+                    padding-left: 4.16666667%;
+                }
+            }
+            .timetable-show{
+                .timetable-day{
+                    text-align: right;
+                    font-weight: bold;
+                    font-size: 1.6em;
+                    box-sizing: border-box;
+                    line-height: 2.1em;
+                }
+                .timetable-row{
+                    &:first-child{
+                        .timetable-col{
+                            border-top: 2px solid $text-color-alt;
+                        }
+                    }
+                    .timetable-col{
+                        border-bottom: 2px solid $text-color-alt;
+                        font-size: 1.5em;
+                        line-height: 2.1em;
+                        padding: 0px;
+                        text-align: center;
+                        &.timetable-col-pm{
+                            padding-left: 4.16666667%;
+                        }
+                    }
+                }
+            }
+        }
+        &.ets-story{
+            .timeline-links{
+                float: left;
+                margin-bottom: 2em;
+                .timeline-content{
+                    .timeline-content-image{
+                        height: 180px;
+                        width: 180px;
+                        float: left;
+                        img{
+                            width: 100%;
+                        }
+                    }
+                    .timeline-content-body{
+                        display: flex;
+                        flex-direction: column;
+                        padding-left: 1.5em;
+                    }
+                    .timeline-content-title{
+                        text-transform: uppercase;
+                        font-size: 1.3em;
+                    }
+                    .timeline-content-text{
+                        text-align: justify;
+                        margin-top: 0.5em;
+                    }
+                }
+            }
+        }
+        &.ets-contact{
+            text-transform: uppercase;
+            text-align: center;
+            .quick-map{
+                height: 300px;
+                width: 100%;
+            }
+            .ets-address{
+                font-size: 1.6em;
+                text-align: center;
+                padding: 1em 0px;
+            }
+            @at-root .book-button{
+                background-color: $booking-color;
+                text-transform: uppercase;
+                font-size: 1.6em;
+                font-weight: bold;
+                border: 0px;
+                @include borderRadius(4px);
+                &:hover, &:focus{
+                    color: $main-text-color;
+                    background-color: $booking-color;
+                }
+                nav &{
+                    font-size: 1em;
+                    margin-top: 10px;
+                }
+            }
+            .contact-number{
+                font-size: 2.4em;
+                padding: 0.6em 0px;
+                a{
+                    color: $main-text-color;
+                    text-decoration: none;
+                    font-weight: bold;
+                    &:hover{
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+        &.ets-menus{
+            .menu-button{
+                margin-top: 1em;
+                text-transform: uppercase;
+                background-color: $booking-color;
+                border: 0px;
+                width: 80%;
+                font-size: 0.9em;
+                padding: 12px 0px;
+                .glyphicon{
+                    margin-left: 0.5em;
+                }
+                &:hover, &:focus{
+                    color: $main-text-color;
+                }
+            }
+        }
+        &.ets-galleries{
+            .gallery-item{
+                margin-bottom: 30px;
+                .square-container{
+                    width: 100%;
+                    height: 300px;
+                }
+                .gallery-details{
+                    line-height: 30px;
+                    height: 30px;
+                    float: left;
+                    width: 100%;
+                    margin: 1em 0px;
+                    .gallery-title{
+                        float: left;
+                        text-transform: uppercase;
+                        font-size: 1.5em;
+                        font-weight: 300;
+                    }
+                    .gallery-info{
+                        float: right;
+                        font-size: 0.8em;
+                    }
+                }
+            }
+        }
+        &.ets-last-pics{
+            .last-pic-item{
+                margin-bottom: 30px;
+                background-size: cover;
+                img.square-pattern{
+                    width: 100%;
+                    @include opacity(0);
+                }
+                img.last-pic-img{
+                    display: block;
+                    position: absolute;
+                    width: 100%;
+                    top: 0px;
+                    left: 0px;
+                    right: 0px;
+                }
+            }
+        }
+        .thumbnail-item{
+            text-align: center;
+            margin-bottom: 2em;
+            img{
+                width: 80%;
+                margin: 10px auto 0px auto;
+                @include borderRadius(100%);
+            }
+            .thumbnail-name{
+                text-transform: uppercase;
+                font-size: 1.6em;
+                height: 33px;
+                width: 100%;
+                overflow: hidden;
+                margin-top: 1.5em;
+            }
+            .thumbnail-description{
+                font-size: 1.1em;
+                height: 44px;
+                width: 100%;
+                overflow: hidden;
+            }
+            .thumbnail-visual{
+                position: relative;
+            }
+            .thumbnail-badge{
+                position: absolute;
+                bottom: 0px;
+                right: 10px;
+                background-color: rgba(15, 102, 148, 0.85);
+                text-align: center;
+                display:table;
+                height: 80px;
+                width: 80px;
+                @include borderRadius(100%);
+                .thumbnail-badge-inner{
+                    display:table-cell;
+                    vertical-align:middle;
+                    padding: 0px 8px;
+                    white-space: nowrap;
+                    .currency{
+                        font-size: 0.7em;
+                        vertical-align: top;
+                        margin-top: -0.8em;
+                        display: inline-block;
+                    }
+                    .price{
+                        font-size: 1.3em;
+                        margin-left: -8px;
+                    }
+                }
+            }
+        }
+    }
+    #ets-nav-bookmarks{
+        position: fixed;
+        right: calc(100% - 40px);
+        top: $searchFilterPanelHeadingHeight + 10px;
+        text-transform: uppercase;   
+        z-index: 1;
+        
+        .ets-nav-bookmark{
+            height: 40px;
+            line-height: 40px;
+            margin-bottom: 5px;
+            font-size: 2em;
+            float: right;
+            clear: both;
+            white-space: nowrap;
+            position: relative;
+            &.bookmark-voucher{
+                $colorVoucher: #e0141f;
+                background: $colorVoucher;
+                &::after{
+                    border-left-color: $colorVoucher;
+                }
+            }
+            &.bookmark-contact{
+                $colorContact: #0d5c85;
+                background: $colorContact;
+                &::after{
+                    border-left-color: $colorContact;
+                }
+            }
+            &.bookmark-event{
+                $colorEvent: #e05c14;
+                background: $colorEvent;
+                &::after{
+                    border-left-color: $colorEvent;
+                }
+            }
+            &.bookmark-home{
+                $colorHome: $alt-highlight-color;
+                background: $colorHome;
+                &::after{
+                    border-left-color: $colorHome;
+                }
+            }
+            &.bookmark-menu{
+                $colorMenu: #c59f5d;
+                background: $colorMenu;
+                &::after{
+                    border-left-color: $colorMenu;
+                }
+            }
+            &.bookmark-photos{
+                $colorPhotos: #008b03;
+                background: $colorPhotos;
+                &::after{
+                    border-left-color: $colorPhotos;
+                }
+            }
+            > *{
+                vertical-align: middle;
+            }
+            .bookmark-icon{
+                padding-left: 13px;
+                padding-right: 5px;
+            }
+            img.bookmark-icon{
+                height: 35px;
+                width: 35px;
+                box-sizing: initial;
+                vertical-align: top;
+                padding-right: 0px;
+                margin-top: 2px;
+            }
+            $bookmarkArrowWidth: 15px;
+            &::after{
+                content: '';
+                position: absolute;
+                right: -$bookmarkArrowWidth;
+                top: 0px;
+                width: 0px; 
+                height: 0px; 
+                border-top: 20px solid transparent;
+                border-bottom: 20px solid transparent;
+                border-left: $bookmarkArrowWidth solid;
+            }
+        }
+    }
+}
+#sidebar-booking.custom-sidebar{
+    top: $navbarHeight;
+    height: 100%;
+    height: -moz-calc(100%);
+    height: -webkit-calc(100% - #{$navbarHeight});
+    height: calc(100% - #{$navbarHeight});
+    padding-bottom: $navbarHeight;
+    background-color: $main-dark-color;
+}
+
+#booking-container{
+    text-transform: uppercase;
+    h3{
+        padding: 0.5em 0.5em;  
+        background-color: #333;
+        font-size: 1.2em;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .form-horizontal{
+        .form-group{
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+    }
+    input[type='time']{
+        text-align: center;    
+    }
+    input, textarea{
+        background-color: transparent;
+        border: 1px solid $main-text-color;
+        color: $main-text-color;
+    }
+    .datepicker-inline{
+        width: 100%;
+        text-transform: initial;
+        .ui-datepicker-inline{
+            width: 100%;
+        }
+    }
+    .booking-invitation, .booking-contact{
+        textarea{
+            height: 70px;
+        }
+    }
+    .booking-validation{
+        background-color: #333;
+        padding: 15px 0px;
+        .book-button{
+            font-size: 1.2em;
+            width: 100%;
+        }
+        .validation-clause{
+            font-size: 0.8em;
+        }
+    }
+    .checkbox > label {
+        line-height: 1.6;
+    }
+}

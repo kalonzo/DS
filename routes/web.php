@@ -59,11 +59,17 @@ Route::get('/establishment/{establishment}','EstablishmentController@edit');
 Route::put('/establishment/{establishment}','EstablishmentController@update');  
 Route::post('/establishment/{establishment}/ajax/','EstablishmentController@ajax');  
 // view
-Route::get('/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        
+Route::match(['get', 'post'], '/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        
     $establishment = \App\Models\Establishment::where('slug', '=', $slug)->where('url_id', '=', $url_id)->first();
     
     $establishmentController = Illuminate\Support\Facades\App::make(App\Http\Controllers\EstablishmentController::class);
-    return $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
+    $controllerRes = null;
+    if(Request::ajax()){
+        $controllerRes = $establishmentController->callAction('showAjax', array('request' => Request::instance(),'establishment' => $establishment, 'page' => $page));
+    } else {
+        $controllerRes = $establishmentController->callAction('show', array('establishment' => $establishment, 'page' => $page));
+    }
+    return $controllerRes;
 });
 
 // store booking

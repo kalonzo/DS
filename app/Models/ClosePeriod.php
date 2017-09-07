@@ -21,8 +21,8 @@ class ClosePeriod extends Model {
 
     public function getFullLabel(){
         $fullLabel = $this->getLabel();
-        $fullLabel .= ', '.__('du').' '.$this->getStartDate();
-        $fullLabel .= ' '.__('au').' '.$this->getEndDate();
+        $fullLabel .= ', '.__('du').' '.formatDate($this->getStartDate());
+        $fullLabel .= ' '.__('au').' '.formatDate($this->getEndDate());
         return $fullLabel;
     }
     

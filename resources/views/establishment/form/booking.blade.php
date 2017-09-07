@@ -51,7 +51,7 @@
             {!! Form::label('email','Email*') !!}
             {!! Form::text('email',old('email'), ['class' => 'form-control']) !!}
         </div>
-        <div class="col-xs-12 form-group">
+        <div class="col-xs-12 phone-form-group">
             {!! Form::label('phone_number','Téléphone / Mobile') !!}
             <div class="form-group form-inline">                        
                 {!! Form::select('prefix', $form_data['country_prefixes'], null, 

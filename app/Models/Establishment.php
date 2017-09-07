@@ -114,6 +114,10 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->hasMany(Gallery::class, 'id_establishment', 'id');
     }
     
+    /**
+     * 
+     * @return Employee
+     */
     public function employees(){
         return $this->hasMany(Employee::class, 'id_establishment', 'id');
     }
@@ -129,7 +133,7 @@ class Establishment extends Model implements GlobalObjectManageable{
     public function menus($excludeDaily = true){
         $menus = $this->hasMany(Menu::class, 'id_establishment', 'id');
         if($excludeDaily){
-            $menus->where('is_daily_menu', '!=', true);
+            $menus->whereNull('is_daily_menu')->orWhere('is_daily_menu', '!=', 1);
         }
         return $menus;
     }
