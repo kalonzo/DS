@@ -13,6 +13,12 @@ class StoreEstablishment extends \App\Http\FormRequest {
         return true;
     }
 
+    public function validateRules($validator) {
+        if ($validator->fails()) {
+            return $validator->getRules();
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -21,105 +27,58 @@ class StoreEstablishment extends \App\Http\FormRequest {
     public function rules() {
         if ($this->ajax() === true) {
             $rules = array();
-
             switch ($this->get('action')) {
                 case 'add_gallery':
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'new_gallery_name' => 'required|min:2|max:255',
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
+                    $rules['new_gallery_name'] = 'required|min:2|max:255';
                     break;
                 case 'add_dish':
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'new_dish_name' => 'required|min:2|max:255',
-                                'new_dish_description' => 'nullable|min:2|max:255',
-                                'new_dish_price' => 'required|numeric|min:2',
-                                'new_dish_price_cents' => 'required|max:2',
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
-                    break;
+
+                    $rules['new_dish_name'] = 'required|min:2|max:255';
+                    $rules['new_dish_description'] = 'nullable|min:2|max:255';
+                    $rules['new_dish_price'] = 'required|numeric|min:2';
+                    $rules['new_dish_price_cents'] = 'required|max:2';
                 case 'delete_gallery':
 
                     break;
                 case 'add_close_period':
                     $closeStartDate = new \DateTime($this->get('close_start'));
-                    //var_dump($closeStartDate);
-                    //die($closeStartDate->format('Y-m-d H:i:s'));
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'close_name' => 'required|min:2|max:255',
-                                'end_date' => 'date_format:Y/m/d|after:' . $closeStartDate->format('Y/m/d'),
-                                    //'datetime_reservation' => 'date_format:d/m/Y|after_or_equal:' . $dateNow,
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
+                    $rules['close_name'] = 'required|min:2|max:255';
+                    $rules['end_date'] = 'date_format:Y/m/d|after:' . $closeStartDate->format('Y/m/d');
                     break;
                 case 'add_media_to_gallery':
-
                     break;
                 case 'add_menu':
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'menu_name' => 'required|min:2|max:255',
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
+                    $rules['menu_name'] = 'required|min:2|max:255';
+
                     break;
                 case 'add_video':
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'video' => 'required|mimes:mp4'
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
+                    $rules['video'] = 'required|mimes:mp4';
                     break;
                 case 'add_employee':
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'new_employee_firstname' => 'required|min:2|max:255',
-                                'new_employee_lastname' => 'required|min:2|max:255',
-                                'job_type' => 'required',
-                                'new_employee_position' => 'required',
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
+                    $rules['new_employee_firstname'] = 'required|min:2|max:255';
+                    $rules['new_employee_lastname'] = 'required|min:2|max:255';
+                    $rules['job_type'] = 'required';
+                    $rules['new_employee_position'] = 'required';
                     break;
                 case 'add_story':
-                    $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                                'new_story_year' => 'required',
-                                'new_story_title' => 'required|min:2|max:255',
-                                'new_story_description' => 'nullable|min:2|max:255',
-                    ]);
-                    if ($validator->fails()) {
-                        return $validator->getRules();
-                    }
-
+                    $rules['new_story_year'] = 'required';
+                    $rules['new_story_title'] = 'required|min:2|max:255';
+                    $rules['new_story_description'] = 'nullable|min:2|max:255';
                     break;
             }
 
             return $rules;
         } else {
-            //Une regex contenant des pipe doit être validé avant ou après 
-            $validator = \Illuminate\Support\Facades\Validator::make($this->all(), [
-                        //format autorisé +(502)(4 à 10) ou +(41)(4 à 10) ou (0041)(4 à 10)ou (00502)(4 à 10)
-                        'call_number.1' => ['required', 'regex:/(^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-                        'call_number.4' => ['required', 'regex:/(^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-                        'call_number.2' => ['nullable', 'regex:/((^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-                        'call_number.3' => ['nullable', 'regex:/(^[0]?\d{2}\ ?\d{3}\ ?\d{2}\ ?\d{2}$)|(^\d{10,11}$)/'],
-            ]);
 
-            if ($validator->fails()) {
-                return $validator->getRules();
-            }
+            $rules['call_number.1'] = 'required|regex:/[0-9 ]+/';
+            $rules['call_number.4'] = 'required|regex:/[0-9 ]+/';
+            $rules['call_number.2'] = 'nullable|regex:/[0-9 ]+/';
+            $rules['call_number.3'] = 'nullable|regex:/[0-9 ]+/';
+
 
             //minima maxima for dishes
             $min = $this->get('average_price_min');
             $max = $this->get('average_price_max');
-
             $rules = [
                 //self::$rules_phone,
                 // Location
@@ -195,6 +154,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'menu_name.required' => 'Veuillez saisir un nom pour votre menu',
             'menu_name.min' => 'le nom de votre menu est trop cout',
             'menu_name.max' => 'Le nom de votre menu est trop long',
+            'average_price_max.between' => 'Le prix maximum doit être inférieur au prix minimum',
             //video
             'video.mimes' => 'Format incorrect',
             'video.required' => 'Format incorrect',
@@ -219,13 +179,13 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'close_name.max' => 'Le nom est trop long',
             'end_date.after' => 'La date de fin doit être supérieure à la date d\'ouverture',
             //employeee
-            'new_employee_firstname.required' => '|min:2|max:255',
-            'new_employee_firstname.min' => '|min:2|max:255',
-            'new_employee_firstname.max' => '|min:2|max:255',
-            'new_employee_lastname.required' => 'required|min:2|max:255',
-            'new_employee_lastname.min' => 'required|min:2|max:255',
-            'new_employee_lastname.max' => 'required|min:2|max:255',
-            'job_type.required' => '',
+            'new_employee_firstname.required' => 'Le nom est requis',
+            'new_employee_firstname.min' => 'Le nom est trop court',
+            'new_employee_firstname.max' => 'Le nom est trop long',
+            'new_employee_lastname.required' => 'Le prenom est requis',
+            'new_employee_lastname.min' => 'Le prenom est trop court',
+            'new_employee_lastname.max' => 'Le prenom est trop long',
+            'job_type.required' => 'Veuillez choisir le type d\'employé',
             'new_employee_position.required' => '',
             //story
             'new_story_year.required' => 'Veuillez séléctionner une date',
@@ -237,8 +197,10 @@ class StoreEstablishment extends \App\Http\FormRequest {
             //call number
             'call_number.1.regex' => 'Veuillez contrôler le format de votre numéro',
             'call_number.4.regex' => 'Veuillez contrôler le format de votre numéro',
-            'call_number.2.regex' => 'Veuillez contrôler le format de votre numéro', 
-            'call_number.3.regex' => 'Veuillez contrôler le format de votre numéro', 
+            'call_number.2.regex' => 'Veuillez contrôler le format de votre numéro',
+            'call_number.3.regex' => 'Veuillez contrôler le format de votre numéro',
+            'call_number.1.required' => 'Veuillez saisir un numéro de réservation',
+            'call_number.4.required' => 'Veuillez saisir un numéro de contact',
         ];
         // Opening hours
         foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
@@ -259,5 +221,4 @@ class StoreEstablishment extends \App\Http\FormRequest {
         }
         return $messages;
     }
-
 }
