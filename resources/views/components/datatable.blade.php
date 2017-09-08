@@ -36,21 +36,34 @@
             @if(!empty($actions))
                 <td>
                 @foreach($actions as $actionId => $rowAction)
-                    @if(!empty($rowAction->getHref()))
                     <?php
-                        $href = $rowAction->getHref();
+                    $classes = $rowAction->getIcon();
+                    $href = $rowAction->getHref();
+                    if(!empty($rowAction->getHref())){
                         if(strpos($href, '{{') !== false){
                             $refAttribute = str_between($href, "{{", '}}');
                             if(isset($row[$refAttribute])){
                                 $href = str_replace('{{'.$refAttribute.'}}', $row[$refAttribute], $href);
                             }
                         }
+                    }
+                    $onClick = $rowAction->getOnClick();
+                    if(!empty($rowAction->getOnClick())){
+                        $classes .= ' clickable';
+                        if(strpos($onClick, '{{') !== false){
+                            $refAttribute = str_between($onClick, "{{", '}}');
+                            if(isset($row[$refAttribute])){
+                                $onClick = str_replace('{{'.$refAttribute.'}}', $row[$refAttribute], $onClick);
+                            }
+                        }
+                    }
                     ?>
+                    @if(!empty($href))
                     <a href="{{ $href }}">
                     @endif
-                    <span class="glyphicon {{ $rowAction->getIcon() }}" title="{{ $rowAction->getTitle() }}" onclick="{{ $rowAction->getOnClick() }}"
+                    <span class="glyphicon {{ $classes }}" title="{{ $rowAction->getTitle() }}" onclick="{{ $onClick }}"
                           aria-hidden="true"></span>
-                    @if(!empty($rowAction->getHref()))
+                    @if(!empty($href))
                     </a>
                     @endif
                 @endforeach

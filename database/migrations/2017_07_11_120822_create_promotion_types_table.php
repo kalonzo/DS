@@ -14,7 +14,7 @@ class CreatePromotionTypesTable extends Migration {
 	{
 		Schema::create('promotion_types', function(Blueprint $table)
 		{
-			$table->binary('id', 16)->primary();
+			$table->integer('id')->primary();
                         $table->timestamps();
 			$table->string('name')->nullable();
 		});

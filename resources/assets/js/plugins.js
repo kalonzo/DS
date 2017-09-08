@@ -33,14 +33,30 @@ $(document).on('ready js-loaded ajaxSuccess', function(e){
     if(isPluginLoaded($.fn.select2)){
         $.fn.select2.defaults.set('language', 'fr');
         
-        $('.select2:not(.s2-done)').each(function(){
+        $('select.select2:not(.s2-done)').each(function(){
             $(this).addClass('s2-done');
-            var tagsParam = $(this).attr('aria-tags') ? true : false;
+            var tagsParam = $(this).attr('data-tags') ? true : false;
             var maxSelectionLengthParam = $(this).attr('data-maximumSelectionLength') ? $(this).attr('data-maximumSelectionLength') : null;
             var options = {
                 tags: tagsParam,
                 maximumSelectionLength: maxSelectionLengthParam
             };
+            if(this.hasAttribute('data-ajax-url')){
+                var ajaxFeedUrl = $(this).attr('data-ajax-url');
+                var ajaxFeedAction = $(this).attr('data-ajax-action');
+                options['ajax'] = {
+                    url: ajaxFeedUrl,
+                    data: function (params) {
+                        return {
+                            action: ajaxFeedAction,
+                            q: params.term
+                        };
+                    },
+                    dataType: 'json',
+                    delay: 250,
+                }
+                options['minimumInputLength'] = 2;
+            }
             $(this).select2(options);
         });
     }
@@ -55,8 +71,6 @@ $(document).on('ready js-loaded ajaxSuccess', function(e){
     }
     if (typeof baguetteBox != 'undefined') {
         baguetteBox.run('.gallery-box');
-//        baguetteBox.run('.gallery-box:not(.bgb-done)');
-//        $('.gallery-box:not(.bgb-done)').addClass('bgb-done');
     }
     
 });

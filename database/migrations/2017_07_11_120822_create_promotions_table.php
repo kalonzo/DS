@@ -22,7 +22,7 @@ class CreatePromotionsTable extends Migration {
 			$table->dateTime('start_date')->nullable();
 			$table->dateTime('end_date')->nullable();
 			$table->binary('id_establishment', 16)->index('fk_promotion_establishments1_idx');
-			$table->binary('id_promotion_type', 16)->index('fk_promotion_promotion_types1_idx');
+			$table->integer('id_promotion_type')->index('fk_promotion_promotion_types1_idx');
 		});
 	}
 

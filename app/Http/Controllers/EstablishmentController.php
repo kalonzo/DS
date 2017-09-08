@@ -383,6 +383,9 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function createBooking(\App\Http\Requests\StoreBooking $request, Establishment $establishment) {
+        $response = response();
+        $jsonResponse = array('success' => 0);
+        
         $user = User::where('email', $request->get('email'))->first();
         if (checkModel($user)) {
             $userId = $user->getId();
@@ -429,8 +432,17 @@ class EstablishmentController extends Controller {
                     'id_user' => $userId,
                     'id_establishment' => $establishment->getId(),
         ]);
-
-        die('réservation enregistrer');
+        
+        if(checkModel($bookingReservation)){
+            $jsonResponse['success'] = 1;
+        }
+        
+        if($request->ajax()){
+            $responsePrepared = $response->json($jsonResponse);
+            return $responsePrepared;
+        } else {
+            return redirect();
+        }
     }
 
     /**

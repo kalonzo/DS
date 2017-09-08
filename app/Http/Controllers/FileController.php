@@ -225,6 +225,15 @@ class FileController {
                     }
                 }
                 break;
+            case \App\Models\Media::TYPE_USE_ETS_PROMO:
+                if($relatedObject instanceof \App\Models\Promotion){
+                    $ets = $relatedObject->establishment()->first();
+                    if(checkModel($ets)){
+                        $path .= 'ets/'.$ets->getIdBusinessType().'/'.$ets->getUuid().'/promotions/'.$relatedObject->getUuid();
+                        $resolved = true;
+                    }
+                }
+                break;
         }
         if(!$resolved){
             $path = null;
@@ -258,6 +267,7 @@ class FileController {
             case \App\Models\Media::TYPE_USE_ETS_DISH:
             case \App\Models\Media::TYPE_USE_ETS_EMPLOYEE:
             case \App\Models\Media::TYPE_USE_ETS_STORY:
+            case \App\Models\Media::TYPE_USE_ETS_PROMO:
                 $instance = new \App\Models\EstablishmentMedia();
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);

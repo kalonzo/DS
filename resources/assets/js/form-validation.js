@@ -7,7 +7,7 @@ $('body').on('click', '.form-data-button', function () {
             data: $(form).serialize(),
             dataType: 'json',
             success: function (data) {
-                $(form).submit();
+                location.reload();
             },
             error: function (data) {
                 var errors = data.responseJSON;

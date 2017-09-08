@@ -11,7 +11,7 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-md-12 accordion-inner">
-                    {!! Form::label('email',' e-mail') !!}
+                    {!! Form::label('email',' E-mail') !!}
                     <div class="form-group">
                         {!! Form::text('email', old('email'), ['class' => 'form-control']) !!}
                     </div>

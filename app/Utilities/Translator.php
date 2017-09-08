@@ -2,39 +2,23 @@
 
 namespace App\Utilities;
 
-class Translator extends \Illuminate\Translation\Translator
-{
-    
-        /**
+class Translator extends \Illuminate\Translation\Translator {
+
+    /**
      * Make the place-holder replacements on a line.
      *
      * @param  string  $line
      * @param  array   $replace
      * @return string
      */
-    protected function makeReplacements($line, array $replace)
-    {
-        if (empty($replace)) {
-            return $line;
-        }else{
-            //TODO
+    protected function makeReplacements($line, array $replace) {
+        if (!empty($replace)) {
+            // TODO for detect untranslated string
             echo $replace;
         }
-
-        $replace = $this->sortReplacements($replace);
-
-        foreach ($replace as $key => $value) {
-            $line = str_replace(
-                [':'.$key, ':'.Str::upper($key), ':'.Str::ucfirst($key)],
-                [$value, Str::upper($value), Str::ucfirst($value)],
-                $line
-            );
-        }
-
-        return $line;
+        return parent::makeReplacements($line, $replace);
     }
-    
-    
+
     /**
      * Set translation.
      *
@@ -43,12 +27,11 @@ class Translator extends \Illuminate\Translation\Translator
      * @param  string  $locale
      * @return void
      */
-    public function set($key, $value, $locale = null)
-    {
+    /*
+    public function set($key, $value, $locale = null) {
         list($namespace, $group, $item) = $this->parseKey($key);
 
-        if(null === $locale)
-        {
+        if (null === $locale) {
             $locale = $this->locale;
         }
 
@@ -57,7 +40,8 @@ class Translator extends \Illuminate\Translation\Translator
 
         array_set($this->loaded[$namespace][$group][$locale], $item, $value);
     }
-
+    */
+    
     /**
      * Set multiple translations.
      *
@@ -65,27 +49,26 @@ class Translator extends \Illuminate\Translation\Translator
      * @param  string  $locale
      * @return void
      */
-    public function add(array $items, $locale = null)
-    {
-        if(null === $locale)
-        {
+    /*
+    public function add(array $items, $locale = null) {
+        if (null === $locale) {
             $locale = $this->locale;
         }
 
-        foreach($items as $group => $translations)
-        {
+        foreach ($items as $group => $translations) {
             // Build key to parse
-            $key = $group.'.'.key($translations);
+            $key = $group . '.' . key($translations);
 
             list($namespace, $group) = $this->parseKey($key);
 
             // Load given group defaults if exists
             $this->load($namespace, $group, $locale);
 
-            foreach($translations as $item => $value)
-            {
+            foreach ($translations as $item => $value) {
                 array_set($this->loaded[$namespace][$group][$locale], $item, $value);
             }
         }
     }
+     */
+
 }

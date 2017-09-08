@@ -22,6 +22,7 @@ class Media extends Model {
     const TYPE_USE_ETS_EMPLOYEE = 6;
     const TYPE_USE_ETS_STORY = 7;
     const TYPE_USE_ETS_VIDEO = 8;
+    const TYPE_USE_ETS_PROMO = 9;
     
     const STATUS_PENDING = 1;
     const STATUS_VALIDATED = 2;

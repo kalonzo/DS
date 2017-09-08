@@ -14,7 +14,7 @@ class CreateEventTypesTable extends Migration {
 	{
 		Schema::create('event_types', function(Blueprint $table)
 		{
-			$table->binary('id', 16)->primary();
+			$table->integer('id')->primary();
                         $table->timestamps();
 			$table->string('label')->nullable();
 		});

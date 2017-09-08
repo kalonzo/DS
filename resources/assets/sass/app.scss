@@ -114,3 +114,26 @@ a.simple{
         }
     }
 }
+
+.datatable-container{
+    .datatable{
+        .glyphicon{
+            &.clickable{
+                color: #3097D1;
+            }
+        }
+    }
+    .datatable-container-footer{
+        .pagination{
+            float: right;
+        }
+    }
+}
+
+.select2.select2{
+    .select2-selection{
+        @include borderRadius(0px);
+        height: 34px;
+        padding: 3px 5px;
+    }
+}

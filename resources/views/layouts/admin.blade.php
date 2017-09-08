@@ -14,6 +14,8 @@
         <link href="/css/dashboard.css" rel="stylesheet">
         <link href="/css/admin.css" rel="stylesheet">
         
+        <link href="/libraries/bootstrap-fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+        
         <!-- ============================================
         ================= Stylesheets ===================
         ============================================= -->
@@ -22,10 +24,10 @@
         <link rel="stylesheet" href="/dashboard-innovate/css/vendor/font-awesome.min.css">
         <!--<link rel="stylesheet" href="/dashboard-innovate/js/vendor/animsition/css/animsition.min.css">-->
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/daterangepicker/daterangepicker-bs3.css">
-        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/morris/morris.css">
+<!--        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/morris/morris.css">
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/owl-carousel/owl.carousel.css">
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/owl-carousel/owl.theme.css">
-        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/rickshaw/rickshaw.min.css">
+        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/rickshaw/rickshaw.min.css">-->
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/datetimepicker/css/bootstrap-datetimepicker.min.css">
 <!--        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/datatables/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/datatables/datatables.bootstrap.min.css">
@@ -34,8 +36,8 @@
         <link rel="stylesheet" href="/assets/js/vendor/datatables/extensions/Responsive/css/dataTables.responsive.css">
         <link rel="stylesheet" href="/assets/js/vendor/datatables/extensions/ColVis/css/dataTables.colVis.min.css">
         <link rel="stylesheet" href="/assets/js/vendor/datatables/extensions/TableTools/css/dataTables.tableTools.min.css">-->
-        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/chosen/chosen.css">
-        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/summernote/summernote.css">
+<!--        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/chosen/chosen.css">
+        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/summernote/summernote.css">-->
 
         <!-- project main css files -->
         <link rel="stylesheet" href="/dashboard-innovate/css/main.css">
@@ -44,12 +46,13 @@
         <!-- ==========================================
         ================= Modernizr ===================
         =========================================== -->
-        <script src="/dashboard-innovate/js/vendor/modernizr/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/modernizr/modernizr-2.8.3-respond-1.4.2.min.js"></script>-->
         <!--/ modernizr -->
         @show
         
         @yield('css_imports')
         
+        <script src="/js/kernelFunctions.js"></script>
         @yield('js_imports_head')
     </head>
     <body>
@@ -123,44 +126,49 @@
             
         </footer>
         
+        @component('components.ajax-modal')
+        @endcomponent
+        
         <script src="/js/app.js"></script>
-        <script src="/js/kernelFunctions.js"></script>
         <script src="/js/extendMethods.js"></script>
         <script src="/js/functions.js"></script>
+        <script src="/js/plugins.js"></script>    
+        <script src="/js/form-validation.js"></script>
+        
         <script src="/js/datatables.js"></script>
         
+        <script src="/libraries/bootstrap-fileinput/js/plugins/sortable.min.js"></script>
+        <script src="/libraries/bootstrap-fileinput/js/fileinput.js"></script>
         
         <!-- ============================================
         ============== Vendor JavaScripts ===============
         ============================================= -->
         <script src="/dashboard-innovate/js/vendor/jRespond/jRespond.min.js"></script>
 
-        <script src="/dashboard-innovate/js/vendor/d3/d3.min.js"></script>
-        <script src="/dashboard-innovate/js/vendor/d3/d3.layout.min.js"></script>
+<!--        <script src="/dashboard-innovate/js/vendor/d3/d3.min.js"></script>
+        <script src="/dashboard-innovate/js/vendor/d3/d3.layout.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/rickshaw/rickshaw.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/rickshaw/rickshaw.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/sparkline/jquery.sparkline.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/sparkline/jquery.sparkline.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/slimscroll/jquery.slimscroll.min.js"></script>
-
-        <!--<script src="/dashboard-innovate/js/vendor/animsition/js/jquery.animsition.min.js"></script>-->
+        <!--<script src="/dashboard-innovate/js/vendor/slimscroll/jquery.slimscroll.min.js"></script>-->
 
         <script src="/dashboard-innovate/js/vendor/daterangepicker/moment.min.js"></script>
         <script src="/dashboard-innovate/js/vendor/daterangepicker/daterangepicker.js"></script>
 
         <script src="/dashboard-innovate/js/vendor/screenfull/screenfull.min.js"></script>
 
-        <script src="/dashboard-innovate/js/vendor/flot/jquery.flot.min.js"></script>
+<!--        <script src="/dashboard-innovate/js/vendor/flot/jquery.flot.min.js"></script>
         <script src="/dashboard-innovate/js/vendor/flot-tooltip/jquery.flot.tooltip.min.js"></script>
-        <script src="/dashboard-innovate/js/vendor/flot-spline/jquery.flot.spline.min.js"></script>
+        <script src="/dashboard-innovate/js/vendor/flot-spline/jquery.flot.spline.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/easypiechart/jquery.easypiechart.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/easypiechart/jquery.easypiechart.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/raphael/raphael-min.js"></script>
-        <script src="/dashboard-innovate/js/vendor/morris/morris.min.js"></script>
+<!--        <script src="/dashboard-innovate/js/vendor/raphael/raphael-min.js"></script>
+        <script src="/dashboard-innovate/js/vendor/morris/morris.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/owl-carousel/owl.carousel.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/owl-carousel/owl.carousel.min.js"></script>-->
 
         <script src="/dashboard-innovate/js/vendor/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
 
@@ -173,12 +181,12 @@
         <script src="/assets/js/vendor/datatables/extensions/TableTools/js/dataTables.tableTools.min.js"></script>
         <script src="/assets/js/vendor/datatables/extensions/dataTables.bootstrap.js"></script>-->
         
-        <script src="/dashboard-innovate/js/vendor/chosen/chosen.jquery.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/chosen/chosen.jquery.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/summernote/summernote.min.js"></script>
+        <!--<script src="/dashboard-innovate/js/vendor/summernote/summernote.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/coolclock/coolclock.js"></script>
-        <script src="/dashboard-innovate/js/vendor/coolclock/excanvas.js"></script>
+<!--        <script src="/dashboard-innovate/js/vendor/coolclock/coolclock.js"></script>
+        <script src="/dashboard-innovate/js/vendor/coolclock/excanvas.js"></script>-->
         <!--/ vendor javascripts -->
 
         <!-- ============================================
@@ -188,6 +196,7 @@
         <!--/ custom javascripts -->
         
         @yield('js_imports_footer')
+        <script src="/js/js-loaded-trigger.js"></script>    
     </body>
 </html>
 @endif

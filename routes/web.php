@@ -26,10 +26,6 @@ Route::match(['get', 'post'], '/search', 'SearchController@search');
 Route::get('/establishment/register', 'UserProController@create'); 
 // store
 Route::put('/establishment/register', 'UserProController@store'); 
-//Route::put('/establishment/register', function(){
-//    $userProController = Illuminate\Support\Facades\App::make(App\Http\Controllers\UserProController::class);
-//    return $userProController->callAction('store');
-//});                  
 
 // BusinessCategory
 Route::get('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@edit');
@@ -43,8 +39,48 @@ Route::get('/admin/delete/{table_name}/{id}', function($table_name, $id){
             $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\BusinessCategoryController::class); 
         break;
     }   
-    if(!empty($controllerClass)){
+    if($controllerClass instanceof \App\Http\Controllers\Controller){
         return $controllerClass->callAction('destroy',array('id' => $id));
+    }
+});
+Route::get('/admin/create/{table_name}/{ajax?}', function($table_name, $ajax = null){
+    $controllerClass = null;
+   
+    switch ($table_name){
+        case App\Models\Promotion::TABLENAME: 
+            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\PromotionController::class); 
+        break;
+    }   
+    if($controllerClass instanceof \App\Http\Controllers\Controller){
+        $params = [];
+        if($ajax === 'ajax'){
+            $action = 'ajax';
+            $params['request'] = Illuminate\Support\Facades\App::make(App\Http\Requests\StorePromotion::class); 
+        } else {
+            $action = 'create';
+            if(Request::ajax()){
+                $action .= 'Ajax';
+            }
+        }
+        return $controllerClass->callAction($action, $params);
+    }
+});
+Route::match(['put', 'post'], '/admin/create/{table_name}', function($table_name){
+    $controllerClass = null;
+   
+    switch ($table_name){
+        case App\Models\Promotion::TABLENAME: 
+            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\PromotionController::class); 
+        break;
+    }   
+    if($controllerClass instanceof \App\Http\Controllers\Controller){
+        $params = [];
+        $action = 'store';
+//        if(Request::ajax()){
+//            $action .= 'Ajax';
+//        }
+        $params['request'] = Illuminate\Support\Facades\App::make(App\Http\Requests\StorePromotion::class); 
+        return $controllerClass->callAction($action, $params);
     }
 });
 

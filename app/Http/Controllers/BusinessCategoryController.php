@@ -9,26 +9,37 @@ use App\Models\BusinessCategory;
 class BusinessCategoryController extends Controller {
     /**
      * 
+     * @param \App\Http\Request $request
      * @param BusinessCategory $businessCategory
      * @return type
      */
-    public function edit(BusinessCategory $businessCategory) {
-        switch ($businessCategory->status) {
-            case BusinessCategory::STATUS_TO_CHECK :
-                $status = array();
-                $status[] = 'En attente de validation';
-                $status[] = false;
-                break;
-            default :
-                $status[] = 'Confirmé par Dinerscope';
-                break;
+    public function edit(\App\Http\Request $request, BusinessCategory $businessCategory) {
+        $response = response();
+        $jsonResponse = array('success' => 0);
+        $view = null;
+        
+        if(checkModel($businessCategory)){
+            switch ($businessCategory->getStatus()) {
+                case BusinessCategory::STATUS_TO_CHECK :
+                    $status = array();
+                    $status[] = 'En attente de validation';
+                    $status[] = false;
+                    break;
+                default :
+                    $status[] = 'Confirmé par Dinerscope';
+                    break;
+            }
+
+            $view = View::make('admin.business_categories')->with('businessCategory', $businessCategory)
+                    ->with('status', $status);
+            $jsonResponse['content'] = $view->render();
+            $jsonResponse['success'] = 1;
         }
-
-        $view = View::make('admin.business_categories')->with('businessCategory', $businessCategory)
-                ->with('status', $status);
-        return $view;
+        
+        $responsePrepared = $response->json($jsonResponse);
+        return $responsePrepared;
     }
-
+    
     /**
      * 
      * @param \Illuminate\Http\Request $request

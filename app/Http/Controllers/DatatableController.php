@@ -6,14 +6,15 @@ use App\Feeders\DatatableFeeder;
 use App\Feeders\DatatableRowAction;
 use App\Models\Address;
 use App\Models\Booking;
+use App\Models\BusinessCategory;
 use App\Models\BusinessType;
 use App\Models\Country;
 use App\Models\Establishment;
+use App\Models\Promotion;
 use App\Utilities\UuidTools;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use \App\Models\BusinessCategory;
 
 /**
  * Description of DatatableController
@@ -25,6 +26,7 @@ class DatatableController {
     const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
     const BOOKING_DATATABLE = 'booking_datatable';
     const BUSINESS_CATEGORIES_DATATABLE = 'business_category_datatable';
+    const PROMOTION_DATATABLE = 'promotion_datatable';
     
     /**
      * 
@@ -34,6 +36,11 @@ class DatatableController {
     public static function buildDatatable($id) {
         $typeEts = SessionController::getInstance()->getUserTypeEts();
         $dtFeeder = null;
+        
+        $nbElementPerPage = 10;
+        $currentPage = Request::get('page', 1);
+        $sliceStart = ($currentPage - 1) * $nbElementPerPage;
+                
         switch ($id) {
             case self::ESTABLISHMENT_DATATABLE:
                 $establishments = array();
@@ -47,9 +54,6 @@ class DatatableController {
                 }
                 $establishmentsQuery->orderBy(Establishment::TABLENAME . '.updated_at', 'desc');
 
-                $nbElementPerPage = 10;
-                $currentPage = Request::get('page', 1);
-                $sliceStart = ($currentPage - 1) * $nbElementPerPage;
                 $nbTotalResults = $establishmentsQuery->count(Establishment::TABLENAME . '.id');
 
                 $establishmentsQuery->offset($sliceStart)->limit($nbElementPerPage);
@@ -83,9 +87,6 @@ class DatatableController {
 
                 $bookingsQuery->orderBy(Booking::TABLENAME . '.updated_at', 'desc');
 
-                $nbElementPerPage = 10;
-                $currentPage = Request::get('page', 1);
-                $sliceStart = ($currentPage - 1) * $nbElementPerPage;
                 $nbTotalResults = $bookingsQuery->count(Booking::TABLENAME . '.id');
 
                 $bookingsQuery->offset($sliceStart)->limit($nbElementPerPage);
@@ -116,13 +117,10 @@ class DatatableController {
             case self::BUSINESS_CATEGORIES_DATATABLE:
                 $businessCategory = array();
 
-                $businessQuery = DB::table(BusinessCategory::TABLENAME)->select();
+                $businessQuery = DB::table(BusinessCategory::TABLENAME);
                 $businessQuery->orderBy(BusinessCategory::TABLENAME . '.updated_at', 'desc');
                 //$businessQuery->orderBy(BusinessCategory::TABLENAME . '.status', 'desc');
 
-                $nbElementPerPage = 10;
-                $currentPage = Request::get('page', 1);
-                $sliceStart = ($currentPage - 1) * $nbElementPerPage;
                 $nbTotalResults = $businessQuery->count(BusinessCategory::TABLENAME . '.id');
 
                 $businessQuery->offset($sliceStart)->limit($nbElementPerPage);
@@ -160,9 +158,47 @@ class DatatableController {
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_REMOVE);
                 
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/'.BusinessCategory::TABLENAME.'/{{id}}');
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setOnclick('getOnClickModal("Edition catégorie Business", '
+                        . '"/admin/'.BusinessCategory::TABLENAME.'/{{id}}");');
+//                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/'.BusinessCategory::TABLENAME.'/{{id}}');
                 $dtFeeder->customizeAction(DatatableRowAction::ACTION_REMOVE)->setHref('/admin/delete/'.BusinessCategory::TABLENAME.'/{{id}}');
 
+                break;
+            case self::PROMOTION_DATATABLE:
+                $promotions = array();
+
+                $promotionsQuery = DB::table(Promotion::TABLENAME)
+                        ->select([Promotion::TABLENAME . '.*', 
+                                Establishment::TABLENAME . '.name AS ets_name'])
+                        ->join(Establishment::TABLENAME, Promotion::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
+                ;
+                $promotionsQuery->whereRaw(Promotion::TABLENAME . '.end_date > NOW()');
+                $promotionsQuery->orderBy(Promotion::TABLENAME . '.start_date', 'ASC');
+
+                $nbTotalResults = $promotionsQuery->count(Promotion::TABLENAME . '.id');
+
+                $promotionsQuery->offset($sliceStart)->limit($nbElementPerPage);
+                $promotionsData = $promotionsQuery->get();
+                foreach ($promotionsData as $promotionData) {
+                    $uuid = UuidTools::getUuid($promotionData->id);
+
+                    $promotions[$uuid]['id'] = $uuid;
+                    $promotions[$uuid]['ets_name'] = $promotionData->ets_name;
+                    $promotions[$uuid]['name'] = $promotionData->name;
+                    $promotions[$uuid]['type'] = \App\Models\PromotionType::getLabelFromType($promotionData->id_promotion_type);
+                    $promotions[$uuid]['start_date'] = $promotionData->start_date;
+                    $promotions[$uuid]['end_date'] = $promotionData->end_date;
+                }
+                // Paginate results
+                $resultsPagination = new LengthAwarePaginator($promotions, $nbTotalResults, $nbElementPerPage, $currentPage);
+                $resultsPagination->setPath(Request::url());
+
+                $dtFeeder = new DatatableFeeder($id);
+                $dtFeeder->setPaginator($resultsPagination);
+                $dtFeeder->setColumns(array('ets_name' => 'Etablissement', 'name' => 'Label', 'type' => 'Type', 'start_date' => 'Début'
+                    , 'end_date' => 'Fin'));
+                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/promotion/{{id}}');
                 break;
         }
         return $dtFeeder;

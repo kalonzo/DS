@@ -94,12 +94,15 @@ selectTimelineItem = function (triggerElement){
     $(triggerElement).parentsInclude('.timeline-links').find('[data-id='+itemId+']').addClass('selected');
 };
 
-getOnClickModal = function(title, url, params, modalId, modalClasses){
+getOnClickModal = function(title, url, params, modalId, modalClasses, method){
     var $sampleModal = $('#ajax-modal-sample');
     if(checkExist($sampleModal) && !isEmpty(url)){
         var newModal = $sampleModal.clone();
         if(isEmpty(modalId)){
             modalId = 'modal_'+ Math.round(Math.random() * 1000000);
+        }
+        if(method !== 'post' && method !== 'POST'){
+            method = 'get';
         }
         $(newModal).attr('id', modalId);
         $(newModal).addClass(modalClasses);
@@ -109,7 +112,7 @@ getOnClickModal = function(title, url, params, modalId, modalClasses){
         
         $.ajax({
             url: url,
-            type: "post",
+            type: method,
             data: params,
             dataType: 'json',
             success: function (data) {
