@@ -368,6 +368,17 @@ $timetableRowHeight: 76px;
                     padding-top: 2em;
                 }
                 .event-item{
+                    .event-picture{
+                        margin-bottom: 1em;
+                        .square-container{
+                            width: 100%;
+                            height: 200px;
+                            border: 9px solid white;
+                            img{
+                                width: 100%;
+                            }
+                        }
+                    }
                     &.promo{
                         .icon-container span{
                             padding-bottom: 3px;
@@ -381,6 +392,11 @@ $timetableRowHeight: 76px;
                         background: none;
                         color: inherit;
                         border: 0px;
+                        &:not(.collapsible){
+                            a{
+                                cursor: default;
+                            }
+                        }
                         > .panel-heading{
                             background: none;
                             color: inherit;

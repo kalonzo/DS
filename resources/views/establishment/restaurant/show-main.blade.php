@@ -84,12 +84,20 @@
                                         var timestp = dateSplit[2] + dateSplit[1] + dateSplit[0] + '000000';
                                         
                                         var $selectedItems = [];
+                                        var mediaDisplayed = false;
                                         $('#event-items-list .event-item').hide().each(function(){
                                             var start = $(this).attr('data-start');
                                             var end = $(this).attr('data-end');
                                             if(timestp >= start && timestp <= end){
+                                                var $mediaElement = $(this).find('.event-picture');
                                                 $(this).show();
                                                 $selectedItems.push(this);
+                                                if(!mediaDisplayed && checkExist($mediaElement)){
+                                                    $mediaElement.show();
+                                                    mediaDisplayed = true;
+                                                } else {
+                                                    $mediaElement.hide();
+                                                }
                                             }
                                         });
                                         $.each($selectedItems, function(key, element){
@@ -137,9 +145,20 @@
                         });
                         var nbInitialItems = $('#event-items-list .event-item.first').length;
                         if(nbInitialItems > 1){
-                            $('#event-items-list .event-item.first .panel').addClass('collapsible');
-                            $('#event-items-list .event-item.first .panel-collapse').removeClass('in');
-                            $('#event-items-list .event-item.first .panel-heading > a').attr('aria-expanded', false);
+                            var $firstItems = $('#event-items-list .event-item.first');
+                            $firstItems.find('.panel').addClass('collapsible');
+                            $firstItems.find('.panel-collapse').removeClass('in');
+                            $firstItems.find('.panel-heading > a').attr('aria-expanded', false);
+                            var mediaDisplayed = false;
+                            $firstItems.each(function(){
+                                var $mediaElement = $(this).find('.event-picture');
+                                if(!mediaDisplayed && checkExist($mediaElement)){
+                                    $mediaElement.show();
+                                    mediaDisplayed = true;
+                                } else {
+                                    $mediaElement.hide();
+                                }
+                            });
                         }
                     });
                 </script>
@@ -154,11 +173,17 @@
                 @foreach($data['promotions'] as $promo)
                 <div class="event-item promo @if((!empty($minTimestp) && $promo['start_timestp'] === $minTimestp) || $loop->iteration === 1) first @endif" 
                      data-start="{{ $promo['start_timestp'] }}" data-end="{{ $promo['end_timestp'] }}">
-                    <div class="event-picture">
-                        @if(isset($promo['picture']))
-                            <img src="{{ $promo['picture'] }}" alt="{{ $promo['name'] }} picture"/>   
-                        @endif
+                    @if(isset($promo['picture']))
+                    <div class="event-picture gallery-box">
+                        <a class="" href="{{ $promo['picture'] }}">
+                            <div class="square-container">
+                                <div class="crop">
+                                    <img src="{{ $promo['picture'] }}" alt="{{ $promo['name'] }} picture"/>   
+                                </div>
+                            </div>
+                        </a>
                     </div>
+                    @endif
                     <div class="panel panel-default">
                         <div class="panel-heading" role="tab" id="heading{!! $loop->iteration !!}">
                             <a role="button" data-parent="#event-items-list" aria-expanded="true" aria-controls="collapse{!! $loop->iteration !!}" data-toggle="collapse"

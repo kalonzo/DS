@@ -4,8 +4,11 @@ $('body').on('click', '.form-data-button', function () {
         $.ajax({
             url: $(form).attr('action'),
             type: $(form).attr('method'),
-            data: $(form).serialize(),
+            data: new FormData(form[0]),
+//            data: $(form).serialize(),
             dataType: 'json',
+            processData: false,
+            contentType: false,
             success: function (data) {
                 location.reload();
             },
