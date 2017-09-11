@@ -153,6 +153,14 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->hasMany(Dish::class, 'id_establishment', 'id');
     }
     
+    /**
+     * 
+     * @return Promotion
+     */
+    public function promotions(){
+        return $this->hasMany(Promotion::class, 'id_establishment', 'id');
+    }
+    
     protected $url = null;
     public function getUrl($lazy = true){
         if($this->url === null || !$lazy){

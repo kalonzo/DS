@@ -43,22 +43,152 @@
 </section>
  @endif
 <!------------- RESTAURANT EVENTS & PROMO ----------------------------->
-@if(isset($data['events']) || isset($data['promo']))
-<section class="container-fluid ets-events" id="events">
+@if(checkFlow($data, ['events', 'promotions']))
+<section class="container-fluid ets-events">
     <div class="container">
         <h1>Nos <strong>événements</strong> et <strong>promotions</strong></h1>
+        <br/><br/>
         <div class="row">
-            <div class="col-sm-4">
-                <!--
-                CALENDAR
-                -->
+            <div class="col-sm-4_5">
+                <?php
+                $dates = array();
+                foreach($data['promotions'] as $promo){
+                    $dates[] = array($promo['start_date'], $promo['end_date'], 'promo');
+                }
+                ?>
+                <div class="" id="mini-event-calendar">     
+                    {!! Form::hidden('datetime_reservation', '', ['class' => '']) !!}
+                </div>
+                <script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function(event) { 
+                        var eventsDataJson = JSON.parse('{!! json_encode($dates) !!}');
+                        var eventsData = new Array();
+                        $.each(eventsDataJson, function (key, value) {
+                            var startDate = new Date(value[0]);
+                            var endDate = new Date(value[1]);
+                            eventsData.push([startDate, endDate, value[2]]);
+                        });
+                        $('#mini-event-calendar').each(function(){
+                            $.datepicker.setDefaults({dayNamesMin: <?php echo json_encode(App\Utilities\DateTools::getDaysFirstLetterArray(7));?>});
+                            var $input = $(this).find('input[type=hidden]');
+                            
+                            if(checkExist($input)){
+                                var options = {
+                                    dateFormat: "dd/mm/yy",
+                                    defaultDate: $input.val(),
+                                    showOtherMonths: true,
+                                    selectOtherMonths: true,
+                                    minDate: 0,
+                                    onSelect: function(dateText, inst){
+                                        var dateSplit = dateText.split('/');
+                                        var timestp = dateSplit[2] + dateSplit[1] + dateSplit[0] + '000000';
+                                        
+                                        var $selectedItems = [];
+                                        $('#event-items-list .event-item').hide().each(function(){
+                                            var start = $(this).attr('data-start');
+                                            var end = $(this).attr('data-end');
+                                            if(timestp >= start && timestp <= end){
+                                                $(this).show();
+                                                $selectedItems.push(this);
+                                            }
+                                        });
+                                        $.each($selectedItems, function(key, element){
+                                            if($selectedItems.length === 1){
+                                                $(element).find('.panel-collapse').addClass('in');
+                                                $(element).find('.panel').removeClass('collapsible');
+                                                $(element).find('.panel-heading > a').attr('aria-expanded', true);
+                                            } else {
+                                                $(element).find('.panel-collapse').removeClass('in');
+                                                $(element).find('.panel').addClass('collapsible');
+                                                $(element).find('.panel-heading > a').attr('aria-expanded', false);
+
+                                            }
+                                        });
+                                    },
+                                    beforeShowDay: function(date){
+                                        var selectable = false;
+                                        var classes = '';
+                                        $.each(eventsData, function (key, value) {
+                                            if(date >= value[0] && date <= value[1]){
+                                                classes += value[2];
+                                                selectable = true;
+                                                if(date.getTime() == value[0].getTime()){
+                                                    classes += ' start';
+                                                }
+                                                if(date.getTime() == value[1].getTime()){
+                                                    classes += ' end';
+                                                }
+                                            }
+                                        });
+                                        return [selectable, classes, ''];
+                                    }
+                                };
+                                $(this).datepicker(options);
+                            }
+                        });
+                        $('#event-items-list .event-item .panel').each(function(){
+                            $(this).on('hide.bs.collapse', function (e) {
+                                if(!$(this).hasClass('collapsible')){
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    return false;
+                                }
+                            });
+                        });
+                        var nbInitialItems = $('#event-items-list .event-item.first').length;
+                        if(nbInitialItems > 1){
+                            $('#event-items-list .event-item.first .panel').addClass('collapsible');
+                            $('#event-items-list .event-item.first .panel-collapse').removeClass('in');
+                            $('#event-items-list .event-item.first .panel-heading > a').attr('aria-expanded', false);
+                        }
+                    });
+                </script>
             </div>
-            <div class="col-sm-8">
-                <!--
-                EVENT INFO
-                -->
+            <div class="col-sm-7 col-sm-offset-0_5" id="event-items-list">
+                <?php
+                $minTimestp = null;
+                if(isset($data['promotions'][0])){
+                    $minTimestp = $data['promotions'][0]['start_timestp'];
+                }
+                ?>
+                @foreach($data['promotions'] as $promo)
+                <div class="event-item promo @if((!empty($minTimestp) && $promo['start_timestp'] === $minTimestp) || $loop->iteration === 1) first @endif" 
+                     data-start="{{ $promo['start_timestp'] }}" data-end="{{ $promo['end_timestp'] }}">
+                    <div class="event-picture">
+                        @if(isset($promo['picture']))
+                            <img src="{{ $promo['picture'] }}" alt="{{ $promo['name'] }} picture"/>   
+                        @endif
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="heading{!! $loop->iteration !!}">
+                            <a role="button" data-parent="#event-items-list" aria-expanded="true" aria-controls="collapse{!! $loop->iteration !!}" data-toggle="collapse"
+                               href="#collapse{!! $loop->iteration !!}">
+                                <div class="container-fluid no-gutter">
+                                    <div class="icon-container">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                    </div>
+                                    <div class="title-container">
+                                        <h4 class="panel-title">{{ $promo['name'] }}</h4>
+                                        <div class="event-date">{!! formatDate($promo['start_date'], IntlDateFormatter::LONG) !!}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div id="collapse{!! $loop->iteration !!}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{!! $loop->iteration !!}">
+                            <div class="panel-body container-fluid">
+                                <div class="row"> 
+                                    <div class="col-xs-12">
+                                        {{ $promo['description'] }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
+        <br class="cleaner"/><br/><br/>
     </div>
 </section>
 @endif

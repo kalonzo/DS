@@ -239,6 +239,31 @@ class EstablishmentController extends Controller {
                     }
                 }
                 
+                $data['promotions'] = array();
+                $promosWithMedia = $establishment->promotions()
+                                            ->select([\App\Models\Promotion::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                                            ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id_object_related', '='
+                                                    , \App\Models\Promotion::TABLENAME.'.id')
+                                            ->whereRaw(\App\Models\Promotion::TABLENAME.'.end_date > NOW()')
+                                            ->orderBy(\App\Models\Promotion::TABLENAME.'.start_date')
+                                            ->get();
+                foreach ($promosWithMedia as $promoWithMedia) {
+                    if ($promoWithMedia instanceof \App\Models\Promotion) {
+                        $promoData = array(
+                                            'name' => $promoWithMedia->getName(),
+                                            'description' => $promoWithMedia->getDescription(),
+                                            'start_date' => $promoWithMedia->getStartDate(),
+                                            'end_date' => $promoWithMedia->getEndDate(),
+                                            'start_timestp' => DateTools::getStringTimestpFromDate($promoWithMedia->getStartDate()),
+                                            'end_timestp' => DateTools::getStringTimestpFromDate($promoWithMedia->getEndDate()),
+                                        );
+                        if(!empty($promoWithMedia->local_path)){
+                            $promoData['picture'] = asset($promoWithMedia->local_path);
+                        }
+                        $data['promotions'][] = $promoData;
+                    }
+                }
+                
                 $data['story'] = array();
                 $storiesWithMedia = $establishment->stories()
                                             ->select([\App\Models\EstablishmentHistory::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])

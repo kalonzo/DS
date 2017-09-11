@@ -19,4 +19,33 @@ class DateTools {
         $days[7] = 'Dimanche';
         return $days;
     }
+    
+    public static function getDaysFirstLetterArray($startIndex = 1){
+        $days = self::getDaysArray();
+        
+        $res = array();
+        $counter = 0;
+        for($i = $startIndex; $i <= 7, $counter <= 7; $i++){
+            $res[$counter] = substr($days[$i], 0, 1);
+            $counter++;
+            if($i === 7 && $counter < 7){
+                $i = 0;
+            }
+        }
+        
+        return $res;
+    }
+    
+    public static function getStringTimestpFromDate($date){
+        return str_replace([' ', '-', ':'], '', $date);
+//        $timestp = null;
+//        $dateHourSplitted = explode(' ', $date);
+//        $dateSplitted = explode('-', $dateHourSplitted[0]);
+//        $hourSplitted = explode(':', $dateHourSplitted[1]);
+//        if(count($dateSplitted) === 3 && count($hourSplitted) === 3){
+//            $timestp = $dateSplitted[2].$dateSplitted[1].$dateSplitted[0];
+//            $timestp .= $hourSplitted[0].$hourSplitted[1].$hourSplitted[2];
+//        }
+//        return $timestp;
+    }
 }
