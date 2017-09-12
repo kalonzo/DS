@@ -32,7 +32,7 @@ class ImportRestaurantController extends Controller {
      */
     public function import(Request $request) {
         $file = \Illuminate\Support\Facades\Request::file('excel');
-        
+
         if (!empty($file)) {
             if ($file->isValid()) {
                 $relPath = $file->store('/import_tmp');
@@ -41,12 +41,12 @@ class ImportRestaurantController extends Controller {
                 Excel::load($absolutePath, function($reader) {
                     $sheets = $reader->all();
                     $stop = false;
-                    if (!empty($sheets)) {   
-                            $nbError= 0;
-                            $nbSucces = 0;
-                            $nbRest = 0;
-                            $nbMaj = 0;
-                            $i = 0;
+                    if (!empty($sheets)) {
+                        $nbError = 0;
+                        $nbSucces = 0;
+                        $nbRest = 0;
+                        $nbMaj = 0;
+                        $i = 0;
                         foreach ($sheets as $sheet) {
                             $nameEstablishment = null;
                             $street = null;
@@ -63,20 +63,13 @@ class ImportRestaurantController extends Controller {
                             $email = null;
                             $siteWeb = null;
                             $city = null;
-                            $department = null;
                             $description = null;
                             $service = null;
                             $ambiance = null;
                             $status = null;
                             $lat = null;
                             $lng = null;
-                            $lundi = null;
-                            $mardi = null;
-                            $mercredi = null;
-                            $jeudi = null;
-                            $vendredi = null;
-                            $samedi = null;
-                            $dimanche = null;
+                            $openingHours[] = array();
                             foreach ($sheet as $numRow => $row) {
                                 if ($numRow > 0) { //&& $numRow < 10
                                     foreach ($row as $col_slug => $cellContent) {
@@ -116,32 +109,76 @@ class ImportRestaurantController extends Controller {
                                             $service = explode('-', $cellContent);
                                         } elseif ($col_slug === 'cadre_ambiance') {
                                             $ambiance = explode('-', $cellContent);
-                                        } elseif ($col_slug === 'lundi') {
-                                            $lundi = $cellContent;
-                                        } elseif ($col_slug === 'mardi') {
-                                            $mardi = $cellContent;
-                                        } elseif ($col_slug === 'mercredi') {
-                                            $mercredi = $cellContent;
-                                        } elseif ($col_slug === 'jeudi') {
-                                            $jeudi = $cellContent;
-                                        } elseif ($col_slug === 'vendredi') {
-                                            $vendredi = $cellContent;
-                                        } elseif ($col_slug === 'samedi') {
-                                            $samedi = $cellContent;
-                                        } elseif ($col_slug === 'dimanche') {
-                                            $dimanche = $cellContent;
+                                            //jour de la semaine
+                                        } elseif ($col_slug === 'lundi1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'lundi2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'lund13') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'lund14') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mardi1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mardi2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mardi3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mardi4') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mercredi1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mercredi2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mercredi3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'mercredi4') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'jeudi1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'jeudi2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'jeudi3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'jeudi3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'jeudi4') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'vendredi1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'vendredi2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'vendredi3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'vendredi4') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'samedi1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'samedi2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'samedi3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'samedi4') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'dimanche1') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'dimanche2') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'dimanche3') {
+                                            $openingHours[] = $cellContent;
+                                        } elseif ($col_slug === 'dimanche4') {
+                                            $openingHours[] = $cellContent;
                                         }
                                     }
                                 }
 
                                 $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
                                                 ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
-                                $establishmentName = Establishment::where('name','=',$nameEstablishment)->first();
+                                $establishmentName = Establishment::where('name', '=', $nameEstablishment)->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
-                                if ((!checkModel($establishmentName) && !checkModel($addressEstablishment) && !empty($nameEstablishment) 
-                                        && !empty($street) && !empty($streetNumber) && !empty($postalCode) && !empty($city))) {
-                                    $i= $i + 1;
+                                if ((!checkModel($establishmentName) && !checkModel($addressEstablishment) && !empty($nameEstablishment) && !empty($street) && !empty($streetNumber) && !empty($postalCode) && !empty($city))) {
+                                    $i = $i + 1;
                                     $data = self::getLatLng($nameEstablishment, $street, $streetNumber, $postalCode, $country, $city);
                                     if (isset($data['results'][0]['geometry']['location']['lat'])) {
                                         $lat = $data['results'][0]['geometry']['location']['lat'];
@@ -150,7 +187,7 @@ class ImportRestaurantController extends Controller {
                                         //$street = $data['results'][0]['address_components']['route']['short_name'];
                                         // $city = $data['results'][0]['address_components']['locality']['short_name'];
                                         //$department = $data['results'][0]['address_components']['administrative_area_level_1']['short_name'];
-                                       // $country = $data['results'][0]['address_components']['country']['long_name'];
+                                        // $country = $data['results'][0]['address_components']['country']['long_name'];
                                         //$postalCode = $data['results'][0]['address_components'][6]['long_name'];
                                         //print_r('$department->' . $department . ' $country->' . $country . ' city->' . $postalCode);
 
@@ -158,70 +195,70 @@ class ImportRestaurantController extends Controller {
                                                         ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
                                         if (!checkModel($addressEstablishment)) {
                                             $status = Establishment::STATUS_ACTIVE;
-                                            self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
-                                                    $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
-                                                    $phonePro, $status, null, null);
-                                                    $nbSucces = $nbSucces + 1;
-                                                    $stop = false;
-                                           // print_r('La ligne ' . $nameEstablishment . ' est insérer<br>');
+                                            self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, $phonePro, $openingHours, $status, null, null);
+                                            $nbSucces = $nbSucces + 1;
+                                            $stop = false;
+                                            // print_r('La ligne ' . $nameEstablishment . ' est insérer<br>');
                                         }
                                     } else {
-                                       // echo ('<h1>Busy API</h1><br>');
+                                        // echo ('<h1>Busy API</h1><br>');
                                         //echo('La ligne ' . $nameEstablishment . ' n\'as pas été enregistré en base <br>');
                                         $nbRest = $nbRest + 1;
                                         $stop = true;
                                         /**
                                          * print_r('La ligne ' . $nameEstablishment . ' doit être localiser<br>');
-                                        $status = Establishment::STATUS_TO_LOCALIZE;
-                                        self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
-                                                $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
-                                                $phonePro, $status, null, null);
+                                          $status = Establishment::STATUS_TO_LOCALIZE;
+                                          self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city,
+                                          $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance,
+                                          $phonePro,$openingHours, $status, null, null);
                                          * 
                                          */
                                     }
                                 } elseif ((!checkModel($addressEstablishment) && isset($nameEstablishment))) {
-                                    $i= $i + 1;
+                                    $i = $i + 1;
                                     $nbError = $nbError + 1;
                                     /**
-                                    $status = Establishment::STATUS_INCOMPLETE;
-                                    self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
-                                            $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
-                                            $phonePro, $status, null, null);
+                                      $status = Establishment::STATUS_INCOMPLETE;
+                                      self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city,
+                                      $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance,
+                                      $phonePro,$openingHours, $status, null, null);
                                      * 
                                      */
                                 } elseif (checkModel($addressEstablishment)) {
                                     $i = $i + 1;
                                     //$nbMaj = $nbMaj + 1 ;
                                     /**
-                                    $establishment = Establishment::where('id_address', '=', $addressEstablishment->getId())->first();
-                                    if (checkModel($establishment)) {
-                                        self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, 
-                                                $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, 
-                                                $phonePro, $status, $establishment, $addressEstablishment);
-                                       // print_r('La ligne ' . $nameEstablishment . ' à été mise à jour<br>');
-                                    }
+                                      $establishment = Establishment::where('id_address', '=', $addressEstablishment->getId())->first();
+                                      if (checkModel($establishment)) {
+                                      self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city,
+                                      $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance,
+                                      $phonePro,$openingHours, $status, $establishment, $addressEstablishment);
+                                      // print_r('La ligne ' . $nameEstablishment . ' à été mise à jour<br>');
+                                      }
                                      * 
                                      */
-                                }elseif(isset($nameEstablishment) && $stop === true){
+                                } elseif (isset($nameEstablishment) && $stop === true) {
                                     $i = $i + 1;
                                     $nbRest = $nbRest + 1;
-                                   // print_r('La ligne ' . $nameEstablishment . ' n\'as pas pu être traité <br>');
+                                    // print_r('La ligne ' . $nameEstablishment . ' n\'as pas pu être traité <br>');
                                 }
                             }
                         }
-                        
+
                         echo '<h2> Résultat pour cette Import</h2>';
-                        
-                        print_r('Nombre de ligne insérer Actif '.$nbSucces.'<br>');
-                        print_r('Nombre de ligne à compléter '.$nbRest.'<br>');
-                        print_r('Nombre de ligne incompléte '.$nbError.'<br>');
-                        print_r('Nombre de ligne traité '.$i.'<br>');
-                      ?> 
-                            <a type="button" name="nom" value="Retour à la séléction Excel"  href="https://dinerscope/admin/establishment/import" >
-                                retour
-                            </a>
-                                <input type="button" value="Rafraichir" id="refresh" onclick="{location.reload()}" />
-                      <?php
+
+                        print_r('Nombre de ligne insérer Actif ' . $nbSucces . '<br>');
+                        print_r('Nombre de ligne à compléter ' . $nbRest . '<br>');
+                        print_r('Nombre de ligne incompléte ' . $nbError . '<br>');
+                        print_r('Nombre de ligne traité ' . $i . '<br>');
+                        ?> 
+                        <a type="button" name="nom" value="Retour à la séléction Excel"  href="https://dinerscope/admin/establishment/import" >
+                            retour
+                        </a>
+                        <input type="button" value="Rafraichir" id="refresh" onclick="{
+                                    location.reload()
+                                }" />
+                        <?php
                     }
                 });
                 Storage::delete($relPath);
@@ -235,12 +272,50 @@ class ImportRestaurantController extends Controller {
         try {
             $json = file_get_contents($url);
             $data = json_decode($json, true);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
         //print_r($json);
         return $data;
+    }
+
+    /**
+     * 
+     * @param StoreEstablishment $request
+     * @param type $day
+     * @param type $startTime
+     * @param type $endTime
+     * @param Establishment $establishment
+     */
+    public function insertOpeningHours($openingHours, $establishmentId) {
+        try {
+
+            //insére succesivement les horaires en base
+            $i=0;
+            foreach ($openingHours as $hour) {
+                print_r($hour);
+                echo $hour[$i].'<br>';
+                $i = $i +1;
+            }
+            die();
+            //insertion des horaires
+            $ets = \App\Models\OpeningHour::create([
+                        'id' => UuidTools::generateUuid(),
+                        'day' => $nameEstablishment,
+                        'start_time' => $email,
+                        'end_time' => $addressEstablishment->id,
+                        'start_date' => $lat,
+                        'end_date' => $lng,
+                        'id_establishment' => $establishmentId,
+                        'no_break' => 0,
+                        'closed' => $siteWeb,
+                        'day_order' => $description,
+            ]);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            die();
+        }
+        return $openingHours;
     }
 
     /**
@@ -268,7 +343,7 @@ class ImportRestaurantController extends Controller {
      * @param Establishment $establishment
      * @param Address $address
      */
-    function insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, $phone, $status, $establishment, $address) {
+    function insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, $phone, $openingsHours, $status, $establishment, $address) {
         $idEstablishment = UuidTools::generateUuid();
         $idAddress = UuidTools::generateUuid();
         $idLocationIndex = 0;
@@ -327,8 +402,10 @@ class ImportRestaurantController extends Controller {
                         'id_currency' => $idCurrency,
             ]);
 
-            //Insertion numéro principal PRO
-            $callNumber = \App\Models\CallNumber::where('number', '=', $phone)->where('id_establishment', '=', $ets->getId())->first();
+            self::insertOpeningHours($openingsHours,$ets->getId());
+            
+                    //Insertion numéro principal PRO
+                    $callNumber = \App\Models\CallNumber::where('number', '=', $phone)->where('id_establishment', '=', $ets->getId())->first();
             if (!checkModel($callNumber)) {
                 \App\Models\CallNumber::create([
                     'id' => UuidTools::generateUuid(),
@@ -372,22 +449,22 @@ class ImportRestaurantController extends Controller {
 
         if (isset($cookingType)) {
             foreach ($cookingType as $business) {
-                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_COOKING_TYPE);
+                self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_COOKING_TYPE);
             }
         }
         if (isset($speciality)) {
             foreach ($speciality as $business) {
-                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_FOOD_SPECIALTY);
+                self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_FOOD_SPECIALTY);
             }
         }
         if (isset($ambiance)) {
             foreach ($ambiance as $business) {
-                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_RESTAURANT_AMBIENCE);
+                self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_RESTAURANT_AMBIENCE);
             }
         }
         if (isset($service)) {
             foreach ($service as $business) {
-                self::linkBusinessCategory($ets->getId(), $business , BusinessCategory::TYPE_SERVICES);
+                self::linkBusinessCategory($ets->getId(), $business, BusinessCategory::TYPE_SERVICES);
             }
         }
     }
@@ -420,8 +497,8 @@ class ImportRestaurantController extends Controller {
         return $idLocationIndex;
     }
 
-    function linkBusinessCategory($idEstablishment, $name,$type) {
-        $businessModel = \App\Models\BusinessCategory::where('name', '=', $name)->where('type','=',$type)->first();
+    function linkBusinessCategory($idEstablishment, $name, $type) {
+        $businessModel = \App\Models\BusinessCategory::where('name', '=', $name)->where('type', '=', $type)->first();
         if (checkModel($businessModel)) {
             self::feedEstablishmentBusinessCategory($businessModel->getId(), $idEstablishment);
         } else {
@@ -429,7 +506,7 @@ class ImportRestaurantController extends Controller {
                         'id' => UuidTools::generateUuid(),
                         'name' => $name,
                         'type' => $type,
-                         'status' => BusinessCategory::STATUS_TO_CHECK
+                        'status' => BusinessCategory::STATUS_TO_CHECK
             ]);
             self::feedEstablishmentBusinessCategory($specialityModel->getId(), $idEstablishment);
         }
@@ -446,4 +523,5 @@ class ImportRestaurantController extends Controller {
             ]);
         }
     }
+
 }

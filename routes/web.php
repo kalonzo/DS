@@ -50,6 +50,9 @@ Route::get('/admin/create/{table_name}/{ajax?}', function($table_name, $ajax = n
         case App\Models\Promotion::TABLENAME: 
             $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\PromotionController::class); 
         break;
+        case App\Models\Event::TABLENAME: 
+            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\EventController::class); 
+        break;
     }   
     if($controllerClass instanceof \App\Http\Controllers\Controller){
         $params = [];
@@ -71,6 +74,9 @@ Route::match(['put', 'post'], '/admin/create/{table_name}', function($table_name
     switch ($table_name){
         case App\Models\Promotion::TABLENAME: 
             $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\PromotionController::class); 
+        break;
+        case App\Models\Event::TABLENAME: 
+            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\EventController::class); 
         break;
     }   
     if($controllerClass instanceof \App\Http\Controllers\Controller){

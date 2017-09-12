@@ -11,6 +11,7 @@ use App\Models\BusinessType;
 use App\Models\Country;
 use App\Models\Establishment;
 use App\Models\Promotion;
+use \App\Models\Event;
 use App\Utilities\UuidTools;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -22,12 +23,13 @@ use Illuminate\Support\Facades\Request;
  * @author Nico
  */
 class DatatableController {
-    
+
     const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
     const BOOKING_DATATABLE = 'booking_datatable';
     const BUSINESS_CATEGORIES_DATATABLE = 'business_category_datatable';
     const PROMOTION_DATATABLE = 'promotion_datatable';
-    
+    const EVENT_DATATABLE = 'event_datatable';
+
     /**
      * 
      * @param type $id
@@ -36,17 +38,17 @@ class DatatableController {
     public static function buildDatatable($id) {
         $typeEts = SessionController::getInstance()->getUserTypeEts();
         $dtFeeder = null;
-        
+
         $nbElementPerPage = 10;
         $currentPage = Request::get('page', 1);
         $sliceStart = ($currentPage - 1) * $nbElementPerPage;
-                
+
         switch ($id) {
             case self::ESTABLISHMENT_DATATABLE:
                 $establishments = array();
 
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, '.Establishment::TABLENAME . '.id AS id_establishment'))
+                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, ' . Establishment::TABLENAME . '.id AS id_establishment'))
                         ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                 ;
                 if (!empty($typeEts)) {
@@ -101,7 +103,7 @@ class DatatableController {
                     $bookings[$uuid]['comment'] = $bookingData->comment;
                     $bookings[$uuid]['phone_number'] = $bookingData->phone_number;
                     $bookings[$uuid]['email'] = $bookingData->email;
-                    $bookings[$uuid]['contact'] = $bookingData->phone_number.' '.$bookingData->email;
+                    $bookings[$uuid]['contact'] = $bookingData->phone_number . ' ' . $bookingData->email;
                     $bookings[$uuid]['status'] = $bookingData->status;
                     $bookings[$uuid]['updated_at'] = $bookingData->updated_at;
                 }
@@ -111,7 +113,7 @@ class DatatableController {
 
                 $dtFeeder = new DatatableFeeder($id);
                 $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('nb_adults' => 'Personne', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire','contact' => 'Contact','status' => 'Etat', 'updated_at' => 'Modifié le'));
+                $dtFeeder->setColumns(array('nb_adults' => 'Personne', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire', 'contact' => 'Contact', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 break;
             case self::BUSINESS_CATEGORIES_DATATABLE:
@@ -131,18 +133,18 @@ class DatatableController {
 
                     $businessCategory[$uuid]['id'] = $uuid;
                     $businessCategory[$uuid]['name'] = $businessCategoryData->name;
-                    switch ($businessCategoryData->type){
+                    switch ($businessCategoryData->type) {
                         case BusinessCategory::TYPE_COOKING_TYPE :
-                                $businessCategory[$uuid]['type'] = 'Type de cuisine';
+                            $businessCategory[$uuid]['type'] = 'Type de cuisine';
                             break;
                         case BusinessCategory::TYPE_FOOD_SPECIALTY :
-                                $businessCategory[$uuid]['type'] = 'Spécialité';
+                            $businessCategory[$uuid]['type'] = 'Spécialité';
                             break;
                         case BusinessCategory::TYPE_RESTAURANT_AMBIENCE :
-                                $businessCategory[$uuid]['type'] = 'Cadre et ambiance';
+                            $businessCategory[$uuid]['type'] = 'Cadre et ambiance';
                             break;
                         case BusinessCategory::TYPE_SERVICES :
-                                $businessCategory[$uuid]['type'] = 'Service';
+                            $businessCategory[$uuid]['type'] = 'Service';
                             break;
                     }
                     $businessCategory[$uuid]['status'] = $businessCategoryData->status;
@@ -157,19 +159,19 @@ class DatatableController {
                 $dtFeeder->setColumns(array('name' => 'Nom de la catégorie', 'type' => 'type', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_REMOVE);
-                
+
                 $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setOnclick('getOnClickModal("Edition catégorie Business", '
-                        . '"/admin/'.BusinessCategory::TABLENAME.'/{{id}}");');
+                        . '"/admin/' . BusinessCategory::TABLENAME . '/{{id}}");');
 //                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/'.BusinessCategory::TABLENAME.'/{{id}}');
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_REMOVE)->setHref('/admin/delete/'.BusinessCategory::TABLENAME.'/{{id}}');
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_REMOVE)->setHref('/admin/delete/' . BusinessCategory::TABLENAME . '/{{id}}');
 
                 break;
             case self::PROMOTION_DATATABLE:
                 $promotions = array();
 
                 $promotionsQuery = DB::table(Promotion::TABLENAME)
-                        ->select([Promotion::TABLENAME . '.*', 
-                                Establishment::TABLENAME . '.name AS ets_name'])
+                        ->select([Promotion::TABLENAME . '.*',
+                            Establishment::TABLENAME . '.name AS ets_name'])
                         ->join(Establishment::TABLENAME, Promotion::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
                 ;
                 $promotionsQuery->whereRaw(Promotion::TABLENAME . '.end_date > NOW()');
@@ -200,7 +202,44 @@ class DatatableController {
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/promotion/{{id}}');
                 break;
+            case self::EVENT_DATATABLE:
+                $event = array();
+
+                $eventsQuery = DB::table(Event::TABLENAME)
+                        ->select([Event::TABLENAME . '.*',
+                            Establishment::TABLENAME . '.name AS ets_name'])
+                        ->join(Establishment::TABLENAME, Event::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
+                ;
+                $eventsQuery->whereRaw(Event::TABLENAME . '.end_date > NOW()');
+                $eventsQuery->orderBy(Event::TABLENAME . '.start_date', 'ASC');
+
+                $nbTotalResults = $eventsQuery->count(Event::TABLENAME . '.id');
+
+                $eventsQuery->offset($sliceStart)->limit($nbElementPerPage);
+                $eventsData = $eventsQuery->get();
+                foreach ($eventsData as $eventsData) {
+                    $uuid = UuidTools::getUuid($eventsData->id);
+
+                    $event[$uuid]['id'] = $uuid;
+                    $event[$uuid]['ets_name'] = $eventsData->ets_name;
+                    $event[$uuid]['name'] = $eventsData->name;
+                    $event[$uuid]['type'] = $eventsData->event_type;
+                    $event[$uuid]['start_date'] = $eventsData->start_date;
+                    $event[$uuid]['end_date'] = $eventsData->end_date;
+                }
+                // Paginate results
+                $resultsPagination = new LengthAwarePaginator($event, $nbTotalResults, $nbElementPerPage, $currentPage);
+                $resultsPagination->setPath(Request::url());
+
+                $dtFeeder = new DatatableFeeder($id);
+                $dtFeeder->setPaginator($resultsPagination);
+                $dtFeeder->setColumns(array('ets_name' => 'Etablissement', 'name' => 'Label', 'type' => 'Type', 'start_date' => 'Début'
+                    , 'end_date' => 'Fin'));
+                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/events/{{id}}');
+                break;
         }
         return $dtFeeder;
     }
+
 }

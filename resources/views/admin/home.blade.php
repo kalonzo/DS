@@ -29,5 +29,10 @@
                                     'tabledata' => $promotion_datatable])
 
     @endcomponent
+    
+    @component('components.tile', ['title' => 'Evénements', 'add_href' => 'javascript:getOnClickModal("Créer un événement", "/admin/create/events")', 
+                                    'tabledata' => $event_datatable])
+
+    @endcomponent
 
 @endsection
