@@ -26,6 +26,7 @@ class StoreBooking extends \App\Http\FormRequest {
             'lastname' => 'required|min:2|max:255',
             'phone_number' => 'required|min:11|numeric',
             'timeAM' => 'required_without:timePM',
+            'timePM' => 'required_without:timeAM',
             'datetime_reservation' => 'date_format:d/m/Y|after_or_equal:' . $dateNow,
         ];
 
@@ -44,6 +45,7 @@ class StoreBooking extends \App\Http\FormRequest {
             'lastname.min' => 'Veuillez renseigner au minimum 2 caractères pour votre nom',
             'lastname.max' => 'Merci de ne pas renseigner plus de 255 caractères pour votre nom',
             'timeAM.required_without' => 'Veuillez saisir une heure pour votre réservation',
+            'timePM.required_without' => 'Veuillez saisir une heure pour votre réservation',
             'datetime_reservation.after_or_equal' => 'La date pour votre réservation est passée de date',
         ];
         return $messages;

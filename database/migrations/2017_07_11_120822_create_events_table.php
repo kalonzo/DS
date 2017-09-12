@@ -23,7 +23,7 @@ class CreateEventsTable extends Migration {
 			$table->dateTime('end_date')->nullable();
 			$table->string('type_event', 255)->nullable();
 			$table->binary('id_establishment', 16)->index('fk_events_establishments1_idx');
-			$table->integer('id_event_type')->nullable;
+			$table->integer('id_event_type')->nullable();
 		});
 	}
 

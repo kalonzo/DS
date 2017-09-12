@@ -137,3 +137,11 @@ a.simple{
         padding: 3px 5px;
     }
 }
+
+.app-disabled{
+    @include opacity(0.4);
+    cursor: default;
+    > a{
+        cursor: default;
+    }
+}

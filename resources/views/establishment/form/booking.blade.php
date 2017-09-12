@@ -54,7 +54,7 @@
         <div class="col-xs-12 phone-form-group">
             {!! Form::label('phone_number','Téléphone / Mobile') !!}
             <div class="form-group form-inline">                        
-                {!! Form::select('prefix', $form_data['country_prefixes'], null, 
+                {!! Form::select('prefix', $form_data['country_prefixes'], $form_data['id_country'], 
                 ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
                 {!! Form::text('phone_number', null, ['class' => 'form-control']) !!}
             </div>

@@ -79,19 +79,19 @@
                         <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
                     </a>
                     <ul class="nav navbar-nav navbar-right">
-                        <li id="promotionButton">
+                        <li id="promotionButton" class="app-disabled">
                             <a href="#">
                                 <img alt="user" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>
                                 <span class="badge">42</span>
                             </a>
                         </li>
-                        <li id="eventButton">
+                        <li id="eventButton" class="app-disabled">
                             <a href="#">
                                 <img alt="user" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
                                 <span class="badge">8</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="app-disabled">
                             <a href="#">
                                 <img alt="user" src="/img/icons/ICONS-MENU-USER.svg"/>
                             </a>

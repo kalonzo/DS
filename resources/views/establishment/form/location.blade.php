@@ -30,7 +30,6 @@
                 </div>
             </div>
             <?php
-            // TODO Gicler les errors->has, et regrouper Form::label et Form::text comme pour le bloc "Quartier"
             ?>
             <div class="row">
                 <div class="col-md-4">

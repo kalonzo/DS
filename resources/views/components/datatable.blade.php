@@ -2,7 +2,7 @@
     $id = $tabledata['id'];
     $columns = $tabledata['columns'];
     $rows = $tabledata['rows'];
-    $actions = $tabledata['actions'];
+    $actions = isset($tabledata['actions']) ? $tabledata['actions'] : null;
     $reloaded = $tabledata['reloaded'];
     $nbColumns = count($columns);
     if(!empty($actions)){

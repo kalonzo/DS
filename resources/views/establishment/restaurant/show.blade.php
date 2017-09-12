@@ -19,7 +19,7 @@
     </aside>
     <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">
-            <div class="ets-nav-bookmark bookmark-voucher" title="Bon cadeau">
+            <div class="ets-nav-bookmark bookmark-voucher app-disabled" title="Bon cadeau">
                 <a href="{{ $establishment->getUrl() }}#voucher" class="simple">
                     <span>Bon cadeau</span>
                     <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
