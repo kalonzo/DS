@@ -872,6 +872,14 @@ form:not(.navbar-form){
         }
     }
 }
+.time-form-group{
+    display: inline-flex;
+    span{
+        text-transform: lowercase;
+        padding: 0px 6px 0px 3px;
+        line-height: 35px;
+    }
+}
 .business-type-tiles{
     .business-type-tile{
         float: left;

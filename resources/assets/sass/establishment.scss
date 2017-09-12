@@ -6,30 +6,33 @@
     height: 200px;
 }
 
-#ets-heading{
-    height: 70px;
-    line-height: 70px;
-    background: #ccc;
-    position: relative;
-    #ets-logo{
-        width: 120px;
-        height: 120px;
-        position: absolute;
-        bottom: 5px;
-        border: 2px solid white;
-        + input[type=file]{
-            display: none;
+#feed-establishment{
+    padding-bottom: 2em;
+    #ets-heading{
+        height: 70px;
+        line-height: 70px;
+        background: #ccc;
+        position: relative;
+        #ets-logo{
+            width: 120px;
+            height: 120px;
+            position: absolute;
+            bottom: 5px;
+            border: 2px solid white;
+            + input[type=file]{
+                display: none;
+            }
         }
-    }
-    #ets-name{
-        margin-left: 137px;
-        margin-top: 19px;
-        width: calc(100% - 130px);
-        background: #aaa;
-        color: black;
-        font-weight: bold;
-        border: 0px;
-        outline: none;
+        #ets-name{
+            margin-left: 137px;
+            margin-top: 19px;
+            width: calc(100% - 130px);
+            background: #aaa;
+            color: black;
+            font-weight: bold;
+            border: 0px;
+            outline: none;
+        }
     }
 }
 
@@ -791,21 +794,108 @@ $timetableRowHeight: 76px;
     input[type='time']{
         text-align: center;    
     }
-    input, textarea{
+    input, textarea, select, span.select2 .select2-selection{
         background-color: transparent;
-        border: 1px solid $main-text-color;
-        color: $main-text-color;
+        border: 1px solid darken($main-text-color, 80) !important;
+        color: $main-text-color !important;
+        @include borderRadius(5px);
+    }
+    select{
+        height: 34px;
+    }
+    .form-control:focus{
+        @include box-shadow(none);
     }
     .datepicker-inline{
         width: 100%;
         text-transform: initial;
         .ui-datepicker-inline{
             width: 100%;
+            border: 0px;
+            background: none;
+            color: $main-text-color;
+            font-family: inherit;
+            .ui-widget-header{
+                border: 0px;
+                background: none;
+                color: $main-text-color;
+                .ui-datepicker-title{
+                    font-size: 1.3em;
+                    .ui-datepicker-month{
+                        text-transform: capitalize;
+                    }
+                }
+                .ui-datepicker-prev, .ui-datepicker-prev-hover{
+                    top: 2px;
+                    left: 2px;
+                }
+                .ui-datepicker-next, .ui-datepicker-next-hover{
+                    top: 2px;
+                    right: 2px;
+                }
+                .ui-datepicker-prev, .ui-datepicker-next{
+                    width: 1em;
+                    font-family: 'Glyphicons Halflings';
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 1em;
+                    line-height: 1;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    border: 0px;
+                    background: none;
+                    height: 100%;
+                    line-height: 205%;
+                    cursor: pointer;
+
+                    color: white;
+                    text-decoration: none;
+                    &.ui-state-hover{
+                        border: 0px;
+                        background: none;
+                    }
+                    &.ui-datepicker-prev::before{
+                        content: "\e079";
+                        vertical-align: middle;
+                    }
+                    &.ui-datepicker-next::before{
+                        content: "\e080";
+                        vertical-align: middle;
+                    }
+                    .ui-icon{
+                        display: none;
+                    }
+                }
+            }
+            .ui-datepicker-calendar{
+                thead th span{
+                    font-weight: normal;
+                }
+                td{
+                    border: 1px dotted #666;
+                    a{
+                        background: none;
+                        color: $main-text-color;
+                        text-align: center;
+                        border: 0px;
+                        font-size: 1.5em;
+                        &.ui-state-active{
+                            background-color: $booking-color;
+                            @include borderRadius(100%);
+                        }
+                    }
+                }
+            }
         }
     }
     .booking-invitation, .booking-contact{
         textarea{
             height: 70px;
+        }
+        .phone-form-group{
+            [name='phone_number']{
+                width: inherit;
+            }
         }
     }
     .booking-validation{

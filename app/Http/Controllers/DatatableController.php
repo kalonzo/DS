@@ -197,8 +197,8 @@ class DatatableController {
                 $dtFeeder->setPaginator($resultsPagination);
                 $dtFeeder->setColumns(array('ets_name' => 'Etablissement', 'name' => 'Label', 'type' => 'Type', 'start_date' => 'Début'
                     , 'end_date' => 'Fin'));
-                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/promotion/{{id}}');
+//                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+//                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/promotion/{{id}}');
                 break;
         }
         return $dtFeeder;

@@ -82,6 +82,9 @@ class EstablishmentController extends Controller {
         if (checkModel($callNumber)) {
             $data['phone_number'] = $callNumber->getDisplayable();
         }
+        
+        // Opening hours
+        // TODO
 
         switch ($page) {
             case 'menu':
@@ -319,8 +322,8 @@ class EstablishmentController extends Controller {
                 break;
         }
         
-        $this->buildFeedFormData();
-        $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
+        $this->buildShowFormData();
+        $formData = StorageHelper::getInstance()->get('show_establishment.form_data');
         
         $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData)
                 ->with('footerHidden', true);;
@@ -575,6 +578,33 @@ class EstablishmentController extends Controller {
         StorageHelper::getInstance()->add('feed_establishment.form_data.job_types', $jobTypes);
     }
 
+    
+    public function buildShowFormData() {
+        // Select for call number prefixes
+        $countryPrefixes = array();
+        $countryNames = array();
+        $countriesData = DB::table(Country::TABLENAME)
+                ->select(['id', 'label', 'prefix'])
+                ->where('prefix', '>', 0)
+                ->orderBy('label')
+                ->get();
+        $countriesData->map(function($item, $key) {
+            // Translate country name
+            $item->label = __($item->label);
+            return $item;
+        });
+        foreach ($countriesData as $countryData) {
+            $countryPrefixes[$countryData->id] = $countryData->label . " | +" . $countryData->prefix;
+            $countryNames[$countryData->id] = $countryData->label;
+        }
+        // Sort list by translated country name
+        asort($countryPrefixes);
+        asort($countryNames);
+        
+        $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
+        StorageHelper::getInstance()->add('show_establishment.form_data.id_country', $idCountry);
+        StorageHelper::getInstance()->add('show_establishment.form_data.country_prefixes', $countryPrefixes);
+    }
     /**
      * 
      * @param Establishment $establishment
