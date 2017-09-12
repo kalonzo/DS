@@ -10,15 +10,21 @@ namespace App\Models;
 class Event extends Model
 {
     protected $table = 'events';
+    
+    const TABLENAME = 'events';
+    
+    const STATUS_ACTIVE = 1;
+    const STATUS_DISABLED = 2;
 
     public $timestamps = true;
 
     protected $fillable = [
-        'label',
+        'name',
         'status',
         'description',
         'start_date',
         'end_date',
+        'type_event',
         'id_establishment',
         'id_event_type'
     ];
@@ -29,8 +35,8 @@ class Event extends Model
 	/**
 	 * @return mixed
 	 */
-	public function getLabel() {
-		return $this->label;
+	public function getName() {
+		return $this->name;
 	}
 
 	/**
@@ -60,6 +66,13 @@ class Event extends Model
 	public function getEndDate() {
 		return $this->end_date;
 	}
+        
+	/**
+	 * @return mixed
+	 */
+	public function getTypeEvent() {
+		return $this->type_event;
+	}
 
 	/**
 	 * @return mixed
@@ -81,8 +94,8 @@ class Event extends Model
 	 * @param $value
 	 * @return $this
 	 */
-	public function setLabel($value) {
-		$this->label = $value;
+	public function setName($value) {
+		$this->name = $value;
 		return $this;
 	}
 
@@ -119,6 +132,15 @@ class Event extends Model
 	 */
 	public function setEndDate($value) {
 		$this->end_date = $value;
+		return $this;
+	}
+        
+	/**
+	 * @param $value
+	 * @return $this
+	 */
+	public function setTypeEvent($value) {
+		$this->type_event = $value;
 		return $this;
 	}
 
