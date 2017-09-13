@@ -67,8 +67,6 @@ class EventController extends Controller {
         $promotion = null;
         $createdObjects = array();
         try {
-            $startDate = new \DateTime($request->get('start_date'));
-            $endDate = new \DateTime($request->get('end_date'));
 
             if ($request->get('start_hour') !== null) {
                 $startHour = $request->get('start_hour');
@@ -90,7 +88,6 @@ class EventController extends Controller {
                         'type_event' => $request->get('type_event'),
                         'end_date' => $endDate->format('Y-m-d'),
                         'id_establishment' => \App\Utilities\UuidTools::getId($request->get('id_establishment')),
-                        'id_event_type' => $request->get('id_event_type'),
             ]);
             if (checkModel($event)) {
                 $jsonResponse['success'] = 1;
