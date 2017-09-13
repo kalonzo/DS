@@ -38,7 +38,7 @@ class Menu extends Model {
      * @return Establishment
      */
     public function establishment(){
-        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_establishment');
+        return $this->hasOne(Establishment::class, 'id', 'id_establishment');
     }
     
     /**
