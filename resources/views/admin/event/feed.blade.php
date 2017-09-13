@@ -18,12 +18,12 @@ if(checkModel($event)){
             </div>
         </div>
         <div class="col-xs-12 form-group">
-            {!! Form::label('label',"Titre de l'évenements") !!}
-            {!! Form::text('label', old('label'), ['class' => 'form-control']) !!}
+            {!! Form::label('name',"Titre de l'évenements") !!}
+            {!! Form::text('name', old('name'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
             {!! Form::label('id_event_type',"Type de l'événement") !!}
-            {!! Form::select('id_event_type', $form_data['event_types'], old('id_event_type'), ['class' => 'form-control']) !!}
+            {!! Form::text('type_event', old('event_type'), ['class' => 'form-control']) !!}
         </div>
         <div class="col-xs-12 form-group">
             {!! Form::label('description',"Description de l'événement") !!}
@@ -36,6 +36,14 @@ if(checkModel($event)){
         <div class="col-xs-12 col-sm-6 form-group">
             {!! Form::label('end_date',"Date d'expiration") !!}
             {!! Form::date('end_date', old('end_date'), ['class' => 'form-control']) !!}  
+        </div>
+        <div class="col-xs-12 col-sm-6 form-group">
+            {!! Form::label('start_hour','Heure') !!}
+            {!! Form::time('start_hour', old('start_date'), ['class' => 'form-control']) !!}  
+        </div>
+        <div class="col-xs-12 col-sm-6 form-group">
+            {!! Form::label('end_hour','Heure') !!}
+            {!! Form::time('end_hour', old('end_hour'), ['class' => 'form-control']) !!}  
         </div>
     </div>
     <div class="col-xs-12 col-md-7">

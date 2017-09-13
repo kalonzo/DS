@@ -49,10 +49,9 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     break;
                 case 'add_menu':
                     $rules['menu_name'] = 'required|min:2|max:255';
-
                     break;
                 case 'add_video':
-                    $rules['video'] = 'required|mimes:mp4';
+                    
                     break;
                 case 'add_employee':
                     $rules['new_employee_firstname'] = 'required|min:2|max:255';
@@ -69,13 +68,6 @@ class StoreEstablishment extends \App\Http\FormRequest {
 
             return $rules;
         } else {
-
-            $rules['call_number.1'] = 'required|regex:/[0-9 ]+/';
-            $rules['call_number.4'] = 'required|regex:/[0-9 ]+/';
-            $rules['call_number.2'] = 'nullable|regex:/[0-9 ]+/';
-            $rules['call_number.3'] = 'nullable|regex:/[0-9 ]+/';
-
-
             //minima maxima for dishes
             $min = $this->get('average_price_min');
             $max = $this->get('average_price_max');
@@ -95,10 +87,18 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 // Cooking types
                 'businessCategories.1' => 'required|array|min:1|max:5',
                 'businessCategories.2' => 'nullable|array|max:5',
+                //galerie
+                'logo' => 'nullable|mimes:png,jpg,jpeg',
+                //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
                 //Menu average price
                 'average_price_min' => 'nullable|numeric|min:1',
                 'average_price_max' => 'nullable|numeric|min:1|between:' . $min . ',' . $max,
             ];
+            //call number
+            $rules['call_number.1'] = 'required|regex:/^[0-9 ]+$/';
+            $rules['call_number.4'] = 'required|regex:/^[0-9 ]+$/';
+            $rules['call_number.2'] = 'nullable|regex:/^[0-9 ]+$/';
+            $rules['call_number.3'] = 'nullable|regex:/^[0-9 ]+$/';
             // Opening hours
             foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
                 $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
@@ -130,13 +130,10 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'longitude.required' => 'Veuillez cliquer sur le bouton Géolocaliser mon établissement.',
             //contact
             'call_number.1.regex' => 'Veuillez indiquer un numéro de réservation.',
-            'call_number.1.numeric' => 'Veuillez indiquer un numéro de réservation.',
-            'call_number.1.max' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
-            'call_number.4.numeric' => 'Le numéro de contact ne ne doit pas contenir de caractères',
             'call_number.4.required' => 'Veuillez indiquer un numéro pour vous joindre.',
-            'call_number.4.max' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
-            'call_number.3.numeric' => 'Le numéro de fax ne doit pas contenir plus de 11 numéro.',
-            'call_number.2.numeric' => 'Le numéro de réservation ne doit pas contenir de caractères',
+            'call_number.4.regex' => 'Veuillez indiquer un numéro pour vous joindre.',
+            'call_number.3.regex' => 'Le numéro de fax ne doit pas contenir plus de 11 numéro.',
+            'call_number.2.regex' => 'Le numéro de réservation ne doit pas contenir de caractères',
             //Web
             'site_url.regex' => 'Veuillez saisir une adresse correcte pour votre site internet.',
             'email.email' => 'Veuillez saisir une adresse e mail valide.',
@@ -160,6 +157,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'new_gallery_name.required' => 'Veuillez saisir un nom pour votre gallerie',
             'new_gallery_name.min' => 'Le nom de votre gallerie est trop court',
             'new_gallery_name.max' => 'Le nom de votre gallerie est trop long',
+            'logo.mime' => 'Votre logo dois être de format JPEG ou PNG',
             //dishe
             'new_dish_name.required' => 'Veuillez saisir un nom pour votre assiette',
             'new_dish_name.min' => 'Le nom d\'assiette est trop court',
@@ -219,4 +217,5 @@ class StoreEstablishment extends \App\Http\FormRequest {
         }
         return $messages;
     }
+
 }
