@@ -196,7 +196,7 @@
         var startTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][start]"]').val();
         var endTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][end]"]').val();
 
-        var hasNoBreakRef = $timetableGrid.find('input[name="openingHours[1][2][no_break]"]').is(':checked');
+        var hasNoBreakRef = $timetableGrid.find('input[name="openingHours[1][1][no_break]"]').is(':checked');
         
         for(var $i=2; $i<=7; $i++){
             $timetableGrid.find('select[name="openingHours['+$i+'][1][start]"]').val(startTimeAmRef);
@@ -205,9 +205,9 @@
             $timetableGrid.find('select[name="openingHours['+$i+'][2][start]"]').val(startTimePmRef);
             $timetableGrid.find('select[name="openingHours['+$i+'][2][end]"]').val(endTimePmRef);
             
-            var currentHasNoBreak = $timetableGrid.find('input[name="openingHours['+$i+'][2][no_break]"]').is(':checked');
+            var currentHasNoBreak = $timetableGrid.find('input[name="openingHours['+$i+'][1][no_break]"]').is(':checked');
             if(currentHasNoBreak !== hasNoBreakRef){
-                $timetableGrid.find('input[name="openingHours['+$i+'][2][no_break]"]').click();
+                $timetableGrid.find('input[name="openingHours['+$i+'][1][no_break]"]').click();
             }
         }
     }
