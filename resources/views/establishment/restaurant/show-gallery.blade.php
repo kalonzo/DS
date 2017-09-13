@@ -1,6 +1,7 @@
 <!------------- RESTAURANT GALLERIES -------------------------------------->
 @if(checkFlow($data, ['galleries']))
 <section class="container-fluid ets-galleries">
+    <div class="section-bg"></div>
     <div class="container">
         <h1><strong>Galeries</strong> photos</h1>
         <div class="row">
@@ -29,6 +30,7 @@
 <!------------- RESTAURANT LAST PICS -------------------------------------->
 @if(checkFlow($data, ['last_pics']))
 <section class="container-fluid ets-last-pics">
+    <div class="section-bg"></div>
     <div class="container">
         <h1><strong>Dernières</strong> photos</h1>
         <div class="row gallery-box">

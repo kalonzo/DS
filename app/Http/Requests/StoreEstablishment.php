@@ -95,19 +95,17 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 // Cooking types
                 'businessCategories.1' => 'required|array|min:1|max:5',
                 'businessCategories.2' => 'nullable|array|max:5',
-                //menu
                 //Menu average price
                 'average_price_min' => 'nullable|numeric|min:1',
                 'average_price_max' => 'nullable|numeric|min:1|between:' . $min . ',' . $max,
             ];
             // Opening hours
             foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
-                $rules['openingHours.' . $dayIndex . '.1.start'] = 'required'; //|before_or_equal:openingHours.'.$dayIndex.'.1.end';
+                $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
                 $rules['openingHours.' . $dayIndex . '.1.end'] = 'required|after_or_equal:openingHours.' . $dayIndex . '.1.start';
 
-                $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end'
-                ; //.'before_or_equal:openingHours.'.$dayIndex.'.2.end';
-                $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
+                $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
+                $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
             }
             return $rules;
         }

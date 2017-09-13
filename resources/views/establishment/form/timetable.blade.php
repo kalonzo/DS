@@ -46,9 +46,9 @@
                         $endTimePm = $form_values['opening_hours'][$dayIndex][2]['end']['time'];
                     }
                     
-                    $noBreakValue = old("openingHours[".$dayIndex."][2][no_break]");
-                    if(isset($form_values['opening_hours'][$dayIndex][2]['no_break'])){
-                        $noBreakValue = $form_values['opening_hours'][$dayIndex][2]['no_break'];
+                    $noBreakValue = old("openingHours[".$dayIndex."][1][no_break]");
+                    if(isset($form_values['opening_hours'][$dayIndex][1]['no_break'])){
+                        $noBreakValue = $form_values['opening_hours'][$dayIndex][1]['no_break'];
                         $startTimePm = null;
                         $endTimePm = null;
                     }
@@ -73,7 +73,7 @@
                             <div class="timetable-action-nobreak">
                                 {!! Form::label('no_stop','Non stop') !!}
                                 <br/>
-                                {!! Form::checkbox("openingHours[".$dayIndex."][2][no_break]", '1', $noBreakValue, ['class' => '', 'onchange' => 'toggleNoBreak(this);']) !!}
+                                {!! Form::checkbox("openingHours[".$dayIndex."][1][no_break]", '1', $noBreakValue, ['class' => '', 'onchange' => 'toggleNoBreak(this);']) !!}
                             </div>
                             <div class="col-xs-12 no-gutter text-center">
                                 <a class="close-timeslot @if($noBreakValue) disabled @endif" href="javascript:void(0);" onclick="closeTimeSlot(this);">Fermé</a>

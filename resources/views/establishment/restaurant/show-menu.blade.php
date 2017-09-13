@@ -1,6 +1,7 @@
 <!------------- RESTAURANT MENUS -------------------------------------->
 @if(checkFlow($data, ['menus']))
 <section class="container-fluid ets-menus">
+    <div class="section-bg"></div>
     <div class="container">
         <h1>Notre <strong>menu</strong></h1>
         <div class="row">
@@ -22,6 +23,7 @@
 <!------------- RESTAURANT DISHES -------------------------------------->
 @if(checkFlow($data, ['dishes']))
 <section class="container-fluid ets-staff">
+    <div class="section-bg"></div>
     <div class="container">
         <h1>Nos <strong>assiettes</strong></h1>
         <div class="row">
@@ -51,6 +53,7 @@
 <!------------- RESTAURANT MENUS -------------------------------------->
 @if(checkFlow($data, ['daily_menu']))
 <section class="container-fluid ets-menus">
+    <div class="section-bg"></div>
     <div class="container">
         <h1><strong>Menu</strong> du jour</h1>
         <div class="row">

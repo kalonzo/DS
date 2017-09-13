@@ -1,29 +1,55 @@
 <div class="container-fluid" id="booking-container">
     {!! Form::open(['url' => '/establishment/booking/'.$establishment->getUuid(),'method' => 'POST']) !!}
     <div class="row form-group">   
-        <input type="hidden" name="date_now" value="<?php echo date('d/m/Y'); ?> "/>
+        <input type="hidden" name="date_now" value="<?php echo $form_data['datetime_reservation']; ?> "/>
         <div class="col-xs-12">
             <h3 class="row">Choisissez <strong>une date</strong></h3>
-            <div class="datepicker-inline">     
-                {!! Form::hidden('datetime_reservation', '', ['class' => '']) !!}
+            <div id="datepicker-booking">     
+                {!! Form::hidden('datetime_reservation', $form_data['datetime_reservation']) !!}
             </div>
+            <script type="text/javascript">
+                document.addEventListener("DOMContentLoaded", function(event) { 
+                    $.datepicker.setDefaults($.datepicker.regional[ "fr" ]);
+                    $.datepicker.setDefaults({dayNamesMin: $.datepicker._defaults.dayNamesShort});
+
+                    $('#datepicker-booking').each(function(){
+                        var $input = $(this).find('input[type=hidden]');
+                        if(checkExist($input)){
+                            var options = {
+                                dateFormat: "dd/mm/yy",
+                                defaultDate: $input.val(),
+                                onSelect: function(dateText, inst){
+                                    $($input).val(dateText).change();
+                                    
+                                    var ajaxParams = {};
+                                    ajaxParams['action'] = 'change_date';
+                                    ajaxParams['date'] = dateText;
+                                    $.ajax({
+                                        url: '/establishment/booking/{!!$establishment->getUuid()!!}/ajax',
+                                        data: ajaxParams,
+                                        dataType: 'json',
+                                        method: 'POST',
+                                        success: function( data ) {
+                                            if(data.success){
+                                                $('#time-booking').empty().html(data.content);
+                                            }
+                                        }
+                                    });
+                                }
+                            };
+                            $(this).datepicker(options);
+                        }
+                    });
+                });
+            </script>
         </div>
     </div>
     <div class="row">
         <h3>Choisissez <strong>l'heure</strong></h3>
-        <div class="form-horizontal">
-            <div class="form-group">
-                {!! Form::label('timeAM', 'Déjeuner', ['class' => 'col-xs-6 control-label']) !!}	
-                <div class="col-xs-6">
-                    {!! Form::time('timeAM', old('time'), ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('timePM', 'Diner', ['class' => 'col-xs-6 control-label']) !!}	
-                <div class="col-xs-6">
-                    {!! Form::time('timePM', old('time'), ['class' => 'form-control']) !!}
-                </div>
-            </div>
+        <div id="time-booking">
+            @component('establishment.form.booking-hours', ['establishment' => $establishment, 'form_data' => $form_data])
+
+            @endcomponent
         </div>
     </div>
     <div class="row">

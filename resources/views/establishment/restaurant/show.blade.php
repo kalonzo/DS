@@ -68,6 +68,7 @@
         </div>
         <!------------- RESTAURANT INTRO -------------------------------------->
         <section class="container-fluid ets-intro">
+            <div class="section-bg"></div>
             @component('components.divcell', ['style' => 'height: 100%;'])
                 @slot('content')
                     <h1>{{ $establishment->getName() }}</h1>
@@ -97,6 +98,7 @@
         @endif
          <!------------- CONTACT -------------------------------------->
          <section class="container-fluid ets-contact" id="contact">
+            <div class="section-bg"></div>
             <div class="container">
                 <h1><strong>Nous</strong> contacter</h1>
                 <div class="quick-map" data-lat="{{ $establishment->getLatitude() }}" data-lng="{{ $establishment->getLongitude() }}"></div>
@@ -124,7 +126,7 @@
         ?><style><?php
         foreach($establishment->homePictures()->get() as $i => $media){
             ?>
-            .show-page section:nth-of-type(<?php echo $i+1;?>){
+            .show-page section:nth-of-type(<?php echo $i+1;?>) .section-bg{
                 background-image: url('<?php echo asset($media->getLocalPath());?>');
                 background-color: black;
             }

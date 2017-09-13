@@ -1,6 +1,7 @@
 <!------------- RESTAURANT DETAILS ------------------------------------>
  @if(checkFlow($data, ['services', 'ambiences']) || $establishment->video()->exists() || !empty($establishment->getDescription()) )
 <section class="container-fluid ets-details">
+    <div class="section-bg"></div>
     <div class="container">
         <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
             <h1>Qui <strong>sommes-nous</strong></h1>
@@ -45,6 +46,7 @@
 <!------------- RESTAURANT EVENTS & PROMO ----------------------------->
 @if(checkFlow($data, ['events', 'promotions']))
 <section class="container-fluid ets-events">
+    <div class="section-bg"></div>
     <div class="container">
         <h1>Nos <strong>événements</strong> et <strong>promotions</strong></h1>
         <br/><br/>
@@ -220,6 +222,7 @@
 <!------------- RESTAURANT STAFF -------------------------------------->
 @if(checkFlow($data, ['staff']))
 <section class="container-fluid ets-staff">
+    <div class="section-bg"></div>
     <div class="container">
         <h1>Notre <strong>équipe</strong></h1>
         <div class="row">
@@ -241,6 +244,7 @@
 <!------------- RESTAURANT HISTORY -------------------------------------->
 @if(checkFlow($data, ['story']))
 <section class="container-fluid ets-story">
+    <div class="section-bg"></div>
     <div class="container">
         <h1><strong>Notre</strong> histoire</h1>
         <div class="row">
@@ -271,6 +275,7 @@
 <!------------- RESTAURANT TIMETABLE ---------------------------------->
 @if(checkFlow($data, ['timetable', 'close_periods']))
 <section class="container-fluid ets-timetable">
+    <div class="section-bg"></div>
     <div class="container">
         <h1><strong>Horaires</strong> d'ouverture</h1>
         <div class="row">
@@ -311,7 +316,7 @@
             </div>
             @endforeach
         </div>
-        @if(isset($data['close_periods']))
+        @if(checkFlow($data, ['close_periods']))
         <br class="cleaner"/><br/>
         <div class="row close-show">
             <div class="col-xs-5_5 col-sm-2_5 text-right">

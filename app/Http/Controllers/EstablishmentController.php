@@ -82,9 +82,6 @@ class EstablishmentController extends Controller {
         if (checkModel($callNumber)) {
             $data['phone_number'] = $callNumber->getDisplayable();
         }
-        
-        // Opening hours
-        // TODO
 
         switch ($page) {
             case 'menu':
@@ -322,7 +319,7 @@ class EstablishmentController extends Controller {
                 break;
         }
         
-        $this->buildShowFormData();
+        $this->buildShowFormData($establishment);
         $formData = StorageHelper::getInstance()->get('show_establishment.form_data');
         
         $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData)
@@ -439,13 +436,8 @@ class EstablishmentController extends Controller {
                         'id_company' => 0,
             ]);
         }
-        if ($request->get('timeAM') !== null) {
-            $hour = $request->get('timeAM');
-        }
-        if ($request->get('timePM') !== null) {
-            $hour = $request->get('timePM');
-        }
-        $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$hour);
+        $time = $request->get('time_reservation');
+        $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$time);
 
         $bookingReservation = \App\Models\Booking::create([
                     'id' => \App\Utilities\UuidTools::generateUuid(),
@@ -471,6 +463,63 @@ class EstablishmentController extends Controller {
         } else {
             return redirect();
         }
+    }
+    
+    
+    public function createBookingAjax(\Illuminate\Http\Request $request, Establishment $establishment){
+        $response = response();
+        $jsonResponse = array('success' => 0);
+        $createdObjects = array();
+        
+        try {
+            $action = $request->get('action');
+            switch ($action){
+                default :
+                    $jsonResponse['error'] = "Le système n'a pu identifier la demande.";
+                    break;
+                case 'change_date':
+                    $date = $request->get('date');
+                    if(!empty($date)){
+                        // Opening hours
+                        $today = new \DateTime(str_replace('/', '-', $date));
+                        $dayIndex = $today->format('N');
+                        $datetimeReservation = $today->format('d/m/Y');
+
+                        $timeslots = array();
+                        $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
+                        if($closePeriods === 0){
+                            $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)->whereRaw('end_time >= NOW()')
+                                    ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
+                                    ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
+                                    ->get();
+                            foreach($openingHours as $openingHour){
+                                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['start'] = $openingHour->getStartTime();
+                                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['end'] = $openingHour->getEndTime();
+                                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
+                            }
+                        }
+                        $formData = ['time_slots' => $timeslots];
+                        $view = View::make('establishment.form.booking-hours')->with('form_data', $formData);
+                        $jsonResponse['content'] = $view->render();
+                        $jsonResponse['success'] = 1;
+                    } else {
+                        $jsonResponse['error'] = "Les horaires n'ont pas pu être trouvés.";
+                    }
+                break;
+            }
+        } catch (Exception $e) {
+            // TODO Report error in log system
+            print_r($e->getMessage());
+
+            foreach ($createdObjects as $createdObject) {
+                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
+                    $createdObject->delete();
+                }
+            }
+        }
+        
+        $responsePrepared = $response->json($jsonResponse);
+        return $responsePrepared;
     }
 
     /**
@@ -579,7 +628,7 @@ class EstablishmentController extends Controller {
     }
 
     
-    public function buildShowFormData() {
+    public function buildShowFormData(Establishment $establishment) {
         // Select for call number prefixes
         $countryPrefixes = array();
         $countryNames = array();
@@ -601,9 +650,31 @@ class EstablishmentController extends Controller {
         asort($countryPrefixes);
         asort($countryNames);
         
+        
+        // Opening hours
+        $today = new \DateTime();
+        $dayIndex = $today->format('N');
+        $datetimeReservation = $today->format('d/m/Y');
+                
+        $timeslots = array();
+        $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
+        if($closePeriods === 0){
+            $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)->whereRaw('end_time >= NOW()')
+                    ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
+                    ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
+                    ->get();
+            foreach($openingHours as $openingHour){
+                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['start'] = $openingHour->getStartTime();
+                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['end'] = $openingHour->getEndTime();
+                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
+            }
+        }
+        
         $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
         StorageHelper::getInstance()->add('show_establishment.form_data.id_country', $idCountry);
         StorageHelper::getInstance()->add('show_establishment.form_data.country_prefixes', $countryPrefixes);
+        StorageHelper::getInstance()->add('show_establishment.form_data.time_slots', $timeslots);
+        StorageHelper::getInstance()->add('show_establishment.form_data.datetime_reservation', $datetimeReservation);
     }
     /**
      * 
@@ -962,6 +1033,11 @@ class EstablishmentController extends Controller {
 
                     if (checkModel($gallery) && $request->file('new_gallery')) {
                         $newGalleryMedias = FileController::storeFileMultiple('new_gallery', \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM, $gallery);
+                        $firstMedia = current($newGalleryMedias);
+                        if(checkModel($firstMedia)){
+                            $firstMedia->setPosition(1);
+                            $firstMedia->save();
+                        }
 
                         $view = View::make('establishment.form.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
                         $jsonResponse['content'] = $view->render();
@@ -1324,7 +1400,7 @@ class EstablishmentController extends Controller {
                     } else if (isset($timeslotData['no_break'])) {
                         $noBreak = true;
                     }
-                    if ((!empty($start) && !empty($end)) || $noBreak) {
+                    if ((!empty($start) && !empty($end)) || ($dayOrder == 1 && $noBreak)) {
                         $openingHour = $etsOpeningHours->where('day', $day)->where('day_order', $dayOrder)->first();
                         $attributes = [
                             'day' => $day,

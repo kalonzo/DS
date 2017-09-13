@@ -100,6 +100,11 @@ Route::get('/establishment/{establishment}','EstablishmentController@edit');
 // update
 Route::put('/establishment/{establishment}','EstablishmentController@update');  
 Route::post('/establishment/{establishment}/ajax/','EstablishmentController@ajax');  
+
+// store booking
+Route::post('/establishment/booking/{establishment}','EstablishmentController@createBooking');
+Route::match(['get', 'post'], '/establishment/booking/{establishment}/ajax/','EstablishmentController@createBookingAjax');  
+    
 // view
 Route::match(['get', 'post'], '/{type_ets}/{city}/{slug}/{url_id}/{page?}', function($typeEts, $city, $slug, $url_id, $page = null){                        
     $establishment = \App\Models\Establishment::where('slug', '=', $slug)->where('url_id', '=', $url_id)->first();
@@ -114,9 +119,6 @@ Route::match(['get', 'post'], '/{type_ets}/{city}/{slug}/{url_id}/{page?}', func
     return $controllerRes;
 });
 
-// store booking
-Route::post('/establishment/booking/{establishment}','EstablishmentController@createBooking');
-    
 // MEDIA
 Route::post('/delete/{media_type}/{id_media}', function($media_type, $id_media){
     $media = null;
