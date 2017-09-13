@@ -8,8 +8,8 @@ namespace App\Http;
  * @author Nico
  */
 trait ExtendRequestTrait {
-    public function getWithDot($key, $default = NULL){
-        $result = null;
+    
+    public function get($key, $default = NULL){
         if(strpos($key, ".") !== false){
             $keys = explode('.', $key);
             $offset = null;
@@ -26,15 +26,15 @@ trait ExtendRequestTrait {
                         $arrayCursor =  &$arrayCursor[$subkey];
                     }
                 } else {
-                    $result = $this->route($key);
+                    return $this->route($key);
                 }
                 $counter++;
             }
             if(!empty($offset)){
-                $result = data_get($arrayCursor, $offset);
+                return data_get($arrayCursor, $offset);
             }
+        } else {
+            return parent::get($key, $default);
         }
-        return $result;
     }
-    
 }

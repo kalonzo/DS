@@ -10,12 +10,4 @@ use Illuminate\Foundation\Http\FormRequest as BaseFormRequest;
  */
 class FormRequest extends BaseFormRequest{
     use ExtendRequestTrait;
-    
-    public function get($key, $default = NULL){
-        if(strpos($key, ".") !== false){
-            return $this->getWithDot($key, $default);
-        } else {
-            return BaseFormRequest::get($key, $default);
-        }
-    }
 }

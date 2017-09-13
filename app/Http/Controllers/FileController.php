@@ -31,47 +31,48 @@ class FileController {
             foreach($files as $file){
                 if ($file->isValid()) {
                     $path = self::resolveFilePath($fileType, $relatedObject);
+                    if($path !== null){
+                        // Get infos from request file input
+                        $fileMimeType = $file->getMimeType();
+                        $resolvedMimeType = self::resolveFileType($fileMimeType);
+                        $fileSize = $file->getClientSize();
+                        $fileName = self::resolveFileName($fileType, $relatedObject, $file);
+                        $fileExtension = $file->getClientOriginalExtension();
 
-                    // Get infos from request file input
-                    $fileMimeType = $file->getMimeType();
-                    $resolvedMimeType = self::resolveFileType($fileMimeType);
-                    $fileSize = $file->getClientSize();
-                    $fileName = self::resolveFileName($fileType, $relatedObject, $file);
-                    $fileExtension = $file->getClientOriginalExtension();
-
-                    $media = self::resolveMediaInstance($fileType, $relatedObject);
-                    if($media instanceof \App\Models\Media){
-                        $options = array();
-                        if($media->getPublic() && $media->getDrive(\App\Models\Media::DRIVE_LOCAL)){
-                            $options = 'public';
-                        }
-
-                        // Store file physically
-                        $relPath = $file->storePublicly($path, $options);
-
-                        if($relPath !== false){
-                            if($media->getPublic()){
-                                $relPath = 'public/'.$relPath;
+                        $media = self::resolveMediaInstance($fileType, $relatedObject);
+                        if($media instanceof \App\Models\Media){
+                            $options = array();
+                            if($media->getPublic() && $media->getDrive(\App\Models\Media::DRIVE_LOCAL)){
+                                $options = 'public';
                             }
-                            // Get definitive file paths
-                            $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
-                            $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
-                           
-                            $media->setId(\App\Utilities\UuidTools::generateUuid());
-                           
-                            // Set media info
-                            $media->setType($resolvedMimeType);
-                            $media->setFilename($fileName);
-                            $media->setExtension($fileExtension);
-                            $media->setSize($fileSize);
-                            $media->setLocalPath($appRelPath);
-                            list($width, $height) = getimagesize($absolutePath);
-                            $media->setWidth($width);
-                            $media->setHeight($height);
-                            $media->setIdObjectRelated($relatedObject->getId());
-                            $media->save();
-                            
-                            $createdMedias[] = $media;
+
+                            // Store file physically
+                            $relPath = $file->storePublicly($path, $options);
+
+                            if($relPath !== false){
+                                if($media->getPublic()){
+                                    $relPath = 'public/'.$relPath;
+                                }
+                                // Get definitive file paths
+                                $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
+                                $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
+
+                                $media->setId(\App\Utilities\UuidTools::generateUuid());
+
+                                // Set media info
+                                $media->setType($resolvedMimeType);
+                                $media->setFilename($fileName);
+                                $media->setExtension($fileExtension);
+                                $media->setSize($fileSize);
+                                $media->setLocalPath($appRelPath);
+                                list($width, $height) = getimagesize($absolutePath);
+                                $media->setWidth($width);
+                                $media->setHeight($height);
+                                $media->setIdObjectRelated($relatedObject->getId());
+                                $media->save();
+
+                                $createdMedias[] = $media;
+                            }
                         }
                     }
                 }
@@ -95,56 +96,58 @@ class FileController {
                 $hasChanged = true;
                 $path = self::resolveFilePath($fileType, $relatedObject);
                 
-                // Get infos from request file input
-                $fileMimeType = $file->getMimeType();
-                $resolvedMimeType = self::resolveFileType($fileMimeType);
-                $fileSize = $file->getClientSize();
-                $fileName = self::resolveFileName($fileType, $relatedObject, $file);
-                $fileExtension = $file->getClientOriginalExtension();
-                
-                if(!checkModel($media)){
-                    $media = self::resolveMediaInstance($fileType, $relatedObject);
-                } else {
-                    // Check if file is different from previous saved media
-                    if($media->getExtension() == $fileExtension && $media->getSize() == $fileSize && $media->getType() === $resolvedMimeType){
-                        $hasChanged = false;
-                    } 
-                }
-                if($hasChanged && $media instanceof \App\Models\Media){
-                    $options = array();
-                    if($media->getPublic() && $media->getDrive(\App\Models\Media::DRIVE_LOCAL)){
-                        $options = 'public';
+                if($path !== null){
+                    // Get infos from request file input
+                    $fileMimeType = $file->getMimeType();
+                    $resolvedMimeType = self::resolveFileType($fileMimeType);
+                    $fileSize = $file->getClientSize();
+                    $fileName = self::resolveFileName($fileType, $relatedObject, $file);
+                    $fileExtension = $file->getClientOriginalExtension();
+
+                    if(!checkModel($media)){
+                        $media = self::resolveMediaInstance($fileType, $relatedObject);
+                    } else {
+                        // Check if file is different from previous saved media
+                        if($media->getExtension() == $fileExtension && $media->getSize() == $fileSize && $media->getType() === $resolvedMimeType){
+                            $hasChanged = false;
+                        } 
                     }
-                    
-                    // Store file physically
-                    $relPath = $file->storePublicly($path, $options);
-                    
-                    if($relPath !== false){
-                        if($media->getPublic()){
-                            $relPath = 'public/'.$relPath;
+                    if($hasChanged && $media instanceof \App\Models\Media){
+                        $options = array();
+                        if($media->getPublic() && $media->getDrive(\App\Models\Media::DRIVE_LOCAL)){
+                            $options = 'public';
                         }
-                        // Get definitive file paths
-                        $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
-                        $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
-                        if(!checkModel($media)){
-                            $media->setId(\App\Utilities\UuidTools::generateUuid());
-                        } else {
-                            // Delete previous uploaded file
-                            \Illuminate\Support\Facades\Storage::delete($media->getLocalPath());
+
+                        // Store file physically
+                        $relPath = $file->storePublicly($path, $options);
+
+                        if($relPath !== false){
+                            if($media->getPublic()){
+                                $relPath = 'public/'.$relPath;
+                            }
+                            // Get definitive file paths
+                            $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
+                            $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
+                            if(!checkModel($media)){
+                                $media->setId(\App\Utilities\UuidTools::generateUuid());
+                            } else {
+                                // Delete previous uploaded file
+                                \Illuminate\Support\Facades\Storage::delete($media->getLocalPath());
+                            }
+                            // Set media info
+                            $media->setType($resolvedMimeType);
+                            $media->setFilename($fileName);
+                            $media->setExtension($fileExtension);
+                            $media->setSize($fileSize);
+                            $media->setLocalPath($appRelPath);
+                            list($width, $height) = getimagesize($absolutePath);
+                            $media->setWidth($width);
+                            $media->setHeight($height);
+                            $media->setIdObjectRelated($relatedObject->getId());
+                            $media->save();
+    //                        print_r($media);
+    //                        echo '<img src ="'.asset($appRelPath).'" />';die();
                         }
-                        // Set media info
-                        $media->setType($resolvedMimeType);
-                        $media->setFilename($fileName);
-                        $media->setExtension($fileExtension);
-                        $media->setSize($fileSize);
-                        $media->setLocalPath($appRelPath);
-                        list($width, $height) = getimagesize($absolutePath);
-                        $media->setWidth($width);
-                        $media->setHeight($height);
-                        $media->setIdObjectRelated($relatedObject->getId());
-                        $media->save();
-//                        print_r($media);
-//                        echo '<img src ="'.asset($appRelPath).'" />';die();
                     }
                 }
             }
