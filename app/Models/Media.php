@@ -13,6 +13,8 @@ class Media extends Model {
     
     const TYPE_IMAGE = 1;
     const TYPE_VIDEO = 2;
+    const TYPE_APPLICATION = 3;
+    const TYPE_TEXT = 4;
     
     const TYPE_USE_ETS_LOGO = 1;
     const TYPE_USE_ETS_HOME_PICS = 2;
@@ -83,6 +85,8 @@ class Media extends Model {
         $types = array();
         $types[self::TYPE_IMAGE] = 'image';
         $types[self::TYPE_VIDEO] = 'video';
+        $types[self::TYPE_APPLICATION] = 'application';
+        $types[self::TYPE_TEXT] = 'text';
         
         return $types;
     }
@@ -101,6 +105,12 @@ class Media extends Model {
         $type = $this->getTypeLabel();
         $ext = $this->getExtension();
         if(!empty($type) && !empty($ext)){
+            switch($ext){
+                case 'doc':
+                case 'docx':
+                    $ext = 'msword';
+                    break;
+            }
             $mimetype = $type.'/'.$ext;
         }
         return $mimetype;

@@ -51,7 +51,7 @@
                                         ['name' => 'new_employee',
                                         'class' => 'form-control',
                                         'medias' => $employeeMedias,
-                                        'filetype' => ['image', 'text'],
+                                        'fileType' => ['image', 'text'],
                                         'uploadLabel' => 'Ajouter cet employé',
                                         'browseLabel' => 'Ajouter une photo',
                                         'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',

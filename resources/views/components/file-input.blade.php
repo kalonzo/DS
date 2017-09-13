@@ -1,4 +1,4 @@
-@php
+<?php
 if(!isset($multiple)){
     $multiple = false;
     $class .= ' file-input-single';
@@ -19,26 +19,56 @@ if(isset($medias) && !empty($medias)){
     $existingFilesConfig = '[]';
 }
 
-$fileExtensions = array();
+$maxFileSize= 5000;
+if(!isset($fileExtensions)){
+    $fileExtensions = array();
+}
 //['image', 'html', 'text', 'video', 'audio', 'flash', 'object']
 if(!isset($fileType)){
-    $fileType = 'image';
+    $fileType = array();
 }
-switch($fileType){
-    default:
-        $fileExtensions = null;
-        $maxFileSize= 5000;
-    break;
-    case 'image':
-        $fileExtensions = ['jpg', 'png'];
-        $maxFileSize= 5000;
-    break;
-    case 'video':
-        $fileExtensions = ['mp4', 'avi', 'mpeg'];
-        $maxFileSize= 20000;
-    break;
+if(!is_array($fileType)){
+    $fileType = array($fileType);
 }
-$fileType = json_encode($fileType);
+foreach($fileType as $type){
+    switch($type){
+        default:
+            $typeMaxFileSize= 5000;
+            if($typeMaxFileSize > $maxFileSize){
+                $maxFileSize = $typeMaxFileSize;
+            }
+        break;
+        case 'image':
+            $fileExtensions[] = 'jpg';
+            $fileExtensions[] = 'png';
+            $typeMaxFileSize= 5000;
+            if($typeMaxFileSize > $maxFileSize){
+                $maxFileSize = $typeMaxFileSize;
+            }
+        break;
+        case 'text':
+            $fileExtensions[] = 'doc';
+            $fileExtensions[] = 'docx';
+            $fileExtensions[] = 'pdf';
+            $typeMaxFileSize= 5000;
+            if($typeMaxFileSize > $maxFileSize){
+                $maxFileSize = $typeMaxFileSize;
+            }
+        break;
+        case 'video':
+            $fileExtensions[] = 'mp4';
+            $fileExtensions[] = 'avi';
+            $fileExtensions[] = 'mpeg';
+            $typeMaxFileSize= 20000;
+            if($typeMaxFileSize > $maxFileSize){
+                $maxFileSize = $typeMaxFileSize;
+            }
+        break;
+    }
+}
+if(!empty($fileType)){
+    $fileType = json_encode($fileType);
+}
 $fileExtensions = json_encode($fileExtensions);
 
 if(!isset($fileRefreshOnUpload)){
@@ -53,8 +83,8 @@ if(!isset($uploadLabel)){
 if(!isset($browseLabel)){
     $browseLabel = __('Parcourir');
 }
+?>
 
-@endphp
 <input type="file" name="{!! $name !!}" class="bootstrap-file-input {{ $class }}" @if($multiple) multiple @endif />
 <script type="text/javascript">
     @if(!Request::ajax())
@@ -84,8 +114,12 @@ if(!isset($browseLabel)){
                     @if(isset($required))
                         required: {!! $required !!},
                     @endif
-                    allowedFileTypes: {!! $fileType !!},
+                    @if(!empty($fileType))
+                        allowedFileTypes: {!! $fileType !!},
+                    @endif
+                    @if(!empty($fileExtensions))
                     allowedFileExtensions: {!! $fileExtensions !!},
+                    @endif
                     browseLabel: "{!! $browseLabel !!}",
                     removeLabel: "@lang('Supprimer')",
                     uploadLabel: "{!! $uploadLabel !!}",
@@ -102,6 +136,20 @@ if(!isset($browseLabel)){
                     uploadExtraData: {{ $extraData }},
                     @endif
                     dropZoneEnabled: false,
+                    previewFileIcon: '<i class="glyphicon glyphicon-file"></i>',
+                    preferIconicPreview: true,
+                    previewFileIconSettings: {
+                        'doc': '<i class="glyphicon glyphicon-file doc"></i>',
+                        'docx': '<i class="glyphicon glyphicon-file doc"></i>'
+                    },
+                    previewFileExtSettings: {
+                        'doc': function(ext) {
+                            return ext.match(/(doc|docx)$/i);
+                        },
+                        'docx': function(ext) {
+                            return ext.match(/(doc|docx)$/i);
+                        }
+                    }
                 })
                 .on('filesorted', function(event, params) {
                     console.log('File sorted ', params.previewId, params.oldIndex, params.newIndex, params.stack);

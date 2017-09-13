@@ -299,6 +299,12 @@ class FileController {
                 case 'video':
                     $fileType = \App\Models\Media::TYPE_VIDEO;
                 break;
+                case 'application':
+                    $fileType = \App\Models\Media::TYPE_APPLICATION;
+                break;
+                case 'text':
+                    $fileType = \App\Models\Media::TYPE_TEXT;
+                break;
             }
         }
         return $fileType;

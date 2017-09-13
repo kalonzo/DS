@@ -105,11 +105,27 @@ function getMediaConfigForInputFile($medias, $jsonEncoded = true){
                     'caption' => $media->getFilename(),
                     'size' => $media->getSize(),
                     'key' => $media->getUuid(),
-                    'filetype' => $media->getMimeType()
                 );
                 $instanceConfig['url'] = '/delete/'.$media::TABLENAME.'/'.$media->getUuid();
                 if(!empty($media->getType())){
-                    $instanceConfig['type'] = $media->getTypeLabel();
+                    switch($media->getType()){
+                        case \App\Models\Media::TYPE_IMAGE:
+                        case \App\Models\Media::TYPE_VIDEO:
+                            $instanceConfig['type'] = $media->getTypeLabel();
+                            $instanceConfig['filetype'] = $media->getMimeType();
+                            break;
+                        default :
+                            switch($media->getExtension()){
+                                case 'pdf' :
+                                    $instanceConfig['type'] = $media->getExtension();
+                                    $instanceConfig['filetype'] = $media->getMimeType();
+                                    break;
+                                default :
+                                    $instanceConfig['type'] = 'other';
+                                    break;
+                            }
+                            break;
+            }
                 }
             }
             $mediaConfig[] = $instanceConfig;

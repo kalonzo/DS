@@ -43,7 +43,7 @@
                                         ['name' => 'new_story',
                                         'class' => 'form-control',
                                         'medias' => $storyMedias,
-                                        'filetype' => ['image', 'text'],
+                                        'fileType' => ['image', 'text'],
                                         'uploadLabel' => 'Ajouter',
                                         'browseLabel' => 'Ajouter une photo',
                                         'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
