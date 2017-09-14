@@ -64,7 +64,7 @@
                                     }
                                 @endslot
                                 @slot('fileuploaded')
-                                    $('#ets-story').find('input, select, textarea').each(function(){
+                                    $('#ets-story').find('input, textarea').each(function(){
                                         $(this).val('').change();
                                     });
                                     $('#ets-story .kv-fileinput-caption').hide();

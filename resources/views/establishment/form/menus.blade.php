@@ -138,7 +138,7 @@
                                         }
                                     @endslot
                                     @slot('fileuploaded')
-                                        $('#ets-menu-dishes').find('input, select').each(function(){
+                                        $('#ets-menu-dishes').find('input').each(function(){
                                             $(this).val('');
                                         });
                                         $('#ets-menu-dishes .kv-fileinput-caption').hide();

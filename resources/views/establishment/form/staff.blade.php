@@ -72,7 +72,7 @@
                                     }
                                 @endslot
                                 @slot('fileuploaded')
-                                    $('#ets-staff').find('input, select').each(function(){
+                                    $('#ets-staff').find('input[type=text]').each(function(){
                                         $(this).val('');
                                     });
                                     $('#ets-staff .kv-fileinput-caption').hide();
