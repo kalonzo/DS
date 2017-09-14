@@ -76,7 +76,16 @@ class StoreEstablishment extends \App\Http\FormRequest {
 
             $name = $this->get('name');
             $establishment = \App\Models\Establishment::where('name', $name)->first();
-            self::checkEstablishmentName($establishment);
+
+            if (checkModel($establishment)) {
+                $establishmentId = explode('/', $this->getPathInfo());
+                if (!isset($establishmentId[2])) {
+                    $rules['nameExist'] = ['required'];
+                    return $rules;
+                }
+            } else {
+                $rules['name'] = ['required|min:2|max:255'];
+            }
 
             //minima maxima for dishes
             $min = $this->get('average_price_min');
@@ -233,15 +242,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
     }
 
     public function checkEstablishmentName($establishment) {
-        if (checkModel($establishment)) {
-            $establishmentId = explode('/', $this->getPathInfo());
-            if (!isset($establishmentId[2])) {
-                $rules['nameExist'] = ['required'];
-                return $rules;
-            }
-        } else {
-            $rules['name'] = ['required|min:2|max:255'];
-        }
+        
     }
 
 }
