@@ -68,15 +68,11 @@ class EventController extends Controller {
         $createdObjects = array();
         try {
 
-            if ($request->get('start_hour') !== null) {
-                $startHour = $request->get('start_hour');
-            }
-            if ($request->get('end_hour') !== null) {
-                $endHour = $request->get('start_end');
-            }
+            $startHour = $request->get('start_hour');
+            $startDate = new \DateTime(str_replace('/', '-', $request->get('start_date')).' '.$startHour);
             
-            $startDate = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')) . ' ' . $startHour);
-            $endDate = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')) . ' ' . $endHour);
+            $endHour = $request->get('end_hour');
+            $endDate = new \DateTime(str_replace('/', '-', $request->get('end_date')).' '.$endHour);
 
             $event = Event::create([
                         'id' => \App\Utilities\UuidTools::generateUuid(),
@@ -84,9 +80,8 @@ class EventController extends Controller {
                         'status' => Event::STATUS_ACTIVE,
                         'description' => $request->get('description'),
                         'start_date' => $startDate->format('Y-m-d H:i'),
-                        'end_date' => $startDate->format('Y-m-d H:i'),
+                        'end_date' => $endDate->format('Y-m-d H:i'),
                         'type_event' => $request->get('type_event'),
-                        'end_date' => $endDate->format('Y-m-d'),
                         'id_establishment' => \App\Utilities\UuidTools::getId($request->get('id_establishment')),
             ]);
             if (checkModel($event)) {
