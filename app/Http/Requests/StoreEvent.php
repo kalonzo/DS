@@ -50,6 +50,9 @@ class StoreEvent extends \App\Http\FormRequest
             'end_date.date_format' => 'Le format de date n\'est pas correcte',
             'end_date.after_or_equal' => 'La date de fin dois être supérieur à la date de début',
             'id_establishment.required' => 'Veuillez séléctionner un établissement pour votre événement',
+            'type_event.required' => 'Veuillez saisir une catégorie pour classifier vos événements',
+            'type_event.min' => 'Non de la catégorie trop courte',
+            'type_event.max' => 'Non de la catégorie trop longue',
         ];
         return $messages;
     }
