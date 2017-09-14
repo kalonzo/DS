@@ -29,7 +29,7 @@
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.7",
         "xethron/migrations-generator": "^2.0",
-        "kartik-v/bootstrap-fileinput": "@dev",
+        "kartik-v/bootstrap-fileinput": "^4.4.3",
         "propaganistas/laravel-phone": "^3.0.2"
     },
     "autoload": {

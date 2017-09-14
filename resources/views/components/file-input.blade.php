@@ -178,7 +178,7 @@ if(!isset($browseLabel)){
                         $input.fileinput("refresh", inputData);
                     }
                     @endif
-                    $(this).fileinput('unlock');
+                    $input.fileinput('unlock');
                 })
                 @endif
                 @if(isset($filepreupload))
