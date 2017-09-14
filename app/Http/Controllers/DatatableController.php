@@ -223,7 +223,7 @@ class DatatableController {
                     $event[$uuid]['id'] = $uuid;
                     $event[$uuid]['ets_name'] = $eventsData->ets_name;
                     $event[$uuid]['name'] = $eventsData->name;
-                    $event[$uuid]['type'] = $eventsData->event_type;
+                    $event[$uuid]['type'] = $eventsData->type_event;
                     $event[$uuid]['start_date'] = $eventsData->start_date;
                     $event[$uuid]['end_date'] = $eventsData->end_date;
                 }

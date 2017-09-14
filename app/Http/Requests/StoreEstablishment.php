@@ -13,68 +13,78 @@ class StoreEstablishment extends \App\Http\FormRequest {
         return true;
     }
 
-    public function validateRules($validator) {
-        if ($validator->fails()) {
-            return $validator->getRules();
-        }
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
+        $rules = array();
+
         if ($this->ajax() === true) {
-            $rules = array();
             switch ($this->get('action')) {
                 case 'add_gallery':
-                    $rules['new_gallery_name'] = 'required|min:2|max:255';
+                    //var_dump($this->file('new_gallery'));
+                    $rules = [
+                        'new_gallery_name' => 'required|min:2|max:255',
+                        'new_gallery' => 'required',
+                    ];
                     break;
                 case 'add_dish':
-
-                    $rules['new_dish_name'] = 'required|min:2|max:255';
-                    $rules['new_dish_description'] = 'nullable|min:2|max:255';
-                    $rules['new_dish_price'] = 'required|numeric|min:2';
-                    $rules['new_dish_price_cents'] = 'required|max:2';
+                    $rules = [
+                        'new_dish_name' => 'required|min:2|max:255',
+                        'new_dish_description' => 'nullable|min:2|max:255',
+                        'new_dish_price' => 'required|numeric|min:2',
+                        'new_dish_price_cents' => 'required|max:2',
+                    ];
                 case 'delete_gallery':
-
                     break;
                 case 'add_close_period':
                     $closeStartDate = new \DateTime($this->get('close_start'));
-                    $rules['close_name'] = 'required|min:2|max:255';
-                    $rules['end_date'] = 'date_format:Y/m/d|after:' . $closeStartDate->format('Y/m/d');
+                    $rules = [
+                        'close_name' => 'required|min:2|max:255',
+                        'end_date' => 'date_format:Y/m/d|after:' . $closeStartDate->format('Y/m/d'),
+                    ];
                     break;
                 case 'add_media_to_gallery':
+                    //TODO
                     break;
                 case 'add_menu':
+                    //TODO
                     $rules['menu_name'] = 'required|min:2|max:255';
                     break;
                 case 'add_video':
-                    
+                    //TODO
+
                     break;
                 case 'add_employee':
-                    $rules['new_employee_firstname'] = 'required|min:2|max:255';
-                    $rules['new_employee_lastname'] = 'required|min:2|max:255';
-                    $rules['job_type'] = 'required';
-                    $rules['new_employee_position'] = 'required';
+                    $rules = [
+                        'new_employee_firstname' => 'required|min:2|max:255',
+                        'new_employee_lastname' => 'required|min:2|max:255',
+                        'job_type' => 'required',
+                        'new_employee_position' => 'required',
+                    ];
                     break;
                 case 'add_story':
-                    $rules['new_story_year'] = 'required';
-                    $rules['new_story_title'] = 'required|min:2|max:255';
-                    $rules['new_story_description'] = 'nullable|min:2|max:255';
+                    $rules = ['new_story_year' => 'required',
+                        'new_story_title' => 'required|min:2|max:255',
+                        'new_story_description' => 'nullable|min:2|max:255',
+                    ];
                     break;
             }
-
-            return $rules;
         } else {
+
+            $name = $this->get('name');
+            $establishment = \App\Models\Establishment::where('name', $name)->first();
+            self::checkEstablishmentName($establishment);
+
             //minima maxima for dishes
             $min = $this->get('average_price_min');
             $max = $this->get('average_price_max');
             $rules = [
                 //self::$rules_phone,
                 // Location
-                'name' => 'required|min:2|max:255',
+                // 'name' => 'required|min:2|max:255',
                 'address.street' => 'required|min:3|max:255',
                 'address.street_number' => 'required|max:45',
                 'address.postal_code' => 'required|max:11',
@@ -90,6 +100,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 //galerie
                 'logo' => 'nullable|mimes:png,jpg,jpeg',
                 //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
+                //menu
                 //Menu average price
                 'average_price_min' => 'nullable|numeric|min:1',
                 'average_price_max' => 'nullable|numeric|min:1|between:' . $min . ',' . $max,
@@ -101,14 +112,15 @@ class StoreEstablishment extends \App\Http\FormRequest {
             $rules['call_number.3'] = 'nullable|regex:/^[0-9 ]+$/';
             // Opening hours
             foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
-                $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
+                $rules['openingHours.' . $dayIndex . '.1.start'] = 'required'; //|before_or_equal:openingHours.'.$dayIndex.'.1.end';
                 $rules['openingHours.' . $dayIndex . '.1.end'] = 'required|after_or_equal:openingHours.' . $dayIndex . '.1.start';
 
-                $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
-                $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
+                $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end'
+                ; //.'before_or_equal:openingHours.'.$dayIndex.'.2.end';
+                $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.2.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
             }
-            return $rules;
         }
+        return $rules;
     }
 
     public function messages() {
@@ -157,6 +169,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'new_gallery_name.required' => 'Veuillez saisir un nom pour votre gallerie',
             'new_gallery_name.min' => 'Le nom de votre gallerie est trop court',
             'new_gallery_name.max' => 'Le nom de votre gallerie est trop long',
+            'new_gallery.required' => 'Veuillez séléctioner au minimum une image pour créer une gallerie',
             'logo.mime' => 'Votre logo dois être de format JPEG ou PNG',
             //dishe
             'new_dish_name.required' => 'Veuillez saisir un nom pour votre assiette',
@@ -197,6 +210,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'call_number.3.regex' => 'Veuillez contrôler le format de votre numéro',
             'call_number.1.required' => 'Veuillez saisir un numéro de réservation',
             'call_number.4.required' => 'Veuillez saisir un numéro de contact',
+            'nameExist.required' => 'Le restaurant est déja inscrit en base. Merci de contacter un administrateur',
         ];
         // Opening hours
         foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
@@ -216,6 +230,18 @@ class StoreEstablishment extends \App\Http\FormRequest {
             $messages['openingHours.' . $dayIndex . '.2.end.required_unless'] = "Veuillez saisir l'heure de fermeture du " . strtolower($dayLabel) . " après-midi";
         }
         return $messages;
+    }
+
+    public function checkEstablishmentName($establishment) {
+        if (checkModel($establishment)) {
+            $establishmentId = explode('/', $this->getPathInfo());
+            if (!isset($establishmentId[2])) {
+                $rules['nameExist'] = ['required'];
+                return $rules;
+            }
+        } else {
+            $rules['name'] = ['required|min:2|max:255'];
+        }
     }
 
 }

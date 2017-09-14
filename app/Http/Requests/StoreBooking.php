@@ -24,8 +24,8 @@ class StoreBooking extends \App\Http\FormRequest {
             'email' => 'required|email',
             'firstname' => 'required|min:2|max:255',
             'lastname' => 'required|min:2|max:255',
-            'phone_number' => 'required|min:11|numeric',
-            'time_reservation' => 'required|date_format:H:i',
+            'phone_number' => 'required|regex:/^[0-9 ]+$/',
+            //'time_reservation' => 'required|date_format:H:i',
             'datetime_reservation' => 'date_format:d/m/Y|after_or_equal:' . $dateNow,
         ];
 

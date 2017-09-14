@@ -39,7 +39,7 @@ if(checkModel($event)){
         </div>
         <div class="col-xs-12 col-sm-6 form-group">
             {!! Form::label('start_hour','Heure') !!}
-            {!! Form::time('start_hour', old('start_date'), ['class' => 'form-control']) !!}  
+            {!! Form::time('start_hour', old('start_hour'), ['class' => 'form-control']) !!}  
         </div>
         <div class="col-xs-12 col-sm-6 form-group">
             {!! Form::label('end_hour','Heure') !!}
