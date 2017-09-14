@@ -26,7 +26,7 @@ class StoreEvent extends \App\Http\FormRequest
                 $dateNow = date('Y-m-d');
                 $rules = [
                     'name' => 'required|min:2|max:255',
-                    'description' => 'nullable|numeric|min:2',
+                    'description' => 'nullable|min:2',
                     'start_date' => 'date_format:Y-m-d|after_or_equal:' . $dateNow,
                     'start_hour' => 'required',
                     'end_date' => 'date_format:Y-m-d|after_or_equal:' . $this->get('start_date'),
