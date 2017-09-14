@@ -58,10 +58,10 @@ class EventController extends Controller {
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StorePromotion  $request
+     * @param  StoreEvent  $request
      * @return Response
      */
-    public function store(StorePromotion $request) {
+    public function store(StoreEvent $request) {
         $response = response();
         $jsonResponse = array('success' => 0);
         $promotion = null;
@@ -108,10 +108,10 @@ class EventController extends Controller {
 
     /**
      * 
-     * @param StorePromotion $request
+     * @param StoreEvent $request
      * @return type
      */
-//    public function storeAjax(StorePromotion $request){
+//    public function storeAjax(StoreEvent $request){
 //        $response = response();
 //        $jsonResponse = array('success' => 0);
 //        
@@ -125,10 +125,10 @@ class EventController extends Controller {
 
     /**
      * 
-     * @param StorePromotion $request
+     * @param StoreEvent $request
      * @return type
      */
-    public function ajax(StorePromotion $request) {
+    public function ajax(StoreEvent $request) {
         $response = response();
         $jsonResponse = array('success' => 0);
         try {
