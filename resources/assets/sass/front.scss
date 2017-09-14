@@ -1064,7 +1064,7 @@ $timelinePointWidth: 15px;
             cursor: pointer;
             margin-top: ($timelinePointWidth/-2);
             @include no-select;
-            &:last-child{
+            &:last-child:not(:first-child){
                 margin-left: - 60px;
             }
             .timeline-disc{

@@ -123,7 +123,11 @@
 
     <?php
     if($establishment->homePictures()->exists()){
-        ?><style><?php
+        ?><style>
+        .show-page section{
+            background-color: black !important;
+        }
+        <?php
         foreach($establishment->homePictures()->get() as $i => $media){
             ?>
             .show-page section:nth-of-type(<?php echo $i+1;?>) .section-bg{

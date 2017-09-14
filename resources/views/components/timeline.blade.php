@@ -1,5 +1,6 @@
 <?php
-$range = null;
+$date = new DateTime();
+$range = $date->format('Y');
 $startRange = null;
 $endRange = null;
 $selectedItemId = null;
@@ -11,9 +12,9 @@ foreach($items as $item){
         if($startRange === null || $item['value'] < $startRange){
             $startRange = $item['value'];
         }
-        if($endRange === null || $item['value'] > $startRange){
-            $endRange = $item['value'];
-        }
+//        if($endRange === null || $item['value'] > $startRange){
+//            $endRange = $item['value'];
+//        }
     }
 }
 if($startRange !== null && $endRange !== null){
@@ -33,7 +34,11 @@ if(empty($selectedItemId)){
             <?php
             $left = 0;
             if($range !== null){
-                $left = ($item['value'] - $startRange) / $range * 100;
+                if($range == 0){
+                    $left = 50;
+                } else {
+                    $left = ($item['value'] - $startRange) / $range * 100;
+                }
             }
             $left .= '%';
             ?>
