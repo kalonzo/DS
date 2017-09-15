@@ -43,6 +43,15 @@ Route::get('/admin/delete/{table_name}/{id}', function($table_name, $id) {
         return $controllerClass->callAction('destroy', array('id' => $id));
     }
 });
+
+//Promotion
+Route::get('/admin/promotions/{promotion}', 'PromtionController@edit');
+Route::put('/admin/promotions/{promotion}', 'PromtionController@update');
+
+//Evénement
+Route::get('/admin/events/{event}', 'EventController@edit');
+Route::put('/admin/events/{event}', 'EventController@update');
+
 Route::get('/admin/create/{table_name}/{ajax?}', function($table_name, $ajax = null) {
     $controllerClass = null;
 
