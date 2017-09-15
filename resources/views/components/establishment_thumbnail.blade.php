@@ -1,4 +1,4 @@
-<div class="no-gutter ets-thumbnail" 
+<div class="no-gutter ets-thumbnail @if(isset($establishment['promo_name'])) with-promo @endif" 
      data-lat='{{ $establishment['latitude'] }}' data-lng='{{ $establishment['longitude'] }}' data-name="{{ $establishment['name'] }}">
     <a href="{{ $establishment['url'] }}">
         <div class="thumbnail-top col-xs-12 no-gutter">
@@ -14,6 +14,11 @@
             <div class="thumbnail-info col-xs-12 no-gutter">
                 {{$establishment['biz_category_1']}}, {{$establishment['city']}} - {{$establishment['country']}}
             </div>
+            @if(isset($establishment['promo_name']))
+            <div class="thumbnail-promo col-xs-12 no-gutter">
+                {{$establishment['promo_name']}}
+            </div>
+            @endif
         </div>
     </a>
 </div>

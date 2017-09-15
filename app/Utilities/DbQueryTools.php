@@ -120,6 +120,8 @@ class DbQueryTools {
                     $maxLng = $squareCoordinate->getLng();
                 }
             }
+//            print_r($distance);
+//            print_r(['$minLat'=>$minLat, '$minLng'=>$minLng, '$maxLat'=>$maxLat, '$maxLng'=>$maxLng]);
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $query->whereBetween($tableName.'.'.$latFieldName, array($minLat, $maxLat))
                     ->whereBetween($tableName.'.'.$lngFieldName, array($minLng, $maxLng));

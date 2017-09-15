@@ -18,8 +18,11 @@ use View;
 class HomeController extends Controller {
 
     public static function index() {
-        $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+        $etsUuids = array();
         $sliderEts = array();
+        $defaultGeoloc = false;
+        
+        $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
         $userLat = SessionController::getInstance()->getUserLat();
         $userLng = SessionController::getInstance()->getUserLng();
         $typeEts = SessionController::getInstance()->getUserTypeEts();
@@ -27,49 +30,174 @@ class HomeController extends Controller {
         if (!$userLatLng->isValid()) {
             $userLatLng = GeolocationController::getRawInitialGeolocation();
         }
-        $sliderEtsQuery = Restaurant::where('id_business_type', '=', $typeEts)
-        ;
-        $geolocLimitSuccess = DbQueryTools::setGeolocLimits($sliderEtsQuery, $userLatLng, $distance, Establishment::TABLENAME);
-        if ($geolocLimitSuccess) {
-            $sliderEts = $sliderEtsQuery->get();
+        
+        $attempt = 1;
+        $nbResults = 0;
+        do{
+            switch($attempt){
+                case 2:
+                    $distance = 20;
+                    break;
+                case 3:
+                    $distance = 50;
+                    break;
+                case 4:
+                    $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+                    $userLatLng = GeolocationController::getRawInitialGeolocation();
+                    $defaultGeoloc = true;
+                    break;
+            }
+            $sliderEtsQuery = Establishment::select([Establishment::TABLENAME . '.*', DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
+                    ->where('id_business_type', '=', $typeEts)
+//                    ->where('status', '=', Establishment::STATUS_ACTIVE) // TODO Uncomment when statuses are OK
+                    ;
+            $geolocLimitSuccess = DbQueryTools::setGeolocLimits($sliderEtsQuery, $userLatLng, $distance, Establishment::TABLENAME);
+            $nbResults = $sliderEtsQuery->limit(10)->count();
+            if ($geolocLimitSuccess && $nbResults >= 10) {
+                $sliderEts = $sliderEtsQuery->get();
+            }
+            $attempt++;
+        } while($nbResults < 10 && $attempt < 5);
+        
+        if(!empty($sliderEts)){
+            $etsUuids = array_merge($etsUuids, $sliderEts->pluck('uuid')->all());
         }
-
-        $establishments = array();
+        
+        $dsSelectionEstablishments = array();
+        $promotionEstablishments = array();
         $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.* '
-                                . ', biz_category1.id as id_biz_category_1, biz_category1.name as name_biz_category_1'
-                                . ',' . DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
+                ->select([
+                        Establishment::TABLENAME . '.id as id_establishment'
+                        , Establishment::TABLENAME . '.*', Address::TABLENAME . '.*'
+                        , 'logo.local_path as logo_path'
+                        , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
+                    ])
                 ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
-                ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_establishment')
-                ->join(BusinessCategory::TABLENAME . ' AS biz_category1', 'biz_category1.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
-                ->leftJoin(Promotion::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
+                ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', 'logo.id', '=', Establishment::TABLENAME . '.id_logo')
                 ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
+//                    ->where('status', '=', Establishment::STATUS_ACTIVE) // TODO Uncomment when statuses are OK
         ;
+        $establishmentsQueryWithoutDistance = clone $establishmentsQuery;
+        
         $geolocLimitSuccess = DbQueryTools::setGeolocLimits($establishmentsQuery, $userLatLng, $distance, Establishment::TABLENAME);
         if ($geolocLimitSuccess) {
-//            $establishmentsQuery->offset($sliceStart)->limit($nbElementPerPage);
-            $establishmentsData = $establishmentsQuery->get();
-            foreach ($establishmentsData as $establishmentData) {
-                if ($establishmentData->rawDistance <= ($distance * 1000)) {
-                    $uuid = UuidTools::getUuid($establishmentData->id);
-                    // Search results list
-                    $establishments[$uuid]['id'] = $uuid;
-                    $establishments[$uuid]['name'] = $establishmentData->name;
-                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
-                    $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
-                    $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
-                    $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
-                    $establishments[$uuid]['latitude'] = $establishmentData->latitude;
-                    $establishments[$uuid]['longitude'] = $establishmentData->longitude;
-                    $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
-                            $establishmentData->slug, $establishmentData->url_id);
+            /************* DS Selection build *********************************/
+            $dsSelectionData = with(clone $establishmentsQuery)->limit(24)->get();
+            $dsSelectionEstablishments = EstablishmentController::buildThumbnailData($dsSelectionData, ($distance * 1000));
+            foreach($dsSelectionEstablishments as $uuid => $dsSelectionEstablishment){
+                $etsUuids[$uuid] = $uuid;
+            }
+            
+            /********** Promotions build **************************************/
+            $promotionsData = array();
+            $attempt = 1;
+            $nbResults = 0;
+            do{
+                $ignoreStep = false;
+                switch($attempt){
+                    case 2:
+                        $distance = 20;
+                        break;
+                    case 3:
+                        $distance = 50;
+                        break;
+                    case 4:
+                        if($defaultGeoloc || $nbResults === 0){
+                            $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+                            $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        } else {
+                            $ignoreStep = true;
+                        }
+                        break;
+                    case 5:
+                        if($defaultGeoloc || $nbResults === 0){
+                            $distance = 20;
+                            $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        } else {
+                            $ignoreStep = true;
+                        }
+                        break;
                 }
+                $promotionsQuery =  with(clone $establishmentsQueryWithoutDistance)
+                                    ->addSelect(Promotion::TABLENAME.'.name as promo_name')
+                                    ->join(Promotion::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
+                                    ->whereRaw(Promotion::TABLENAME . '.end_date > NOW()')
+                                    ;
+                $geolocLimitSuccess = DbQueryTools::setGeolocLimits($promotionsQuery, $userLatLng, $distance, Establishment::TABLENAME);
+                $nbResults = $promotionsQuery->limit(24)->count();
+                if ($ignoreStep || ($geolocLimitSuccess && $nbResults >= 6)) {
+                    $promotionsData = $promotionsQuery->get();
+                }
+                if($ignoreStep){
+                    break;
+                }
+                $attempt++;
+            } while($nbResults < 6 && $attempt <= 5);
+            
+            if(!empty($promotionsData)){
+                $promotionEstablishments = EstablishmentController::buildThumbnailData($promotionsData, ($distance * 1000));
+                foreach($promotionEstablishments as $uuid => $promotionEstablishment){
+                    $etsUuids[$uuid] = $uuid;
+                }
+            }
+                
+            /********** Weekly most visited ***********************************/
+            $mostVisitedData =  with(clone $establishmentsQuery)
+                                ->orderBy(Establishment::TABLENAME . '.nb_last_week_visits', 'DESC')
+                                ->limit(24)->get();
+            $mostVisitedEstablishments = EstablishmentController::buildThumbnailData($mostVisitedData, ($distance * 1000));
+            foreach($mostVisitedEstablishments as $uuid => $mostVisitedEstablishment){
+                $etsUuids[$uuid] = $uuid;
             }
         }
 
-        $view = View::make('front.home')->with('slider_ets', $sliderEts)->with('ds_selection', $establishments)
-                ->with('reloaded', \Illuminate\Support\Facades\Request::get('reload'));
+        switch($typeEts){
+            case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
+                // Link cooking type to establishment list in slider
+                $businessCategories = BusinessCategory::select([
+                        BusinessCategory::TABLENAME . '.name', EstablishmentBusinessCategory::TABLENAME . '.id_establishment',
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', EstablishmentBusinessCategory::TABLENAME))
+                    ])
+                    ->join(EstablishmentBusinessCategory::TABLENAME, BusinessCategory::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
+                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuids, EstablishmentBusinessCategory::TABLENAME))
+                    ->orderBy(EstablishmentBusinessCategory::TABLENAME.'.created_at')
+                    ->get();
+                    ;
+                foreach($businessCategories as $etsCategoryData){
+                    $idEstablishment = $etsCategoryData->id_establishment;
+                    $uuidEstablishment = $etsCategoryData->uuid;
+                    if(!empty($sliderEts)){
+                        foreach($sliderEts as $establishment){
+                            if($establishment->getId() === $idEstablishment && !isset($establishment->cooking_type)){
+                                $establishment->cooking_type = $etsCategoryData->name;
+                            }
+                        }
+                    }
+                    if(!empty($dsSelectionEstablishments)){
+                        if(isset($dsSelectionEstablishments[$uuidEstablishment]) && !isset($dsSelectionEstablishments[$uuidEstablishment]['biz_category_1'])){
+                            $dsSelectionEstablishments[$uuidEstablishment]['biz_category_1'] = $etsCategoryData->name;
+                        }
+                    }
+                    if(!empty($promotionEstablishments)){
+                        if(isset($promotionEstablishments[$uuidEstablishment]) && !isset($promotionEstablishments[$uuidEstablishment]['biz_category_1'])){
+                            $promotionEstablishments[$uuidEstablishment]['biz_category_1'] = $etsCategoryData->name;
+                        }
+                    }
+                    if(!empty($mostVisitedEstablishments)){
+                        if(isset($mostVisitedEstablishments[$uuidEstablishment]) && !isset($mostVisitedEstablishments[$uuidEstablishment]['biz_category_1'])){
+                            $mostVisitedEstablishments[$uuidEstablishment]['biz_category_1'] = $etsCategoryData->name;
+                        }
+                    }
+                }
+                break;
+        }
+        
+        $view = View::make('front.home')
+                    ->with('slider_ets', $sliderEts)
+                    ->with('ds_selection', $dsSelectionEstablishments)
+                    ->with('promotions', $promotionEstablishments)
+                    ->with('most_visited', $mostVisitedEstablishments)
+                    ->with('reloaded', \Illuminate\Support\Facades\Request::get('reload'));
         $response = \Illuminate\Support\Facades\Response::make($view);
         if (!empty(\Illuminate\Support\Facades\Cookie::queued('userLng'))) {
             $response->withCookie(\Illuminate\Support\Facades\Cookie::queued('userLng'));

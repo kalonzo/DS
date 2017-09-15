@@ -318,14 +318,14 @@ $timetableRowHeight: 76px;
                             }
                             &.promo a{
                                 height: 37px;
-                                background: #fca600;
+                                background: $promo-color;
                                 border: 0px;
                             }
                             &.start:not(.end){
                                 ::before{
                                     content: "_";
-                                    background: #fca600;
-                                    color: #fca600;
+                                    background: $promo-color;
+                                    color: $promo-color;
                                     height: 37px;
                                     width: 50%;
                                     border-radius: 0px;
@@ -340,13 +340,13 @@ $timetableRowHeight: 76px;
                             &.end:not(.start){
                                 ::before{
                                     content: "_";
-                                    background: #fca600;
-                                    color: #fca600;
+                                    background: $promo-color;
+                                    color: $promo-color;
                                     height: 37px;
                                     width: 50%;
                                     border-radius: 0px;
                                     position: absolute;
-                                    top: 0px;
+                                    top: 3px;
                                     left: 0px;
                                     z-index: -1;
                                     overflow: hidden;
@@ -395,7 +395,7 @@ $timetableRowHeight: 76px;
                     &.promo{
                         .icon-container span{
                             padding-bottom: 3px;
-                            border-color: #fca600;
+                            border-color: $promo-color;
                         }
                     }
                     &:not(.first){

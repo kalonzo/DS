@@ -60,6 +60,7 @@ class EstablishmentController extends Controller {
      * @return Response
      */
     public function show(Establishment $establishment, $page = null) {
+        $establishment->incrementWeeklyVisit();
         $data = array();
 
         // Business categories
@@ -1517,34 +1518,34 @@ class EstablishmentController extends Controller {
         return $callNumbers;
     }
 
-    /**
-     * 
-     * @param type $name
-     * @param type $lat
-     * @param type $lng
-     * @return boolean
-     */
-    public function isUniqueEstablishment($name, $lat, $lng) {
-        $bool = false;
-        if (isset($name) & isset($lat) & isset($lng)) {
-            $name = DB::table('Establishment')
-                            ->where('name', $name)->first();
-            $lat = DB::table('Establishment')
-                            ->where('latitude', $lat)->first();
-            $lng = DB::table('Establishment')
-                            ->where('longitude', $lng)->first();
-        } else {
-            $bool = false;
+    public static function buildThumbnailData(\Illuminate\Support\Collection $queryResultsCollection, $maxDistanceKm){
+        $thumbnailData = array();
+        foreach ($queryResultsCollection as $queryResult) {
+            if ($queryResult->rawDistance <= $maxDistanceKm) {
+                $uuid = UuidTools::getUuid($queryResult->id_establishment);
+                // Search results list
+                $etsUuids[] = $uuid;
+                $thumbnailData[$uuid]['id'] = $uuid;
+                $thumbnailData[$uuid]['name'] = $queryResult->name;
+                if(empty($queryResult->logo_path)){
+                    $thumbnailData[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
+                } else {
+                    $thumbnailData[$uuid]['img'] = $queryResult->logo_path;
+                }
+                $thumbnailData[$uuid]['city'] = $queryResult->city;
+                $thumbnailData[$uuid]['country'] = \App\Models\Country::getCountryLabel($queryResult->id_country);
+//                    $dsSelectionEstablishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
+                $thumbnailData[$uuid]['raw_distance'] = \App\Utilities\StringTools::displayCleanDistance($queryResult->rawDistance);
+                $thumbnailData[$uuid]['latitude'] = $queryResult->latitude;
+                $thumbnailData[$uuid]['longitude'] = $queryResult->longitude;
+                $thumbnailData[$uuid]['url'] = Establishment::getUrlStatic($queryResult->id_business_type, $queryResult->city, 
+                        $queryResult->slug, $queryResult->url_id);
+                
+                if(isset($queryResult->promo_name)){
+                    $thumbnailData[$uuid]['promo_name'] = $queryResult->promo_name;
+                }
+            }
         }
-
-        if (isset($name->name) & isset($lat->latitude) & isset($lng->longitude)) {
-            $bool = false;
-        } else {
-
-            $bool = true;
-        }
-
-        return $bool;
-    }
-
+        return $thumbnailData;
+    } 
 }

@@ -28,10 +28,15 @@ class CallNumber extends Model {
     
     public function getDisplayable(){
         $country = $this->country()->select('iso')->first();
+        $countryIso = null;
         if(checkModel($country)){
             $countryIso = $country->getIso();
         }
-        $label = (string)\Propaganistas\LaravelPhone\PhoneNumber::make($this->getNumber(), $countryIso)->formatForCountry(\Illuminate\Support\Facades\App::getLocale());
+        try{
+            $label = (string)\Propaganistas\LaravelPhone\PhoneNumber::make($this->getNumber(), $countryIso)->formatForCountry(\Illuminate\Support\Facades\App::getLocale());
+        } catch(\Exception $e){
+            $label = $this->getNumber();
+        }
         return $label;
     }
     

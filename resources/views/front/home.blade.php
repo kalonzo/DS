@@ -14,14 +14,14 @@
         </ol>
         <div class="carousel-inner" role="listbox">
             @foreach($slider_ets as $establishment)
-            <div class="item @if( $loop->iteration == 1) active @endif"> 
-                <img class="" src="{{ $establishment->getDefaultPicture() }}" alt="{{ $establishment->getName() }}" />
+            <a class="item @if( $loop->iteration == 1) active @endif" style="background-image: url('{{ $establishment->getDefaultBanner() }}');"
+               href="{{ $establishment->getUrl() }}"> 
                 <div class="carousel-caption d-none d-md-block">
-                    <img src="{{ $establishment->getDefaultPicture() }}" alt="Logo establishment"/>
+                    <img src="{{ $establishment->getDefaultPicture() }}" alt="Logo {{ $establishment->getName() }}"/>
                     <h3>{{ $establishment->getName() }} | </h3>
-                    <p>Type ETS</p>
+                    <p>{{ $establishment->cooking_type }}</p>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
         <a class="left carousel-control" href="#homeAdvertCarousel" role="button" data-slide="prev">
@@ -72,10 +72,11 @@
         </div>
 
         <!-- BEST PROMOS ---------------------------------------------------------->
+        @if(!empty($promotions))
         <div class="home-highlight-section">
             <div class="container">
                 <div class="home-highlight-header">
-                    <h2>Les <strong class="text-highlight">meilleures</strong> promotions</h2>
+                    <h2>Les <strong class="text-promo">meilleures</strong> promotions</h2>
                     <div class="carousel-control-container">
                         <a class="carousel-control left" href="#bestPromoCarousel" role="button" data-slide="prev">
                             <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
@@ -89,14 +90,51 @@
                 </div>
                 <div id="bestPromoCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
                     <div class="carousel-inner" role="listbox">
-                        @foreach($ds_selection as $establishment)
+                        @foreach($promotions as $establishment)
                             @if( $loop->index % 6 == 0)
                             <div class="item @if( $loop->iteration == 1) active @endif">
                             @endif
 
-                                @component('components.establishment_thumbnail', ['establishment' => $establishment])
+                            @component('components.establishment_thumbnail', ['establishment' => $establishment])
 
-                                @endcomponent
+                            @endcomponent
+
+                            @if( $loop->iteration % 6 == 0 OR $loop->last)
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- MOST VISITED ---------------------------------------------------------->
+        <div class="home-highlight-section">
+            <div class="container">
+                <div class="home-highlight-header">
+                    <h2>Les <strong>plus visités</strong> cette semaine</h2>
+                    <div class="carousel-control-container">
+                        <a class="carousel-control left" href="#mostVisitedCarousel" role="button" data-slide="prev">
+                            <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+                            <span class="sr-only">Précédent</span>
+                        </a>
+                        <a class="carousel-control right" href="#mostVisitedCarousel" role="button" data-slide="next">
+                            <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                            <span class="sr-only">Suivant</span>
+                        </a>
+                    </div>
+                </div>
+                <div id="mostVisitedCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
+                    <div class="carousel-inner" role="listbox">
+                        @foreach($most_visited as $establishment)
+                            @if( $loop->index % 6 == 0)
+                            <div class="item @if( $loop->iteration == 1) active @endif">
+                            @endif
+
+                            @component('components.establishment_thumbnail', ['establishment' => $establishment])
+
+                            @endcomponent
 
                             @if( $loop->iteration % 6 == 0 OR $loop->last)
                             </div>

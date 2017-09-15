@@ -63,11 +63,25 @@ class Establishment extends Model implements GlobalObjectManageable{
     }
     
     public function getDefaultPicture(){
-        return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+        $picPath = null;
+        $logo = $this->logo()->first();
+        if(checkModel($logo)){
+            $picPath = $logo->getLocalPath();
+        } else {
+            $picPath = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+        }
+        return $picPath;
     }
     
     public function getDefaultBanner(){
-        return "/img/images_ds/imagen-DS-".rand(1, 20).".jpg";
+        $picPath = null;
+        $banner = $this->homePictures()->orderBy('position')->limit(1)->first();
+        if(checkModel($banner)){
+            $picPath = $banner->getLocalPath();
+        } else {
+            $picPath = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+        }
+        return $picPath;
     }
     
     public function address(){
@@ -159,6 +173,14 @@ class Establishment extends Model implements GlobalObjectManageable{
      */
     public function promotions(){
         return $this->hasMany(Promotion::class, 'id_establishment', 'id');
+    }
+    
+    /**
+     * Increments nbLastWeekVisits and save it
+     */
+    public function incrementWeeklyVisit(){
+        $this->setNbLastWeekVisits($this->getNbLastWeekVisits() + 1);
+        $this->save();
     }
     
     protected $url = null;
