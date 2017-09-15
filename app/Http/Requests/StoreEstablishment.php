@@ -128,7 +128,6 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 //galerie
                 'logo' => 'nullable|mimes:png,jpg,jpeg',
                 //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
-                //menu
                 //Menu average price
                 'average_price_min' => 'nullable|numeric|min:1',
                 'average_price_max' => 'required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
@@ -189,6 +188,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'menu_name.required' => 'Veuillez saisir un nom pour votre menu',
             'menu_name.min' => 'le nom de votre menu est trop cout',
             'menu_name.max' => 'Le nom de votre menu est trop long',
+            'new_menu.required' => 'Une image est requise',
             'average_price_max.between' => 'Le prix maximum doit être inférieur au prix minimum',
             'average_price_max.required_with' => 'Veuillez indiquer le prix maximum',
             'average_price_min.required_with' => 'Veuillez indiquer le prix minimum',
