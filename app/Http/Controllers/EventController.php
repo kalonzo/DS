@@ -122,6 +122,32 @@ class EventController extends Controller {
 //        $responsePrepared = $response->json($jsonResponse);
 //        return $responsePrepared;
 //    }
+    
+     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Establishment $event
+     * @return Response
+     */
+    public function edit(Event $event) {
+        $this->buildFeedFormData();
+        $this->buildEditFormValues($event);
+        $formData = StorageHelper::getInstance()->get('feed_event.form_data');
+        $formValues = StorageHelper::getInstance()->get('feed_event.form_values');
+        //var_dump($event->getId());
+        $view = View::make('admin.event.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('event', $event);
+        return $view;
+    }
+    
+     /**
+     * 
+     * @param Event $event
+     */
+    public function buildEditFormValues(Event $event) {
+        // Default ID establishment
+        $idEstablishment = $event->id_establishment;      
+        StorageHelper::getInstance()->add('feed_event.form_values.id_establishment', $idEstablishment);
+    }
 
     /**
      * 

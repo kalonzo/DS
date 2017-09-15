@@ -13,6 +13,19 @@ class StoreEstablishment extends \App\Http\FormRequest {
         return true;
     }
 
+    public function checkEstablishment($establishment, $rules) {
+        if (checkModel($establishment)) {
+            $establishmentId = explode('/', $this->getPathInfo());
+            if (!isset($establishmentId[2])) {
+                $rules['nameExist'] = ['required'];
+                //return $rules;
+            }
+        } else {
+            $rules['name'] = ['required|min:2|max:255'];
+        }
+        return $rules;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -43,15 +56,18 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     $closeStartDate = new \DateTime($this->get('close_start'));
                     $rules = [
                         'close_name' => 'required|min:2|max:255',
-                        'end_date' => 'date_format:Y/m/d|after:' . $closeStartDate->format('Y/m/d'),
+                        'close_start' => 'required_with:close_name|date_format:Y-m-d',
+                        'close_end' => 'required_with:close_name|date_format:Y-m-d|after:' . $closeStartDate->format('Y/m/d'),
                     ];
                     break;
                 case 'add_media_to_gallery':
                     //TODO
                     break;
                 case 'add_menu':
-                    //TODO
-                    $rules['menu_name'] = 'required|min:2|max:255';
+                    $rules = [
+                        'menu_name' => 'required|min:2|max:255',
+                        'new_menu' => 'required',
+                    ];
                     break;
                 case 'add_video':
                     //TODO
@@ -66,25 +82,26 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     ];
                     break;
                 case 'add_story':
-                    $rules = ['new_story_year' => 'required',
+                    $rules = [
+                        'new_story_year' => 'required',
                         'new_story_title' => 'required|min:2|max:255',
                         'new_story_description' => 'nullable|min:2|max:255',
+                        'new_story' => 'required',
                     ];
                     break;
             }
         } else {
-
             $name = $this->get('name');
             $establishment = \App\Models\Establishment::where('name', $name)->first();
 
             if (checkModel($establishment)) {
                 $establishmentId = explode('/', $this->getPathInfo());
                 if (!isset($establishmentId[2])) {
-                    $rules['nameExist'] = ['required'];
+                    $rules = [
+                        'nameExist' => 'required',
+                    ];
                     return $rules;
                 }
-            } else {
-                $rules['name'] = ['required|min:2|max:255'];
             }
 
             //minima maxima for dishes
@@ -93,7 +110,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             $rules = [
                 //self::$rules_phone,
                 // Location
-                // 'name' => 'required|min:2|max:255',
+                'name' => 'required|min:2|max:255',
                 'address.street' => 'required|min:3|max:255',
                 'address.street_number' => 'required|max:45',
                 'address.postal_code' => 'required|max:11',
@@ -103,6 +120,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 //Web 
                 'site_url' => 'nullable|regex:/(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.?([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
                 'email' => 'nullable|email',
+                //description
+                'description' => 'nullable|min:2',
                 // Cooking types
                 'businessCategories.1' => 'required|array|min:1|max:5',
                 'businessCategories.2' => 'nullable|array|max:5',
@@ -112,7 +131,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 //menu
                 //Menu average price
                 'average_price_min' => 'nullable|numeric|min:1',
-                'average_price_max' => 'nullable|numeric|min:1|between:' . $min . ',' . $max,
+                'average_price_max' => 'required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
+                'average_price_min' => 'required_with:average_price_max',
             ];
             //call number
             $rules['call_number.1'] = 'required|regex:/^[0-9 ]+$/';
@@ -170,6 +190,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'menu_name.min' => 'le nom de votre menu est trop cout',
             'menu_name.max' => 'Le nom de votre menu est trop long',
             'average_price_max.between' => 'Le prix maximum doit être inférieur au prix minimum',
+            'average_price_max.required_with' => 'Veuillez indiquer le prix maximum',
+            'average_price_min.required_with' => 'Veuillez indiquer le prix minimum',
             //video
             'video.mimes' => 'Format incorrect',
             'video.required' => 'Format incorrect',
@@ -194,7 +216,9 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'close_name.required' => 'Veuillez nommez la période de fermeture',
             'close_name.min' => 'Le nom est trop court',
             'close_name.max' => 'Le nom est trop long',
-            'end_date.after' => 'La date de fin doit être supérieure à la date d\'ouverture',
+            'close_end.after' => 'La date de fin doit être supérieure à la date d\'ouverture',
+            'close_end.required_with' => 'Veuiillez entrer date de début',
+            'close_start.required_with' => 'Veuillez entrer une date de fin',
             //employeee
             'new_employee_firstname.required' => 'Le nom est requis',
             'new_employee_firstname.min' => 'Le nom est trop court',
@@ -204,13 +228,14 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'new_employee_lastname.max' => 'Le prenom est trop long',
             'job_type.required' => 'Veuillez choisir le type d\'employé',
             'new_employee_position.required' => '',
-            //story
+            //history
             'new_story_year.required' => 'Veuillez séléctionner une date',
             'new_story_title.required' => 'Veuillez entrer un tire évoquant votre histoire',
             'new_story_title.min' => 'Le titre est trop court',
             'new_story_title.max' => 'Le titre est trop long',
             'new_story_description.min' => 'La description est trop courte',
             'new_story_description.max' => 'La description est trop longue',
+            'new_story.required' => 'Veuillez insérer une image',
             //call number
             'call_number.1.regex' => 'Veuillez contrôler le format de votre numéro',
             'call_number.4.regex' => 'Veuillez contrôler le format de votre numéro',
@@ -238,10 +263,6 @@ class StoreEstablishment extends \App\Http\FormRequest {
             $messages['openingHours.' . $dayIndex . '.2.end.required_unless'] = "Veuillez saisir l'heure de fermeture du " . strtolower($dayLabel) . " après-midi";
         }
         return $messages;
-    }
-
-    public function checkEstablishmentName($establishment) {
-        
     }
 
 }
