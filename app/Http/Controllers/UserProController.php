@@ -70,7 +70,7 @@ class UserProController extends Controller {
      */
     public function store(StoreUserPro $request) {
         $response = response();
-        $jsonResponse = array('success' => 0);
+        $jsonResponse = array('success' => 0, 'triggerMode' => 1);
         $createdObjects = array();
         $payment = null;
         try {
@@ -203,14 +203,13 @@ class UserProController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getMessage());
+            print_r($e->getTraceAsString());
 //            print_r($e->getTraceAsString());
             try{
                 print_r($createdObjects);
                 foreach ($createdObjects as $createdObject) {
                     if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
                         $deleted = $createdObject->delete();
-                        var_dump($deleted);
                     } else {
                         print_r($createdObject);
                     }

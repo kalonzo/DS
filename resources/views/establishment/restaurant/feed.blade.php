@@ -16,14 +16,9 @@
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
-                @if(checkModel($establishment) && $establishment->logo()->exists())
-                <img id="ets-logo" src="{{ asset($establishment->logo()->first()->getLocalPath()) }}" />
-                @else
-                <img id="ets-logo" src="/img/images_ds/imagen-DS-1.jpg"/>
-                @endif
+                <img id="ets-logo" src="{{ asset($establishment->getDefaultPicture()) }}" />
                 <div id="" class="form-inline form-group">
                     {!! Form::text('name', old('name'), ['class'=>'form-control', 'placeholder'=>'Nom de votre restaurant', 'id' => 'ets-name']) !!}
-                    <!--<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>-->
                 </div>
             </div>
         </div>        
@@ -43,46 +38,46 @@
         </div>
         @endif
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
-            @component('establishment.form.location', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.location', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.contact', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.contact', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.web', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.web', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.cooking', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.cooking', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.food_specialties', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.food_specialties', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.description', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.description', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.services', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.services', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.ambiences', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.ambiences', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.photos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.photos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.videos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.videos', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.menus', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.menus', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.timetable', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.timetable', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.staff', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.staff', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
             
-            @component('establishment.form.story', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
+            @component('establishment.restaurant.feed.story', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
         </div>
     </div>

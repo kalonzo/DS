@@ -38,7 +38,7 @@ class SearchController {
     const SEARCH_ORDER_BY_NAME = 2;
     const SEARCH_ORDER_BY_COOKING_TYPE = 3;
 
-    public static $nbElementsPerPageChoices = array(8, 24, 48, 96);
+    public static $nbElementsPerPageChoices = array(24, 48, 96);
 
     public static function quickSearch($terms) {
         $results = array();
@@ -46,82 +46,143 @@ class SearchController {
         $userLng = SessionController::getInstance()->getUserLng();
         $typeEts = SessionController::getInstance()->getUserTypeEts();
         $userLatLng = new LatLng($userLat, $userLng);
+        if (!$userLatLng->isValid()) {
+            $userLatLng = GeolocationController::getRawInitialGeolocation();
+        }
 
         if (!empty($terms) && $userLatLng->isValid()) {
-            // Search by proximity
-            $rawDistanceRestaurantsQuery = Restaurant::where('name', 'LIKE', "%$terms%")
-                    ->where('id_business_type', '=', $typeEts)
-            ;
-            $geolocLimitSuccess = DbQueryTools::setGeolocLimits($rawDistanceRestaurantsQuery, $userLatLng, self::DEFAULT_DISTANCE_KM_SEARCH, Establishment::TABLENAME);
-            if($geolocLimitSuccess){
-                $rawDistanceList = array();
-                $rawDistanceRestaurants = $rawDistanceRestaurantsQuery->get();
-                foreach ($rawDistanceRestaurants as $rawDistanceRestaurant) {
-                    $rawDistance = GeolocTools::calculateRawDistance($userLatLng, $rawDistanceRestaurant->getLatLng());
-                    $rawDistanceList[$rawDistance] = $rawDistanceRestaurant;
-                }
-                ksort($rawDistanceList);
-                $counter = 1;
-                foreach ($rawDistanceList as $distance => $restaurant) {
-                    if ($counter <= self::NB_QUICK_RESULTS_PER_TYPE) {
-                        $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($distance));
-                        $results [] = array(
-                            'id' => $restaurant->getUuid(),
-                            'label' => $restaurant->getName(),
-                            'value' => $restaurant->getName(),
-                            'avatar_bg_color' => \App\Utilities\StyleTools::genColorHexaForVisualGradient('0090ff', '00b33b', ($distance/20000)),
-                            'avatar_text' => $distanceDisplay,
-                            'section' => 'Localité',
-                            'order_by' => self::SEARCH_ORDER_BY_PROXIMITY,
-                            'lat' => $restaurant->getLatitude(),
-                            'lng' => $restaurant->getLongitude(),
-                            'url' => $restaurant->getUrl()
-                        );
-                        $counter++;
-                    } else {
+            $businessCategoryType1 = null;
+            switch ($typeEts) {
+                case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
+                    $businessCategoryType1 = BusinessCategory::TYPE_COOKING_TYPE;
+                    break;
+            }
+            
+            $rawDistanceEstablishments = array();
+            $namedEstablishments = array();
+            $attempt = 1;
+            $nbResults = 0;
+            $searchDistance = self::DEFAULT_DISTANCE_KM_SEARCH;
+            do{
+                switch($attempt){
+                    case 1:
+                        $searchDistance = self::DEFAULT_DISTANCE_KM_SEARCH;
                         break;
-                    }
+                    case 2:
+                        $searchDistance = 20;
+                        break;
+                    case 3:
+                        $searchDistance = 50;
+                        break;
                 }
-                // Search by alphabetic
-                $alphabetRestaurants = $rawDistanceRestaurantsQuery->orderBy('name')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
-                foreach ($alphabetRestaurants as $distance => $restaurant) {
+                
+                $rawDistanceEstablishmentsQuery = Establishment::select([
+                            Establishment::TABLENAME.'.*'
+                            , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
+                        ])
+                        ->where('name', 'LIKE', "%$terms%")
+                        ->where('id_business_type', '=', $typeEts)
+                ;
+                $geolocLimitSuccess = DbQueryTools::setGeolocLimits($rawDistanceEstablishmentsQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
+                $nbResults = $rawDistanceEstablishmentsQuery->count();
+                if ($geolocLimitSuccess && $nbResults >= (self::NB_QUICK_RESULTS_PER_TYPE / 2)) {
+                    $namedEstablishments = with(clone $rawDistanceEstablishmentsQuery)->orderBy('name')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
+                    $rawDistanceEstablishments = $rawDistanceEstablishmentsQuery->orderBy('rawDistance')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
+                }
+                $attempt++;
+            } while($nbResults < (self::NB_QUICK_RESULTS_PER_TYPE / 2) && $attempt < 4);
+        
+            if(!empty($rawDistanceEstablishments)){
+                foreach ($rawDistanceEstablishments as $rawDistanceEstablishment) {
+                    $distance = $rawDistanceEstablishment->rawDistance;
+                    $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($distance));
                     $results [] = array(
-                        'id' => $restaurant->getUuid(),
-                        'label' => $restaurant->getName(),
-                        'value' => $restaurant->getName(),
-                        'picture' => $restaurant->getDefaultPicture(),
+                        'id' => $rawDistanceEstablishment->getUuid(),
+                        'label' => $rawDistanceEstablishment->getName(),
+                        'value' => $rawDistanceEstablishment->getName(),
+                        'avatar_bg_color' => \App\Utilities\StyleTools::genColorHexaForVisualGradient('0090ff', '00b33b', 
+                                                                            ($distance/($searchDistance*1000))),
+                        'avatar_text' => $distanceDisplay,
+                        'section' => 'Localité',
+                        'order_by' => self::SEARCH_ORDER_BY_PROXIMITY,
+                        'distance' => $searchDistance,
+                        'lat' => $rawDistanceEstablishment->getLatitude(),
+                        'lng' => $rawDistanceEstablishment->getLongitude(),
+                        'url' => $rawDistanceEstablishment->getUrl()
+                    );
+                }
+            }
+            
+            if(!empty($namedEstablishments)){
+                foreach ($namedEstablishments as $namedEstablishment) {
+                    $results [] = array(
+                        'id' => $namedEstablishment->getUuid(),
+                        'label' => $namedEstablishment->getName(),
+                        'value' => $namedEstablishment->getName(),
+                        'picture' => $namedEstablishment->getDefaultPicture(),
                         'avatar_bg_color' => 'none',
                         'section' => 'Nom',
                         'order_by' => self::SEARCH_ORDER_BY_NAME,
-                        'lat' => $restaurant->getLatitude(),
-                        'lng' => $restaurant->getLongitude(),
-                        'url' => $restaurant->getUrl()
+                        'distance' => $searchDistance,
+                        'lat' => $namedEstablishment->getLatitude(),
+                        'lng' => $namedEstablishment->getLongitude(),
+                        'url' => $namedEstablishment->getUrl()
                     );
                 }
-
-                // Search by cooking type
-                $cookingTypesResults = BusinessCategory::select(DB::raw('count(' . EstablishmentBusinessCategory::TABLENAME . '.id_establishment' . ') as nb_establishment, '
-                                        . BusinessCategory::TABLENAME . '.id, ' . BusinessCategory::TABLENAME . '.name'))
+            }
+            
+            $businessCategoriesResults = array();
+            $attempt = 1;
+            $nbResults = 0;
+            $searchDistance = self::DEFAULT_DISTANCE_KM_SEARCH;
+            do{
+                switch($attempt){
+                    case 1:
+                        $searchDistance = self::DEFAULT_DISTANCE_KM_SEARCH;
+                        break;
+                    case 2:
+                        $searchDistance = 20;
+                        break;
+                    case 3:
+                        $searchDistance = 50;
+                        break;
+                }
+                // Search by business category (cooking type, ...)
+                $businessCategoriesQuery = BusinessCategory::select([
+                                DB::raw('count(' . EstablishmentBusinessCategory::TABLENAME . '.id_establishment' . ') as nb_establishment')
+                                , BusinessCategory::TABLENAME . '.id as id_business_category'
+                                , BusinessCategory::TABLENAME . '.name'
+                        ])
                         ->join(EstablishmentBusinessCategory::TABLENAME, EstablishmentBusinessCategory::TABLENAME . '.id_business_category', '=', BusinessCategory::TABLENAME . '.id')
                         ->join(Establishment::TABLENAME, EstablishmentBusinessCategory::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
                         ->where(BusinessCategory::TABLENAME . '.name', 'LIKE', "%$terms%")
-                        ->where(BusinessCategory::TABLENAME . '.type', '=', BusinessCategory::TYPE_COOKING_TYPE)
+                        ->where(BusinessCategory::TABLENAME . '.type', '=', $businessCategoryType1)
                         ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                         ->groupBy(BusinessCategory::TABLENAME . '.id')
                         ->orderBy(BusinessCategory::TABLENAME . '.name')
                         ->limit(self::NB_QUICK_RESULTS_PER_TYPE)
-                        ->get()
-                ;
-                foreach ($cookingTypesResults as $result) {
+                        ;
+                
+                $geolocLimitSuccess = DbQueryTools::setGeolocLimits($businessCategoriesQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
+                $nbResults = $businessCategoriesQuery->count();
+                if ($geolocLimitSuccess && $nbResults >= (self::NB_QUICK_RESULTS_PER_TYPE / 2)) {
+                    $businessCategoriesResults = $businessCategoriesQuery->get();
+                }
+                $attempt++;
+            } while($nbResults < (self::NB_QUICK_RESULTS_PER_TYPE / 2) && $attempt < 4);
+            
+            if(!empty($businessCategoriesResults)){
+                foreach ($businessCategoriesResults as $result) {
+                    $uuid = UuidTools::getUuid($result->id_business_category);
                     $results [] = array(
-                        'id' => UuidTools::getUuid($result->id_business_category),
+                        'id' => $uuid,
                         'label' => $result->name,
                         'value' => $result->name,
                         'avatar_bg_color' => \App\Utilities\StyleTools::genRandomColorHexa(),
                         'avatar_text' => strtoupper($result->name[0]),
                         'text_right' => '(' . $result->nb_establishment . ')',
                         'section' => 'Type de cuisine',
-                        'order_by' => self::SEARCH_ORDER_BY_COOKING_TYPE
+                        'url' => "/search?biz_category_1[]=".$uuid."&distance=".$searchDistance
                     );
                 }
             }
@@ -168,6 +229,9 @@ class SearchController {
         $userLat = SessionController::getInstance()->getUserLat();
         $userLng = SessionController::getInstance()->getUserLng();
         $userLatLng = new LatLng($userLat, $userLng);
+        if (!$userLatLng->isValid()) {
+            $userLatLng = GeolocationController::getRawInitialGeolocation();
+        }
 
         $terms = Request::get('term');
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
@@ -190,13 +254,16 @@ class SearchController {
             }
 
             $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                    ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.* '
-                                    . ', biz_category1.id as id_biz_category_1, biz_category1.name as name_biz_category_1'
-                                    . ',' . DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME)))
+                    ->select([Establishment::TABLENAME . '.*', Address::TABLENAME . '.*'
+                            , DB::raw("biz_category1.id as id_biz_category_1"), DB::raw("biz_category1.name as name_biz_category_1")
+                            , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
+                            , 'logo.local_path as logo_path'
+                            ])
                     ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                     ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_establishment')
                     ->join(BusinessCategory::TABLENAME . ' AS biz_category1', 'biz_category1.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
                     ->leftJoin(Promotion::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
+                    ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', 'logo.id', '=', Establishment::TABLENAME . '.id_logo')
                     ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
                     ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
 //                            ->having('rawDistance', '<=', ($distance*1000))
@@ -308,7 +375,11 @@ class SearchController {
                     // Filter label for location
                     $uuidLocationIndex = UuidTools::getUuid($establishmentFilterData->id_location_index);
                     if (!isset($locationIndexes[$uuidLocationIndex])) {
-                        $locationIndexes[$uuidLocationIndex] = array('city' => $establishmentFilterData->city, 'count' => 1);
+                        $locationIndexes[$uuidLocationIndex] = array(
+                                                                    'city' => $establishmentFilterData->city, 
+                                                                    'postal_code' => $establishmentFilterData->postal_code, 
+                                                                    'district' => $establishmentFilterData->district, 
+                                                                    'count' => 1);
                     } else {
                         $locationIndexes[$uuidLocationIndex]['count'] ++;
                     }
@@ -374,7 +445,11 @@ class SearchController {
                     // Search results list
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;
-                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
+                    if(empty($establishmentData->logo_path)){
+                        $establishments[$uuid]['img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+                    } else {
+                        $establishments[$uuid]['img'] = $establishmentData->logo_path;
+                    }
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;

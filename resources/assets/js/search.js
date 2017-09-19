@@ -18,14 +18,19 @@ $(function () {
         $.each(items, function (index, item) {
             if (item.section != currentCategory) {
                 indexCategory++;
-                var liSection = "<li class='ui-autocomplete-category' onclick=\"document.location.href='/search?order_by="+ item.order_by +"'\">"
-//                            + "<a href='/search?section="+ item.section_id +"'>" 
-                                + "<span class='category-label'>" 
-                                    + item.section 
-                                + "</span>"
-                                + "<span class='category-opener'>+</span>"
-//                            + "</a>"
-                        + "</li>"
+                var liSection = "<li class='ui-autocomplete-category' ";
+                if(typeof item.order_by != 'undefined'){
+                    liSection += " onclick=\"document.location.href='/search?order_by="+ item.order_by +"'\" ";
+                }
+                liSection +=  ">"
+                            + "<span class='category-label'>" 
+                                + item.section 
+                            + "</span>";
+                if(typeof item.order_by != 'undefined'){
+                    liSection += "<span class='category-opener'>+</span>"
+                }
+                liSection += "</li>";
+                
                 ul.append(liSection);
                 currentCategory = item.section;
             }
@@ -80,6 +85,10 @@ $(function () {
         if(!isEmpty(autocomplete)){
             $(autocomplete.menu.element).show();
         }
+    }).keypress(function(e) {
+        if(e.which == 13) {
+            document.location.href= '/search?q=' + $(this).val();
+        }
     });
     $(document).on('positionSaved', function(){
         $("#search_keywords").autocomplete("search");
@@ -92,7 +101,7 @@ $(function () {
             $(this).slider({
                 range: true,
                 min: 0,
-                max: 20,
+                max: 50,
                 step: 5,
                 values: [0, filterValue],
                 slide: function( event, ui ) {

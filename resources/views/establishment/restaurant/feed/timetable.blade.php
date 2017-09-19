@@ -90,7 +90,7 @@
                 @endforeach
             </div>
             <div class="cleaner"></div>
-            @component('establishment.form.timetable-close', ['establishment' => $establishment])
+            @component('establishment.restaurant.feed.timetable-close', ['establishment' => $establishment])
             @endcomponent
             <div class="row">
                 <div class="col-xs-12">

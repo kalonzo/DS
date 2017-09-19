@@ -20,7 +20,6 @@ class StoreUserPro extends \App\Http\FormRequest {
      */
     public function rules() {
         $rules = [
-            //Credentiel
             'gender' => 'required',
             'company.name' => 'required|min:3|max:255',
             'firstname' => 'required|min:3|max:255',

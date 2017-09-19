@@ -47,7 +47,7 @@
     <div class="row">
         <h3>Choisissez <strong>l'heure</strong></h3>
         <div id="time-booking">
-            @component('establishment.form.booking-hours', ['establishment' => $establishment, 'form_data' => $form_data])
+            @component('establishment.restaurant.feed.booking-hours', ['establishment' => $establishment, 'form_data' => $form_data])
 
             @endcomponent
         </div>

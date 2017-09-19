@@ -32,10 +32,10 @@ class StoreUserInfo
         if(empty(SessionController::getInstance()->getUserLat()) || empty(SessionController::getInstance()->getUserLng())){
             $userDefaultLatLng = GeolocationController::getRawInitialGeolocation();
             if(!empty($userDefaultLatLng)){
-                SessionController::getInstance()->setUserLat($userDefaultLatLng->getLat());
-                SessionController::getInstance()->setUserLng($userDefaultLatLng->getLng());
-                Cookie::queue(cookie('userLat', $userDefaultLatLng->getLat(), 60*12, null, null, null, false));
-                Cookie::queue(cookie('userLng', $userDefaultLatLng->getLng(), 60*12, null, null, null, false));
+//                SessionController::getInstance()->setUserLat($userDefaultLatLng->getLat());
+//                SessionController::getInstance()->setUserLng($userDefaultLatLng->getLng());
+//                Cookie::queue(cookie('userLat', $userDefaultLatLng->getLat(), 60*12, null, null, null, false));
+//                Cookie::queue(cookie('userLng', $userDefaultLatLng->getLng(), 60*12, null, null, null, false));
             }
         }
         // Type establishment

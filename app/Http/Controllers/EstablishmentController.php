@@ -47,7 +47,7 @@ class EstablishmentController extends Controller {
         $this->buildCreateFormValues();
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', null)
+        $view = View::make('establishment.restaurant.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', null)
                 ->with('disableQuickSearch', true);
 
         return $view;
@@ -386,7 +386,7 @@ class EstablishmentController extends Controller {
         $this->buildEditFormValues($establishment);
         $formData = StorageHelper::getInstance()->get('feed_establishment.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_establishment.form_values');
-        $view = View::make('establishment.create')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', $establishment)
+        $view = View::make('establishment.restaurant.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('establishment', $establishment)
                 ->with('disableQuickSearch', true)->with('footerHidden', true);
         return $view;
     }
@@ -500,7 +500,7 @@ class EstablishmentController extends Controller {
                             }
                         }
                         $formData = ['time_slots' => $timeslots];
-                        $view = View::make('establishment.form.booking-hours')->with('form_data', $formData);
+                        $view = View::make('establishment.restaurant.feed.booking-hours')->with('form_data', $formData);
                         $jsonResponse['content'] = $view->render();
                         $jsonResponse['success'] = 1;
                     } else {
@@ -759,11 +759,16 @@ class EstablishmentController extends Controller {
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
             $idCountry = $request->get('address.id_country');
+            $district = $request->get('address.district');
             $latitude = $request->get('latitude');
             $longitude = $request->get('longitude');
 
             if (!empty($postalCode) && !empty($city) && !empty($idCountry)) {
-                $locationIndex = \App\Models\LocationIndex::where('city', '=', $city)->where('postal_code', '=', $postalCode)->first();
+                $locationIndexQuery = \App\Models\LocationIndex::where('city', 'LIKE', $city)->where('postal_code', 'LIKE', $postalCode);
+                if(!empty($district)){
+                    $locationIndexQuery->where('district', 'LIKE', $district);
+                }
+                $locationIndex = $locationIndexQuery->first();
                 if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
                 } else {
@@ -771,6 +776,7 @@ class EstablishmentController extends Controller {
                                 'id' => \App\Utilities\UuidTools::generateUuid(),
                                 'postal_code' => $postalCode,
                                 'city' => $city,
+                                'district' => $district,
                                 'latitude' => $latitude,
                                 'longitude' => $longitude,
                                 'id_country' => $idCountry
@@ -790,7 +796,7 @@ class EstablishmentController extends Controller {
                             'street_number' => $request->get('address.street_number'),
                             'address_additional' => $request->get('address.address_additional'),
                             'region' => $request->get('address.region'),
-                            'district' => $request->get('address.district'),
+                            'district' => $district,
                             'postal_code' => $request->get('address.postal_code'),
                             'po_box' => $request->get('address.po_box'),
                             'city' => $request->get('address.city'),
@@ -1038,7 +1044,7 @@ class EstablishmentController extends Controller {
                             $firstMedia->save();
                         }
 
-                        $view = View::make('establishment.form.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
+                        $view = View::make('establishment.restaurant.feed.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
                         $jsonResponse['content'] = $view->render();
                         $jsonResponse['success'] = 1;
                     }
@@ -1049,7 +1055,7 @@ class EstablishmentController extends Controller {
                     if(checkModel($gallery)){
                         $deleted = $gallery->delete();
                         if($deleted){
-                            $view = View::make('establishment.form.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
+                            $view = View::make('establishment.restaurant.feed.photos-galleries')->with('establishment', $establishment)->with('reloaded', true);
                             $jsonResponse['content'] = $view->render();
                             $jsonResponse['success'] = 1;
                         }
@@ -1177,7 +1183,7 @@ class EstablishmentController extends Controller {
                     ]);
 
                     if (checkModel($closePeriod)) {
-                        $view = View::make('establishment.form.timetable-close')->with('establishment', $establishment)->with('reloaded', true);
+                        $view = View::make('establishment.restaurant.feed.timetable-close')->with('establishment', $establishment)->with('reloaded', true);
                         $jsonResponse['content'] = $view->render();
                         $jsonResponse['success'] = 1;
                     }
@@ -1188,7 +1194,7 @@ class EstablishmentController extends Controller {
                     if(checkModel($closePeriod)){
                         $deleted = $closePeriod->delete();
                         if($deleted){
-                            $view = View::make('establishment.form.timetable-close')->with('establishment', $establishment)->with('reloaded', true);
+                            $view = View::make('establishment.restaurant.feed.timetable-close')->with('establishment', $establishment)->with('reloaded', true);
                             $jsonResponse['content'] = $view->render();
                             $jsonResponse['success'] = 1;
                         }
@@ -1528,7 +1534,7 @@ class EstablishmentController extends Controller {
                 $thumbnailData[$uuid]['id'] = $uuid;
                 $thumbnailData[$uuid]['name'] = $queryResult->name;
                 if(empty($queryResult->logo_path)){
-                    $thumbnailData[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
+                    $thumbnailData[$uuid]['img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
                 } else {
                     $thumbnailData[$uuid]['img'] = $queryResult->logo_path;
                 }

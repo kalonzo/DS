@@ -10,7 +10,11 @@ $('body').on('click', '.form-data-button', function () {
             processData: false,
             contentType: false,
             success: function (data) {
-                location.reload();
+                if(data.triggerMode){
+                    $(form).trigger('ajaxSubmitted', data);
+                } else {
+                    location.reload();
+                }
             },
             error: function (data) {
                 var errors = data.responseJSON;

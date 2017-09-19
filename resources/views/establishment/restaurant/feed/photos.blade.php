@@ -65,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            @component('establishment.form.photos-galleries', ['establishment' => $establishment])
+            @component('establishment.restaurant.feed.photos-galleries', ['establishment' => $establishment])
             @endcomponent
             <div class="row">
                 <div class="col-xs-12">

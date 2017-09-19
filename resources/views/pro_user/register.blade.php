@@ -60,7 +60,8 @@
         </div>
         <br class="cleaner"/><br/>
         <div class="col-xs-12">
-            {!! Form::submit('Envoyer', array('id' => 'validToPayment', 'class'=>'btn btn-lg')) !!}
+            {{-- Form::submit('Envoyer', array('id' => 'validToPayment', 'class'=>'btn btn-lg')) --}}
+            {!! Form::button('Envoyer', ['class' => 'btn btn-lg form-data-button', 'type' => 'button', 'id' => 'validToPayment']) !!}
         </div>
         <br class="cleaner"/><br/><br/>
     </div>
@@ -104,7 +105,7 @@
 
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) { 
-        $('body').on('click', '#validToPayment', function(){
+        $('body').on('ajaxSubmitted', 'form#feed-establishment', function(e){
             $('#checkoutModal').modal('show');
             var form = $(this).parentsInclude('form');
 
@@ -118,96 +119,96 @@
                     url: $(form).attr('action'),
                     data: $(form).serialize(),
                     dataType: 'json',
-                    method: 'POST'
-                })
-                .done(function( data ) {
-                    if(!isEmpty(data.id_user)){
-                        $(form).find('[name=id_user]').val(data.id_user);
-                    }
-                    if(data.success){
-                        if(data.url){
-                            var iframeScriptUrl = data.url;
-                            var counter = 0;
-                            var myLoop = null;
-
-                            loadPaymentIframe = function(){
-                                counter += 200;
-                                if(typeof window.IframeCheckoutHandler != 'undefined'){
-                                    clearInterval(myLoop);
-                                    // Set here the id of the payment method configuration the customer chose.
-                                    var paymentMethodConfigurationId = 616;
-
-                                    // Set here the id of the HTML element the payment iframe should be appended to.
-                                    var containerId = 'payment-form';
-
-                                    var handler = window.IframeCheckoutHandler(paymentMethodConfigurationId);
-
-                                    handler.setValidationCallback(
-                                        function (validationResult) {
-                                            // Reset payment errors
-                                            $('#payment-errors').html('');
-
-                                            if (validationResult.success) {
-                                                // Create the order within the shop and eventually update the transaction.
-                                                $.ajax('/create_order', {
-                                                    method: 'POST',
-                                                    success: function () {
-                                                        handler.submit();
-                                                    },
-                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                        console.log("Error processing order creation : " + textStatus);
-                                                        console.log(errorThrown);
-                                                    },
-                                                });
-                                            } else {
-                                                // Display errors to customer
-                                                $.each(validationResult.errors, function (index, errorMessage) {
-                                                    $('#payment-errors').append('<li>' + errorMessage + '</li>');
-                                                });
-                                            }
-                                        }
-                                    );
-
-                                    //Set the optional initialize callback
-                                    handler.setInitializeCallback(function () {
-                                        //Execute initialize code
-                                        $('#checkoutModal .loading-bar').hide();
-                                        $('#iframe-ext-footer').show();
-                                    });
-
-                                    //Set the optional height change callback
-                                    handler.setHeightChangeCallback(function (height) {
-                                        //Execute code
-                                    });
-
-                                    handler.create(containerId);
-
-                                    $('#pay-button').on('click', function(){
-                                        handler.validate();
-                                    });
-                                } else if(counter > 2000){
-                                    clearInterval(myLoop);
-                                    $('#checkoutModal .loading-bar').hide();
-                                    $('#payment-form').html("Une erreur est survenue avec le service de paiement.");
-                                }
-                            }
-                            $(document).ready(function(){
-                                myLoop = setInterval(loadPaymentIframe, 200);
-                            });
-
-                            $('body').append("<script type=\"text\/javascript\" src=\""+iframeScriptUrl+"\"><\/script>");
+                    method: 'POST',
+                    error: function (data) {
+                        $('#checkoutModal .form-error').html(data).show();
+                    }, 
+                    success: function( data ) {
+                        if(!isEmpty(data.id_user)){
+                            $(form).find('[name=id_user]').val(data.id_user);
                         }
-                    } else {
-                        $('#checkoutModal .form-error').content(data.error).show();
+                        if(data.success){
+                            if(data.url){
+                                var iframeScriptUrl = data.url;
+                                var counter = 0;
+                                var myLoop = null;
+
+                                loadPaymentIframe = function(){
+                                    counter += 200;
+                                    if(typeof window.IframeCheckoutHandler != 'undefined'){
+                                        clearInterval(myLoop);
+                                        // Set here the id of the payment method configuration the customer chose.
+                                        var paymentMethodConfigurationId = 616;
+
+                                        // Set here the id of the HTML element the payment iframe should be appended to.
+                                        var containerId = 'payment-form';
+
+                                        var handler = window.IframeCheckoutHandler(paymentMethodConfigurationId);
+
+                                        handler.setValidationCallback(
+                                            function (validationResult) {
+                                                // Reset payment errors
+                                                $('#payment-errors').html('');
+
+                                                if (validationResult.success) {
+                                                    // Create the order within the shop and eventually update the transaction.
+                                                    $.ajax('/create_order', {
+                                                        method: 'POST',
+                                                        success: function () {
+                                                            handler.submit();
+                                                        },
+                                                        error: function (jqXHR, textStatus, errorThrown) {
+                                                            console.log("Error processing order creation : " + textStatus);
+                                                            console.log(errorThrown);
+                                                        },
+                                                    });
+                                                } else {
+                                                    // Display errors to customer
+                                                    $.each(validationResult.errors, function (index, errorMessage) {
+                                                        $('#payment-errors').append('<li>' + errorMessage + '</li>');
+                                                    });
+                                                }
+                                            }
+                                        );
+
+                                        //Set the optional initialize callback
+                                        handler.setInitializeCallback(function () {
+                                            //Execute initialize code
+                                            $('#checkoutModal .loading-bar').hide();
+                                            $('#iframe-ext-footer').show();
+                                        });
+
+                                        //Set the optional height change callback
+                                        handler.setHeightChangeCallback(function (height) {
+                                            //Execute code
+                                        });
+
+                                        handler.create(containerId);
+
+                                        $('#pay-button').on('click', function(){
+                                            handler.validate();
+                                        });
+                                    } else if(counter > 2000){
+                                        clearInterval(myLoop);
+                                        $('#checkoutModal .loading-bar').hide();
+                                        $('#payment-form').html("Une erreur est survenue avec le service de paiement.");
+                                    }
+                                }
+                                $(document).ready(function(){
+                                    myLoop = setInterval(loadPaymentIframe, 200);
+                                });
+
+                                $('body').append("<script type=\"text\/javascript\" src=\""+iframeScriptUrl+"\"><\/script>");
+                            }
+                        }
                     }
                 });
             }
-            return false;
         });
     });
     
 </script>
 
 @section('js_imports_footer')
-
+<script src="/js/form-validation.js"></script>
 @endsection

@@ -52,7 +52,15 @@
                         <label>
                             <input type="checkbox" name="location_index[]" value="{{ $id_location }}" class="search-filter-input"
                                     @if(is_array($filter_values['location_index']) && in_array($id_location, $filter_values['location_index'])) checked @endif />
-                            {{ $location_info['city'] }}
+                            <?php
+                            if(isset($location_info['district']) && !empty($location_info['district'])){
+                                echo $location_info['district'].', ';
+                            }
+                            echo $location_info['city'];
+                            if(isset($location_info['postal_code']) && !empty($location_info['postal_code'])){
+                                echo ' ('.$location_info['postal_code'].')';
+                            }
+                            ?>
                             <span class="pull-right">({{ $location_info['count'] }})</span>
                         </label>
                     </div>

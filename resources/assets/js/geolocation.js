@@ -13,12 +13,14 @@ function initGeolocation(){
     if(isEmpty(cookiePositionLat) || isEmpty(cookiePositionLng)){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                userPositionLat = position.coords.latitude * 1;
-                userPositionLng = position.coords.longitude * 1;
+                    userPositionLat = position.coords.latitude * 1;
+                    userPositionLng = position.coords.longitude * 1;
 
-                $(document).trigger('googleGeolocReady');
-                saveNewPosition(userPositionLat, userPositionLng);
-
+                    $(document).trigger('googleGeolocReady');
+    //                saveNewPosition(userPositionLat, userPositionLng);
+                    reloadPage({'userLat': userPositionLat, 'userLng': userPositionLng}, function(){
+                        $(document).trigger('positionSaved');
+                    });
                 }, function () {
                     console.log("Erreur lors de la géolocalisation");
                 }
@@ -72,8 +74,8 @@ function fillUserAddress(lat, lng){
 function relocateUserPosition(lat, lng){
     userPositionLat = lat;
     userPositionLng = lng;
-    var latLng = new google.maps.LatLng(userPositionLat, userPositionLng);
     if(typeof map !== 'undefined'){
+        var latLng = new google.maps.LatLng(userPositionLat, userPositionLng);
         markerPosition.setPosition(latLng);
         map.setCenter(latLng);
     }

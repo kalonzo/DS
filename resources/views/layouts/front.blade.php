@@ -29,7 +29,7 @@
                     @if(!isset($disableQuickSearch) || !$disableQuickSearch)
                     <form class="navbar-form navbar-left">
                         <div class="input-group locationInputGroup">
-                            <span class="input-group-addon clickable" onclick="document.location.href='/search'" title="Cliquer ici pour rechercher autour de moi">
+                            <span class="input-group-addon clickable" onclick="document.location.href='/search'" title="Cliquez ici pour rechercher autour de vous">
                                 <span class="geolocMeIcon glyphicon glyphicon-search" aria-hidden="true"></span>
                             </span>
                             <input type="text" class="form-control" placeholder="Nom, type de cuisine" id="search_keywords">
