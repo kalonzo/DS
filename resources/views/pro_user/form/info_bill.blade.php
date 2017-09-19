@@ -53,7 +53,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('address[po_box]','* P.O. BOX') !!}
+                    {!! Form::label('address[po_box]',' P.O. BOX') !!}
                     {!! Form::text('address[po_box]', old('address[po_box]'), ['class' => 'form-control']) !!}
                 </div>
             </div>
