@@ -759,7 +759,7 @@ class EstablishmentController extends Controller {
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
             $idCountry = $request->get('address.id_country');
-//            $district = $request->get('address.district');
+            $district = $request->get('address.district');
             $latitude = $request->get('latitude');
             $longitude = $request->get('longitude');
 
