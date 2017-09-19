@@ -27,7 +27,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('address[company_name]','* Société / Etablissement') !!}
+                    {!! Form::label('address[company_name]','Société / Etablissement') !!}
                     {!! Form::text('address[company_name]', old('company_name'), ['class' => 'form-control']) !!}
                 </div>
             </div>
