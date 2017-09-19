@@ -16,7 +16,11 @@
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
-                <img id="ets-logo" src="{{ asset($establishment->getDefaultPicture()) }}" />
+                @if(checkModel($establishment))
+                <img id="ets-logo" src="{{ asset($establishment->lgetDefaultPicture()) }}" />
+                @else
+                <img id="ets-logo" src="<?php echo \App\Utilities\MediaTools::getRandomDsThumbnailPath();?>"/>
+                @endif
                 <div id="" class="form-inline form-group">
                     {!! Form::text('name', old('name'), ['class'=>'form-control', 'placeholder'=>'Nom de votre restaurant', 'id' => 'ets-name']) !!}
                 </div>
