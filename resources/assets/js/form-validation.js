@@ -28,7 +28,7 @@ $('body').on('click', '.form-data-button', function () {
                     $scrollRefElement = $('body');
                 }
                 $.each(errors, function (key, value) {
-                    var $input = $(form).find('[name="' + key + '"]');
+                    var $input = $(form).find('[name="' + key + '"]').first();
                     if (checkExist($input)) {
                         if (first) {
                             first = false;
