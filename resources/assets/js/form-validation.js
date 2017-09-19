@@ -11,12 +11,13 @@ $('body').on('click', '.form-data-button', function () {
             contentType: false,
             success: function (data) {
                 if(data.triggerMode){
-                    $(form).trigger('ajaxSubmitted', data);
+                    $(form).trigger('ajaxFormSubmitted', data);
                 } else {
                     location.reload();
                 }
             },
             error: function (data) {
+                $(form).trigger('ajaxFormFailed', data);
                 var errors = data.responseJSON;
 
                 $(form).find('.has-error [data-toggle=tooltip]').tooltip('destroy');
@@ -27,7 +28,7 @@ $('body').on('click', '.form-data-button', function () {
                     $scrollRefElement = $('body');
                 }
                 $.each(errors, function (key, value) {
-                    var $input = $(form).find('[name="' + key + '"]');
+                    var $input = $(form).find('[name="' + key + '"]').first();
                     if (checkExist($input)) {
                         if (first) {
                             first = false;

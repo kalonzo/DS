@@ -276,6 +276,7 @@ class UserProController extends Controller {
         $paymentMethods = array();
         $paymentMethodsData = DB::table(PaymentMethod::TABLENAME)
                 ->select('id', 'name')
+                ->whereIn('id', array(PaymentMethod::METHOD_CB, PaymentMethod::METHOD_30_DAYS_BILL))
                 ->orderBy('name')
                 ->get();
         foreach ($paymentMethodsData as $paymentMethod) {
