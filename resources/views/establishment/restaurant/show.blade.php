@@ -143,7 +143,6 @@
 
 @section('js_imports_footer')
 <script src="/js/sidebar.js"></script>
-<script src="/js/form-validation.js"></script>
 <script src="/libraries/baguettebox/baguetteBox.min.js"></script>
 <script src="/js/search.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>

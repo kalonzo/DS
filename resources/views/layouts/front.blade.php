@@ -64,13 +64,9 @@
                                 <img alt="user" src="/img/icons/ICONS-MENU-USER.svg"/>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dLabel" id="login-dropdown">
-                                @if (Auth::check())
-                                <a href="{{ url('/admin') }}">Home</a>
-                                @else
                                 @component('components.login')
 
                                 @endcomponent
-                                @endif
                             </div>
                         </li>
                     </ul>
@@ -87,7 +83,6 @@
                 </div>
             </div>
         </nav>
-        
         @yield('content')
                 
         @if(!isset($footerHidden) || !$footerHidden)
@@ -140,6 +135,7 @@
         <script src="/js/functions.js"></script>
         <script src="/js/plugins.js"></script>    
         <script src="/js/geolocation.js"></script>    
+        <script src="/js/form-validation.js"></script>
         @yield('js_imports_footer')
         <script src="/js/js-loaded-trigger.js"></script>    
     </body>
