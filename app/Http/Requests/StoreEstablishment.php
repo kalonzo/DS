@@ -129,9 +129,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 'logo' => 'nullable|mimes:png,jpg,jpeg',
                 //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
                 //Menu average price
-                'average_price_min' => 'nullable|numeric|min:1',
-                'average_price_max' => 'required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
-                'average_price_min' => 'required_with:average_price_max',
+                'average_price_max' => 'nullable|required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
+                'average_price_min' => 'nullable|required_with:average_price_max',
             ];
             //call number
             $rules['call_number.1'] = 'required|regex:/^[0-9 ]+$/';
@@ -191,6 +190,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'new_menu.required' => 'Une image est requise',
             'average_price_max.between' => 'Le prix maximum doit être inférieur au prix minimum',
             'average_price_max.required_with' => 'Veuillez indiquer le prix maximum',
+            'average_price_max.numeric' => 'Le prix maximum doit être inférieur au prix minimum',
+            'average_price_max.min' => 'Veuillez indiquer le prix maximum',
             'average_price_min.required_with' => 'Veuillez indiquer le prix minimum',
             //video
             'video.mimes' => 'Format incorrect',

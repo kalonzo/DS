@@ -27,7 +27,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('company[name]','* Société / Etablissement') !!}
+                    {!! Form::label('company[name]','Société / Etablissement') !!}
                     {!! Form::text('company[name]', old('company[name]'), ['class' => 'form-control']) !!}
                 </div>
             </div>
@@ -67,7 +67,7 @@
                 </div>
                 <div class="col-sm-6 form-group">
                     {!! Form::label('password-confirm','* Confirmation mot de passe') !!}
-                    {!! Form::password('password-confirm', ['class' => 'form-control']) !!}
+                    {!! Form::password('password_confirmation', ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
