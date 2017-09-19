@@ -759,15 +759,15 @@ class EstablishmentController extends Controller {
             $postalCode = $request->get('address.postal_code');
             $city = $request->get('address.city');
             $idCountry = $request->get('address.id_country');
-            $district = $request->get('address.district');
+//            $district = $request->get('address.district');
             $latitude = $request->get('latitude');
             $longitude = $request->get('longitude');
 
             if (!empty($postalCode) && !empty($city) && !empty($idCountry)) {
                 $locationIndexQuery = \App\Models\LocationIndex::where('city', 'LIKE', $city)->where('postal_code', 'LIKE', $postalCode);
-                if(!empty($district)){
-                    $locationIndexQuery->where('district', 'LIKE', $district);
-                }
+//                if(!empty($district)){
+//                    $locationIndexQuery->where('district', 'LIKE', $district);
+//                }
                 $locationIndex = $locationIndexQuery->first();
                 if (checkModel($locationIndex)) {
                     $idLocation = $locationIndex->getId();
@@ -776,7 +776,7 @@ class EstablishmentController extends Controller {
                                 'id' => \App\Utilities\UuidTools::generateUuid(),
                                 'postal_code' => $postalCode,
                                 'city' => $city,
-                                'district' => $district,
+//                                'district' => $district,
                                 'latitude' => $latitude,
                                 'longitude' => $longitude,
                                 'id_country' => $idCountry

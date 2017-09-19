@@ -47,22 +47,31 @@
                     </a>
                     <ul class="nav navbar-nav navbar-right">
                         @yield('navbar-right')
-                        <li id="promotionButton" class="app-disabled">
+                        <li id="promotionButton" class="hidden app-disabled">
                             <a href="#">
                                 <img alt="user" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>
                                 <span class="badge">42</span>
                             </a>
                         </li>
-                        <li id="eventButton" class="app-disabled">
+                        <li id="eventButton" class="hidden app-disabled">
                             <a href="#">
                                 <img alt="user" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
                                 <span class="badge">8</span>
                             </a>
                         </li>
-                        <li class="app-disabled">
-                            <a href="#">
+                        <li class="dropdown">
+                            <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <img alt="user" src="/img/icons/ICONS-MENU-USER.svg"/>
                             </a>
+                            <div class="dropdown-menu" aria-labelledby="dLabel" id="login-dropdown">
+                                @if (Auth::check())
+                                <a href="{{ url('/admin') }}">Home</a>
+                                @else
+                                @component('components.login')
+
+                                @endcomponent
+                                @endif
+                            </div>
                         </li>
                     </ul>
                 </div>

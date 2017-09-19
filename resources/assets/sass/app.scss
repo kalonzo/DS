@@ -145,3 +145,13 @@ a.simple{
         cursor: default;
     }
 }
+
+#login-dropdown{
+    width: 300px;
+    background: $main-dark-color;
+    color: $main-text-color;
+    h3{
+        font-size: 1em;
+        text-transform: uppercase;
+    }
+}

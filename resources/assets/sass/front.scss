@@ -812,9 +812,9 @@ $mapThumbnailWidth: 145px;
     }
 }
 
-form:not(.navbar-form){
+form:not(.navbar-form):not(#login-dropdown){
     
-    input[type=text], input[type=password], input[type=date], textarea{
+    input[type=text], input[type=password], input[type=date], input[type=email], textarea{
         color: $main-text-color;
         border: 1px solid $main-text-color;
         @include borderRadius(0px);

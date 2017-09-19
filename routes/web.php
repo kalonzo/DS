@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 /* * *********************** AUTH ********************************************** */
 Auth::routes();
+Route::get('/logout', 'Auth\LoginController@logout');
 
 /* * **************************** FRONT **************************************** */
 Route::get('/', 'HomeController@index');

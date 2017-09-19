@@ -17,7 +17,7 @@
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
                 @if(checkModel($establishment))
-                <img id="ets-logo" src="{{ asset($establishment->lgetDefaultPicture()) }}" />
+                <img id="ets-logo" src="{{ asset($establishment->getDefaultPicture()) }}" />
                 @else
                 <img id="ets-logo" src="<?php echo \App\Utilities\MediaTools::getRandomDsThumbnailPath();?>"/>
                 @endif
