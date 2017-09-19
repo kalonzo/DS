@@ -58,7 +58,7 @@ use RegistersUsers;
             'password.string' => 'dfdff',
             'password.min' => 'Mot de passe trop faible',
             'password.min.string' => 'Mot de passe trop faible',
-            'password.confirmed' => 'ddd',
+            'password.confirmed' => 'Veuillez confirmer votre mot de passe',
         ];
 
             
