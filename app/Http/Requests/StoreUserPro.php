@@ -21,12 +21,13 @@ class StoreUserPro extends \App\Http\FormRequest {
     public function rules() {
         $rules = [
             'gender' => 'required',
-            'company.name' => 'required|min:3|max:255',
+            'company.name' => 'nullable|min:3|max:255',
             'firstname' => 'required|min:3|max:255',
             'lastname' => 'required|min:3|max:255',
-            'email' => 'required|email',
-            'phoneNumber.number' => 'required|min:11|numeric',
-//            'password' => 'required|confirmed:password_confirm',
+           // 'phoneNumber[number]' => 'required',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|min:6|string|confirmed:password_confirmation',
+            'password_confirmation' => 'required',
             //Business categories
             'business_type' => 'required',
             //subscription
@@ -35,7 +36,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'payment_method' => 'required',
             //Info bill
             'company.name' => 'required|min:2|max:255',
-            'address.firstname' => 'required|min:2|max:255',
+            //'address[firstname]' => 'required|min:2|max:255',
             'address.lastname' => 'required|min:2|max:255',
             'address.street' => 'required|min:3|max:255',
             'address.street_number' => 'required|max:45',
@@ -45,13 +46,20 @@ class StoreUserPro extends \App\Http\FormRequest {
             'address.id_country' => 'required',
             'email' => 'required|email',
         ];
+        
+            //call number
+            $rules['call_number[5]'] = 'nullable|regex:/^[0-9 ]+$/';
+            //$rules['call_number.4'] = 'required|regex:/^[0-9 ]+$/';
+            $rules['call_number.2'] = 'nullable|regex:/^[0-9 ]+$/';
+            $rules['call_number.3'] = 'nullable|regex:/^[0-9 ]+$/';
+        
         return $rules;
     }
 
     public function messages() {
         $messages = [
             //Credentiel
-           'gender.required' => 'Veuillez sélectionner votre genre.',
+            'gender.required' => 'Veuillez sélectionner votre genre.',
             'company.required' => 'Veuillez saisir le nom de votre société.',
             'company.min' => 'Veuillez renseigner au minimum 2 caractères pour le nom de votre société',
             'company.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre société',
@@ -63,11 +71,11 @@ class StoreUserPro extends \App\Http\FormRequest {
             'lastname.max' => 'Merci de ne pas renseigner plus de 255 caractères pour votre prénom',
             'email.required' => 'Veuillez saisir une adresse e mail.',
             'email.email' => 'Veuillez saisir une adresse e mail valide.',
-            'phoneNumber.number.required' => 'Veuillez indiquer un numéro pour vous joindre.',
-            'phoneNumber.number.min' => 'Le numéro ne doit pas contenir plus de 11 numéro.',
-            'phoneNumber.number.numeric' => 'Votre numéro ne doit pas contenir de caractères',
+            'phoneNumber[number].required' => 'Veuillez indiquer un numéro pour vous joindre.',
             'password.required' => 'Veuillez renseigner un mot de passe pour vous connecter à votre espace privé',
-            'password.confirmed' => 'Veuillez confirmer votre mot de passe',
+            'password.min' => 'Votre mot de passe est trop faible',
+            'password-confirm.required' => 'Veuillez confirmer votre mot de passe',
+            'password-confirm.confirmed' => 'Votre mot de passe n\'est pas identique',
             //Business categories
             'business_type.required' => 'Veuillez sélectionner le type d\'établissement désiré',
             //subscription
@@ -95,7 +103,12 @@ class StoreUserPro extends \App\Http\FormRequest {
             'address.postal_code.max' => '|max:11',
             'address.city.required' => 'Vous devez spécifier une ville pour votre établissement.',
             'address.city.max' => 'Merci de ne pas renseigner plus de 255 caractères pour la ville',
-            //'address.id_country.required' => '',
+                //'address.id_country.required' => '',
+            //call number
+            'call_number[5]' => 'regex:/^[0-9 ]+$/',
+            'call_number[4].required' => 'Veuillez saisir un numéro ou vous joindre',
+            'call_number[2]' => 'nullable|regex:/^[0-9 ]+$/',
+            'call_number[3]' => 'nullable|regex:/^[0-9 ]+$/',
         ];
 
         return $messages;

@@ -76,8 +76,8 @@
             </div>
             @php
             $callNumbersAvailable = [
-                                        4 => '* Téléphone',
-                                        5 => 'Téléphone professionnel',
+                                        4 => '* Téléphone professionnel',
+                                        5 => 'Téléphone',
                                         3 => 'Fax',
                                         2 => 'Mobile'
                                     ];
