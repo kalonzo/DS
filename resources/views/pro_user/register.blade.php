@@ -206,5 +206,4 @@
 </script>
 
 @section('js_imports_footer')
-<script src="/js/form-validation.js"></script>
 @endsection
