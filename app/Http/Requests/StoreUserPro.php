@@ -70,8 +70,8 @@ class StoreUserPro extends \App\Http\FormRequest {
             'lastname.required' => 'Veuillez renseigner votre nom',
             'lastname.min' => 'Veuillez renseigner au minimum 2 caractères pour votre nom',
             'lastname.max' => 'Merci de ne pas renseigner plus de 255 caractères pour votre prénom',
-            'email.required' => 'Veuillez saisir une adresse e mail.',
-            'email.email' => 'Veuillez saisir une adresse e mail valide.',
+            'email.required' => 'Veuillez saisir une adresse email.',
+            'email.email' => 'Veuillez saisir une adresse email valide.',
             'email.unique' => 'Cette adresse email est déja dans notre base, merci de conntacter un administrateur.',
             'emailBill.required' => 'Veuillez saisir une adresse e mail.',
             'emailBill.email' => 'Veuillez saisir une adresse e mail valide.',
@@ -109,6 +109,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'address.postal_code.max' => 'Code postal tro long.',
             'address.city.required' => 'Vous devez spécifier une ville pour votre établissement.',
             'address.city.max' => 'Merci de ne pas renseigner plus de 255 caractères pour la ville',
+            'address.email.required' => 'Veuillez saisir une adresse email.',
             //'address.id_country.required' => '',
             //call number
             'call_number.5.required' => 'Veuillez saisir un numéro de téléphone de contact.',
