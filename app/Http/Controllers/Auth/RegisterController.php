@@ -39,14 +39,14 @@ use RegistersUsers;
     public function __construct() {
         $this->middleware('guest');
     }
-    
-    public function showRegistrationForm(\Illuminate\Http\Request $request){
-        if($request->ajax()){
+
+    public function showRegistrationForm(\Illuminate\Http\Request $request) {
+        if ($request->ajax()) {
             $response = response();
             $jsonResponse = array('success' => 0);
 
             $typeUser = $request->get('type_user');
-            
+
             //TODO Check if current user has right to invoke this view
             $view = View::make('components.register')->with('type_user', $typeUser);
             $jsonResponse['content'] = $view->render();
@@ -66,29 +66,33 @@ use RegistersUsers;
      * @return Validator2
      */
     protected function validator(array $data) {
-
+        $rules = [
+            'firstname' => 'required|min:2|string|max:255',
+            'lastname' => 'required|min:2|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ];
         $messages = [
-            'name.required' => 'Veuillez entrer un non.',
-            'name.string' => 'Le nom n\'est pas correcte',
-            'name.max' => 'Le nom est trop long',
-            'email.required' => 'Un email valide est reuis',
-            'email.string' => 'Le format de votre mail n\'pas correcte',
-            'email.email' => 'Veuillez saisir un email valide',
-            'email.max' => 'Votre email est trop long',
-            'email.unique' => 'Un utilisateur est déja renseigné pour cette email',
-            'password.required' => 'Un mot de pass est requis',
-            'password.string' => 'dfdff',
-            'password.min' => 'Mot de passe trop faible',
-            'password.min.string' => 'Mot de passe trop faible',
-            'password.confirmed' => 'Veuillez confirmer votre mot de passe',
+            'firstname.required' => 'Veuillez entrer un prénom.',
+            'firstname.string' => 'Votre prénom contient des caractère.',
+            'firstname.min' => 'Veuillez renseigner au minimum 2 caractères pour votre prénom.',
+            'firstname.max' => 'Votre prénom est trop long.',
+            'lastname.required' => 'Veuillez entrer un non.',
+            'lastname.string' => 'Le nom n\'est pas correcte.',
+            'lastname.min' => 'Veuillez renseigner au minimum 2 caractères pour votre nom.',
+            'lastname.max' => 'Le nom est trop long.',
+            'email.required' => 'Un email valide est requis.',
+            'email.string' => 'Le format de votre mail n\'estt pas correcte.',
+            'email.email' => 'Veuillez saisir un email valide.',
+            'email.max' => 'Votre email est trop long.',
+            'email.unique' => 'Un utilisateur est déja renseigné pour cette email.',
+            'password.required' => 'Veuillez renseigner un mot de passe pour vous connecter à votre espace privé.',
+            'password.min' => 'Mot de passe trop faible.',
+            'password.min.string' => 'Mot de passe trop faible.',
+            'password.confirmed' => 'Veuillez confirmer votre mot de passe.',
         ];
 
-            
-        return Validator::make($data, [
-                    'name' => 'required|string|max:255',
-                    'email' => 'required|string|email|max:255|unique:users',
-                    'password' => 'required|string|min:6|confirmed',
-        ],$messages);
+        return Validator::make($data, $rules, $messages);
     }
 
     /**
@@ -114,4 +118,5 @@ use RegistersUsers;
                     'id_company' => 0,
         ]);
     }
+
 }
