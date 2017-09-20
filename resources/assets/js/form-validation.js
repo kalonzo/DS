@@ -12,6 +12,8 @@ $('body').on('click', '.form-data-button', function () {
             success: function (data) {
                 if(data.triggerMode){
                     $(form).trigger('ajaxFormSubmitted', data);
+                } else if(data.relocateMode && !isEmpty(data.location)){
+                    window.location = data.location;
                 } else {
                     location.reload();
                 }

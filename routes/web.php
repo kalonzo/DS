@@ -80,6 +80,14 @@ Route::get('/welcome/{locale}', function ($local) {
     return view('dev.welcome');
 });
 
+Route::get('/test/email', function () {
+    $mail = Illuminate\Support\Facades\Mail::to('nico.trendonline@gmail.com')
+        ->send(new App\Mail\TestMail());
+    print_r($mail); 
+    echo "Mail sent";
+    die();
+});
+
 
 /* * **************************** ADMIN **************************************** */
 

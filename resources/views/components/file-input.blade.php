@@ -59,7 +59,7 @@ foreach($fileType as $type){
             $fileExtensions[] = 'mp4';
             $fileExtensions[] = 'avi';
             $fileExtensions[] = 'mpeg';
-            $typeMaxFileSize= 20000;
+            $typeMaxFileSize= 40000;
             if($typeMaxFileSize > $maxFileSize){
                 $maxFileSize = $typeMaxFileSize;
             }
