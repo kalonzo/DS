@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Request;
+use App\Models\User;
+use Illuminate\Contracts\Validation\Validator as Validator2;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
 
 class RegisterController extends Controller {
     /*
@@ -36,12 +39,31 @@ use RegistersUsers;
     public function __construct() {
         $this->middleware('guest');
     }
+    
+    public function showRegistrationForm(\Illuminate\Http\Request $request){
+        if($request->ajax()){
+            $response = response();
+            $jsonResponse = array('success' => 0);
+
+            $typeUser = $request->get('type_user');
+            
+            //TODO Check if current user has right to invoke this view
+            $view = View::make('components.register')->with('type_user', $typeUser);
+            $jsonResponse['content'] = $view->render();
+            $jsonResponse['success'] = 1;
+
+            $responsePrepared = $response->json($jsonResponse);
+            return $responsePrepared;
+        } else {
+            return view('auth.register');
+        }
+    }
 
     /**
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return Validator2
      */
     protected function validator(array $data) {
 
@@ -73,14 +95,23 @@ use RegistersUsers;
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\Models\User
+     * @return User
      */
     protected function create(array $data) {
+        $status = User::STATUS_CREATED;
         return User::create([
-                    'name' => $data['name'],
+                    'id' => \App\Utilities\UuidTools::generateUuid(),
+                    'status' => $status,
+                    'name' => $data['email'],
+                    'firstname' => $data['firstname'],
+                    'lastname' => $data['lastname'],
                     'email' => $data['email'],
                     'password' => bcrypt($data['password']),
+                    'type' => $data['type_user'],
+                    'gender' => 0,
+                    'id_address' => 0,
+                    'id_inbox' => 0,
+                    'id_company' => 0,
         ]);
     }
-
 }

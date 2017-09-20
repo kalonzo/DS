@@ -145,24 +145,6 @@
             </div>
         </div>
     </div>
-    
-    
-    @if (Route::has('login'))
-    <div class="container-fluid">
-        <div class="main row">
-            <div class="col-xs-12">
-                <div class="top-right links">
-                    @if (Auth::check())
-                    <a href="{{ url('/admin') }}">Home</a>
-                    @else
-                    <a href="{{ url('/login') }}">Login</a>
-                    <a href="{{ url('/register') }}">Register</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
 
 @if(!isset($reloaded) || !$reloaded)
 </div>

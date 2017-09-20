@@ -216,3 +216,62 @@ a.simple{
         }
     }
 }
+
+#register-modal{
+    $titleWidth: 110px;
+    #register-modal-title{
+        width: $titleWidth;
+        height: $titleWidth;
+        background: #222;
+        text-transform: uppercase;
+        position: absolute;
+        margin-left: -($titleWidth/2);
+        top: -125px;
+        left: 50%;
+        z-index: 2;
+        text-align: center;
+        padding: 5px;
+        @include borderRadius(10px);
+    }
+    .modal-dialog{
+        padding: 30px 70px 0px 70px;
+        .modal-content{
+            background: #444;
+            border: 1px solid black;
+            color: $main-text-color;
+            .modal-header{
+                border-bottom: 0px;
+                    padding: 20px;
+            }
+            .modal-body{
+                padding: 0px 60px;
+                form{
+                    margin-top: 20px;
+                    .newsletter-subscription{
+                        text-align: center;
+                        label{
+                            line-height: $line-height-base;
+                        }
+                    }
+                    .register-button{
+                        margin: 1em auto;
+                        padding: 0.4em 2.5em;
+                        background-color: #222;
+                        border: 0px;
+                        font-weight: bold;
+                        font-size: 1.3em;
+                        @include borderRadius(5px);
+                        &:hover, &:focus{
+                            color: $main-text-color;
+                        }
+                    }
+                }
+            }
+            input{
+                background: transparent;
+                border: 1px solid black;
+                color: $main-text-color;
+            }
+        }
+    }
+}

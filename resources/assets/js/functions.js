@@ -94,18 +94,22 @@ selectTimelineItem = function (triggerElement){
     $(triggerElement).parentsInclude('.timeline-links').find('[data-id='+itemId+']').addClass('selected');
 };
 
-getOnClickModal = function(title, url, params, modalId, modalClasses, method){
+getOnClickModal = function(title, url, params, modalId, modalClassSize, modalClasses, method){
     var $sampleModal = $('#ajax-modal-sample');
     if(checkExist($sampleModal) && !isEmpty(url)){
         var newModal = $sampleModal.clone();
         if(isEmpty(modalId)){
             modalId = 'modal_'+ Math.round(Math.random() * 1000000);
         }
+        if(isEmpty(modalClassSize)){
+            modalClassSize = 'modal-lg';
+        }
         if(method !== 'post' && method !== 'POST'){
             method = 'get';
         }
         $(newModal).attr('id', modalId);
         $(newModal).addClass(modalClasses);
+        $(newModal).find('.modal-dialog').addClass(modalClassSize);
         $(newModal).find('.modal-title').html(title);
         $('body').append(newModal);
         $(newModal).modal('show');

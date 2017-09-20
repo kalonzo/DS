@@ -4,7 +4,7 @@
         <div class="col-xs-12 text-center">
             <h3>Se connecter à mon dinerscope</h3>
         </div>
-        <form class="form-horizontal col-xs-12" method="POST" action="{{ route('login') }}" id="login-form">
+        <form class="col-xs-12" method="POST" action="{{ route('login') }}" id="login-form">
             {{ csrf_field() }}
             <div class="row no-margin">
                 <div class="input-group col-xs-12">
@@ -39,7 +39,8 @@
         </div>
         <div class="row">
             <div class="col-xs-12">
-                <a class="register-item" href="{{ url('/register') }}">
+                <a class="register-item" href="javascript:void(0);" onclick="getOnClickModal('', '/register', {type_user: <?php echo App\Models\User::TYPE_USER;?>}, 
+                            'register-modal', 'modal-md')">
                     Créer un compte Dinerscope
                 </a>
                 <a class="register-item" href="{{ url('/establishment/register') }}">
