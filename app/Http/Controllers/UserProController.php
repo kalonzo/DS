@@ -86,11 +86,14 @@ class UserProController extends Controller {
                     $user = User::where('status', '=', User::STATUS_CREATION_PENDING)->where('email', 'LIKE', $request->get('email'))->first();
                 } 
                 if(checkModel($user)){
-                    $company = $user->company()->first();
                     $address = $user->address()->first();
-                    $company->update([
+                    $company = Company::where('id',$user->company_id)->first();
+                    if(checkModel($company)){
+                        $company->update([
                         'name' => $request->get('company.name'),
-                    ]);
+                        ]);
+                    }
+                    
                     $address->update([
                         'firstname' => $request->get('address.firstname'),
                         'lastname' => $request->get('address.lastname'),
@@ -110,6 +113,7 @@ class UserProController extends Controller {
                     ]);
                 } else {
                     $userId = UuidTools::generateUuid();
+                    $idCompany = 0;
                     if (!empty($request->get('company.name'))) {
                         $company = Company::create([
                                     'id' => UuidTools::generateUuid(),
@@ -117,6 +121,7 @@ class UserProController extends Controller {
                                     'id_logo' => 0
                         ]);
                         $createdObjects[] = $company;
+                        $idCompany = $company->getId();
                     }
                     
                     $address = Address::create([
@@ -146,7 +151,7 @@ class UserProController extends Controller {
                                     'lastname' => $request->get('lastname'),
                                     'email' => $request->get('email'),
                                     'password' => bcrypt($request->get('password')), // TODO Auth user activation
-                                    'id_company' => $company->getId(),
+                                    'id_company' => $idCompany,
                                     'id_address' => $address->getId(),
                                     'id_inbox' => 0,
                         ]);
