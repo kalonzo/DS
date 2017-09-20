@@ -126,7 +126,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 'businessCategories.1' => 'required|array|min:1|max:5',
                 'businessCategories.2' => 'nullable|array|max:5',
                 //galerie
-                'logo' => 'nullable|mimes:png,jpg,jpeg',
+                'logo' => 'nullable|mimes:png,jpg,jpeg,svg',
                 //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
                 //Menu average price
                 'average_price_max' => 'nullable|required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
