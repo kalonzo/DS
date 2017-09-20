@@ -28,91 +28,6 @@ Route::get('/establishment/register', 'UserProController@create');
 // store
 Route::put('/establishment/register', 'UserProController@store');
 
-// BusinessCategory
-Route::get('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@edit');
-Route::put('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@update');
-//destroy        
-Route::get('/admin/delete/{table_name}/{id}', function($table_name, $id) {
-    $controllerClass = null;
-
-    switch ($table_name) {
-        case App\Models\BusinessCategory::TABLENAME:
-            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\BusinessCategoryController::class);
-            break;
-    }
-    if ($controllerClass instanceof \App\Http\Controllers\Controller) {
-        return $controllerClass->callAction('destroy', array('id' => $id));
-    }
-});
-
-//Promotion
-Route::get('/admin/promotions/{promotion}', 'PromtionController@edit');
-Route::put('/admin/promotions/{promotion}', 'PromtionController@update');
-
-//Evénement
-Route::get('/admin/events/{event}', 'EventController@edit');
-Route::put('/admin/events/{event}', 'EventController@update');
-
-Route::get('/admin/create/{table_name}/{ajax?}', function($table_name, $ajax = null) {
-    $controllerClass = null;
-
-    switch ($table_name) {
-        case App\Models\Promotion::TABLENAME:
-            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\PromotionController::class);
-            break;
-        case App\Models\Event::TABLENAME:
-            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\EventController::class);
-            break;
-    }
-    if ($controllerClass instanceof \App\Http\Controllers\Controller) {
-        $params = [];
-        if ($ajax === 'ajax') {
-            $action = 'ajax';
-            switch ($table_name) {
-                case App\Models\Promotion::TABLENAME:
-                    $params['request'] = Illuminate\Support\Facades\App::make(App\Http\Requests\StorePromotion::class);
-                    break;
-                case App\Models\Event::TABLENAME:
-                    $params['request'] = Illuminate\Support\Facades\App::make(App\Http\Requests\StoreEvent::class);
-                    break;
-            }
-        } else {
-            $action = 'create';
-            if (Request::ajax()) {
-                $action .= 'Ajax';
-            }
-        }
-        return $controllerClass->callAction($action, $params);
-    }
-});
-Route::match(['put', 'post'], '/admin/create/{table_name}', function($table_name) {
-    $controllerClass = null;
-
-    switch ($table_name) {
-        case App\Models\Promotion::TABLENAME:
-            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\PromotionController::class);
-            break;
-        case App\Models\Event::TABLENAME:
-            $controllerClass = Illuminate\Support\Facades\App::make(App\Http\Controllers\EventController::class);
-            break;
-    }
-    if ($controllerClass instanceof \App\Http\Controllers\Controller) {
-        $params = [];
-        $action = 'store';
-//        if(Request::ajax()){
-//            $action .= 'Ajax';
-//        }
-        switch ($table_name) {
-            case App\Models\Promotion::TABLENAME:
-                $params['request'] = Illuminate\Support\Facades\App::make(App\Http\Requests\StorePromotion::class);
-                break;
-            case App\Models\Event::TABLENAME:
-                $params['request'] = Illuminate\Support\Facades\App::make(App\Http\Requests\StoreEvent::class);
-                break;
-        }
-        return $controllerClass->callAction($action, $params);
-    }
-});
 
 // ESTABLISHMENT
 // create
@@ -168,13 +83,7 @@ Route::get('/welcome/{locale}', function ($local) {
 
 /* * **************************** ADMIN **************************************** */
 
-Route::get('/admin', 'AdminController@index');
-
-// IMPORT
-// upload file
-Route::get('/admin/establishment/import', 'ImportRestaurantController@index');
-// import excel
-Route::post('/admin/establishment/import', 'ImportRestaurantController@import');
+App\Http\Controllers\AdminController::routes();
 
 /* * ************************** AJAX CALLS ************************************* */
 
