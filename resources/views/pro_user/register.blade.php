@@ -60,7 +60,7 @@
         </div>
         <br class="cleaner"/><br/>
         <div class="col-xs-12">
-            {{-- Form::submit('Envoyer', array('id' => 'validToPayment', 'class'=>'btn btn-lg')) --}}
+            {{-- !! Form::submit('Submit', array('class'=>'btn btn-lg')) !! --}}
             {!! Form::button('Envoyer', ['class' => 'btn btn-lg form-data-button', 'type' => 'button', 'id' => 'validToPayment']) !!}
         </div>
         <br class="cleaner"/><br/><br/>

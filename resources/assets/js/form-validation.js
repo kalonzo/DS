@@ -28,7 +28,15 @@ $('body').on('click', '.form-data-button', function () {
                     $scrollRefElement = $('body');
                 }
                 $.each(errors, function (key, value) {
-                    var $input = $(form).find('[name="' + key + '"]').first();
+                    var inputName = key;
+                    if(key.indexOf('.') !== -1){
+                        var inputNameArray = key.split('.');
+                        inputName = inputNameArray[0];
+                        for(var i=1; i < inputNameArray.length; i++){
+                            inputName  += '[' + inputNameArray[i] + ']';
+                        }
+                    }
+                    var $input = $(form).find('[name="' + inputName + '"]').first();
                     if (checkExist($input)) {
                         if (first) {
                             first = false;
