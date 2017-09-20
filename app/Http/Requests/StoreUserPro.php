@@ -20,7 +20,7 @@ class StoreUserPro extends \App\Http\FormRequest {
      */
     public function rules() {
         $rules = [
-            'gender' => 'required',
+            'gender' => 'nullable',
             'company.name' => 'nullable|min:3|max:255',
             'firstname' => 'required|min:3|max:255',
             'lastname' => 'required|min:3|max:255',
@@ -59,8 +59,7 @@ class StoreUserPro extends \App\Http\FormRequest {
     public function messages() {
         $messages = [
             //Credentiel
-            'gender.required' => 'Veuillez sélectionner votre genre.',
-            'company.required' => 'Veuillez saisir le nom de votre société.',
+            //'gender.required' => 'Veuillez sélectionner votre genre.',
             'company.min' => 'Veuillez renseigner au minimum 2 caractères pour le nom de votre société',
             'company.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre société',
             'firstname.required' => 'Veuillez saisir votre prénom.',
