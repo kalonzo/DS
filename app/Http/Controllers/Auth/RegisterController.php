@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Utilities\UuidTools;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Validation\Validator as Validator2;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -138,7 +139,7 @@ use RegistersUsers;
     {
         $this->validator($request->all())->validate();
 
-//        event(new Registered($user = $this->create($request->all())));
+        event(new Registered($user = $this->create($request->all())));
         
         if ($request->ajax()) {
             return response()->json([
