@@ -131,12 +131,13 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 //Menu average price
                 'average_price_max' => 'nullable|required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
                 'average_price_min' => 'nullable|required_with:average_price_max',
+                //call number
+                'call_number.1' => 'required|regex:/^[0-9 ]+$/',
+                'call_number.4' => 'required|regex:/^[0-9 ]+$/',
+                'call_number.2' => 'nullable|regex:/^[0-9 ]+$/',
+                'call_number.3' => 'nullable|regex:/^[0-9 ]+$/',
             ];
-            //call number
-            $rules['call_number.1'] = 'required|regex:/^[0-9 ]+$/';
-            $rules['call_number.4'] = 'required|regex:/^[0-9 ]+$/';
-            $rules['call_number.2'] = 'nullable|regex:/^[0-9 ]+$/';
-            $rules['call_number.3'] = 'nullable|regex:/^[0-9 ]+$/';
+
             // Opening hours
             foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
                 $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
@@ -153,8 +154,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
         $messages = [
             //Emplacement msg
             'name.required' => 'Veuillez saisir le nom de votre restaurant.',
-            'name.min' => 'Veuillez renseigner au minimum 2 caractères pour le nom de votre restaurant',
-            'name.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre restaurant',
+            'name.min' => 'Veuillez renseigner au minimum 2 caractères pour le nom de votre restaurant.',
+            'name.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre restaurant.',
             'address.street.required' => 'Veuillez saisir une adresse pour votre établissement.',
             'address.street.min' => 'Le nom de la rue doit contenir au minimum 3 caractères.',
             'address.street_number.required' => 'Vous devez spécifier un numéro de rue.',

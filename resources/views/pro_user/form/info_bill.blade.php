@@ -110,7 +110,7 @@
             <div class="row">
                 <div class="col-sm-6 form-group">
                     {!! Form::label('email','* E-mail') !!}
-                    {!! Form::text('email', old('email'), ['class' => 'form-control']) !!}
+                    {!! Form::text('address[email]', old('email'), ['class' => 'form-control']) !!}
                 </div>    
             </div>
             <div class="row">
