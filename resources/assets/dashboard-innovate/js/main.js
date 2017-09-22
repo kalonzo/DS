@@ -918,7 +918,7 @@ $(function() {
   // initializing
   //!!!!!!!!!!!!!
   $(document).ready( MINOVATE.documentOnReady.init );
-  $window.load( MINOVATE.documentOnLoad.init );
+  $(window).on('load', MINOVATE.documentOnLoad.init);
   $window.on( 'resize', MINOVATE.documentOnResize.init );
 
 });

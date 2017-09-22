@@ -54,7 +54,6 @@ class StoreUserPro extends \App\Http\FormRequest {
             //confirmation cgv
             'accept_cgv' => 'required',
         ];
-
         return $rules;
     }
 
