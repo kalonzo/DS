@@ -196,23 +196,13 @@ if(!isset($browseLabel)){
                     {!! $filebatchpreupload !!}
                 })
                 @endif
-                /* TODO stop the deletion once the confirm is canceled */
                 .on('filebeforedelete', function(event, key, data) {
                     var aborted = !window.confirm('Veuillez confirmer la suppression de ce fichier.');
                     if(aborted){
                         event.stopPropagation();
-                        event.preventDefault();
                     }
                     return aborted;
                 })
-//                .on('filepredelete', function(event, key, jqXHR, data) {
-//                    var aborted = !window.confirm('Veuillez confirmer la suppression de ce fichier2.');
-//                    if(aborted){
-//                        event.stopPropagation();
-//                        event.preventDefault();
-//                    }
-//                    return aborted;
-//                })
                 ;
             });
         }
