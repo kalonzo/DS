@@ -15,6 +15,7 @@
         <link href="/css/admin.css" rel="stylesheet">
         
         <link href="/libraries/bootstrap-fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+        <link rel='stylesheet' href='/libraries/fullcalendar/fullcalendar.css' />
         
         <!-- ============================================
         ================= Stylesheets ===================
@@ -23,7 +24,7 @@
         <link rel="stylesheet" href="/dashboard-innovate/css/vendor/animate.css">
         <link rel="stylesheet" href="/dashboard-innovate/css/vendor/font-awesome.min.css">
         <!--<link rel="stylesheet" href="/dashboard-innovate/js/vendor/animsition/css/animsition.min.css">-->
-        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/daterangepicker/daterangepicker-bs3.css">
+        <!--<link rel="stylesheet" href="/dashboard-innovate/js/vendor/daterangepicker/daterangepicker-bs3.css">-->
 <!--        <link rel="stylesheet" href="/dashboard-innovate/js/vendor/morris/morris.css">
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/owl-carousel/owl.carousel.css">
         <link rel="stylesheet" href="/dashboard-innovate/js/vendor/owl-carousel/owl.theme.css">
@@ -144,7 +145,9 @@
         
         <script src="/libraries/bootstrap-fileinput/js/plugins/sortable.min.js"></script>
         <script src="/libraries/bootstrap-fileinput/js/fileinput.js"></script>
-        
+        <script src="/dashboard-innovate/js/vendor/daterangepicker/moment.min.js"></script>
+        <script src='libraries/fullcalendar/fullcalendar.js'></script>
+        <script src='libraries/fullcalendar/locale/fr.js'></script>
         <!-- ============================================
         ============== Vendor JavaScripts ===============
         ============================================= -->
@@ -159,7 +162,6 @@
 
         <!--<script src="/dashboard-innovate/js/vendor/slimscroll/jquery.slimscroll.min.js"></script>-->
 
-        <script src="/dashboard-innovate/js/vendor/daterangepicker/moment.min.js"></script>
         <script src="/dashboard-innovate/js/vendor/daterangepicker/daterangepicker.js"></script>
 
         <script src="/dashboard-innovate/js/vendor/screenfull/screenfull.min.js"></script>

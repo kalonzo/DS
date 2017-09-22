@@ -21,9 +21,9 @@ class AdminController extends Controller {
     public static function routes() {
         // BusinessCategory
         Route::get('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@edit')
-                ->middleware('auth');;
+                ->middleware('auth');
         Route::put('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@update')
-                ->middleware('auth');;
+                ->middleware('auth');
         //destroy        
         Route::get('/admin/delete/{table_name}/{id}', function($table_name, $id) {
             $controllerClass = null;
@@ -80,6 +80,7 @@ class AdminController extends Controller {
                 return $controllerClass->callAction($action, $params);
             }
         })->middleware('auth');
+        
         Route::match(['put', 'post'], '/admin/create/{table_name}', function($table_name) {
             $controllerClass = null;
 
@@ -108,6 +109,9 @@ class AdminController extends Controller {
                 return $controllerClass->callAction($action, $params);
             }
         })->middleware('auth');
+        
+        Route::match(['put', 'post'], '/admin/booking/calendarFeed', 'BookingController@calendarFeed')
+        ->middleware('auth');
 
 
         Route::get('/admin', 'AdminController@index');

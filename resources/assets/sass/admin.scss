@@ -76,3 +76,61 @@ html{
         }
     }
 }
+
+.booking-tile-calendar{
+    .booking-calendar{
+        .fc-toolbar{
+            background-color: $booking-color;
+        }
+        .fc-view{
+            &.fc-agendaDay-view{
+                > table{
+                    width: 100.3%;
+                }
+                .fc-head-container{
+                    background-color: #555;
+                    color: $main-text-color;
+                    border-color: #555;
+                    .fc-row{
+                        border: 0px;
+                        th{
+                            border: 0px;
+                        }
+                        .fc-day-header{
+                            span{
+                                line-height: 35px;
+                                margin-left: -30px;
+                            }
+                        }
+                    }
+                }
+            }
+            &.fc-month-view{
+                .fc-day-header{
+                    padding: 0px !important;
+                    word-break: break-word;
+                }
+            }
+        }
+        .fc-slats{
+            tbody td{
+                background-color: white;
+            }
+        }
+        .fc-event.fc-event{
+            color: white;
+            right: auto !important;
+            @include borderRadius(5px);
+            font-size: 1em;
+            padding: 3px 7px;
+            cursor: pointer;
+            .fc-title{
+                font-size: 1em;
+                .glyphicon{
+                    margin-left: 3px;
+                    font-size: 0.85em;
+                }
+            }
+        }
+    }
+}

@@ -83,14 +83,20 @@ class DatatableController {
                 break;
             case self::BOOKING_DATATABLE:
                 $bookings = array();
-
-                $bookingsQuery = DB::table(Booking::TABLENAME)->select();
-
-
-                $bookingsQuery->orderBy(Booking::TABLENAME . '.updated_at', 'desc');
-
+                $start = new \DateTime('today');
+                if(!empty(Request::get('start'))){
+                    $start = new \DateTime(Request::get('start'));
+                }
+                $startDate = $start->format('Y-m-d H:i:s');
+                $end = date_add($start, new \DateInterval('P1D'));
+                if(!empty(Request::get('end'))){
+                    $end = new \DateTime(Request::get('end'));
+                }
+                $endDate = $end->format('Y-m-d H:i:s');
+                $bookingsQuery = Booking::
+                                whereRaw('datetime_reservation BETWEEN "'.$startDate.'" AND "'.$endDate.'"')
+                                ->orderBy(Booking::TABLENAME . '.datetime_reservation', 'asc');
                 $nbTotalResults = $bookingsQuery->count(Booking::TABLENAME . '.id');
-
                 $bookingsQuery->offset($sliceStart)->limit($nbElementPerPage);
                 $bookingsData = $bookingsQuery->get();
 
@@ -104,7 +110,7 @@ class DatatableController {
                     $bookings[$uuid]['phone_number'] = $bookingData->phone_number;
                     $bookings[$uuid]['email'] = $bookingData->email;
                     $bookings[$uuid]['contact'] = $bookingData->phone_number . ' ' . $bookingData->email;
-                    $bookings[$uuid]['status'] = $bookingData->status;
+                    $bookings[$uuid]['status'] = $bookingData->getStatusLabel();
                     $bookings[$uuid]['updated_at'] = $bookingData->updated_at;
                 }
                 // Paginate results
@@ -113,7 +119,8 @@ class DatatableController {
 
                 $dtFeeder = new DatatableFeeder($id);
                 $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('nb_adults' => 'Personne', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire', 'contact' => 'Contact', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
+                $dtFeeder->setColumns(array('nb_adults' => 'Personnes', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire', 
+                                            'contact' => 'Contact', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 break;
             case self::BUSINESS_CATEGORIES_DATATABLE:
