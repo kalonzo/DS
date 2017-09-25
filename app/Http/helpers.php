@@ -192,3 +192,7 @@ function formatDate($datetime, $dateFormat = IntlDateFormatter::GREGORIAN, $time
     $intlDateFormatter = new IntlDateFormatter(\Illuminate\Support\Facades\App::getLocale(), $dateFormat, $timeFormat);
     return $intlDateFormatter->format($datetime);
 }
+
+function checkRight($action = null){
+    return \App\Utilities\RightGranter::getInstance()->isAllowedTo($action);
+}

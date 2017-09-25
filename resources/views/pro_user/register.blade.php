@@ -13,6 +13,12 @@
 {!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment/register/', 'method' => 'put', 'files' => true]) !!}
 @endif
 {!! Form::hidden('id_user', old('id_user')) !!}
+<?php
+if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN) && !empty(Illuminate\Support\Facades\Request::get('id_establishment'))){
+    echo Form::hidden('id_establishment', Request::get('id_establishment'));
+}
+?>
+
 
 <div class="container-fluid no-gutter">
     <div id="ets-heading" class="row no-gutter no-margin"> 
@@ -206,4 +212,6 @@
 </script>
 
 @section('js_imports_footer')
+<script src="/js/google-map.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection

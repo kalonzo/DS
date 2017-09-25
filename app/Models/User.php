@@ -13,7 +13,10 @@ class User extends Authenticatable implements GlobalObjectManageable{
     use \Illuminate\Notifications\Notifiable;
 
     const TYPE_GLOBAL_OBJECT = self::TYPE_OBJECT_USER;
+    
     protected $table = 'users';
+    const TABLENAME = 'users';
+    
     public $timestamps = true;
     public $incrementing = false;
 

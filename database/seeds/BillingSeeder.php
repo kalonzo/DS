@@ -12,6 +12,7 @@ class BillingSeeder extends Seeder
      */
     public function run()
     {
+        Illuminate\Support\Facades\DB::table(PaymentMethod::TABLENAME)->delete();
         PaymentMethod::insert([
             'id' => PaymentMethod::METHOD_30_DAYS_BILL,
             'name' => 'Facture à 30 jours',
@@ -35,6 +36,21 @@ class BillingSeeder extends Seeder
         PaymentMethod::insert([
             'id' => PaymentMethod::METHOD_CB_POSTFINANCE,
             'name' => 'PostFinance Card',
+            'status' => PaymentMethod::STATUS_ACTIVE,
+        ]);
+        PaymentMethod::insert([
+            'id' => PaymentMethod::METHOD_PACKAGE_INCLUDED,
+            'name' => 'Inclus dans une offre commerciale',
+            'status' => PaymentMethod::STATUS_ACTIVE,
+        ]);
+        PaymentMethod::insert([
+            'id' => PaymentMethod::METHOD_FREE_PASS,
+            'name' => 'Gratuit',
+            'status' => PaymentMethod::STATUS_ACTIVE,
+        ]);
+        PaymentMethod::insert([
+            'id' => PaymentMethod::METHOD_DELAYED_PAYMENT,
+            'name' => 'Paiement à percevoir',
             'status' => PaymentMethod::STATUS_ACTIVE,
         ]);
     }

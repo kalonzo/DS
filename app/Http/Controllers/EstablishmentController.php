@@ -442,7 +442,7 @@ class EstablishmentController extends Controller {
 
         $bookingReservation = \App\Models\Booking::create([
                     'id' => \App\Utilities\UuidTools::generateUuid(),
-                    'status' => 0,
+                    'status' => \App\Models\Booking::STATUS_PENDING,
                     'lastname' => $request->get('lastname'),
                     'firstname' => $request->get('firstname'),
                     'email' => $request->get('email'),
