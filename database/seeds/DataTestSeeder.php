@@ -250,7 +250,7 @@ class DataTestSeeder extends Seeder {
                     'DS_ranking' => 2,
                     'id_logo' => 0,
                     'star' => 3.5,
-                    'status' => \App\Models\Establishment::STATUS_ACTIVE,
+                    'status' => \App\Models\Establishment::STATUS_INCOMPLETE,
                     'site_url' => $site_url,
                     'Description' => '',
                     'average_price_min' => 10,

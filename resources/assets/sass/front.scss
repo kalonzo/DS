@@ -139,10 +139,10 @@ select:not(.select2){
                 }
                 .locationInputGroup{
                     @include borderRadius(0px);
-                    &:nth-child(1){
+                    &:nth-of-type(1){
                         width: 59%;
                     }
-                    &:nth-child(2){
+                    &:nth-of-type(2){
                         width: 40%;
                         float: right;
                     }

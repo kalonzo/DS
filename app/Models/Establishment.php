@@ -186,12 +186,14 @@ class Establishment extends Model implements GlobalObjectManageable{
     protected $url = null;
     public function getUrl($lazy = true){
         if($this->url === null || !$lazy){
-            $typeLabel = str_slug($this->getBusinessTypeLabel());
-            $citySlug = $this->address()->first()->getCitySlug();
-            $slug = $this->getSlug();
-            $urlId = $this->getUrlId();
-            if(!empty($typeLabel) && !empty($citySlug) && !empty($slug) && !empty($urlId)){
-                $this->url = '/'.$typeLabel.'/'.$citySlug.'/'.$slug.'/'.$urlId.'/';
+            if($this->getStatus() === self::STATUS_ACTIVE){
+                $typeLabel = str_slug($this->getBusinessTypeLabel());
+                $citySlug = $this->address()->first()->getCitySlug();
+                $slug = $this->getSlug();
+                $urlId = $this->getUrlId();
+                if(!empty($typeLabel) && !empty($citySlug) && !empty($slug) && !empty($urlId)){
+                    $this->url = '/'.$typeLabel.'/'.$citySlug.'/'.$slug.'/'.$urlId.'/';
+                }
             }
         }
         return $this->url;

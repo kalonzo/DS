@@ -49,7 +49,12 @@ $(function () {
         var that = this;
         var li = $( "<li>" );
         var wrapper = $("<div>", {title: item.label});
-        var link = $('<a>', {href: item.url});
+        var link = $('<a>');
+        if(!isEmpty(item.url)){
+            link.attr('href', item.url);
+        } else {
+            link.addClass('link-disabled');
+        }
         
         if(!item.avatar_bg_color){
             item.avatar_bg_color = '#FFF';

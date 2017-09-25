@@ -1,5 +1,7 @@
 $('body').on('click', '.form-data-button', function () {
     var form = $(this).parentsInclude('form');
+    var $button = $(this);
+    var $alert = $(form).find('#form-ajax-alert');
     if (checkExist(form)) {
         $.ajax({
             url: $(form).attr('action'),
@@ -10,6 +12,7 @@ $('body').on('click', '.form-data-button', function () {
             processData: false,
             contentType: false,
             success: function (data) {
+                $alert.hide();
                 if(data.triggerMode){
                     $(form).trigger('ajaxFormSubmitted', data);
                 } else if(data.relocateMode && !isEmpty(data.location)){
@@ -66,6 +69,17 @@ $('body').on('click', '.form-data-button', function () {
                         });
                     }
                 });
+                if(errors.error){
+                    if(!checkExist($alert)){
+                        $alert = $('<div id="form-ajax-alert" class="alert alert-danger alert-dismissible" role="alert">\n\
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\
+                                            <span class="alert-message">Attention!</span>\n\
+                                        </div>');
+                        $button.before($alert);
+                    }
+                    $alert.find('.alert-message').empty().html(errors.error);
+                    $alert.show();
+                }
             }
         });
     }
