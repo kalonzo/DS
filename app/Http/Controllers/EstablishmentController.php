@@ -1544,8 +1544,10 @@ class EstablishmentController extends Controller {
                 $thumbnailData[$uuid]['raw_distance'] = \App\Utilities\StringTools::displayCleanDistance($queryResult->rawDistance);
                 $thumbnailData[$uuid]['latitude'] = $queryResult->latitude;
                 $thumbnailData[$uuid]['longitude'] = $queryResult->longitude;
-                $thumbnailData[$uuid]['url'] = Establishment::getUrlStatic($queryResult->id_business_type, $queryResult->city, 
-                        $queryResult->slug, $queryResult->url_id);
+                if($queryResult->status == Establishment::STATUS_ACTIVE){
+                    $thumbnailData[$uuid]['url'] = Establishment::getUrlStatic($queryResult->id_business_type, $queryResult->city, 
+                            $queryResult->slug, $queryResult->url_id);
+                }
                 
                 if(isset($queryResult->promo_name)){
                     $thumbnailData[$uuid]['promo_name'] = $queryResult->promo_name;

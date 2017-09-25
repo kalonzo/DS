@@ -15,13 +15,21 @@ class BookingController extends Controller{
             
         try{
             $user = Auth::user();
+            
             $start = $request->get('start');
+            
             $end = $request->get('end');
+            
             if(!empty($start) && !empty($end) && checkModel($user)){
+                $startDate = new DateTime($start);
+                $startDateFormatted = $startDate->format('Y-m-d H:i:s');
+                
+                $endDate = new DateTime($end);
+                $endDateFormatted = $endDate->format('Y-m-d H:i:s');
                 $bookings = Booking::select([
                                     'id', 'status', 'datetime_reservation', 'nb_adults', 'nb_children'
                                 ])
-//                                ->whereBetween('datetime_reservation', [$start, $end])
+                                ->whereRaw('datetime_reservation BETWEEN "'.$startDateFormatted.'" AND "'.$endDateFormatted.'"')
                                 ->orderBy(Booking::TABLENAME . '.updated_at', 'asc')
                                 ;
 //                $jsonResponse['debug'] = $bookings->toSql();
@@ -30,7 +38,6 @@ class BookingController extends Controller{
                     $bookingData = array();
                     $bookingData['id'] = $booking->getUuid();
                     $bookingData['title'] = ($booking->getNbAdults() + $booking->getNbChildren());
-//                    $bookingData['title'] .= "<span class='glyphicon glyphicon-user' aria-hidden='true'></span>";
                     $color = '';
                     switch($booking->getStatus()){
                         case Booking::STATUS_PENDING:

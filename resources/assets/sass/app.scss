@@ -35,6 +35,9 @@ a.simple{
         text-decoration: none;
     }
 }
+a.link-disabled{
+    cursor: default;
+}
 .cleaner{
     clear: both;
 }

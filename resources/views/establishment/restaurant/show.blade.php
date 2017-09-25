@@ -19,7 +19,7 @@
     </aside>
     <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">
-            <div class="ets-nav-bookmark bookmark-voucher app-disabled" title="Bon cadeau">
+            <div class="ets-nav-bookmark bookmark-voucher app-disabled hidden" title="Bon cadeau">
                 <a href="{{ $establishment->getUrl() }}#voucher" class="simple">
                     <span>Bon cadeau</span>
                     <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
@@ -121,24 +121,34 @@
         </section>
     </div>
 
-    <?php
-    if($establishment->homePictures()->exists()){
-        ?><style>
+    <style>
         .show-page section{
             background-color: black !important;
         }
         <?php
-        foreach($establishment->homePictures()->get() as $i => $media){
+        $nbSection = 7;
+        $i = 0;
+        if($establishment->homePictures()->exists()){
+            foreach($establishment->homePictures()->get() as $i => $media){
+                ?>
+                .show-page section:nth-of-type(<?php echo $i+1;?>) .section-bg{
+                    background-image: url('<?php echo asset($media->getLocalPath());?>');
+                    background-color: black;
+                }
+                <?php
+            }
+        }
+        while($i < $nbSection){
             ?>
             .show-page section:nth-of-type(<?php echo $i+1;?>) .section-bg{
-                background-image: url('<?php echo asset($media->getLocalPath());?>');
+                background-image: url('/img/background_ds/DS-BG-<?php echo rand(1, 34);?>.jpg');
                 background-color: black;
             }
             <?php
+            $i++;
         }
-        ?></style><?php
-    }
-    ?>
+        ?>
+    </style>
 @endsection
 
 @section('js_imports_footer')

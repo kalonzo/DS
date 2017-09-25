@@ -27,12 +27,12 @@
             <div class="container-fluid">
                 <div class="navbar-collapse collapse">
                     @if(!isset($disableQuickSearch) || !$disableQuickSearch)
-                    <form class="navbar-form navbar-left">
+                    {!! Form::open(['id'=>'quick-search-form', 'url'=>'/search', 'method' => 'post', 'class' => 'navbar-form navbar-left']) !!}
                         <div class="input-group locationInputGroup">
-                            <span class="input-group-addon clickable" onclick="document.location.href='/search'" title="Cliquez ici pour rechercher autour de vous">
+                            <span class="input-group-addon clickable" onclick="$(this).parentsInclude('form').submit();" title="Cliquez ici pour rechercher autour de vous">
                                 <span class="geolocMeIcon glyphicon glyphicon-search" aria-hidden="true"></span>
                             </span>
-                            <input type="text" class="form-control" placeholder="Nom, type de cuisine" id="search_keywords">
+                            <input type="text" name="term" class="form-control" placeholder="Nom, type de cuisine" id="search_keywords">
                         </div>
                         <div class="input-group locationInputGroup">
                             <span class="input-group-addon clickable" onclick="geolocateMe();" title="Cliquer ici pour me géolocaliser">
@@ -40,7 +40,7 @@
                             </span>
                             <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
                         </div>
-                    </form>
+                    {!! form::close() !!}
                     @endif
                     <a class="navbar-brand" href="/">
                         <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
@@ -107,10 +107,10 @@
                 <div class="col col-sm-4 socialNetworks">
                     <h2>Suivez-nous</h2>
                     <ul>
-                        <li><a href="#"><img alt="facebook" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/></a></li>
-                        <li><a href="#"><img alt="twitter" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/></a></li>
-                        <li><a href="#"><img alt="instagram" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/></a></li>
-                        <li><a href="#"><img alt="skype" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/></a></li>
+                        <li><a href="#"><img alt="facebook" src="/img/icons/Facebook.svg"/></a></li>
+                        <li><a href="#"><img alt="twitter" src="/img/icons/Twitter.svg"/></a></li>
+                        <li><a href="#"><img alt="instagram" src="/img/icons/Instagram.svg"/></a></li>
+                        <li><a href="#"><img alt="skype" src="/img/icons/Skype.svg"/></a></li>
                     </ul>
                 </div>
             </div>

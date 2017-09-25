@@ -93,6 +93,24 @@ class SearchController {
             } while($nbResults < (self::NB_QUICK_RESULTS_PER_TYPE / 2) && $attempt < 4);
         
             if(!empty($rawDistanceEstablishments)){
+                // TOP RESULTS
+                $counter = 0;
+                foreach ($rawDistanceEstablishments as $rawDistanceEstablishment) {
+                    if($counter < 3){
+                        $distance = $rawDistanceEstablishment->rawDistance;
+                        $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($distance));
+                        $results [] = array(
+                            'id' => $rawDistanceEstablishment->getUuid(),
+                            'label' => $rawDistanceEstablishment->getName(),
+                            'value' => $rawDistanceEstablishment->getName(),
+                            'picture' => $rawDistanceEstablishment->getDefaultPicture(),
+                            'avatar_bg_color' => 'none',
+                            'section' => 'Top Résultats',
+                            'url' => $rawDistanceEstablishment->getUrl()
+                        );
+                        $counter++;
+                    }
+                }
                 foreach ($rawDistanceEstablishments as $rawDistanceEstablishment) {
                     $distance = $rawDistanceEstablishment->rawDistance;
                     $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($distance));
@@ -456,8 +474,10 @@ class SearchController {
                     $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;
                     $establishments[$uuid]['longitude'] = $establishmentData->longitude;
-                    $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
-                            $establishmentData->slug, $establishmentData->url_id);
+                    if($establishmentData->status == Establishment::STATUS_ACTIVE){
+                        $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
+                                $establishmentData->slug, $establishmentData->url_id);
+                    }
                 }
             }
 
