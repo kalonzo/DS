@@ -29,7 +29,7 @@
             @forelse($rows as $row)
             <tr class="">
             @foreach($columns as $columnKey => $columnLabel)
-                <td>{{ $row[$columnKey] }}</td>
+                <td>{!! $row[$columnKey] !!}</td>
             @endforeach
 
             <!-- Actions -->

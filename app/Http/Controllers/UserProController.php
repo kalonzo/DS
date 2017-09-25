@@ -74,6 +74,7 @@ class UserProController extends Controller {
         $createdObjects = array();
         $payment = null;
         try {
+            $uuidEstablishment = $request->get('id_establishment');
             $uuidSubscription = $request->get('id_subscription');
             $businessType = $request->get('business_type');
             $uuidUser = $request->get('id_user');
@@ -189,10 +190,42 @@ class UserProController extends Controller {
                             $idPaymentMethod = $request->get('payment_method');
                             $payment->setIdPaymentMethod($idPaymentMethod)->save();
                             
-                            $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
-                            if ($walleeController instanceof WalleeController) {
-                                $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
-                                $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
+                            if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN)){
+                                $establishment = Establishment::find($uuidEstablishment);
+                                if(checkModel($establishment)){
+                                    $establishment->setIdUserOwner($user->getId());
+                                    $establishment->save();
+                                }
+                            }
+                            
+                            switch($idPaymentMethod){
+                                case PaymentMethod::METHOD_30_DAYS_BILL:
+                                    if($idCountry == Country::CHE){
+                                        $jsonResponse['success'] = 1;
+                                        $jsonResponse['relocateMode'] = 1;
+                                        $jsonResponse['location'] = '/admin';
+                                        unset($jsonResponse['triggerMode']);
+                                    } else {
+                                        $jsonResponse['error'] = "Le paiement en facture à 30 jours n'est disponible que pour les résidents suisses.";
+                                    }
+                                    break;
+                                case PaymentMethod::METHOD_PACKAGE_INCLUDED:
+                                case PaymentMethod::METHOD_FREE_PASS:
+                                case PaymentMethod::METHOD_DELAYED_PAYMENT:
+                                    $jsonResponse['success'] = 1;
+                                    $jsonResponse['relocateMode'] = 1;
+                                    $jsonResponse['location'] = '/admin';
+                                    unset($jsonResponse['triggerMode']);
+                                    break;
+                                default :
+                                    $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
+                                    if ($walleeController instanceof WalleeController) {
+                                        $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
+                                        $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
+                                    } else {
+                                        $jsonResponse['error'] = "Le controller de paiement a connu une erreur. Veuillez avertir le webmaster.";
+                                    }
+                                    break;
                             }
                         } else {
                             $jsonResponse['error'] = "Le processus de paiement n'a pas pu être initié";
@@ -278,10 +311,16 @@ class UserProController extends Controller {
         }
 
         // Payment methods
+        $availableMethods = array(PaymentMethod::METHOD_CB, PaymentMethod::METHOD_30_DAYS_BILL);
+        if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN)){
+            $availableMethods[] = PaymentMethod::METHOD_PACKAGE_INCLUDED;
+            $availableMethods[] = PaymentMethod::METHOD_FREE_PASS;
+            $availableMethods[] = PaymentMethod::METHOD_DELAYED_PAYMENT;
+        }
         $paymentMethods = array();
         $paymentMethodsData = DB::table(PaymentMethod::TABLENAME)
                 ->select('id', 'name')
-                ->whereIn('id', array(PaymentMethod::METHOD_CB, PaymentMethod::METHOD_30_DAYS_BILL))
+                ->whereIn('id', $availableMethods)
                 ->orderBy('name')
                 ->get();
         foreach ($paymentMethodsData as $paymentMethod) {

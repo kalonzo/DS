@@ -39,9 +39,9 @@ class AdminController extends Controller {
         })->middleware('auth');
 
         //Promotion
-        Route::get('/admin/promotions/{promotion}', 'PromtionController@edit')
+        Route::get('/admin/promotions/{promotion}', 'PromotionController@edit')
                 ->middleware('auth');
-        Route::put('/admin/promotions/{promotion}', 'PromtionController@update')
+        Route::put('/admin/promotions/{promotion}', 'PromotionController@update')
                 ->middleware('auth');
 
         //Evénement
@@ -113,6 +113,9 @@ class AdminController extends Controller {
         Route::match(['put', 'post'], '/admin/booking/calendarFeed', 'BookingController@calendarFeed')
         ->middleware('auth');
 
+        // Pro User
+        Route::get('/admin/user_pro/register', 'UserProController@create')
+                ->middleware('auth');
 
         Route::get('/admin', 'AdminController@index');
 
@@ -128,7 +131,7 @@ class AdminController extends Controller {
     public function index() {
         $etsDatatableFeeder = DatatableController::buildDatatable(DatatableController::ESTABLISHMENT_DATATABLE);
 
-        $bookingDatatableFeeder = DatatableController::buildDatatable(DatatableController::BOOKING_DATATABLE);
+        $bookingDatatableFeeder = DatatableController::buildDatatable(DatatableController::BOOKING_PRO_DATATABLE);
 
         $businessCategoriesDatatableFeeder = DatatableController::buildDatatable(DatatableController::BUSINESS_CATEGORIES_DATATABLE);
 

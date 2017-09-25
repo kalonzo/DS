@@ -16,6 +16,9 @@ class PaymentMethod extends Model {
     const METHOD_CB_POSTFINANCE = 103;
     
     const METHOD_30_DAYS_BILL = 2;
+    const METHOD_PACKAGE_INCLUDED = 3;
+    const METHOD_FREE_PASS = 4;
+    const METHOD_DELAYED_PAYMENT = 5;
     
     const STATUS_ACTIVE = 1;
     const STATUS_DISABLED = 2;

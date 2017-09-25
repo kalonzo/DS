@@ -10,9 +10,13 @@ use App\Models\BusinessCategory;
 use App\Models\BusinessType;
 use App\Models\Country;
 use App\Models\Establishment;
+use App\Models\Event;
 use App\Models\Promotion;
-use \App\Models\Event;
+use App\Models\PromotionType;
+use App\Models\User;
 use App\Utilities\UuidTools;
+use DateInterval;
+use DateTime;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -25,7 +29,7 @@ use Illuminate\Support\Facades\Request;
 class DatatableController {
 
     const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
-    const BOOKING_DATATABLE = 'booking_datatable';
+    const BOOKING_PRO_DATATABLE = 'booking_pro_datatable';
     const BUSINESS_CATEGORIES_DATATABLE = 'business_category_datatable';
     const PROMOTION_DATATABLE = 'promotion_datatable';
     const EVENT_DATATABLE = 'event_datatable';
@@ -48,8 +52,14 @@ class DatatableController {
                 $establishments = array();
 
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                        ->select(DB::raw(Establishment::TABLENAME . '.*, ' . Address::TABLENAME . '.*, ' . Establishment::TABLENAME . '.id AS id_establishment'))
+                        ->select([
+                            Establishment::TABLENAME . '.*', Address::TABLENAME . '.*', 
+                            Establishment::TABLENAME . '.id AS id_establishment',
+                            User::TABLENAME . '.id AS id_owner',
+                            DB::raw('CONCAT('.User::TABLENAME . '.lastname, " ", '.User::TABLENAME . '.firstname) AS owner')
+                        ])
                         ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
+                        ->leftJoin(User::TABLENAME, User::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_user_owner')
                 ;
                 if (!empty($typeEts)) {
                     $establishmentsQuery->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts);
@@ -66,7 +76,13 @@ class DatatableController {
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;
                     $establishments[$uuid]['type'] = BusinessType::getLabelFromType($establishmentData->id_business_type);
-                    $establishments[$uuid]['img'] = "/img/images_ds/imagen-DS-" . rand(1, 20) . ".jpg";
+                    if(!empty($establishmentData->owner)){
+                        $establishments[$uuid]['user'] = $establishmentData->owner;
+                    } else {
+                        $establishments[$uuid]['user'] = "<a href='/admin/user_pro/register?id_establishment=".$uuid."'>"
+                                                            . "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span>"
+                                                        ."</a>";
+                    }
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['updated_at'] = $establishmentData->updated_at;
@@ -77,24 +93,24 @@ class DatatableController {
 
                 $dtFeeder = new DatatableFeeder($id);
                 $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('name' => 'Nom', 'type' => 'Type', 'city' => 'Ville', 'updated_at' => 'Modifié le'));
+                $dtFeeder->setColumns(array('name' => 'Nom', 'type' => 'Type', 'user' => 'Client', 'city' => 'Ville', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
                 break;
-            case self::BOOKING_DATATABLE:
+            case self::BOOKING_PRO_DATATABLE:
                 $bookings = array();
-                $start = new \DateTime('today');
+                $start = new DateTime('today');
                 if(!empty(Request::get('start'))){
-                    $start = new \DateTime(Request::get('start'));
+                    $start = new DateTime(Request::get('start'));
                 }
                 $startDate = $start->format('Y-m-d H:i:s');
-                $end = date_add($start, new \DateInterval('P1D'));
+                $end = date_add($start, new DateInterval('P1D'));
                 if(!empty(Request::get('end'))){
-                    $end = new \DateTime(Request::get('end'));
+                    $end = new DateTime(Request::get('end'));
                 }
                 $endDate = $end->format('Y-m-d H:i:s');
-                $bookingsQuery = Booking::
-                                whereRaw('datetime_reservation BETWEEN "'.$startDate.'" AND "'.$endDate.'"')
+                $bookingsQuery = Booking::select([Booking::TABLENAME.'.*'])
+                                ->whereRaw('datetime_reservation BETWEEN "'.$startDate.'" AND "'.$endDate.'"')
                                 ->orderBy(Booking::TABLENAME . '.datetime_reservation', 'asc');
                 $nbTotalResults = $bookingsQuery->count(Booking::TABLENAME . '.id');
                 $bookingsQuery->offset($sliceStart)->limit($nbElementPerPage);
@@ -194,7 +210,7 @@ class DatatableController {
                     $promotions[$uuid]['id'] = $uuid;
                     $promotions[$uuid]['ets_name'] = $promotionData->ets_name;
                     $promotions[$uuid]['name'] = $promotionData->name;
-                    $promotions[$uuid]['type'] = \App\Models\PromotionType::getLabelFromType($promotionData->id_promotion_type);
+                    $promotions[$uuid]['type'] = PromotionType::getLabelFromType($promotionData->id_promotion_type);
                     $promotions[$uuid]['start_date'] = $promotionData->start_date;
                     $promotions[$uuid]['end_date'] = $promotionData->end_date;
                 }

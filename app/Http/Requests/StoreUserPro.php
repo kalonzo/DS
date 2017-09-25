@@ -25,7 +25,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'firstname' => 'required|min:3|max:255',
             'lastname' => 'required|min:3|max:255',
             'phoneNumber.number' => 'required',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:'.\App\Models\User::TABLENAME.',email',
             'password' => 'required|min:6|string|confirmed:password_confirmation',
             'password_confirmation' => 'required',
             //Business categories
