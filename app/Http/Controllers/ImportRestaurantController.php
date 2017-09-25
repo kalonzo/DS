@@ -109,66 +109,8 @@ class ImportRestaurantController extends Controller {
                                             $service = explode('-', $cellContent);
                                         } elseif ($col_slug === 'cadre_ambiance') {
                                             $ambiance = explode('-', $cellContent);
-                                            //jour de la semaine
-                                        } elseif ($col_slug === 'lundi1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'lundi2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'lund13') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'lund14') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mardi1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mardi2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mardi3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mardi4') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mercredi1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mercredi2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mercredi3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'mercredi4') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'jeudi1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'jeudi2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'jeudi3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'jeudi3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'jeudi4') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'vendredi1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'vendredi2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'vendredi3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'vendredi4') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'samedi1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'samedi2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'samedi3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'samedi4') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'dimanche1') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'dimanche2') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'dimanche3') {
-                                            $openingHours[] = $cellContent;
-                                        } elseif ($col_slug === 'dimanche4') {
-                                            $openingHours[] = $cellContent;
                                         }
+                                       
                                     }
                                 }
 
@@ -281,45 +223,6 @@ class ImportRestaurantController extends Controller {
 
     /**
      * 
-     * @param StoreEstablishment $request
-     * @param type $day
-     * @param type $startTime
-     * @param type $endTime
-     * @param Establishment $establishment
-     */
-    public function insertOpeningHours($openingHours, $establishmentId) {
-        try {
-
-            //insére succesivement les horaires en base
-            $i=0;
-            foreach ($openingHours as $hour) {
-                print_r($hour);
-                echo $hour[$i].'<br>';
-                $i = $i +1;
-            }
-            die();
-            //insertion des horaires
-            $ets = \App\Models\OpeningHour::create([
-                        'id' => UuidTools::generateUuid(),
-                        'day' => $nameEstablishment,
-                        'start_time' => $email,
-                        'end_time' => $addressEstablishment->id,
-                        'start_date' => $lat,
-                        'end_date' => $lng,
-                        'id_establishment' => $establishmentId,
-                        'no_break' => 0,
-                        'closed' => $siteWeb,
-                        'day_order' => $description,
-            ]);
-        } catch (Exception $e) {
-            print_r($e->getMessage());
-            die();
-        }
-        return $openingHours;
-    }
-
-    /**
-     * 
      * @param type $nameEstablishment
      * @param type $street
      * @param type $street_2
@@ -402,7 +305,6 @@ class ImportRestaurantController extends Controller {
                         'id_currency' => $idCurrency,
             ]);
 
-            self::insertOpeningHours($openingsHours,$ets->getId());
             
                     //Insertion numéro principal PRO
                     $callNumber = \App\Models\CallNumber::where('number', '=', $phone)->where('id_establishment', '=', $ets->getId())->first();

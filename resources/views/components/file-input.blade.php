@@ -141,6 +141,8 @@ if(!isset($browseLabel)){
                     previewFileIconSettings: {
                         'doc': '<i class="glyphicon glyphicon-file doc"></i>',
                         'docx': '<i class="glyphicon glyphicon-file doc"></i>'
+                        'xls': '<i class="glyphicon glyphicon-file doc"></i>'
+                        'xlsx': '<i class="glyphicon glyphicon-file doc"></i>'
                     },
                     previewFileExtSettings: {
                         'doc': function(ext) {
