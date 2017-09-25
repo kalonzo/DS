@@ -64,14 +64,30 @@ class User extends Authenticatable implements GlobalObjectManageable{
         return $this->hasMany(Cart::class, 'id_user', 'id')->where('status', '=', Cart::STATUS_PENDING)->orderBy('updated_at', 'DESC')->first();
     }
     
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
     public function company(){
         return $this->hasOne(Company::class, 'id', 'id_company');
     }
     
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
     public function address(){
         return $this->hasOne(Address::class, 'id', 'id_address');
     }
 
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function establishmentsOwned(){
+        return $this->hasMany(Establishment::class, 'id_user_owner', 'id');
+    }
+    
     /**
      * @return mixed
      */

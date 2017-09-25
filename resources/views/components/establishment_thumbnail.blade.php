@@ -1,6 +1,6 @@
 <div class="no-gutter ets-thumbnail @if(isset($establishment['promo_name'])) with-promo @endif" 
      data-lat='{{ $establishment['latitude'] }}' data-lng='{{ $establishment['longitude'] }}' data-name="{{ $establishment['name'] }}">
-    <a href="@if(isset($establishment['url'])) $establishment['url'] @else javascript:void(0); @endif" @if(!isset($establishment['url'])) class="link-disabled" @endif>
+    <a href="@if(isset($establishment['url'])) {{ $establishment['url'] }} @else javascript:void(0); @endif" @if(!isset($establishment['url'])) class="link-disabled" @endif>
         <div class="thumbnail-top col-xs-12 no-gutter">
             <img class="col-xs-12 no-gutter" src="{{ $establishment['img'] }}" alt="Establishment picture"/>
             <div class="thumbnail-distance">

@@ -14,10 +14,12 @@ use App\Models\Event;
 use App\Models\Promotion;
 use App\Models\PromotionType;
 use App\Models\User;
+use App\Utilities\DbQueryTools;
 use App\Utilities\UuidTools;
 use DateInterval;
 use DateTime;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
@@ -98,6 +100,7 @@ class DatatableController {
                 $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
                 break;
             case self::BOOKING_PRO_DATATABLE:
+                $user = Auth::user();
                 $bookings = array();
                 $start = new DateTime('today');
                 if(!empty(Request::get('start'))){
@@ -112,6 +115,27 @@ class DatatableController {
                 $bookingsQuery = Booking::select([Booking::TABLENAME.'.*'])
                                 ->whereRaw('datetime_reservation BETWEEN "'.$startDate.'" AND "'.$endDate.'"')
                                 ->orderBy(Booking::TABLENAME . '.datetime_reservation', 'asc');
+                
+                switch($user->getType()){
+                    case User::TYPE_USER_PRO:
+                        $establishmentsData = $user->establishmentsOwned()->select([DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
+                                                ->get();
+                        $establishmentUuids = $establishmentsData->pluck('uuid')->all();
+                        $bookingsQuery
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishmentUuids));
+                        break;
+                    case User::TYPE_USER:
+                        $bookingsQuery
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_user', $user->getUuid()));
+                        break;
+                    case User::TYPE_USER_ADMIN_PRO:
+                        // Can see all
+                        break;
+                    default :
+                        $bookingsQuery->whereRaw('1 = 0');
+                        break;
+                }
+                
                 $nbTotalResults = $bookingsQuery->count(Booking::TABLENAME . '.id');
                 $bookingsQuery->offset($sliceStart)->limit($nbElementPerPage);
                 $bookingsData = $bookingsQuery->get();

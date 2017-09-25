@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Booking;
+use App\Models\User;
+use App\Utilities\DbQueryTools;
+use DateInterval;
 use DateTime;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use function checkModel;
+use function response;
 
 class BookingController extends Controller{
     public function calendarFeed(Request $request){
@@ -17,7 +23,6 @@ class BookingController extends Controller{
             $user = Auth::user();
             
             $start = $request->get('start');
-            
             $end = $request->get('end');
             
             if(!empty($start) && !empty($end) && checkModel($user)){
@@ -26,14 +31,32 @@ class BookingController extends Controller{
                 
                 $endDate = new DateTime($end);
                 $endDateFormatted = $endDate->format('Y-m-d H:i:s');
-                $bookings = Booking::select([
+                $bookingsQuery = Booking::select([
                                     'id', 'status', 'datetime_reservation', 'nb_adults', 'nb_children'
                                 ])
                                 ->whereRaw('datetime_reservation BETWEEN "'.$startDateFormatted.'" AND "'.$endDateFormatted.'"')
                                 ->orderBy(Booking::TABLENAME . '.updated_at', 'asc')
                                 ;
-//                $jsonResponse['debug'] = $bookings->toSql();
-                $bookings = $bookings->get();
+                switch($user->getType()){
+                    case User::TYPE_USER_PRO:
+                        $establishmentsData = $user->establishmentsOwned()->select([DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
+                                                ->get();
+                        $establishmentUuids = $establishmentsData->pluck('uuid')->all();
+                        $bookingsQuery
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishmentUuids));
+                        break;
+                    case User::TYPE_USER:
+                        $bookingsQuery
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_user', $user->getUuid()));
+                        break;
+                    case User::TYPE_USER_ADMIN_PRO:
+                        // Can see all
+                        break;
+                    default :
+                        $bookingsQuery->whereRaw('1 = 0');
+                        break;
+                }
+                $bookings = $bookingsQuery->get();
                 foreach ($bookings as $booking) {
                     $bookingData = array();
                     $bookingData['id'] = $booking->getUuid();
@@ -56,7 +79,7 @@ class BookingController extends Controller{
                     $bookingData['color'] = $color;
                     $dateStart = new DateTime($booking->getDatetimeReservation());
                     $bookingData['start'] = $dateStart->format('Y-m-d H:i');
-                    $dateEnd = date_add($dateStart, new \DateInterval('PT30M'));
+                    $dateEnd = date_add($dateStart, new DateInterval('PT30M'));
                     $bookingData['end'] = $dateEnd->format('Y-m-d H:i');
                     $jsonResponse[] = $bookingData;
                 }
