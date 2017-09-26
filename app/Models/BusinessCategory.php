@@ -34,6 +34,15 @@ class BusinessCategory extends Model {
         return $labelByType;
     }
     
+    public static function getLabelFromType($type){
+        $label = null;
+        $labelByType = self::getLabelByType();
+        if(isset($labelByType[$type])){
+            $label = $labelByType[$type];
+        }
+        return $label;
+    }
+    
     public function establishmentLinks(){
         return $this->hasMany(EstablishmentBusinessCategory::class, 'id_business_category', 'id');
     }

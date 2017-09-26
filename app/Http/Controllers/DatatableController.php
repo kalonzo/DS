@@ -3,25 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Feeders\DatatableFeeder;
-use App\Feeders\DatatableRowAction;
-use App\Models\Address;
-use App\Models\Booking;
-use App\Models\BusinessCategory;
-use App\Models\BusinessType;
-use App\Models\Country;
-use App\Models\Establishment;
-use App\Models\Event;
-use App\Models\Promotion;
-use App\Models\PromotionType;
-use App\Models\User;
-use App\Utilities\DbQueryTools;
-use App\Utilities\UuidTools;
-use DateInterval;
-use DateTime;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Description of DatatableController
@@ -30,312 +11,34 @@ use Illuminate\Support\Facades\Request;
  */
 class DatatableController {
 
-    const ESTABLISHMENT_DATATABLE = 'establishment_datatable';
-    const BOOKING_PRO_DATATABLE = 'booking_pro_datatable';
-    const BUSINESS_CATEGORIES_DATATABLE = 'business_category_datatable';
-    const PROMOTION_DATATABLE = 'promotion_datatable';
-    const EVENT_DATATABLE = 'event_datatable';
-
     /**
      * 
      * @param type $id
      * @return DatatableFeeder
      */
     public static function buildDatatable($id) {
-        $typeEts = SessionController::getInstance()->getUserTypeEts();
         $dtFeeder = null;
 
-        $nbElementPerPage = 10;
-        $currentPage = Request::get('page', 1);
-        $sliceStart = ($currentPage - 1) * $nbElementPerPage;
-
         switch ($id) {
-            case self::ESTABLISHMENT_DATATABLE:
-                // Filters
-                $filters = array();
-                
-                // Free search
-                $freeSearch = new \App\Feeders\DatatableFilter();
-                $freeSearch->setInputType(\App\Feeders\DatatableFilter::INPUT_TEXT);
-                $freeSearch->setName('designation');
-                $freeSearch->setPlaceholder("Recherche...");
-                $freeSearch->setTable(Establishment::TABLENAME);
-                $freeSearch->setField('name');
-                $freeSearch->setOperator(\App\Feeders\DatatableFilter::OPERATOR_LIKE_CONTAINS);
-                $freeSearch->setValue(Request::get('filter.designation'));
-                $filters[] = $freeSearch;
-                
-                $establishments = array();
-
-                $establishmentsQuery = DB::table(Establishment::TABLENAME)
-                        ->select([
-                            Establishment::TABLENAME . '.*', Address::TABLENAME . '.*', 
-                            Establishment::TABLENAME . '.id AS id_establishment',
-                            User::TABLENAME . '.id AS id_owner',
-                            DB::raw('CONCAT('.User::TABLENAME . '.lastname, " ", '.User::TABLENAME . '.firstname) AS owner')
-                        ])
-                        ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
-                        ->leftJoin(User::TABLENAME, User::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_user_owner')
-                ;
-                if (!empty($typeEts)) {
-                    $establishmentsQuery->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts);
-                }
-                $establishmentsQuery->orderBy(Establishment::TABLENAME . '.updated_at', 'desc');
-
-                // Apply filters
-                \App\Feeders\DatatableFilter::applyFilters($establishmentsQuery, $filters);
-                
-                $nbTotalResults = $establishmentsQuery->count(Establishment::TABLENAME . '.id');
-
-                $establishmentsQuery->offset($sliceStart)->limit($nbElementPerPage);
-                $establishmentsData = $establishmentsQuery->get();
-                foreach ($establishmentsData as $establishmentData) {
-                    $uuid = UuidTools::getUuid($establishmentData->id_establishment);
-
-                    $establishments[$uuid]['id'] = $uuid;
-                    $establishments[$uuid]['name'] = $establishmentData->name;
-                    $establishments[$uuid]['type'] = BusinessType::getLabelFromType($establishmentData->id_business_type);
-                    if(!empty($establishmentData->owner)){
-                        $establishments[$uuid]['user'] = $establishmentData->owner;
-                    } else {
-                        $establishments[$uuid]['user'] = "<a href='/admin/user_pro/register?id_establishment=".$uuid."'>"
-                                                            . "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span>"
-                                                        ."</a>";
-                    }
-                    $establishments[$uuid]['city'] = $establishmentData->city;
-                    $establishments[$uuid]['country'] = Country::getCountryLabel($establishmentData->id_country);
-                    $establishments[$uuid]['updated_at'] = $establishmentData->updated_at;
-                }
-                
-                
-                // Paginate results
-                $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage, $currentPage);
-                $resultsPagination->setPath(Request::url());
-
-                $dtFeeder = new DatatableFeeder($id);
-                $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setFilters($filters);
-                $dtFeeder->setColumns(array('name' => 'Nom', 'type' => 'Type', 'user' => 'Client', 'city' => 'Ville', 'updated_at' => 'Modifié le'));
-                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
+            case \App\Datatables\DtEstablishmentAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtEstablishmentAdmin();
+                $dtFeeder->run();
                 break;
-            case self::BOOKING_PRO_DATATABLE:
-                $user = Auth::user();
-                $bookings = array();
-                $start = new DateTime('today');
-                if(!empty(Request::get('start'))){
-                    $start = new DateTime(Request::get('start'));
-                }
-                $startDate = $start->format('Y-m-d H:i:s');
-                $end = date_add($start, new DateInterval('P1D'));
-                if(!empty(Request::get('end'))){
-                    $end = new DateTime(Request::get('end'));
-                }
-                $endDate = $end->format('Y-m-d H:i:s');
-                $bookingsQuery = Booking::select([Booking::TABLENAME.'.*'])
-                                ->whereRaw('datetime_reservation BETWEEN "'.$startDate.'" AND "'.$endDate.'"')
-                                ->orderBy(Booking::TABLENAME . '.datetime_reservation', 'asc');
-                
-                switch($user->getType()){
-                    case User::TYPE_USER_PRO:
-                        $establishmentsData = $user->establishmentsOwned()->select([DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
-                                                ->get();
-                        $establishmentUuids = $establishmentsData->pluck('uuid')->all();
-                        $bookingsQuery
-                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishmentUuids));
-                        break;
-                    case User::TYPE_USER:
-                        $bookingsQuery
-                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_user', $user->getUuid()));
-                        break;
-                    case User::TYPE_USER_ADMIN_PRO:
-                        // Can see all
-                        break;
-                    default :
-                        $bookingsQuery->whereRaw('1 = 0');
-                        break;
-                }
-                
-                $nbTotalResults = $bookingsQuery->count(Booking::TABLENAME . '.id');
-                $bookingsQuery->offset($sliceStart)->limit($nbElementPerPage);
-                $bookingsData = $bookingsQuery->get();
-
-                foreach ($bookingsData as $bookingData) {
-                    $uuid = UuidTools::getUuid($bookingData->id);
-
-                    $bookings[$uuid]['id'] = $uuid;
-                    $bookings[$uuid]['nb_adults'] = $bookingData->nb_adults;
-                    $bookings[$uuid]['datetime_reservation'] = $bookingData->datetime_reservation;
-                    $bookings[$uuid]['comment'] = $bookingData->comment;
-                    $bookings[$uuid]['phone_number'] = $bookingData->phone_number;
-                    $bookings[$uuid]['email'] = $bookingData->email;
-                    $bookings[$uuid]['contact'] = $bookingData->phone_number . ' ' . $bookingData->email;
-                    $bookings[$uuid]['status'] = $bookingData->getStatusLabel();
-                    $bookings[$uuid]['updated_at'] = $bookingData->updated_at;
-                }
-                // Paginate results
-                $resultsPagination = new LengthAwarePaginator($bookings, $nbTotalResults, $nbElementPerPage, $currentPage);
-                $resultsPagination->setPath(Request::url());
-
-                $dtFeeder = new DatatableFeeder($id);
-                $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('nb_adults' => 'Personnes', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire', 
-                                            'contact' => 'Contact', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
-                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
+            case \App\Datatables\DtBookingPro::DT_ID:
+                $dtFeeder = new \App\Datatables\DtBookingPro();
+                $dtFeeder->run();
                 break;
-            case self::BUSINESS_CATEGORIES_DATATABLE:
-                // Filters
-                $filters = array();
-                
-                // Free search
-                $freeSearch = new \App\Feeders\DatatableFilter();
-                $freeSearch->setInputType(\App\Feeders\DatatableFilter::INPUT_TEXT);
-                $freeSearch->setName('category_label');
-                $freeSearch->setPlaceholder("Recherche...");
-                $freeSearch->setTable(BusinessCategory::TABLENAME);
-                $freeSearch->setField('name');
-                $freeSearch->setOperator(\App\Feeders\DatatableFilter::OPERATOR_LIKE_CONTAINS);
-                $freeSearch->setValue(Request::get('filter.category_label'));
-                $filters[] = $freeSearch;
-                
-                // Type search
-                $typeSearch = new \App\Feeders\DatatableFilter();
-                $typeSearch->setInputType(\App\Feeders\DatatableFilter::INPUT_SELECT);
-                $typeSearch->setLabel('Type');
-                $typeSearch->setName('type_category');
-                $typeSearch->setPlaceholder("Tous");
-                $typeSearch->setTable(BusinessCategory::TABLENAME);
-                $typeSearch->setField('type');
-                $typeSearch->setEnableEmpty(false);
-                $typeSearch->setOperator(\App\Feeders\DatatableFilter::OPERATOR_EQUAL);
-                $typeSearch->setValue(Request::get('filter.type_category'));
-                $typeSearch->setOptions(BusinessCategory::getLabelByType());
-                $filters[] = $typeSearch;
-                
-                $businessCategory = array();
-
-                $businessQuery = DB::table(BusinessCategory::TABLENAME);
-                $businessQuery->orderBy(BusinessCategory::TABLENAME . '.updated_at', 'desc');
-                //$businessQuery->orderBy(BusinessCategory::TABLENAME . '.status', 'desc');
-
-                // Apply filters
-                \App\Feeders\DatatableFilter::applyFilters($businessQuery, $filters);
-                
-                $nbTotalResults = $businessQuery->count(BusinessCategory::TABLENAME . '.id');
-
-                $businessQuery->offset($sliceStart)->limit($nbElementPerPage);
-                $BusinessCategoriesData = $businessQuery->get();
-
-                foreach ($BusinessCategoriesData as $businessCategoryData) {
-                    $uuid = UuidTools::getUuid($businessCategoryData->id);
-
-                    $businessCategory[$uuid]['id'] = $uuid;
-                    $businessCategory[$uuid]['name'] = $businessCategoryData->name;
-                    switch ($businessCategoryData->type) {
-                        case BusinessCategory::TYPE_COOKING_TYPE :
-                            $businessCategory[$uuid]['type'] = 'Type de cuisine';
-                            break;
-                        case BusinessCategory::TYPE_FOOD_SPECIALTY :
-                            $businessCategory[$uuid]['type'] = 'Spécialité';
-                            break;
-                        case BusinessCategory::TYPE_RESTAURANT_AMBIENCE :
-                            $businessCategory[$uuid]['type'] = 'Cadre et ambiance';
-                            break;
-                        case BusinessCategory::TYPE_SERVICES :
-                            $businessCategory[$uuid]['type'] = 'Service';
-                            break;
-                    }
-                    $businessCategory[$uuid]['status'] = $businessCategoryData->status;
-                    $businessCategory[$uuid]['updated_at'] = $businessCategoryData->updated_at;
-                }
-                // Paginate results
-                $resultsPagination = new LengthAwarePaginator($businessCategory, $nbTotalResults, $nbElementPerPage, $currentPage);
-                $resultsPagination->setPath(Request::url());
-
-                $dtFeeder = new DatatableFeeder($id);
-                $dtFeeder->setFilters($filters);
-                $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('name' => 'Nom de la catégorie', 'type' => 'type', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
-                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
-                $dtFeeder->enableAction(DatatableRowAction::ACTION_REMOVE);
-
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setOnclick('getOnClickModal("Edition catégorie Business", '
-                        . '"/admin/' . BusinessCategory::TABLENAME . '/{{id}}");');
-//                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/'.BusinessCategory::TABLENAME.'/{{id}}');
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_REMOVE)->setHref('/admin/delete/' . BusinessCategory::TABLENAME . '/{{id}}');
-
+            case \App\Datatables\DtBusinessCategoryAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtBusinessCategoryAdmin();
+                $dtFeeder->run();
                 break;
-            case self::PROMOTION_DATATABLE:
-                $promotions = array();
-
-                $promotionsQuery = DB::table(Promotion::TABLENAME)
-                        ->select([Promotion::TABLENAME . '.*',
-                            Establishment::TABLENAME . '.name AS ets_name'])
-                        ->join(Establishment::TABLENAME, Promotion::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
-                ;
-                $promotionsQuery->whereRaw(Promotion::TABLENAME . '.end_date > NOW()');
-                $promotionsQuery->orderBy(Promotion::TABLENAME . '.start_date', 'ASC');
-
-                $nbTotalResults = $promotionsQuery->count(Promotion::TABLENAME . '.id');
-
-                $promotionsQuery->offset($sliceStart)->limit($nbElementPerPage);
-                $promotionsData = $promotionsQuery->get();
-                foreach ($promotionsData as $promotionData) {
-                    $uuid = UuidTools::getUuid($promotionData->id);
-
-                    $promotions[$uuid]['id'] = $uuid;
-                    $promotions[$uuid]['ets_name'] = $promotionData->ets_name;
-                    $promotions[$uuid]['name'] = $promotionData->name;
-                    $promotions[$uuid]['type'] = PromotionType::getLabelFromType($promotionData->id_promotion_type);
-                    $promotions[$uuid]['start_date'] = $promotionData->start_date;
-                    $promotions[$uuid]['end_date'] = $promotionData->end_date;
-                }
-                // Paginate results
-                $resultsPagination = new LengthAwarePaginator($promotions, $nbTotalResults, $nbElementPerPage, $currentPage);
-                $resultsPagination->setPath(Request::url());
-
-                $dtFeeder = new DatatableFeeder($id);
-                $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('ets_name' => 'Etablissement', 'name' => 'Label', 'type' => 'Type', 'start_date' => 'Début'
-                    , 'end_date' => 'Fin'));
-//                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
-//                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/promotion/{{id}}');
+            case \App\Datatables\DtPromotionAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtPromotionAdmin();
+                $dtFeeder->run();
                 break;
-            case self::EVENT_DATATABLE:
-                $event = array();
-
-                $eventsQuery = DB::table(Event::TABLENAME)
-                        ->select([Event::TABLENAME . '.*',
-                            Establishment::TABLENAME . '.name AS ets_name'])
-                        ->join(Establishment::TABLENAME, Event::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
-                ;
-                $eventsQuery->whereRaw(Event::TABLENAME . '.end_date > NOW()');
-                $eventsQuery->orderBy(Event::TABLENAME . '.start_date', 'ASC');
-
-                $nbTotalResults = $eventsQuery->count(Event::TABLENAME . '.id');
-
-                $eventsQuery->offset($sliceStart)->limit($nbElementPerPage);
-                $eventsData = $eventsQuery->get();
-                foreach ($eventsData as $eventsData) {
-                    $uuid = UuidTools::getUuid($eventsData->id);
-
-                    $event[$uuid]['id'] = $uuid;
-                    $event[$uuid]['ets_name'] = $eventsData->ets_name;
-                    $event[$uuid]['name'] = $eventsData->name;
-                    $event[$uuid]['type'] = $eventsData->type_event;
-                    $event[$uuid]['start_date'] = $eventsData->start_date;
-                    $event[$uuid]['end_date'] = $eventsData->end_date;
-                }
-                // Paginate results
-                $resultsPagination = new LengthAwarePaginator($event, $nbTotalResults, $nbElementPerPage, $currentPage);
-                $resultsPagination->setPath(Request::url());
-
-                $dtFeeder = new DatatableFeeder($id);
-                $dtFeeder->setPaginator($resultsPagination);
-                $dtFeeder->setColumns(array('ets_name' => 'Etablissement', 'name' => 'Label', 'type' => 'Type', 'start_date' => 'Début'
-                    , 'end_date' => 'Fin'));
-                $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
-                $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/events/{{id}}');
+            case \App\Datatables\DtEventAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtEventAdmin();
+                $dtFeeder->run();
                 break;
         }
         return $dtFeeder;

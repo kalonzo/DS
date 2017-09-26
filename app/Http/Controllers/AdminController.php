@@ -129,15 +129,15 @@ class AdminController extends Controller {
     }
 
     public function index() {
-        $etsDatatableFeeder = DatatableController::buildDatatable(DatatableController::ESTABLISHMENT_DATATABLE);
+        $etsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentAdmin::DT_ID);
+        
+        $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingPro::DT_ID);
 
-        $bookingDatatableFeeder = DatatableController::buildDatatable(DatatableController::BOOKING_PRO_DATATABLE);
+        $businessCategoriesDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBusinessCategoryAdmin::DT_ID);
 
-        $businessCategoriesDatatableFeeder = DatatableController::buildDatatable(DatatableController::BUSINESS_CATEGORIES_DATATABLE);
+        $promotionsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtPromotionAdmin::DT_ID);
 
-        $promotionsDatatableFeeder = DatatableController::buildDatatable(DatatableController::PROMOTION_DATATABLE);
-
-        $eventDatatableFeeder = DatatableController::buildDatatable(DatatableController::EVENT_DATATABLE);
+        $eventDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEventAdmin::DT_ID);
 
         $view = View::make('admin.home')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
