@@ -119,6 +119,14 @@ a.link-disabled{
 }
 
 .datatable-container{
+    .datatable-filters{
+        label{
+            padding-right: 5px;
+        }
+        .form-group{
+            padding-right: 10px;
+        }
+    }
     .datatable{
         .glyphicon{
             &.clickable{

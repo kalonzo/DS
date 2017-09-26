@@ -99,4 +99,14 @@ class DatatableFeeder {
     function addFilter($filter){
         $this->filters[] = $filter;
     }
+    
+    function getFilters(){
+        return $this->filters;
+    }
+
+    function setFilters($filters) {
+        $this->filters = $filters;
+    }
+
+
 }

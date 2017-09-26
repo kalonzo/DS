@@ -51,6 +51,20 @@ class DatatableController {
 
         switch ($id) {
             case self::ESTABLISHMENT_DATATABLE:
+                // Filters
+                $filters = array();
+                
+                // Free search
+                $freeSearch = new \App\Feeders\DatatableFilter();
+                $freeSearch->setInputType(\App\Feeders\DatatableFilter::INPUT_TEXT);
+                $freeSearch->setName('designation');
+                $freeSearch->setPlaceholder("Recherche...");
+                $freeSearch->setTable(Establishment::TABLENAME);
+                $freeSearch->setField('name');
+                $freeSearch->setOperator(\App\Feeders\DatatableFilter::OPERATOR_LIKE_CONTAINS);
+                $freeSearch->setValue(Request::get('filter.designation'));
+                $filters[] = $freeSearch;
+                
                 $establishments = array();
 
                 $establishmentsQuery = DB::table(Establishment::TABLENAME)
@@ -68,6 +82,9 @@ class DatatableController {
                 }
                 $establishmentsQuery->orderBy(Establishment::TABLENAME . '.updated_at', 'desc');
 
+                // Apply filters
+                \App\Feeders\DatatableFilter::applyFilters($establishmentsQuery, $filters);
+                
                 $nbTotalResults = $establishmentsQuery->count(Establishment::TABLENAME . '.id');
 
                 $establishmentsQuery->offset($sliceStart)->limit($nbElementPerPage);
@@ -89,12 +106,15 @@ class DatatableController {
                     $establishments[$uuid]['country'] = Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['updated_at'] = $establishmentData->updated_at;
                 }
+                
+                
                 // Paginate results
                 $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage, $currentPage);
                 $resultsPagination->setPath(Request::url());
 
                 $dtFeeder = new DatatableFeeder($id);
                 $dtFeeder->setPaginator($resultsPagination);
+                $dtFeeder->setFilters($filters);
                 $dtFeeder->setColumns(array('name' => 'Nom', 'type' => 'Type', 'user' => 'Client', 'city' => 'Ville', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 $dtFeeder->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
@@ -164,12 +184,43 @@ class DatatableController {
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);
                 break;
             case self::BUSINESS_CATEGORIES_DATATABLE:
+                // Filters
+                $filters = array();
+                
+                // Free search
+                $freeSearch = new \App\Feeders\DatatableFilter();
+                $freeSearch->setInputType(\App\Feeders\DatatableFilter::INPUT_TEXT);
+                $freeSearch->setName('category_label');
+                $freeSearch->setPlaceholder("Recherche...");
+                $freeSearch->setTable(BusinessCategory::TABLENAME);
+                $freeSearch->setField('name');
+                $freeSearch->setOperator(\App\Feeders\DatatableFilter::OPERATOR_LIKE_CONTAINS);
+                $freeSearch->setValue(Request::get('filter.category_label'));
+                $filters[] = $freeSearch;
+                
+                // Type search
+                $typeSearch = new \App\Feeders\DatatableFilter();
+                $typeSearch->setInputType(\App\Feeders\DatatableFilter::INPUT_SELECT);
+                $typeSearch->setLabel('Type');
+                $typeSearch->setName('type_category');
+                $typeSearch->setPlaceholder("Tous");
+                $typeSearch->setTable(BusinessCategory::TABLENAME);
+                $typeSearch->setField('type');
+                $typeSearch->setEnableEmpty(false);
+                $typeSearch->setOperator(\App\Feeders\DatatableFilter::OPERATOR_EQUAL);
+                $typeSearch->setValue(Request::get('filter.type_category'));
+                $typeSearch->setOptions(BusinessCategory::getLabelByType());
+                $filters[] = $typeSearch;
+                
                 $businessCategory = array();
 
                 $businessQuery = DB::table(BusinessCategory::TABLENAME);
                 $businessQuery->orderBy(BusinessCategory::TABLENAME . '.updated_at', 'desc');
                 //$businessQuery->orderBy(BusinessCategory::TABLENAME . '.status', 'desc');
 
+                // Apply filters
+                \App\Feeders\DatatableFilter::applyFilters($businessQuery, $filters);
+                
                 $nbTotalResults = $businessQuery->count(BusinessCategory::TABLENAME . '.id');
 
                 $businessQuery->offset($sliceStart)->limit($nbElementPerPage);
@@ -202,6 +253,7 @@ class DatatableController {
                 $resultsPagination->setPath(Request::url());
 
                 $dtFeeder = new DatatableFeeder($id);
+                $dtFeeder->setFilters($filters);
                 $dtFeeder->setPaginator($resultsPagination);
                 $dtFeeder->setColumns(array('name' => 'Nom de la catégorie', 'type' => 'type', 'status' => 'Etat', 'updated_at' => 'Modifié le'));
                 $dtFeeder->enableAction(DatatableRowAction::ACTION_EDIT);

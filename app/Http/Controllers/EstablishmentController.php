@@ -830,6 +830,7 @@ class EstablishmentController extends Controller {
                                     'name' => $request->get('name'),
                                     'latitude' => $request->get('latitude'),
                                     'longitude' => $request->get('longitude'),
+                                    'status' => Establishment::STATUS_ACTIVE,
                                     'email' => $request->get('email'),
                                     'site_url' => $request->get('site_url'),
                                     'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
@@ -952,6 +953,7 @@ class EstablishmentController extends Controller {
 
                         // Update establishment
                         $establishment->update([
+                            'status' => Establishment::STATUS_ACTIVE,
                             'name' => $request->get('name'),
                             'latitude' => $request->get('latitude'),
                             'longitude' => $request->get('longitude'),
