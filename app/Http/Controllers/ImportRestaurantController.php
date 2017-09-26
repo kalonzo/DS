@@ -114,9 +114,9 @@ class ImportRestaurantController extends Controller {
                                     }
                                 }
 
-                                $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
-                                                ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
-                                $establishmentName = Establishment::where('name', '=', $nameEstablishment)->first();
+                                $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', 'like', '%'.$street.'%')
+                                                ->where('postal_code', 'like', '%'.$postalCode.'%')->where('city', '=', $city)->first();
+                                $establishmentName = Establishment::where('name', 'like', '%'.$nameEstablishment.'%')->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
                                 if ((!checkModel($establishmentName) && !checkModel($addressEstablishment) && !empty($nameEstablishment) && !empty($street) && !empty($streetNumber) && !empty($postalCode) && !empty($city))) {
