@@ -60,7 +60,7 @@
                             <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <img alt="user" src="/img/icons/ICONS-MENU-USER.svg"/>
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="dLabel" id="login-dropdown">
+                            <div class="dropdown-menu @if(!Auth::check()) login @else logout @endif" aria-labelledby="dLabel" id="login-dropdown">
                                 @component('components.login')
 
                                 @endcomponent

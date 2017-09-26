@@ -39,30 +39,48 @@
         </div>
         <div class="row">
             <div class="col-xs-12">
-                <a class="register-item" href="javascript:void(0);" onclick="getOnClickModal('', '/register', {type_user: <?php echo App\Models\User::TYPE_USER;?>}, 
-                            'register-modal', 'modal-md')">
-                    Créer un compte Dinerscope
-                </a>
                 <a class="register-item" href="{{ url('/establishment/register') }}">
+                    <div class="corner">
+                        pro
+                    </div>
+                    <img src="/img/icons/add_user.svg" alt="Créer un compte"/>
                     Créer un compte professionnel
+                </a>
+                <a class="register-item color-inverted" href="javascript:void(0);" onclick="getOnClickModal('', '/register', {type_user: <?php echo App\Models\User::TYPE_USER;?>}, 
+                            'register-modal', 'modal-md')">
+                    <img src="/img/icons/add_user_dark.svg" alt="Créer un compte"/>
+                    Créer un compte Dinerscope
                 </a>
             </div>
         </div>
         <br class="cleaner"/>
     </div>
     @else
-    <div class="row logout-section">
-        <p class="col-xs-12">
-            <?php
-//            $user = Auth::user();
-//            echo "Bonjour ".$user->getFirstname().' '.$user->getLastname();
-            ?>
-        </p>
-        <div class="input-group col-xs-12">
-            <a type="button" class="btn btn-default login-logout" href="{{ url('/logout') }}">
-                Me déconnecter
+    <ul class="logout-section">
+        <li>
+            <a href="{{ url('/admin') }}">
+                <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+                <span class="section-item">Espace personnel</span>
             </a>
-        </div>
-    </div>
+        </li>
+        <li>
+            <a href="{{ url('/establishment/register') }}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <span class="section-item">Editer profil</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ url('/establishment/') }}">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <span class="section-item">Editer établissement</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ url('/logout') }}">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                <span class="section-item">Sortir</span>
+            </a>
+        </li>
+    </ul>
     @endif
 </div>

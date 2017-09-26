@@ -129,6 +129,19 @@ class AdminController extends Controller {
     }
 
     public function index() {
+        $view = null;
+        switch(\Illuminate\Support\Facades\Auth::user()->getType()){
+            case \App\Models\User::TYPE_USER_ADMIN_PRO:
+                $view = $this->indexAdmin();
+                break;
+            case \App\Models\User::TYPE_USER_PRO:
+                $view = $this->indexPro();
+                break;
+        }
+        return $view;
+    }
+    
+    private function indexAdmin(){
         $etsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentAdmin::DT_ID);
         
         $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingPro::DT_ID);
@@ -139,10 +152,25 @@ class AdminController extends Controller {
 
         $eventDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEventAdmin::DT_ID);
 
-        $view = View::make('admin.home')
+        $view = View::make('admin.admin.dashboard')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
                 ->with($bookingDatatableFeeder->getId(), $bookingDatatableFeeder->getViewParamsArray())
                 ->with($businessCategoriesDatatableFeeder->getId(), $businessCategoriesDatatableFeeder->getViewParamsArray())
+                ->with($promotionsDatatableFeeder->getId(), $promotionsDatatableFeeder->getViewParamsArray())
+                ->with($eventDatatableFeeder->getId(), $eventDatatableFeeder->getViewParamsArray())
+        ;
+        return $view;
+    }
+    
+    private function indexPro(){
+        $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingPro::DT_ID);
+
+        $promotionsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtPromotionAdmin::DT_ID);
+
+        $eventDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEventAdmin::DT_ID);
+
+        $view = View::make('admin.pro.dashboard')
+                ->with($bookingDatatableFeeder->getId(), $bookingDatatableFeeder->getViewParamsArray())
                 ->with($promotionsDatatableFeeder->getId(), $promotionsDatatableFeeder->getViewParamsArray())
                 ->with($eventDatatableFeeder->getId(), $eventDatatableFeeder->getViewParamsArray())
         ;

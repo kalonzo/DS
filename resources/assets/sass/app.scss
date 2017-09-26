@@ -158,7 +158,41 @@ a.link-disabled{
 }
 
 #login-dropdown{
-    width: 300px;
+    &.login{
+        width: 300px;
+    }
+    &.logout{
+        width: 230px;
+        @include borderRadius(0px);
+        ul.logout-section{
+            list-style: none;
+            padding-left: 0;
+            margin-left: -15px;
+            margin-right: -15px;
+            li{
+                line-height: 40px;
+                .section-item{
+                    font-size: 1.3em;
+                }
+                .glyphicon{
+                    margin-right: 0.5em;
+                }
+                a{
+                    width: 100%;
+                    padding: 0px 15px;
+                    color: $main-text-color;
+                    vertical-align: middle;
+                    &:hover, &:focus{
+                        color: $main-text-color;
+                        text-decoration: none;
+                    }
+                    > *{
+                        vertical-align: middle;
+                    }
+                }
+            }
+        }
+    }
     background: $main-dark-color;
     color: $main-text-color;
     padding: 0px;
@@ -207,8 +241,29 @@ a.link-disabled{
             @include borderRadius(10px);
             text-transform: uppercase;
             color: $main-text-color;
+            line-height: 1em;
+            font-size: 0.95em;
+            position: relative;
+            overflow: hidden;
             &:hover, &:focus{
                 text-decoration: none;
+            }
+            &.color-inverted{
+                background-color: white;
+                color: $main-dark-color;
+            }
+            img{
+                width: 100% !important;
+            }
+            .corner{
+                text-transform: uppercase;
+                background-color: $alt-highlight-color;
+                @include rotate(45);
+                position: absolute;
+                top: -5px;
+                right: -25px;
+                padding: 15px 20px 5px 20px;
+                font-size: 1.2em;
             }
         }
     }
