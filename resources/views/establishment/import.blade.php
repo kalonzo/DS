@@ -26,13 +26,7 @@
         </div>
         @endif
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
-            @component('components.file-input', 
-                                ['name' => 'excel',
-                                'class' => 'form-control',
-                                'fileType' => 'text'
-                                ])
-
-            @endcomponent
+           {!! Form::file('excel', array('class' => 'form-control')) !!}
         </div>
     </div>
     <div id="formControlBottomBand">

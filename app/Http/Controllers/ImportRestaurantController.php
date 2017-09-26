@@ -136,7 +136,7 @@ class ImportRestaurantController extends Controller {
                                         $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', '=', $street)
                                                         ->where('postal_code', '=', $postalCode)->where('city', '=', $city)->first();
                                         if (!checkModel($addressEstablishment)) {
-                                            $status = Establishment::STATUS_ACTIVE;
+                                            $status = Establishment::STATUS_INCOMPLETE;
                                             self::insertETS($nameEstablishment, $street, $street_2, $streetNumber, $postalCode, $region, $district, $city, $country, $lat, $lng, $email, $siteWeb, $description, $cookingType, $speciality, $service, $ambiance, $phonePro, $openingHours, $status, null, null);
                                             $nbSucces = $nbSucces + 1;
                                             $stop = false;
