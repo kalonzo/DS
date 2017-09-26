@@ -2,7 +2,9 @@ $(function () {
     $("#search_keywords").autocomplete({
         source: "/search-autocomplete/",
         minLength: 2,
-
+        select: function( event, ui ) {
+            $("#search_keywords").parentsInclude('form').submit();
+        }
     }).autocomplete("instance")._create = function() {
         this._super();
         this.widget().menu({

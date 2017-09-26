@@ -1,5 +1,6 @@
 @php
     $id = $tabledata['id'];
+    $filters = isset($tabledata['filters']) ? $tabledata['filters'] : null;
     $columns = $tabledata['columns'];
     $rows = $tabledata['rows'];
     $actions = isset($tabledata['actions']) ? $tabledata['actions'] : null;
@@ -13,6 +14,30 @@
 @if(!isset($reloaded) || !$reloaded)
 <div class="datatable-container">
 @endif
+    @if(isset($filters) && !empty($filters))
+    <form class="datatable-filters form-inline">
+        <?php
+        foreach($filters as $filter){
+            if($filter instanceof \App\Feeders\DatatableFilter){
+                ?><div class="form-group"><?php
+                if(!empty($filter->getLabel())){
+                    echo Form::label('filter['.$filter->getName().']', $filter->getLabel());
+                }
+                switch ($filter->getInputType()){
+                    case \App\Feeders\DatatableFilter::INPUT_TEXT:
+                        echo Form::text('filter['.$filter->getName().']', $filter->getValue(), ['class' => 'form-control', 'placeholder' => $filter->getPlaceholder()]);
+                        break;
+                    case \App\Feeders\DatatableFilter::INPUT_SELECT:
+                        echo Form::select('filter['.$filter->getName().']', $filter->getOptions(), $filter->getValue(), 
+                                        ['class' => 'form-control select2', 'placeholder' => $filter->getPlaceholder()]);
+                        break;
+                }
+                ?></div><?php
+            }
+        }
+        ?>
+    </form>
+    @endif
     <table class="datatable table table-custom dt-responsive" id="{{ $id }}" width="100%">
         <thead>
             <tr>

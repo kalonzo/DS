@@ -85,13 +85,13 @@ class SearchController {
                 ;
                 $geolocLimitSuccess = DbQueryTools::setGeolocLimits($rawDistanceEstablishmentsQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
                 $nbResults = $rawDistanceEstablishmentsQuery->count();
-                if ($geolocLimitSuccess && $nbResults >= (self::NB_QUICK_RESULTS_PER_TYPE / 2)) {
+                if ($attempt === 3 || ($geolocLimitSuccess && $nbResults >= (self::NB_QUICK_RESULTS_PER_TYPE / 2))) {
                     $namedEstablishments = with(clone $rawDistanceEstablishmentsQuery)->orderBy('name')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
                     $rawDistanceEstablishments = $rawDistanceEstablishmentsQuery->orderBy('rawDistance')->limit(self::NB_QUICK_RESULTS_PER_TYPE)->get();
                 }
                 $attempt++;
             } while($nbResults < (self::NB_QUICK_RESULTS_PER_TYPE / 2) && $attempt < 4);
-        
+
             if(!empty($rawDistanceEstablishments)){
                 // TOP RESULTS
                 $counter = 0;
