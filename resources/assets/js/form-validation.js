@@ -46,6 +46,12 @@ $('body').on('click', '.form-data-button', function () {
                         if (first) {
                             first = false;
                             if (checkExist($scrollRefElement)) {
+                                // Check if element is into a closed accordion
+                                var $accordionPanel = $input.parentsInclude('.panel-collapse:not(.in)');
+                                if(checkExist($accordionPanel)){
+                                    $accordionPanel.collapse('show');
+                                }
+                                
                                 var inputTopPosition = $input.offset().top;
                                 var inputHeight = $input.outerHeight();
                                 var refScrollTopPosition = $scrollRefElement.offset().top;
@@ -61,7 +67,8 @@ $('body').on('click', '.form-data-button', function () {
                         $formGroup.addClass('has-error');
                         $input.tooltip({
                             title: value.join(', '),
-                            trigger: 'manual'
+                            trigger: 'manual',
+                            template: '<div class="tooltip form-error-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
                         }).tooltip('show');
                         $input.change(function () {
                             $(this).tooltip('destroy');

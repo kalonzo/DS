@@ -9,9 +9,9 @@
 
 <div id="map"> </div>
 @if(checkModel($establishment))
-    {!! Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/establishment/'.$establishment->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
+    {!! Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/edit/establishment/'.$establishment->getUuid(), 'files' => true]) !!}
 @else
-    {!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment', 'method' => 'put', 'files' => true]) !!}
+    {!! Form::open(['id'=>'feed-establishment', 'url'=>'/create/establishment', 'files' => true]) !!}
 @endif
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
@@ -86,7 +86,24 @@
         </div>
     </div>
     <div id="formControlBottomBand">
-       {!! Form::submit('Valider', array('class'=>'btn pull-right')) !!}
+        <div id="formAjaxFeedback">
+            <div id="form-ajax-alert" class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+                <span class="alert-message">Attention!</span>
+            </div>
+            <div id="form-ajax-confirm" class="alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                <span class="alert-message">Vos informations ont bien été enregistrées.</span>
+            </div>
+        </div>
+        <div id="formActions" class="pull-right">
+            <a class="btn" href="/admin">
+                Retour au dashboard
+            </a>
+            {!! Form::button('Enregistrer les modifications', ['class' => 'btn form-data-button', 'type' => 'button']) !!}
+        </div>
     </div>
 {!! form::close() !!}
 @endsection
@@ -233,6 +250,7 @@
             });
             
             $form.on('submit', function(){
+                console.log(addressGeocoded);
                 if(!addressGeocoded){
                     var callbacks = $.Callbacks();
                     callbacks.add(
@@ -315,6 +333,26 @@
                     });
                 };
             }
+        });
+        
+        $('body').on('ajaxFormFailed', 'form#feed-establishment', function(e, data){
+            var errors = data.responseJSON;
+            
+            var $confirm = $(this).find('#form-ajax-confirm');
+            $confirm.hide();
+            
+            if(!errors.error){
+                var nbInputErrors = Object.keys(errors).length;
+                var message = "Veuillez corriger votre saisie, nous avons détecté " + nbInputErrors + " erreur(s).";
+                var $alert = $(this).find('#form-ajax-alert');
+                $alert.find('.alert-message').empty().html(message);
+                $alert.show();
+            }
+        });
+        
+        $('body').on('ajaxFormSubmitted', 'form#feed-establishment', function(e, data){
+            var $confirm = $(this).find('#form-ajax-confirm');
+            $confirm.show();
         });
     });
     

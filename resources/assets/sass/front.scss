@@ -40,8 +40,7 @@ a.disabled{
     
 }
 
-$inputErrorColor: #a94442;
-.has-error {
+/*.has-error {
     .form-control {
         border-color: $inputErrorColor !important;
     }
@@ -53,7 +52,7 @@ $inputErrorColor: #a94442;
             color: $inputErrorColor;
         }
     }
-}
+}*/
 
 select:not(.select2){
         color: $main-text-color !important;
@@ -761,9 +760,28 @@ $mapThumbnailWidth: 145px;
     width: 100%;
     height: 60px;
     padding: 10px;
-    z-index: 2;
+    z-index: 1080;
     box-sizing: border-box;
     background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    #formAjaxFeedback{
+        flex: 1;
+        padding-right: 10px;
+        #form-ajax-alert, #form-ajax-confirm{
+            padding-top: 10px;
+            padding-bottom: 10px;
+            text-align: left;
+            display: none;
+            .glyphicon{
+                margin-right: 5px;
+            }
+        }
+    }
+    #formActions{
+        .btn{
+            padding: 10px;
+        }
+    }
 }
 
 .form-accordion{

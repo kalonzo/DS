@@ -30,15 +30,16 @@ Route::put('/establishment/register', 'UserProController@store');
 
 
 // ESTABLISHMENT
-// create
-Route::get('/establishment/create', 'EstablishmentController@create');
-// store
-Route::put('/establishment', 'EstablishmentController@store');
-// edit
-Route::get('/establishment/{establishment}', 'EstablishmentController@edit');
-// update
-Route::put('/establishment/{establishment}', 'EstablishmentController@update');
-Route::post('/establishment/{establishment}/ajax/', 'EstablishmentController@ajax');
+// create view
+Route::get('/create/establishment', 'EstablishmentController@create');
+// store process
+Route::post('/create/establishment', 'EstablishmentController@store');
+// edit view
+Route::get('/edit/establishment/{establishment}', 'EstablishmentController@edit');
+// update process
+Route::post('/edit/establishment/{establishment}', 'EstablishmentController@update');
+// ajax processes through update 
+Route::post('/edit/establishment/{establishment}/ajax/', 'EstablishmentController@ajax');
 
 // store booking
 Route::post('/establishment/booking/{establishment}', 'EstablishmentController@createBooking');

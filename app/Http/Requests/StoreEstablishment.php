@@ -33,119 +33,118 @@ class StoreEstablishment extends \App\Http\FormRequest {
      */
     public function rules() {
         $rules = array();
+        
+        switch ($this->get('action')) {
+            case 'add_gallery':
+                //var_dump($this->file('new_gallery'));
+                $rules = [
+                    'new_gallery_name' => 'required|min:2|max:255',
+                    'new_gallery' => 'required',
+                ];
+                break;
+            case 'add_dish':
+                $rules = [
+                    'new_dish_name' => 'required|min:2|max:255',
+                    'new_dish_description' => 'nullable|min:2|max:255',
+                    'new_dish_price' => 'required|numeric|min:2',
+                    'new_dish_price_cents' => 'required|max:2',
+                ];
+            case 'delete_gallery':
+                break;
+            case 'add_close_period':
+                $closeStartDate = new \DateTime($this->get('close_start'));
+                $rules = [
+                    'close_name' => 'required|min:2|max:255',
+                    'close_start' => 'required_with:close_name|date_format:Y-m-d',
+                    'close_end' => 'required_with:close_name|date_format:Y-m-d|after:' . $closeStartDate->format('Y/m/d'),
+                ];
+                break;
+            case 'add_media_to_gallery':
+                //TODO
+                break;
+            case 'add_menu':
+                $rules = [
+                    'menu_name' => 'required|min:2|max:255',
+                    'new_menu' => 'required',
+                ];
+                break;
+            case 'add_video':
+                //TODO
 
-        if ($this->ajax() === true) {
-            switch ($this->get('action')) {
-                case 'add_gallery':
-                    //var_dump($this->file('new_gallery'));
-                    $rules = [
-                        'new_gallery_name' => 'required|min:2|max:255',
-                        'new_gallery' => 'required',
-                    ];
-                    break;
-                case 'add_dish':
-                    $rules = [
-                        'new_dish_name' => 'required|min:2|max:255',
-                        'new_dish_description' => 'nullable|min:2|max:255',
-                        'new_dish_price' => 'required|numeric|min:2',
-                        'new_dish_price_cents' => 'required|max:2',
-                    ];
-                case 'delete_gallery':
-                    break;
-                case 'add_close_period':
-                    $closeStartDate = new \DateTime($this->get('close_start'));
-                    $rules = [
-                        'close_name' => 'required|min:2|max:255',
-                        'close_start' => 'required_with:close_name|date_format:Y-m-d',
-                        'close_end' => 'required_with:close_name|date_format:Y-m-d|after:' . $closeStartDate->format('Y/m/d'),
-                    ];
-                    break;
-                case 'add_media_to_gallery':
-                    //TODO
-                    break;
-                case 'add_menu':
-                    $rules = [
-                        'menu_name' => 'required|min:2|max:255',
-                        'new_menu' => 'required',
-                    ];
-                    break;
-                case 'add_video':
-                    //TODO
+                break;
+            case 'add_employee':
+                $rules = [
+                    'new_employee_firstname' => 'required|min:2|max:255',
+                    'new_employee_lastname' => 'required|min:2|max:255',
+                    'job_type' => 'required',
+                    'new_employee_position' => 'required',
+                ];
+                break;
+            case 'add_story':
+                $rules = [
+                    'new_story_year' => 'required',
+                    'new_story_title' => 'required|min:2|max:255',
+                    'new_story_description' => 'nullable|min:2|max:255',
+                    'new_story' => 'required',
+                ];
+                break;
+            default :
+                $name = $this->get('name');
+                $establishment = \App\Models\Establishment::where('name', $name)->first();
 
-                    break;
-                case 'add_employee':
-                    $rules = [
-                        'new_employee_firstname' => 'required|min:2|max:255',
-                        'new_employee_lastname' => 'required|min:2|max:255',
-                        'job_type' => 'required',
-                        'new_employee_position' => 'required',
-                    ];
-                    break;
-                case 'add_story':
-                    $rules = [
-                        'new_story_year' => 'required',
-                        'new_story_title' => 'required|min:2|max:255',
-                        'new_story_description' => 'nullable|min:2|max:255',
-                        'new_story' => 'required',
-                    ];
-                    break;
-            }
-        } else {
-            $name = $this->get('name');
-            $establishment = \App\Models\Establishment::where('name', $name)->first();
-
-            if (checkModel($establishment)) {
-                $establishmentId = explode('/', $this->getPathInfo());
-                if (!isset($establishmentId[2])) {
-                    $rules = [
-                        'nameExist' => 'required',
-                    ];
-                    return $rules;
+                if (checkModel($establishment)) {
+                    $establishmentId = explode('/', $this->getPathInfo());
+                    if (!isset($establishmentId[2])) {
+                        $rules = [
+                            'nameExist' => 'required',
+                        ];
+                        return $rules;
+                    }
                 }
-            }
 
-            //minima maxima for dishes
-            $min = $this->get('average_price_min');
-            $max = $this->get('average_price_max');
-            $rules = [
-                //self::$rules_phone,
-                // Location
-                'name' => 'required|min:2|max:255',
-                'address.street' => 'required|min:3|max:255',
-                'address.street_number' => 'required|max:45',
-                'address.postal_code' => 'required|max:11',
-                'address.region' => 'required|max:255',
-                'address.city' => 'required|max:255',
-                'address.id_country' => 'required',
-                //Web 
-                'site_url' => 'nullable|regex:/(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.?([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-                'email' => 'nullable|email',
-                //description
-                'description' => 'nullable|min:2',
-                // Cooking types
-                'businessCategories.1' => 'required|array|min:1|max:5',
-                'businessCategories.2' => 'nullable|array|max:5',
-                //galerie
-                'logo' => 'nullable|mimes:png,jpg,jpeg,svg',
-                //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
-                //Menu average price
-                'average_price_max' => 'nullable|required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
-                'average_price_min' => 'nullable|required_with:average_price_max',
-                //call number
-                'call_number.1' => 'required|regex:/^[0-9 ]+$/',
-                'call_number.4' => 'required|regex:/^[0-9 ]+$/',
-                'call_number.2' => 'nullable|regex:/^[0-9 ]+$/',
-                'call_number.3' => 'nullable|regex:/^[0-9 ]+$/',
-            ];
+                //minima maxima for dishes
+                $min = $this->get('average_price_min');
+                $max = $this->get('average_price_max');
+                $rules = [
+                    //self::$rules_phone,
+                    // Location
+                    'name' => 'required|min:2|max:255',
+                    'address.street' => 'required|min:3|max:255',
+                    'address.street_number' => 'required|max:45',
+                    'address.postal_code' => 'required|max:11',
+                    'address.region' => 'required|max:255',
+                    'address.city' => 'required|max:255',
+                    'address.id_country' => 'required',
+                    //Web 
+                    'site_url' => 'nullable|regex:/(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.?([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+                    'email' => 'nullable|email',
+                    //description
+                    'description' => 'nullable|min:2',
+                    // Cooking types
+                    'businessCategories.1' => 'required|array|min:1|max:5',
+                    'businessCategories.2' => 'nullable|array|max:5',
+                    //galerie
+                    'logo' => 'nullable|mimes:png,jpg,jpeg,svg',
+                    //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
+                    //Menu average price
+                    'average_price_max' => 'nullable|required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
+                    'average_price_min' => 'nullable|required_with:average_price_max',
+                    //call number
+                    'call_number.1' => 'required|regex:/^[0-9 ]+$/',
+                    'call_number.4' => 'required|regex:/^[0-9 ]+$/',
+                    'call_number.2' => 'nullable|regex:/^[0-9 ]+$/',
+                    'call_number.3' => 'nullable|regex:/^[0-9 ]+$/',
+                ];
 
-            // Opening hours
-            foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
-                $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
-                $rules['openingHours.' . $dayIndex . '.1.end'] = 'required|after_or_equal:openingHours.' . $dayIndex . '.1.start';
+                // Opening hours
+                foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
+                    $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
+                    $rules['openingHours.' . $dayIndex . '.1.end'] = 'required|after_or_equal:openingHours.' . $dayIndex . '.1.start';
 
-                $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
-                $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
-            }
+                    $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
+                    $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
+                }
+            break;
         }
         return $rules;
     }

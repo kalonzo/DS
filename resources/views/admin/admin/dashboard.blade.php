@@ -8,7 +8,7 @@
 
 @section('content')
 
-    @component('components.tile', ['title' => 'Etablissements', 'add_href' => '/establishment/create', 
+    @component('components.tile', ['title' => 'Etablissements', 'add_href' => '/create/establishment', 
                                     'tabledata' => $dt_establishment_admin])
 
     @endcomponent

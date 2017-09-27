@@ -27,7 +27,7 @@ class DtEstablishmentAdmin extends DatatableFeeder {
 
     public function buildActions() {
         $this->enableAction(DatatableRowAction::ACTION_EDIT);
-        $this->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/establishment/{{id}}');
+        $this->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/edit/establishment/{{id}}');
     }
 
     public function buildColumns() {

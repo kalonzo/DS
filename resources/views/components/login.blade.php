@@ -64,17 +64,23 @@
             </a>
         </li>
         <li>
-            <a href="{{ url('/establishment/register') }}">
+            <a href="#">
                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                 <span class="section-item">Editer profil</span>
             </a>
         </li>
-        <li>
-            <a href="{{ url('/establishment/') }}">
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                <span class="section-item">Editer établissement</span>
-            </a>
-        </li>
+        <?php
+        if(Illuminate\Support\Facades\Auth::user()->getType() === App\Models\User::TYPE_USER_PRO){
+            ?>
+            <li>
+                <a href="{{ url('/establishment/') }}">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                    <span class="section-item">Editer établissement</span>
+                </a>
+            </li>
+            <?php
+        }
+        ?>
         <li>
             <a href="{{ url('/logout') }}">
                 <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>

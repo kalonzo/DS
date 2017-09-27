@@ -341,3 +341,33 @@ a.link-disabled{
         }
     }
 }
+
+.alert-success {
+    background-color: $success-color;
+    border-color: $success-color;
+    color: #fff;
+    font-weight: bold;
+}
+
+.alert-danger{
+    background-color: $danger-color;
+    border-color: $danger-color;
+    color: #fff;
+    font-weight: bold;
+}
+
+.has-error.form-control{
+    border-color: $danger-color !important;
+}
+
+.form-error-tooltip{
+    .tooltip-inner{
+        background-color: $danger-color;
+        border-color: $danger-color;
+        color: #fff;
+        font-weight: bold;
+    }
+    .tooltip-arrow.tooltip-arrow{
+        border-top-color: #fff;
+    }
+}
