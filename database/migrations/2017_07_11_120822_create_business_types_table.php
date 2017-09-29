@@ -18,6 +18,7 @@ class CreateBusinessTypesTable extends Migration {
                         $table->timestamps();
 			$table->binary('id_media', 16);
 			$table->string('label', 90)->nullable();
+			$table->integer('status')->nullable();
 		});
 	}
 

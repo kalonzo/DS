@@ -25,6 +25,7 @@ class CreateAddressTable extends Migration {
                     $table->integer('id_country')->nullable()->index('fk_address_country_idx');
                     $table->float('latitude', 10, 0)->nullable();
                     $table->float('longitude', 10, 0)->nullable();
+                    $table->boolean('geocoded')->nullable();
                     $table->string('label')->nullable();
                     $table->string('title')->nullable();
                     $table->string('company_name')->nullable();

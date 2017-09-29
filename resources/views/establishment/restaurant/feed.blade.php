@@ -8,11 +8,19 @@
 @section('content')
 
 <div id="map"> </div>
-@if(checkModel($establishment))
-    {!! Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/edit/establishment/'.$establishment->getUuid(), 'files' => true]) !!}
-@else
-    {!! Form::open(['id'=>'feed-establishment', 'url'=>'/create/establishment', 'files' => true]) !!}
-@endif
+<?php
+$geocoded = false;
+if(checkModel($establishment)){
+    echo Form::model($establishment, ['id'=>'feed-establishment', 'url' => '/edit/establishment/'.$establishment->getUuid(), 'files' => true]);
+    $address = $establishment->address()->first();
+    if(checkModel($address) && $address->getGeocoded()){
+        $geocoded = true;
+    }
+} else {
+    echo Form::open(['id'=>'feed-establishment', 'url'=>'/create/establishment', 'files' => true]);
+}
+?>
+    {!! Form::hidden('address[geocoded]', $geocoded, ['id'=>'addressGeocoded']) !!}
     <div class="container-fluid no-gutter">
         <div id="ets-heading" class="row no-gutter no-margin"> 
             <div class="container">
@@ -85,36 +93,51 @@
             @endcomponent
         </div>
     </div>
-    <div id="formControlBottomBand">
-        <div id="formAjaxFeedback">
-            <div id="form-ajax-alert" class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-                <span class="alert-message">Attention!</span>
+    <div id="formControlBottomBand" class="panel">
+        <div class="panel-heading" role="tab" id="headingBottomBand">
+            <div id="formAjaxFeedback">
+                <a role="button" data-toggle="collapse" data-parent="#feed-establishment" href="#form-panel-errors" aria-expanded="false" aria-controls="form-panel-errors">
+                    <div id="form-ajax-alert" class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+                        <span class="alert-message">Attention!</span>
+                    </div>
+                </a>
+                <div id="form-ajax-confirm" class="alert alert-success alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    <span class="alert-message">Vos informations ont bien été enregistrées.</span>
+                </div>
+                <div id="form-ajax-loading" class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <span class="glyphicon glyphicon-repeat normal-right-spinner" aria-hidden="true"></span>
+                    <span class="alert-message">Envoi...</span>
+                </div>
             </div>
-            <div id="form-ajax-confirm" class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
-                <span class="alert-message">Vos informations ont bien été enregistrées.</span>
-            </div>
-            <div id="form-ajax-loading" class="alert alert-info alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <span class="glyphicon glyphicon-repeat normal-right-spinner" aria-hidden="true"></span>
-                <span class="alert-message">Envoi...</span>
+            <div id="formActions" class="pull-right">
+                <a class="btn" href="/admin">
+                    Retour au dashboard
+                </a>
+                {!! Form::button('Enregistrer les modifications', ['class' => 'btn form-data-button', 'type' => 'button']) !!}
             </div>
         </div>
-        <div id="formActions" class="pull-right">
-            <a class="btn" href="/admin">
-                Retour au dashboard
-            </a>
-            {!! Form::button('Enregistrer les modifications', ['class' => 'btn form-data-button', 'type' => 'button']) !!}
+        <div id='form-panel-errors' class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBottomBand">
+            <ul class="panel-body container" id='form-list-errors'>
+                
+            </ul>
         </div>
     </div>
 {!! form::close() !!}
 @endsection
 
 <script type="text/javascript">
-    addressGeocoded = false;
+    function isGeocoded(){
+        return $('#addressGeocoded').val();
+    }
+    
+    function setGeocoded(geocoded){
+        $('#addressGeocoded').val(geocoded);
+    }
     
     function geocodeAddress(triggerELement) {
         var $form = $(triggerELement).parentsInclude('form');
@@ -131,7 +154,7 @@
                 'address': address
             }, function (results, status) {
                 if (status === 'OK') {
-                    addressGeocoded = true;
+                    setGeocoded(true);
                     var lat = results[0].geometry.location.lat();
                     var lng = results[0].geometry.location.lng();
                     
@@ -240,38 +263,12 @@
             if(checkExist($form)){
                 var lat = $form.find('[name=latitude]').val()*1;
                 var lng = $form.find('[name=longitude]').val()*1;
-                console.log(lat);
-                console.log(lng);
                 if(!isNaN(lat) && !isNaN(lng)){
-                    addressGeocoded = true;
                     relocateMapPosition(lat, lng);
                 } else {
                     relocateMapPosition(46.204549, 6.144775);
                 }
             }
-            
-            $form.on('change', 'input, select', function(){
-                addressGeocoded = false;
-            });
-            
-            $form.on('submit', function(){
-                console.log(addressGeocoded);
-                if(!addressGeocoded){
-                    var callbacks = $.Callbacks();
-                    callbacks.add(
-                            geocodeAddress($form.children().get(0))
-                    );
-                    callbacks.add(function(){
-                        if(!addressGeocoded){
-                            return false;
-                        } else {
-                            $form.submit();
-                        }
-                    });
-                    callbacks.fire();
-                }
-                return true;
-            });
                         
             var $areaAutoCompleteInput = $('[name="address[district]"]');
             if(!isEmpty($areaAutoCompleteInput)){
@@ -292,7 +289,6 @@
                                 types: ['geocode'], 
                             };
                         service.getQueryPredictions(options, function(predictions, status) {
-//                            console.log(predictions);
                             if (status != google.maps.places.PlacesServiceStatus.OK) {
                                 console.log(status);
                             } else {
@@ -341,10 +337,21 @@
         });
         
         $('body').on('click', 'form#feed-establishment .form-data-button', function(e){
+            $('#form-list-errors').empty();
+            $('#form-panel-errors').collapse('hide');
+
             var $form = $('form#feed-establishment');
             $form.find('#form-ajax-confirm').hide();
             $form.find('#form-ajax-alert').hide();
             $form.find('#form-ajax-loading').show();
+            
+            if(!isGeocoded()){
+                var callbacks = $.Callbacks();
+                callbacks.add(
+                        geocodeAddress($form.children().get(0))
+                );
+                callbacks.fire();
+            }
         });
         
         $('body').on('ajaxFormFailed', 'form#feed-establishment', function(e, data){
@@ -353,13 +360,28 @@
             $(this).find('#form-ajax-loading').hide();
             $(this).find('#form-ajax-confirm').hide();
             
+            $formListErrors = $('#form-list-errors');
+            $formListErrors.empty();
             if(!errors.error){
                 var nbInputErrors = Object.keys(errors).length;
                 var message = "Veuillez corriger votre saisie, nous avons détecté " + nbInputErrors + " erreur(s).";
                 var $alert = $(this).find('#form-ajax-alert');
                 $alert.find('.alert-message').empty().html(message);
                 $alert.show();
+                $.each(errors, function (input, messages) {
+                    $.each(messages, function (key, message) {
+                        $formListErrors.append('<li>'+message+'</li>');
+                    });
+                });
             }
+        });
+        $('body').on('click', '#form-ajax-alert .close', function(e){
+            e.stopPropagation();
+            $('#form-ajax-alert').hide();
+        });
+        
+        $('body').on('change', '#ets-location input, #ets-location select', function(e){
+                setGeocoded(false);
         });
         
         $('body').on('ajaxFormSubmitted', 'form#feed-establishment', function(e, data){

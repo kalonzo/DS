@@ -109,6 +109,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     //self::$rules_phone,
                     // Location
                     'name' => 'required|min:2|max:255',
+                    'address.geocoded' => 'required|'. \Illuminate\Validation\Rule::in(['true', 1]),
                     'address.street' => 'required|min:3|max:255',
                     'address.street_number' => 'required|max:45',
                     'address.postal_code' => 'required|max:11',
@@ -155,6 +156,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'name.required' => 'Veuillez saisir le nom de votre restaurant.',
             'name.min' => 'Veuillez renseigner au minimum 2 caractères pour le nom de votre restaurant.',
             'name.max' => 'Merci de ne pas renseigner plus de 255 caractères pour le nom de votre restaurant.',
+            'address.geocoded.required' => "L'adresse de votre établissement n'a pu être géolocalisée, merci de modifier votre saisie afin que l'adresse soit confirmée1.",
+            'address.geocoded.in' => "L'adresse de votre établissement n'a pu être géolocalisée, merci de modifier votre saisie afin que l'adresse soit confirmée2.",
             'address.street.required' => 'Veuillez saisir une adresse pour votre établissement.',
             'address.street.min' => 'Le nom de la rue doit contenir au minimum 3 caractères.',
             'address.street_number.required' => 'Vous devez spécifier un numéro de rue.',

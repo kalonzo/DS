@@ -1,4 +1,4 @@
-<div class="panel panel-default">
+<div class="panel panel-default" id='ets-location'>
     <div class="panel-heading" role="tab" id="heading1">
         <a role="button" data-toggle="collapse" data-parent="#establishment_form_accordion" href="#collapse1" 
            aria-expanded="true" aria-controls="collapse1">

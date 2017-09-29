@@ -40,7 +40,6 @@ class BuyableItem extends Model {
         'color',
     ];
     protected $guarded = [];
-    protected $duration;
     
     /**
      * Get a cart line based on the current buyable item

@@ -12,12 +12,19 @@ class BusinessCategorySeeder extends Seeder {
      * @return void
      */
     public function run() {
-
-        DB::table('business_types')->insert([
-            'id' => BusinessType::TYPE_BUSINESS_RESTAURANT,
-            'label' => 'Restaurant',
-            'id_media' => 0,
-        ]);
+        $businessTypes = BusinessType::getLabelByType();
+        foreach($businessTypes as $id => $businessTypeLabel){
+            $status = BusinessType::STATUS_ACTIVE;
+            if($id !== BusinessType::TYPE_BUSINESS_RESTAURANT){
+                $status = BusinessType::STATUS_DISABLED;
+            }
+            DB::table('business_types')->insert([
+                'id' => $id,
+                'label' => $businessTypeLabel,
+                'id_media' => 0,
+                'status' => $status,
+            ]);
+        }
         /* Type de cuisine */
         self::insertBusinessCategory("Régionale", BusinessCategory::TYPE_COOKING_TYPE);
         self::insertBusinessCategory("Régionale", BusinessCategory::TYPE_COOKING_TYPE);

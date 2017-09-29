@@ -51,7 +51,7 @@ $('body').on('click', '.form-data-button', function () {
                                 if(checkExist($accordionPanel)){
                                     $accordionPanel.collapse('show');
                                 }
-                                
+                                console.log($input);
                                 var inputTopPosition = $input.offset().top;
                                 var inputHeight = $input.outerHeight();
                                 var refScrollTopPosition = $scrollRefElement.offset().top;

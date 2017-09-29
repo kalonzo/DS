@@ -435,6 +435,7 @@ class EstablishmentController extends Controller {
                     if (checkModel($address)) {
                         // Update establishment address
                         $address->update([
+                            'geocoded' => $request->get('address.geocoded') ? 1 : 0,
                             'street' => $request->get('address.street'),
                             'street_number' => $request->get('address.street_number'),
                             'address_additional' => $request->get('address.address_additional'),
@@ -705,6 +706,7 @@ class EstablishmentController extends Controller {
                 //Create establishment address
                 $address = Address::create([
                             'id' => \App\Utilities\UuidTools::generateUuid(),
+                            'geocoded' => $request->get('address.geocoded') ? 1 : 0,
                             'street' => $request->get('address.street'),
                             'street_number' => $request->get('address.street_number'),
                             'address_additional' => $request->get('address.address_additional'),
