@@ -38,7 +38,7 @@
                                             'fileExtensions' => ['doc', 'docx', 'pdf', 'jpg', 'png'],
                                             'uploadLabel' => 'Ajouter votre menu',
                                             'browseLabel' => 'Choisir un fichier',
-                                            'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                            'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                             'fileRefreshOnUpload' => 'true',
                                             'showCaption' => 'true',
                                             'showRemove' => 'false',
@@ -54,6 +54,18 @@
                                     @endslot
                                     @slot('filebatchselected')
                                         $('#ets-menus .kv-fileinput-caption').show();
+                                    @endslot
+                                    @slot('fileerror')
+                                        alertFileInputError(event, data, msg);
+                                    @endslot
+                                    @slot('fileuploaderror')
+                                        alertFileInputError(event, data, msg);
+                                    @endslot
+                                    @slot('filebatchuploaderror')
+                                        alertFileInputError(event, data, msg);
+                                    @endslot
+                                    @slot('filedeleteerror')
+                                        alertFileInputError(event, data, msg);
                                     @endslot
                                 @endcomponent
                             </div>
@@ -120,7 +132,7 @@
                                             'fileType' => ['image'],
                                             'uploadLabel' => 'Ajouter votre assiette',
                                             'browseLabel' => 'Choisir un fichier',
-                                            'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                            'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                             'fileRefreshOnUpload' => 'true',
                                             'showCaption' => 'true',
                                             'showRemove' => 'false',
@@ -174,7 +186,7 @@
                                         'fileExtensions' => ['doc', 'docx', 'pdf', 'jpg', 'png'],
                                         'uploadLabel' => 'Ajouter votre menu',
                                         'browseLabel' => 'Choisir un fichier',
-                                        'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                        'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                         'fileRefreshOnUpload' => 'true',
                                         'showCaption' => 'true',
                                         'showRemove' => 'false',

@@ -12,33 +12,33 @@
             <div class="row">
                 <div class="col-xs-12 form-group text-center">
                     <label class="radio-inline">
-                        {!! Form::radio('gender', 0) !!}
+                        {!! Form::radio('bill[title]', 0) !!}
                         Société
                     </label>
                     <label class="radio-inline">
-                        {!! Form::radio('gender', 1) !!}
+                        {!! Form::radio('bill[title]', 1) !!}
                         Madame
                     </label>
                     <label class="radio-inline">
-                        {!! Form::radio('gender', 2) !!}
+                        {!! Form::radio('bill[title]', 2) !!}
                         Monsieur
                     </label>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('address[company_name]','Société / Etablissement') !!}
-                    {!! Form::text('address[company_name]', old('company_name'), ['class' => 'form-control']) !!}
+                    {!! Form::label('bill[company_name]','Société / Etablissement') !!}
+                    {!! Form::text('bill[company_name]', old('bill[company_name]'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('address[firstname]','* Prénom') !!}
-                    {!! Form::text('address[firstname]', old('address_additional'), ['class' => 'form-control']) !!}
+                    {!! Form::label('bill[firstname]','* Prénom') !!}
+                    {!! Form::text('bill[firstname]', old('bill[firstname]'), ['class' => 'form-control']) !!}
                 </div>
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('address[lastname]','* Nom') !!}
-                    {!! Form::text('address[lastname]', old('district'), ['class' => 'form-control']) !!}
+                    {!! Form::label('bill[lastname]','* Nom') !!}
+                    {!! Form::text('bill[lastname]', old('bill[lastname]'), ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="row">
@@ -74,43 +74,43 @@
                         'class' => 'form-control select2 full-width']) !!}
                 </div>
             </div>
-            @php
+            <?php
             $callNumbersAvailable = [
-                                        4 => '* Téléphone professionnel',
-                                        5 => 'Téléphone',
-                                        3 => 'Fax',
-                                        2 => 'Mobile'
+                                        \App\Models\CallNumber::TYPE_PHONE_PRO => '* Téléphone professionnel',
+                                        \App\Models\CallNumber::TYPE_PHONE_CONTACT => 'Téléphone',
+                                        \App\Models\CallNumber::TYPE_FAX => 'Fax',
+                                        \App\Models\CallNumber::TYPE_MOBILE => 'Mobile'
                                     ];
-            @endphp
+            ?>
             <div class="row">
                 @foreach($callNumbersAvailable as $typeNumber => $label)
                 <div class="col-sm-6 phone-form-group">
-                    {!! Form::label($label,$label) !!}
+                    {!! Form::label('bill[call_number]['.$typeNumber.']', $label) !!}
                     <div class="form-group form-inline">
-                        @php
-                        $selectedPrefix = old('id_country_prefix['.$typeNumber.']');
-                        $selectedNumber = old('call_number['.$typeNumber.']');
+                        <?php
+                        $selectedPrefix = old('bill[id_country_prefix]['.$typeNumber.']');
+                        $selectedNumber = old('bill[call_number]['.$typeNumber.']');
                         if(isset($form_values['call_numbers'][$typeNumber]['number'])){
-                        $selectedNumber = $form_values['call_numbers'][$typeNumber]['number'];
+                            $selectedNumber = $form_values['call_numbers'][$typeNumber]['number'];
                         }
                         if(isset($form_values['call_numbers'][$typeNumber]['id_country_prefix'])){
-                        $selectedPrefix = $form_values['call_numbers'][$typeNumber]['id_country_prefix'];
+                            $selectedPrefix = $form_values['call_numbers'][$typeNumber]['id_country_prefix'];
                         } else if(isset($form_values['id_country'])){
-                        $selectedPrefix = $form_values['id_country'];
+                            $selectedPrefix = $form_values['id_country'];
                         }
-                        @endphp
 
-                        {!! Form::select('id_country_prefix['.$typeNumber.']', $form_data['country_prefixes'], $selectedPrefix, 
-                        ['class' => 'form-control select2', 'placeholder' => 'Indicatif']) !!}
-                        {!! Form::text('call_number['.$typeNumber.']', $selectedNumber, ['class' => 'form-control']) !!}
+                        echo Form::select('bill[id_country_prefix]['.$typeNumber.']', $form_data['country_prefixes'], $selectedPrefix, 
+                                            ['class' => 'form-control select2', 'placeholder' => 'Indicatif']);
+                        echo Form::text('bill[call_number]['.$typeNumber.']', $selectedNumber, ['class' => 'form-control']);
+                        ?>
                     </div>
                 </div>
                 @endforeach
             </div>
             <div class="row">
                 <div class="col-sm-6 form-group">
-                    {!! Form::label('email','* E-mail') !!}
-                    {!! Form::text('address[email]', old('email'), ['class' => 'form-control']) !!}
+                    {!! Form::label('bill[email]','* E-mail') !!}
+                    {!! Form::text('bill[email]', old('bill[email]'), ['class' => 'form-control']) !!}
                 </div>    
             </div>
             <div class="row">

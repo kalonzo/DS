@@ -34,6 +34,9 @@
             outline: none;
         }
     }
+    .kv-fileinput-error{
+        display: none !important;
+    }
 }
 
 #foodSpecialties{
@@ -92,6 +95,50 @@ $timetableRowHeight: 76px;
     font-size: 1.5em;
     text-transform: uppercase;
     @include borderRadius($border-radius-usual);
+}
+
+#pro_user_form_accordion{
+    h5{
+        font-weight: bold;
+        font-size: 1.7em;
+        padding: 0.5em 20px;
+        border-top: 2px solid lighten($main-dark-color, 35);
+        border-bottom: 2px solid lighten($main-dark-color, 35);
+        margin-bottom: 1em;
+    }
+    $durationTileWidth: 200px;
+    .duration-tiles{
+        text-align: center;
+        .duration-tile{
+            width: $durationTileWidth;
+            height: $durationTileWidth;
+            @include borderRadius(5px);
+            border: 1px solid white;
+            display: inline-block;
+            text-align: center;
+            margin-right: 2em;
+            &:last-child{
+                margin-right: 0px;
+            }
+            font-size: 2.5em;
+            cursor: pointer;
+            text-transform: uppercase;
+            background-color: $main-dark-color;
+            &:hover{
+                color: $alt-highlight-color;
+            }
+            &.selected{
+                background-color: white;
+                color: $main-dark-color;
+            }
+            .duration-label{
+                line-height: $durationTileWidth;
+            }
+            input{
+                display: none;
+            }
+        }
+    }
 }
 
 #establishment_form_accordion{
@@ -882,9 +929,9 @@ $timetableRowHeight: 76px;
                 thead th span{
                     font-weight: normal;
                 }
-                td{
+                td, td.ui-datepicker-unselectable.ui-state-disabled {
                     border: 1px dotted #666;
-                    a{
+                    a, > span{
                         background: none;
                         color: $main-text-color;
                         text-align: center;

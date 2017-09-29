@@ -27,7 +27,9 @@
                     ?>
                     <div class="timeslot-item">
                         <?php
-                        $time = substr($i, 0, 2).':'.substr($i, 2, 2);
+                        $hours = sprintf('%02d', $i/100);
+                        $minutes = sprintf('%02d', $i%100);
+                        $time = $hours.':'.$minutes;
                         echo $time;
                         ?>
                         {!! Form::radio('time_reservation', $time, old('timeAM')) !!}

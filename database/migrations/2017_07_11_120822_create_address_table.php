@@ -26,10 +26,13 @@ class CreateAddressTable extends Migration {
                     $table->float('latitude', 10, 0)->nullable();
                     $table->float('longitude', 10, 0)->nullable();
                     $table->string('label')->nullable();
+                    $table->string('title')->nullable();
+                    $table->string('company_name')->nullable();
                     $table->string('firstname')->nullable();
                     $table->string('lastname')->nullable();
+                    $table->string('email')->nullable();
                     $table->binary('id_location_index', 16)->index('fk_address_cities1_idx');
-                    $table->binary('id_object_related', 16)->nullable();
+                    $table->binary('id_object_related', 16)->nullable()->index('fk_object_related_idx');
                     $table->integer('type_object_related')->nullable();
 		});
 	}

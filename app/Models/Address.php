@@ -28,13 +28,17 @@ class Address extends Model {
         'latitude',
         'longitude',
         'label',
+        'title',
+        'company_name',
         'firstname',
         'lastname',
+        'email',
         'id_location_index',
         'id_object_related',
         'type_object_related',
     ];
     protected $guarded = [];
+    protected $email;
     
     public function country(){
         return $this->hasOne(Country::class, 'id', 'id_country');
@@ -369,4 +373,43 @@ class Address extends Model {
         $this->city_slug = $city_slug;
     }
 
+    function getEmail() {
+        return $this->email;
+    }
+
+    function setEmail($email) {
+        $this->email = $email;
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getTitle() {
+        return $this->title;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setTitle($value) {
+        $this->title = $value;
+        return $this;
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getCompanyName() {
+        return $this->company_name;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setCompanyName($value) {
+        $this->company_name = $value;
+        return $this;
+    }
 }

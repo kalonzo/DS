@@ -19,7 +19,7 @@ class CreatePaymentsTable extends Migration {
 			$table->integer('status')->nullable();
 			$table->float('amount', 10, 0)->nullable();
 			$table->binary('id_user', 16)->index('fk_payments_users1_idx');
-			$table->binary('id_payment_method', 16)->index('fk_payments_payment_methods1_idx');
+			$table->integer('id_payment_method')->index('fk_payments_payment_methods1_idx');
 			$table->binary('id_bill', 16)->index('fk_payments_bills1_idx')->nullable();
                         $table->binary('id_cart', 16)->index('fk_payment_id_cart_idx');
                         $table->integer('id_currency')->index('fk_payment_id_currency_idx');

@@ -7,7 +7,12 @@
 @endsection
 
 @section('content')
-
+    <?php
+    if(Request::get('display_locale')){
+        echo "Locale : ".App::getLocale();
+        echo "<br/>Browser conf : ".$_SERVER['HTTP_ACCEPT_LANGUAGE'];
+    }
+    ?>
     @component('components.tile', ['title' => 'Etablissements', 'add_href' => '/create/establishment', 
                                     'tabledata' => $dt_establishment_admin])
 

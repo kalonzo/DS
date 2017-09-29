@@ -2,246 +2,246 @@
 
 namespace App\Models;
 
-
-
 /**
  * Class Bill
  */
-class Bill extends Model
-{
+class Bill extends Model implements GlobalObjectManageable{
+
     protected $table = 'bills';
 
-    public $timestamps = true;
+    const TABLENAME = 'bills';
+    const TYPE_GLOBAL_OBJECT = self::TYPE_OBJECT_BILL;
 
+    const STATUS_CREATED = 1;
+    const STATUS_PARTIALLY_PAID = 2;
+    const STATUS_PAID = 3;
+    const STATUS_CANCELED = 4;
+    
+    public $timestamps = true;
     protected $fillable = [
+        'status',
         'title',
-        'name',
-        'prename',
+        'lastname',
+        'firstname',
         'company_name',
         'pro_phone',
         'end_date',
         'start_date',
         'phone_number',
         'email',
-        'id_condition',
         'id_user',
         'id_cart',
         'id_contract'
     ];
-
     protected $guarded = [];
 
     
-	/**
-	 * @return mixed
-	 */
-	public function getTitle() {
-		return $this->title;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getName() {
-		return $this->name;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getPrename() {
-		return $this->prename;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getCompanyName() {
-		return $this->company_name;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getProPhone() {
-		return $this->pro_phone;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getEndDate() {
-		return $this->end_date;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getStartDate() {
-		return $this->start_date;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getPhoneNumber() {
-		return $this->phone_number;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getEmail() {
-		return $this->email;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getIdCondition() {
-		return $this->id_condition;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getIdUser() {
-		return $this->id_user;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getIdCart() {
-		return $this->id_cart;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getIdContract() {
-		return $this->id_contract;
-	}
-
-
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function callNumbers(){
+        return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
+    }
     
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setTitle($value) {
-		$this->title = $value;
-		return $this;
-	}
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function addresses(){
+        return $this->hasMany(Address::class, 'id_object_related', 'id');
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getTitle() {
+        return $this->title;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setName($value) {
-		$this->name = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLastname() {
+        return $this->lastname;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setPrename($value) {
-		$this->prename = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getFirstname() {
+        return $this->firstname;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setCompanyName($value) {
-		$this->company_name = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getCompanyName() {
+        return $this->company_name;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setProPhone($value) {
-		$this->pro_phone = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getProPhone() {
+        return $this->pro_phone;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setEndDate($value) {
-		$this->end_date = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getEndDate() {
+        return $this->end_date;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setStartDate($value) {
-		$this->start_date = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getStartDate() {
+        return $this->start_date;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setPhoneNumber($value) {
-		$this->phone_number = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getPhoneNumber() {
+        return $this->phone_number;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setEmail($value) {
-		$this->email = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getEmail() {
+        return $this->email;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setIdCondition($value) {
-		$this->id_condition = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getIdUser() {
+        return $this->id_user;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setIdUser($value) {
-		$this->id_user = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getIdCart() {
+        return $this->id_cart;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setIdCart($value) {
-		$this->id_cart = $value;
-		return $this;
-	}
+    /**
+     * @return mixed
+     */
+    public function getIdContract() {
+        return $this->id_contract;
+    }
 
-	/**
-	 * @param $value
-	 * @return $this
-	 */
-	public function setIdContract($value) {
-		$this->id_contract = $value;
-		return $this;
-	}
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setTitle($value) {
+        $this->title = $value;
+        return $this;
+    }
 
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setLastname($value) {
+        $this->lastname = $value;
+        return $this;
+    }
 
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setFirstname($value) {
+        $this->firstname = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setCompanyName($value) {
+        $this->company_name = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setProPhone($value) {
+        $this->pro_phone = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setEndDate($value) {
+        $this->end_date = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setStartDate($value) {
+        $this->start_date = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setPhoneNumber($value) {
+        $this->phone_number = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setEmail($value) {
+        $this->email = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setIdUser($value) {
+        $this->id_user = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setIdCart($value) {
+        $this->id_cart = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setIdContract($value) {
+        $this->id_contract = $value;
+        return $this;
+    }
 
 }

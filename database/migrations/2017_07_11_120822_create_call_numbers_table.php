@@ -22,7 +22,8 @@ class CreateCallNumbersTable extends Migration {
 			$table->integer('id_country')->index('fk_call_numbers_country_idx');
 			$table->integer('prefix')->nullable();
 			$table->string('number', 20)->nullable();
-			$table->binary('id_establishment', 16)->index('fk_call_numbers_establishments1_idx');
+                        $table->binary('id_object_related', 16)->nullable()->index('fk_object_related_idx');
+                        $table->integer('type_object_related')->nullable();
 		});
 	}
 

@@ -60,7 +60,7 @@
                                     'showRemove' => 'false',
                                     'directUpload' => 'true',
                                     'fileRefreshOnUpload' => 'true',
-                                    'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                    'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                     ])
                     @slot('extraData')
                         {'action': 'add_media_to_gallery', 'id_gallery': '{!!$gallery->getUuid()!!}'}

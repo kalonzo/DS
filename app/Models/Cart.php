@@ -12,7 +12,9 @@ class Cart extends Model {
 
     const STATUS_PENDING = 1;
     const STATUS_CHECKEDOUT = 2;
-    
+    const STATUS_BILL = 3;
+    const STATUS_CANCELED = 4;
+
     public $timestamps = true;
     protected $fillable = [
         'status',

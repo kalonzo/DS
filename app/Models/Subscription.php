@@ -10,8 +10,12 @@ class Subscription extends Model {
     protected $table = 'subscriptions';
     const TABLENAME  = 'subscriptions';
     
+    const STATUS_ACTIVE = 1;
+    const STATUS_WAITING_4_PAYMENT = 2;
+    
     public $timestamps = true;
     protected $fillable = [
+        'status',
         'priceTTC',
         'start_date',
         'end_date',
@@ -19,9 +23,19 @@ class Subscription extends Model {
         'id_establishment',
         'id_user',
         'id_bill',
-        'id_buyable_item'
+        'id_buyable_item',
+        'duration'
     ];
     protected $guarded = [];
+    
+    function getStatus() {
+        return $this->status;
+    }
+
+    function setStatus($status) {
+        $this->status = $status;
+        return $this;
+    }
 
     /**
      * @return mixed
@@ -151,4 +165,13 @@ class Subscription extends Model {
         return $this;
     }
 
+    
+    function getDuration() {
+        return $this->duration;
+    }
+
+    function setDuration($duration) {
+        $this->duration = $duration;
+        return $this;
+    }
 }

@@ -18,6 +18,7 @@
                             var options = {
                                 dateFormat: "dd/mm/yy",
                                 defaultDate: $input.val(),
+                                minDate: 0,
                                 onSelect: function(dateText, inst){
                                     $($input).val(dateText).change();
                                     

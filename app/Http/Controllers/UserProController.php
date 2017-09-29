@@ -6,21 +6,23 @@ use App\Http\Request;
 use App\Http\Requests\StoreUserPro;
 use App\Models\Address;
 use App\Models\BusinessType;
+use App\Models\CallNumber;
 use App\Models\Company;
 use App\Models\Country;
 use App\Models\Establishment;
-use App\Models\Model;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use App\php;
 use App\Utilities\DbQueryTools;
 use App\Utilities\StorageHelper;
 use App\Utilities\UuidTools;
+use DateInterval;
+use DateTime;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use NumberFormatter;
 use View;
 
 class UserProController extends Controller {
@@ -84,88 +86,67 @@ class UserProController extends Controller {
             $subscriptionItem = \App\Models\BuyableItem::findUuid($uuidSubscription);
             if (checkModel($subscriptionItem)) {
                 if(!checkModel($user)){
-                    $user = User::where('status', '=', User::STATUS_CREATION_PENDING)->where('email', 'LIKE', $request->get('email'))->first();
+                    $user = User::where('status', '=', User::STATUS_CREATION_PENDING)->where('email', 'LIKE', $request->get('user.email'))->first();
                 } 
+                $idCompany = 0;
                 if(checkModel($user)){
-                    $address = $user->address()->first();
-                    $company = Company::where('id',$user->company_id)->first();
+                    $company = $user->company()->first();
                     if(checkModel($company)){
-                        $company->update([
-                        'name' => $request->get('company.name'),
-                        ]);
+                        if(empty($request->get('user.company'))){
+                            $company->delete();
+                        } else {
+                            $company->update([
+                                'name' => $request->get('user.company'),
+                            ]);
+                            $idCompany = $company->getId();
+                        }
                     }
                     
-                    $address->update([
-                        'firstname' => $request->get('address.firstname'),
-                        'lastname' => $request->get('address.lastname'),
-                        'street' => $request->get('address.street'),
-                        'street_number' => $request->get('address.street_number'),
-                        'postal_code' => $request->get('address.postal_code'),
-                        'po_box' => $request->get('address.po_box'),
-                        'city' => $request->get('address.city'),
-                        'id_country' => $idCountry,
-                    ]);
                     $user->update([
-                        'gender' => $request->get('gender'),
-                        'name' => $request->get('email'),
-                        'firstname' => $request->get('firstname'),
-                        'lastname' => $request->get('lastname'),
-                        'password' => bcrypt($request->get('password')), // TODO Auth user activation
+                        'gender' => $request->get('user.gender'),
+                        'name' => $request->get('user.email'),
+                        'email' => $request->get('user.email'),
+                        'firstname' => $request->get('user.firstname'),
+                        'lastname' => $request->get('user.lastname'),
+                        'password' => bcrypt($request->get('user.password')),
                     ]);
+                    $userId = $user->getId();
                 } else {
                     $userId = UuidTools::generateUuid();
-                    $idCompany = 0;
-                    if (!empty($request->get('company.name'))) {
+                    if (!empty($request->get('user.company'))) {
                         $company = Company::create([
                                     'id' => UuidTools::generateUuid(),
-                                    'name' => $request->get('company.name'),
+                                    'name' => $request->get('user.company'),
                                     'id_logo' => 0
                         ]);
                         $createdObjects[] = $company;
                         $idCompany = $company->getId();
                     }
-                    
-                    $address = Address::create([
-                                'id' => UuidTools::generateUuid(),
-                                'firstname' => $request->get('address.firstname'),
-                                'lastname' => $request->get('address.lastname'),
-                                'street' => $request->get('address.street'),
-                                'street_number' => $request->get('address.street_number'),
-                                'postal_code' => $request->get('address.postal_code'),
-                                'po_box' => $request->get('address.po_box'),
-                                'city' => $request->get('address.city'),
-                                'id_country' => $idCountry,
-                                'id_object_related' => $userId,
-                                'type_object_related' => User::TYPE_GLOBAL_OBJECT,
-                                'id_location_index' => 0,
-                    ]);
-                    $createdObjects[] = $address;
 
-                    if (checkModel($address)) {
-                        $user = User::create([
-                                    'id' => $userId,
-                                    'type' => User::TYPE_USER_PRO,
-                                    'status' => User::STATUS_CREATION_PENDING,
-                                    'gender' => $request->get('gender'),
-                                    'name' => $request->get('email'),
-                                    'firstname' => $request->get('firstname'),
-                                    'lastname' => $request->get('lastname'),
-                                    'email' => $request->get('email'),
-                                    'password' => bcrypt($request->get('password')), // TODO Auth user activation
-                                    'id_company' => $idCompany,
-                                    'id_address' => $address->getId(),
-                                    'id_inbox' => 0,
-                        ]);
-                        $createdObjects[] = $user;
-                    } else {
-                        $jsonResponse['error'] = "Aucune adresse valide";
-                    }
+                    $user = User::create([
+                                'id' => $userId,
+                                'type' => User::TYPE_USER_PRO,
+                                'status' => User::STATUS_CREATION_PENDING,
+                                'gender' => $request->get('user.gender'),
+                                'name' => $request->get('user.email'),
+                                'firstname' => $request->get('user.firstname'),
+                                'lastname' => $request->get('user.lastname'),
+                                'email' => $request->get('user.email'),
+                                'password' => bcrypt($request->get('user.password')),
+                                'id_company' => $idCompany,
+                                'id_address' => 0,
+                                'id_inbox' => 0,
+                    ]);
+                    $createdObjects[] = $user;
                 }
 
                 if(checkModel($user)) {
                     SessionController::getInstance()->setIdPendingUser($user->getId());
                     $jsonResponse['id_user'] = $user->getUuid();
-
+                    
+                    $callNumbers = $this->feedCallNumbers($request, $user, 'user');
+                    $createdObjects = array_merge($createdObjects, $callNumbers);
+                    
                     $cart = $user->getCurrentPendingCart();
                     if(!checkModel($cart)){
                         $cart = \App\Models\Cart::create([
@@ -190,6 +171,8 @@ class UserProController extends Controller {
                             $idPaymentMethod = $request->get('payment_method');
                             $payment->setIdPaymentMethod($idPaymentMethod)->save();
                             
+                            $cart->setStatus(\App\Models\Cart::STATUS_CHECKEDOUT)->save();
+                            
                             if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN)){
                                 $establishment = Establishment::find($uuidEstablishment);
                                 if(checkModel($establishment)){
@@ -198,34 +181,123 @@ class UserProController extends Controller {
                                 }
                             }
                             
+                            $subscriptionStatus = null;
+                            $billStatus = null;
                             switch($idPaymentMethod){
                                 case PaymentMethod::METHOD_30_DAYS_BILL:
                                     if($idCountry == Country::CHE){
-                                        $jsonResponse['success'] = 1;
                                         $jsonResponse['relocateMode'] = 1;
                                         $jsonResponse['location'] = '/admin';
                                         unset($jsonResponse['triggerMode']);
+                                        $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
+                                        $billStatus = \App\Models\Bill::STATUS_CREATED;
                                     } else {
-                                        $jsonResponse['error'] = "Le paiement en facture à 30 jours n'est disponible que pour les résidents suisses.";
+                                        $jsonResponse['error'] = "Le paiement en facture à 30 jours est disponible uniquement pour les résidents suisses.";
                                     }
                                     break;
                                 case PaymentMethod::METHOD_PACKAGE_INCLUDED:
                                 case PaymentMethod::METHOD_FREE_PASS:
                                 case PaymentMethod::METHOD_DELAYED_PAYMENT:
-                                    $jsonResponse['success'] = 1;
                                     $jsonResponse['relocateMode'] = 1;
                                     $jsonResponse['location'] = '/admin';
                                     unset($jsonResponse['triggerMode']);
+                                    if($idPaymentMethod === PaymentMethod::METHOD_FREE_PASS){
+                                        $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
+                                        $billStatus = \App\Models\Bill::STATUS_PAID;
+                                    } else {
+                                        $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
+                                        $billStatus = \App\Models\Bill::STATUS_CREATED;
+                                    }
                                     break;
                                 default :
-                                    $walleeController = \Illuminate\Support\Facades\App::make(WalleeController::class);
+                                    $walleeController = App::make(WalleeController::class);
                                     if ($walleeController instanceof WalleeController) {
                                         $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
                                         $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
+                                        if($jsonResponse['success']){
+                                            $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
+                                            $billStatus = \App\Models\Bill::STATUS_PAID;
+                                        }
                                     } else {
                                         $jsonResponse['error'] = "Le controller de paiement a connu une erreur. Veuillez avertir le webmaster.";
                                     }
                                     break;
+                            }
+                            
+                            if($subscriptionStatus !== null){
+                                $duration = $request->get('duration');
+                                $startDate = new DateTime();
+                                $startDateFormatted = $startDate->format('Y-m-d H:i:s');
+                                
+                                $endDate = date_add($startDate, new DateInterval('P'.$duration.'Y'));
+                                $endDateFormatted = $endDate->format('Y-m-d H:i:s');
+                                
+                                $contract = \App\Models\Contract::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'status' => \App\Models\Contract::STATUS_ACTIVE,
+                                    'start_date' => $startDateFormatted,
+                                    'end_date' => $endDateFormatted,
+                                    'id_user_in_charge' => 0,
+                                    'id_establishment_customer' => 0,
+                                    'id_user_customer' => $user->getId(),
+                                    'type_business' => $businessType
+                                ]);
+                                $contract->generateNumber();
+                                $createdObjects[] = $contract;
+                                
+                                $bill = \App\Models\Bill::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'status' => $billStatus,
+                                    'title' => $request->get('bill.title'),
+                                    'lastname' => $request->get('bill.lastname'),
+                                    'firstname' => $request->get('bill.firstname'),
+                                    'company_name' => $request->get('bill.company_name'),
+                                    'email' => $request->get('bill.email'),
+                                    'id_user' => $user->getId(),
+                                    'id_cart' => $cart->getId(),
+                                    'id_contract' => $contract->getId()
+                                ]);
+                                $createdObjects[] = $bill;
+                                $payment->setIdBill($bill->getId())->save();
+                                $cart->setStatus(\App\Models\Cart::STATUS_BILL)->save();
+                                
+                                $callNumbers = $this->feedCallNumbers($request, $bill, 'bill');
+                                $createdObjects = array_merge($createdObjects, $callNumbers);
+                                
+                                $address = Address::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'title' => $request->get('bill.title'),
+                                    'company_name' => $request->get('bill.company_name'),
+                                    'firstname' => $request->get('bill.firstname'),
+                                    'lastname' => $request->get('bill.lastname'),
+                                    'email' => $request->get('bill.email'),
+                                    'street' => $request->get('address.street'),
+                                    'street_number' => $request->get('address.street_number'),
+                                    'postal_code' => $request->get('address.postal_code'),
+                                    'po_box' => $request->get('address.po_box'),
+                                    'city' => $request->get('address.city'),
+                                    'id_country' => $idCountry,
+                                    'id_object_related' => $bill->getId(),
+                                    'type_object_related' => \App\Models\Bill::TYPE_GLOBAL_OBJECT,
+                                    'id_location_index' => 0,
+                                ]);
+                                $createdObjects[] = $address;
+                                
+                                $subscription = \App\Models\Subscription::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'status' => $subscriptionStatus,
+                                    'priceTTC' => $subscriptionItem->getPriceTTC(),
+                                    'start_date' => $startDateFormatted,
+                                    'end_date' => $endDateFormatted,
+                                    'id_establishment' => 0,
+                                    'id_user' => $user->getId(),
+                                    'id_bill' => $bill->getId(),
+                                    'id_buyable_item' => $subscriptionItem->getId(),
+                                    'duration' => $duration * 12
+                                ]);
+                                $createdObjects[] = $subscription;
+                                
+                                 // TODO Auth user activation
                             }
                         } else {
                             $jsonResponse['error'] = "Le processus de paiement n'a pas pu être initié";
@@ -241,12 +313,9 @@ class UserProController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getTraceAsString());
-//            print_r($e->getTraceAsString());
             try{
-                print_r($createdObjects);
                 foreach ($createdObjects as $createdObject) {
-                    if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
+                    if ($createdObject instanceof Model) {
                         $deleted = $createdObject->delete();
                     } else {
                         print_r($createdObject);
@@ -256,7 +325,6 @@ class UserProController extends Controller {
                 print_r($ex->getMessage());
                 print_r($ex->getTraceAsString());
             }
-            die();
         }
         if(!$jsonResponse['success'] && checkModel($payment)){
             $payment->setStatus(\App\Models\Payment::STATUS_ERROR_CHECKOUT)->save();
@@ -356,12 +424,15 @@ class UserProController extends Controller {
                                             \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL4
                         ])->where('status', '=', \App\Models\BuyableItem::STATUS_ACTIVE)
                         ->orderBy('net_price', 'ASC')->get();
+        
+        $durations = [1 => "1 an", 3 => "3 ans", 5 => "5 ans"];
 
         StorageHelper::getInstance()->add('feed_user.form_data.business_types', $businessTypes);
         StorageHelper::getInstance()->add('feed_user.form_data.payment_methods', $paymentMethods);
         StorageHelper::getInstance()->add('feed_user.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('feed_user.form_data.country_ids', $countryNames);
         StorageHelper::getInstance()->add('feed_user.form_data.subscriptions', $subscriptions);
+        StorageHelper::getInstance()->add('feed_user.form_data.durations', $durations);
     }
 
     /**
@@ -376,4 +447,97 @@ class UserProController extends Controller {
         StorageHelper::getInstance()->add('feed_user.form_values.business_type', BusinessType::TYPE_BUSINESS_RESTAURANT);
     }
 
+    /**
+     * 
+     * @param StoreUserPro $request
+     * @param \App\Models\Bill|User $entity
+     */
+    public function feedCallNumbers($request, $entity, $prefix) {
+        $jsonResponse = array();
+        $callNumbers = array();
+        $prefixByIdCountry = array();
+        $numberTypesToDelete = array();
+        // Get all country ids matching each selected number prefix
+        $prefixCountryIds = array();
+        
+        try {
+            foreach ($request->get($prefix.'.id_country_prefix') as $typeNumber => $idPrefix) {
+                if (!empty($request->get($prefix.'.call_number.' . $typeNumber)) && checkModelId($idPrefix)) {
+                    $prefixCountryIds[$idPrefix] = $idPrefix;
+                } else {
+                    $numberTypesToDelete[] = $typeNumber;
+                }
+            }
+            // Delete existing number removed by the user
+            /*
+            if (!empty($numberTypesToDelete)) {
+                $user->callNumbers()->whereIn('type', $numberTypesToDelete)->delete();
+            }
+             */
+            if (!empty($prefixCountryIds)) {
+                // Get all countries data matching each selected number prefix
+                $prefixCountries = DB::table(Country::TABLENAME)->whereIn('id', $prefixCountryIds)
+                                ->select(['prefix', 'id'])->get();
+                foreach ($prefixCountries as $countryData) {
+                    $prefixByIdCountry[$countryData->id] = $countryData->prefix;
+                }
+
+                foreach ($request->get($prefix.'.call_number') as $typeNumber => $number) {
+                    $numberLabel = null;
+                    $prefix = null;
+                    $isMain = false;
+                    switch ($typeNumber) {
+                        case CallNumber::TYPE_PHONE_PRO:
+                            $numberLabel = 'Téléphone professionnel';
+                            if($entity instanceof \App\Models\Bill){
+                                $isMain = true;
+                            }
+                            break;
+                        case CallNumber::TYPE_PHONE_CONTACT:
+                            $numberLabel = 'Téléphone';
+                            if($entity instanceof \App\Models\User){
+                                $isMain = true;
+                            }
+                            break;
+                        case CallNumber::TYPE_FAX:
+                            $numberLabel = 'Numéro de fax';
+                            break;
+                        case CallNumber::TYPE_MOBILE:
+                            $numberLabel = 'Téléphone mobile';
+                            break;
+                    }
+                    $prefixCountryUuid = $request->get($prefix.'.id_country_prefix.' . $typeNumber);
+                    if (isset($prefixByIdCountry[$prefixCountryUuid])) {
+                        $prefix = $prefixByIdCountry[$prefixCountryUuid];
+                    }
+
+                    if (!empty($typeNumber) && !empty($prefix) && !empty($number)) {
+                        $callNumber = $entity->callNumbers()->where('type', '=', $typeNumber)->first();
+                        $attributes = [
+                            'main' => $isMain,
+                            'label' => $numberLabel,
+                            'type' => $typeNumber,
+                            'prefix' => $prefix,
+                            'id_country' => $prefixCountryUuid,
+                            'number' => $number,
+                            'id_object_related' => $entity->getId(),
+                            'type_object_related' => $entity::TYPE_GLOBAL_OBJECT,
+                        ];
+
+                        if (!checkModel($callNumber)) {
+                            $attributes['id'] = UuidTools::generateUuid();
+                            $callNumber = CallNumber::create($attributes);
+                        } else {
+                            $callNumber->update($attributes);
+                        }
+                        $callNumbers[] = $callNumber;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            $jsonResponse['error'] = $e->getMessage();
+            // TODO Manage error
+        }
+        return $callNumbers;
+    }
 }

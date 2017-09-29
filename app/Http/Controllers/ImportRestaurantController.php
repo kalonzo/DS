@@ -317,7 +317,8 @@ class ImportRestaurantController extends Controller {
                     'id_country' => $countryId,
                     'prefix' => $prefix,
                     'number' => $phone,
-                    'id_establishment' => $ets->getId()
+                    'id_object_related' => $ets->getId(),
+                    'type_object_related' => Establishment::TYPE_GLOBAL_OBJECT,
                 ]);
             } else {
                 $callNumber->update([

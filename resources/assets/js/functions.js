@@ -138,6 +138,25 @@ getOnClickModal = function(title, url, params, modalId, modalClassSize, modalCla
         });
     }
 };
+
+alertFileInputError = function(event, data, msg){
+    var errors = data.jqXHR.responseJSON;
+    var alertMsg = '';
+    if(typeof errors != 'undefined'){
+        var nbInputErrors = Object.keys(errors).length;
+        if(nbInputErrors > 0){
+            $.each(errors, function (key, value) {
+                alertMsg += '' + value + '\n';
+            });
+        } else {
+            alertMsg += msg;
+        }
+    } else {
+        alertMsg += msg;
+    }
+    alertMsg += '';
+    alert(alertMsg);
+};
     
 /*
     var searchRadius = 500;

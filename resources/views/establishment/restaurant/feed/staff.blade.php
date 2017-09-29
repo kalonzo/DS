@@ -54,7 +54,7 @@
                                         'fileType' => ['image', 'text'],
                                         'uploadLabel' => 'Ajouter cet employé',
                                         'browseLabel' => 'Ajouter une photo',
-                                        'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                        'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                         'fileRefreshOnUpload' => 'true',
                                         'showCaption' => 'true',
                                         'showRemove' => 'false',

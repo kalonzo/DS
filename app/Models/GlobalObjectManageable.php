@@ -10,4 +10,5 @@ namespace App\Models;
 interface GlobalObjectManageable {
     const TYPE_OBJECT_ESTABLISHMENT = 1;
     const TYPE_OBJECT_USER = 2;
+    const TYPE_OBJECT_BILL = 3;
 }

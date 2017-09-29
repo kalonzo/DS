@@ -105,7 +105,7 @@ class Establishment extends Model implements GlobalObjectManageable{
     }
     
     public function callNumbers(){
-        return $this->hasMany(CallNumber::class, 'id_establishment', 'id');
+        return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
     }
 
     public function businessCategoryLinks(){

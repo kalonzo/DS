@@ -30,7 +30,6 @@ class Payment extends Model {
         'id_transaction'
     ];
     protected $guarded = [];
-    public $id_transaction;
 
     public function getFinalStatuses(){
         $statuses = [

@@ -90,7 +90,6 @@ class WalleeController extends Controller {
             } catch(Exception $e){
                 $payment->setStatus(Payment::STATUS_ERROR_CHECKOUT)->save();
                 $jsonResponse['error'] = $e->getMessage();
-                throw $e;
             }
         } else {
             $jsonResponse['error'] = "Le processus de paiement n'a pu aboutir car les données sont incomplètes";
@@ -135,7 +134,7 @@ class WalleeController extends Controller {
         return $responsePrepared;
     }
     
-    public function completeOrder(Request $request){
+    public function completeOrder(\Illuminate\Http\Request $request){
         $idUser = SessionController::getInstance()->getIdPendingUser();
         $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
         

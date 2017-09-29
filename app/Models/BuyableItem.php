@@ -37,9 +37,10 @@ class BuyableItem extends Model {
         'id_business_type',
         'id_currency',
         'id_geographical_zone',
-        'color'
+        'color',
     ];
     protected $guarded = [];
+    protected $duration;
     
     /**
      * Get a cart line based on the current buyable item
@@ -369,4 +370,5 @@ class BuyableItem extends Model {
         $this->id_currency = $id_currency;
         return $this;
     }
+    
 }

@@ -97,6 +97,11 @@
                 <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
                 <span class="alert-message">Vos informations ont bien été enregistrées.</span>
             </div>
+            <div id="form-ajax-loading" class="alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="glyphicon glyphicon-repeat normal-right-spinner" aria-hidden="true"></span>
+                <span class="alert-message">Envoi...</span>
+            </div>
         </div>
         <div id="formActions" class="pull-right">
             <a class="btn" href="/admin">
@@ -335,11 +340,18 @@
             }
         });
         
+        $('body').on('click', 'form#feed-establishment .form-data-button', function(e){
+            var $form = $('form#feed-establishment');
+            $form.find('#form-ajax-confirm').hide();
+            $form.find('#form-ajax-alert').hide();
+            $form.find('#form-ajax-loading').show();
+        });
+        
         $('body').on('ajaxFormFailed', 'form#feed-establishment', function(e, data){
             var errors = data.responseJSON;
             
-            var $confirm = $(this).find('#form-ajax-confirm');
-            $confirm.hide();
+            $(this).find('#form-ajax-loading').hide();
+            $(this).find('#form-ajax-confirm').hide();
             
             if(!errors.error){
                 var nbInputErrors = Object.keys(errors).length;
@@ -351,8 +363,9 @@
         });
         
         $('body').on('ajaxFormSubmitted', 'form#feed-establishment', function(e, data){
-            var $confirm = $(this).find('#form-ajax-confirm');
-            $confirm.show();
+            $(this).find('#form-ajax-loading').hide();
+            $(this).find('#form-ajax-alert').hide();
+            $(this).find('#form-ajax-confirm').show();
         });
     });
     

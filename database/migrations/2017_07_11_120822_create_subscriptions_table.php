@@ -16,7 +16,9 @@ class CreateSubscriptionsTable extends Migration {
 		{
 			$table->binary('id', 16)->primary();
                         $table->timestamps();
+                        $table->integer('status');
 			$table->float('priceTTC', 10, 0)->nullable();
+                        $table->integer('duration');
 			$table->date('start_date')->nullable();
 			$table->date('end_date')->nullable();
 			$table->date('close_date')->nullable();

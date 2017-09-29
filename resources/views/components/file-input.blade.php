@@ -203,6 +203,28 @@ if(!isset($browseLabel)){
                     }
                     return aborted;
                 })
+                
+                // ERRORS 
+                @if(isset($fileerror))
+                .on('fileerror', function(event, data, msg) {
+                    {!! $fileerror !!}
+                })
+                @endif
+                @if(isset($fileuploaderror))
+                .on('fileuploaderror', function(event, data, msg) {
+                    {!! $fileuploaderror !!}
+                })
+                @endif
+                @if(isset($filebatchuploaderror))
+                .on('filebatchuploaderror', function(event, data, msg) {
+                    {!! $filebatchuploaderror !!}
+                })
+                @endif
+                @if(isset($filedeleteerror))
+                .on('filedeleteerror', function(event, data, msg) {
+                    {!! $filedeleteerror !!}
+                })
+                @endif
                 ;
             });
         }

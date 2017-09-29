@@ -89,6 +89,14 @@ class User extends Authenticatable implements GlobalObjectManageable{
     }
     
     /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function callNumbers(){
+        return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
+    }
+    
+    /**
      * @return mixed
      */
     public function getStatus() {

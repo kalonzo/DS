@@ -600,22 +600,26 @@ class EstablishmentController extends Controller {
                 case 'change_date':
                     $date = $request->get('date');
                     if(!empty($date)){
-                        // Opening hours
-                        $today = new \DateTime(str_replace('/', '-', $date));
-                        $dayIndex = $today->format('N');
-                        $datetimeReservation = $today->format('d/m/Y');
+                        $today = new \DateTime();
+                        
+                        $selectedDay = new \DateTime(str_replace('/', '-', $date));
+                        $dayIndex = $selectedDay->format('N');
 
                         $timeslots = array();
-                        $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
-                        if($closePeriods === 0){
-                            $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)->whereRaw('end_time >= NOW()')
-                                    ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
-                                    ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
-                                    ->get();
-                            foreach($openingHours as $openingHour){
-                                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['start'] = $openingHour->getStartTime();
-                                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['end'] = $openingHour->getEndTime();
-                                $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
+                        $diff = $today->diff($selectedDay);
+                        if($diff->days === 0 || $diff->invert === 0){
+                            // Invert = 0 if selectedDay is up to come, Days = 0 if selectedDay is today
+                            $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
+                            if($closePeriods === 0){
+                                $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)->whereRaw('end_time >= NOW()')
+                                        ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
+                                        ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
+                                        ->get();
+                                foreach($openingHours as $openingHour){
+                                    $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['start'] = $openingHour->getStartTime();
+                                    $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['end'] = $openingHour->getEndTime();
+                                    $timeslots[$openingHour->getUuid()][$openingHour->getDayOrder()]['no_break'] = $openingHour->getNoBreak();
+                                }
                             }
                         }
                         $formData = ['time_slots' => $timeslots];
@@ -927,7 +931,8 @@ class EstablishmentController extends Controller {
         $timeslots = array();
         $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
         if($closePeriods === 0){
-            $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)->whereRaw('end_time >= NOW()')
+            $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)
+                    ->whereRaw('end_time >= NOW()')->orWhereRaw('start_time >= NOW()')
                     ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
                     ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
                     ->get();
@@ -1498,7 +1503,8 @@ class EstablishmentController extends Controller {
                         'prefix' => $prefix,
                         'id_country' => $prefixCountryUuid,
                         'number' => $number,
-                        'id_establishment' => $establishment->getId(),
+                        'id_object_related' => $establishment->getId(),
+                        'type_object_related' => Establishment::TYPE_GLOBAL_OBJECT,
                     ];
 
                     try {

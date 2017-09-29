@@ -46,7 +46,7 @@
                                         'fileType' => ['image', 'text'],
                                         'uploadLabel' => 'Ajouter',
                                         'browseLabel' => 'Ajouter une photo',
-                                        'uploadUrl' => '/establishment/'.$establishment->getUuid().'/ajax',
+                                        'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                         'fileRefreshOnUpload' => 'true',
                                         'showCaption' => 'true',
                                         'showRemove' => 'false',

@@ -22,7 +22,8 @@ class CallNumber extends Model {
         'prefix',
         'id_country',
         'number',
-        'id_establishment'
+        'id_object_related',
+        'type_object_related',
     ];
     protected $guarded = [];
     
@@ -80,13 +81,6 @@ class CallNumber extends Model {
     }
 
     /**
-     * @return mixed
-     */
-    public function getIdEstablishment() {
-        return $this->id_establishment;
-    }
-
-    /**
      * @param $value
      * @return $this
      */
@@ -131,20 +125,43 @@ class CallNumber extends Model {
         return $this;
     }
 
-    /**
-     * @param $value
-     * @return $this
-     */
-    public function setIdEstablishment($value) {
-        $this->id_establishment = $value;
-        return $this;
-    }
-
     function getIdCountry() {
         return $this->id_country;
     }
 
     function setIdCountry($id_country) {
         $this->id_country = $id_country;
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getIdObjectRelated() {
+        return $this->id_object_related;
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getTypeObjectRelated() {
+        return $this->type_object_related;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setIdObjectRelated($value) {
+        $this->id_object_related = $value;
+        return $this;
+    }
+
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setTypeObjectRelated($value) {
+        $this->type_object_related = $value;
+        return $this;
     }
 }
