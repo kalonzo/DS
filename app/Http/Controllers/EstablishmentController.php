@@ -462,6 +462,7 @@ class EstablishmentController extends Controller {
                             'id_location_index' => $idLocation,
                             'average_price_min' => $request->get('average_price_min'),
                             'average_price_max' => $request->get('average_price_max'),
+                            'accept_booking' => $request->get('accept_booking'),
                         ]);
                         if (checkModel($establishment)) {
                             // Update phone numbers
@@ -755,6 +756,7 @@ class EstablishmentController extends Controller {
                                     'id_user_owner' => $user->getId(),
                                     'id_address' => $address->getId(),
                                     'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
+                                    'accept_booking' => $request->get('accept_booking'),
                                     'id_logo' => 0
                         ]);
                         if (checkModel($establishment)) {

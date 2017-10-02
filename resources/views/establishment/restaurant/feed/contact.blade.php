@@ -43,6 +43,16 @@
             @endforeach
             </div>
             <div class="row">
+                <div class="col-xs-12 text-center">
+                    <div class="checkbox">
+                        <label class="text-left">
+                            {!! Form::checkbox('accept_booking', '1', old('accept_booking')) !!}
+                            En cochant cette case, je confirme activer la réservation en ligne dans mon restaurant.
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">
                         Suivant
