@@ -31,7 +31,7 @@ class DtEstablishmentAdmin extends DatatableFeeder {
     }
 
     public function buildColumns() {
-        $columns = array('name' => 'Nom', 'type' => 'Type', 'user' => 'Client', 'city' => 'Ville', 'updated_at' => 'Modifié le');
+        $columns = array('name' => 'Nom', 'type' => 'Type', 'business_status' => "Statut", 'user' => 'Client', 'city' => 'Ville', 'updated_at' => 'Modifié le');
         return $columns;
     }
 
@@ -49,6 +49,20 @@ class DtEstablishmentAdmin extends DatatableFeeder {
         $freeSearch->setValue(Request::get('filter.designation'));
         $filters[] = $freeSearch;
         
+        // Type search
+        $typeSearch = new DatatableFilter();
+        $typeSearch->setInputType(DatatableFilter::INPUT_SELECT);
+        $typeSearch->setLabel('Type');
+        $typeSearch->setName('business_type');
+        $typeSearch->setPlaceholder("Tous");
+        $typeSearch->setTable(Establishment::TABLENAME);
+        $typeSearch->setField('id_business_type');
+        $typeSearch->setEnableEmpty(false);
+        $typeSearch->setOperator(DatatableFilter::OPERATOR_EQUAL);
+        $typeSearch->setValue(Request::get('filter.business_type', BusinessType::TYPE_BUSINESS_RESTAURANT));
+        $typeSearch->setOptions(BusinessType::getLabelByType());
+        $filters[] = $typeSearch;
+
         return $filters;
     }
 
@@ -87,6 +101,7 @@ class DtEstablishmentAdmin extends DatatableFeeder {
             $results[$uuid]['id'] = $uuid;
             $results[$uuid]['name'] = $queryResult->name;
             $results[$uuid]['type'] = BusinessType::getLabelFromType($queryResult->id_business_type);
+            $results[$uuid]['business_status'] = $queryResult->business_status.' %';
             if(!empty($queryResult->owner)){
                 $results[$uuid]['user'] = $queryResult->owner;
             } else {

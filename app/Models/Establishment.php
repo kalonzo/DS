@@ -25,7 +25,6 @@ class Establishment extends Model implements GlobalObjectManageable{
         'name',
         'slug',
         'url_id',
-        'profile_condition',
         'email',
         'id_address',
         'DS_ranking',
@@ -95,7 +94,7 @@ class Establishment extends Model implements GlobalObjectManageable{
             $businessStatus = 25;
         }
         
-        $address = $this->address()->get();
+        $address = $this->address()->first();
         if(checkModel($address) && $address instanceof Address){
             $geocoded = $address->getGeocoded();
             if($geocoded){
@@ -109,8 +108,26 @@ class Establishment extends Model implements GlobalObjectManageable{
                             }
                             break;
                     }
+                    $logo = $this->logo()->count();
+                    if($logo === 1){
+                        $homePics = $this->homePictures()->count();
+                        if($homePics >= 1){
+                            $menus = $this->menus()->count();
+                            if($menus >= 1){
+                                $businessStatus = 75;
+                            }
+                        }
+                    }
                 }
             }
+        }
+        
+        if($this->getStatus() === self::STATUS_ACTIVE){
+            $businessStatus += 25;
+        }
+        $this->setBusinessStatus($businessStatus);
+        if($autoSave){
+            $this->save();
         }
     }
     
@@ -349,13 +366,6 @@ class Establishment extends Model implements GlobalObjectManageable{
     /**
      * @return mixed
      */
-    public function getProfileCondition() {
-        return $this->profile_condition;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getEmail() {
         return $this->email;
     }
@@ -480,15 +490,6 @@ class Establishment extends Model implements GlobalObjectManageable{
      */
     public function setName($value) {
         $this->name = $value;
-        return $this;
-    }
-
-    /**
-     * @param $value
-     * @return $this
-     */
-    public function setProfileCondition($value) {
-        $this->profile_condition = $value;
         return $this;
     }
 

@@ -27,30 +27,38 @@ class GeolocationController extends Controller
         // From IP, see http://ipinfo.io/developers
         
         // From user accepted language
+        $defaultCountry = self::DEFAULT_COUNTRY;
+        $defaultlang = self::DEFAULT_LANG;
+                    
         $acceptedLanguages = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
         $acceptedLanguagesArray = explode(';', $acceptedLanguages);
         if(!empty($acceptedLanguagesArray) && isset($acceptedLanguagesArray[0])){
             $prioLanguageArray = explode(',', $acceptedLanguagesArray[0]);
-            if(!empty($prioLanguageArray) && isset($prioLanguageArray[0])){
-                $langCountryArray = explode('-', $prioLanguageArray[0]);
+            $prioLanguage = null;
+            foreach($prioLanguageArray as $prioLanguageItem){
+                if(strpos($prioLanguageItem, '-') !== false){
+                    $prioLanguage = $prioLanguageItem;
+                    break;
+                }
+            }
+            if(!empty($prioLanguage)){
+                $langCountryArray = explode('-', $prioLanguage);
                 if(!empty($langCountryArray) && count($langCountryArray) === 2){
                     $lang = strtolower($langCountryArray[0]);
                     $country = strtolower($langCountryArray[1]);
                     
-                    $defaultCountry = self::DEFAULT_COUNTRY;
-                    $defaultlang = self::DEFAULT_LANG;
                     if(isset(self::$geolocArrayByCountryLanguage[$country])){
                         $defaultCountry = $country;
                         if(isset(self::$geolocArrayByCountryLanguage[$country][$lang])){
                             $defaultlang = $lang;
                         }
                     }
-                    $geolocArray = self::$geolocArrayByCountryLanguage[$defaultCountry][$defaultlang];
-                    if(!empty($geolocArray) && count($geolocArray) === 2){
-                        $geoloc = new \App\Models\Utilities\LatLng($geolocArray['lat'], $geolocArray['lng']);
-                    }
                 }
             }
+        }
+        $geolocArray = self::$geolocArrayByCountryLanguage[$defaultCountry][$defaultlang];
+        if(!empty($geolocArray) && count($geolocArray) === 2){
+            $geoloc = new \App\Models\Utilities\LatLng($geolocArray['lat'], $geolocArray['lng']);
         }
         return $geoloc;
     }

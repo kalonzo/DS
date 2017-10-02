@@ -118,6 +118,11 @@ class AdminController extends Controller {
                 ->middleware('auth');
 
         Route::get('/admin', 'AdminController@index');
+        
+        // Valid establishment
+        Route::match(['post'], '/admin/valid_establishment/{establishment}', 'EstablishmentController@validateEstablishment')
+        ->middleware('auth');
+        
 
         // IMPORT
         // upload file

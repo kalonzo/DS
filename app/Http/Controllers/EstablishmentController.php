@@ -494,7 +494,7 @@ class EstablishmentController extends Controller {
                                     $createdObjects[] = $homePictures;
                                 }
                             }
-
+                            $establishment->calculateBusinessStatus();
                             $jsonResponse['success'] = 1;
                         } else {
                             $jsonResponse['error'] = "L'établissement n'a pu être enregistré.";
@@ -755,8 +755,7 @@ class EstablishmentController extends Controller {
                                     'id_user_owner' => $user->getId(),
                                     'id_address' => $address->getId(),
                                     'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
-                                    'id_logo' => 0,
-                                    'business_status' => 50
+                                    'id_logo' => 0
                         ]);
                         if (checkModel($establishment)) {
                             $createdObjects[] = $establishment;
@@ -788,6 +787,8 @@ class EstablishmentController extends Controller {
                                 $createdObjects[] = $homePictures;
                             }
 
+                            $establishment->calculateBusinessStatus();
+                            
                             $jsonResponse['success'] = 1;
                             $jsonResponse['relocateMode'] = 1;
                             $jsonResponse['location'] = '/edit/establishment/'.$establishment->getUuid();
@@ -816,6 +817,27 @@ class EstablishmentController extends Controller {
         
         $responsePrepared = $response->json($jsonResponse);
         return $responsePrepared;
+    }
+    
+    public function validateEstablishment(Establishment $establishment){
+        $response = response();
+        $jsonResponse = array('triggerMode' => 1,'success' => 0);
+        
+        if($establishment->getStatus() !== Establishment::STATUS_ACTIVE){
+            if($establishment->getBusinessStatus() >= 50){
+                $establishment->setStatus(Establishment::STATUS_ACTIVE);
+                $establishment->calculateBusinessStatus();
+                $jsonResponse['success'] = 1;
+            } else {
+                $jsonResponse['error'] = "Les informations de l'établissement sont insuffisantes pour procéder à sa validation.";
+            }
+        } else {
+            $jsonResponse['error'] = "L'établissement a déjà été validé.";
+        }
+        
+        $responsePrepared = $response->json($jsonResponse);
+        return $responsePrepared;
+        
     }
 
     public function buildFeedFormData() {

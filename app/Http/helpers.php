@@ -199,7 +199,7 @@ function checkRight($action = null){
 
 function isAdmin(){
     $isAdmin = false;
-    if(\Illuminate\Support\Facades\Auth::user()->getType() === User::TYPE_USER_ADMIN_PRO){
+    if(\Illuminate\Support\Facades\Auth::user()->getType() === App\Models\User::TYPE_USER_ADMIN_PRO){
         $isAdmin = true;
     }
     return $isAdmin;
