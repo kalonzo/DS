@@ -51,6 +51,20 @@ class Bill extends Model implements GlobalObjectManageable{
     public function addresses(){
         return $this->hasMany(Address::class, 'id_object_related', 'id');
     }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function cart(){
+        return $this->hasOne(Cart::class, 'id', 'id_cart');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function contract(){
+        return $this->hasOne(Cart::class, 'id', 'id_contract');
+    }
     
     /**
      * @return mixed
@@ -243,5 +257,15 @@ class Bill extends Model implements GlobalObjectManageable{
         $this->id_contract = $value;
         return $this;
     }
+
+    function getStatus() {
+        return $this->status;
+    }
+
+    function setStatus($status) {
+        $this->status = $status;
+        return $this;
+    }
+
 
 }

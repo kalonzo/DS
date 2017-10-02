@@ -112,7 +112,7 @@ class Cart extends Model {
     }
 
     public function getLastPayment(){
-        $payment = $this->payments()->whereIn('status', Payment::getFinalStatuses())->orderBy('updated_at')->first();
+        $payment = $this->payments()->whereIn('status', Payment::getFinalStatuses())->orderBy('updated_at', 'DESC')->first();
         return $payment;
     }
     
@@ -125,6 +125,13 @@ class Cart extends Model {
      */
     public function payments(){
         return $this->hasMany(Payment::class, 'id_cart', 'id');
+    }
+    /**
+     * 
+     * @return Payment
+     */
+    public function bills(){
+        return $this->hasMany(Bill::class, 'id_cart', 'id');
     }
     
     /**

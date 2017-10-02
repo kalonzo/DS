@@ -14,6 +14,7 @@ class Contract extends Model {
     const STATUS_ACTIVE = 1;
     const STATUS_CANCELED = 2;
     const STATUS_OVER = 3;
+    const STATUS_PROCESSING = 4;
     
     public $timestamps = true;
     protected $fillable = [
@@ -138,6 +139,16 @@ class Contract extends Model {
 
     function setTypeBusiness($type_business) {
         $this->type_business = $type_business;
+        return $this;
+    }
+
+    function getStatus() {
+        return $this->status;
+    }
+
+    function setStatus($status) {
+        $this->status = $status;
+        return $this;
     }
 
 

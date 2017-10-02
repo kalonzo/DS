@@ -92,6 +92,14 @@ class User extends Authenticatable implements GlobalObjectManageable{
      * 
      * @return \App\Database\Eloquent\Builder
      */
+    public function cart(){
+        return $this->hasMany(Cart::class, 'id_user', 'id');
+    }
+    
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
     public function callNumbers(){
         return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
     }

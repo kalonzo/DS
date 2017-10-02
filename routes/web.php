@@ -71,9 +71,11 @@ Route::post('/delete/{media_type}/{id_media}', function($media_type, $id_media) 
 })->where('media_type', '[a-z_]*medias$');
 
 // CHECKOUT
-//Route::post('/start_checkout', 'WalleeController@startCheckout');
 Route::post('/create_order', 'WalleeController@createOrder');
-Route::match(['get', 'post'], '/complete_order', 'WalleeController@completeOrder');
+Route::match(['get', 'post'], '/transaction/success', 'WalleeController@transactionSucceed');
+Route::match(['get', 'post'], '/transaction/failure', 'WalleeController@transactionFailed');
+Route::match(['get', 'post'], '/establishment/register/success', 'WalleeController@subscriptionSucceed');
+Route::match(['get', 'post'], '/establishment/register/failure', 'WalleeController@subscriptionFailed');
 
 /* * ****************************TEST ROUTE************************************* */
 Route::get('/welcome/{locale}', function ($local) {

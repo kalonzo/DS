@@ -196,3 +196,11 @@ function formatDate($datetime, $dateFormat = IntlDateFormatter::GREGORIAN, $time
 function checkRight($action = null){
     return \App\Utilities\RightGranter::getInstance()->isAllowedTo($action);
 }
+
+function isAdmin(){
+    $isAdmin = false;
+    if(\Illuminate\Support\Facades\Auth::user()->getType() === User::TYPE_USER_ADMIN_PRO){
+        $isAdmin = true;
+    }
+    return $isAdmin;
+}

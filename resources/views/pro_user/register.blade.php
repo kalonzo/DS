@@ -81,7 +81,7 @@ if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN) && !empty(Illuminate\Su
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Checkout</h4>
+                <img src="/img/logo-dinerscope.png" alt="Dinerscope"/>
             </div>
             <div class="modal-body">
                 <div class="row" id="payment-form">

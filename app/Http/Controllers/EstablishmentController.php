@@ -756,6 +756,7 @@ class EstablishmentController extends Controller {
                                     'id_address' => $address->getId(),
                                     'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
                                     'id_logo' => 0,
+                                    'business_status' => 50
                         ]);
                         if (checkModel($establishment)) {
                             $createdObjects[] = $establishment;

@@ -20,6 +20,9 @@ class WalleeController extends Controller {
     const API_CLIENT_KEY = 'SSh8KJebkHmR7zhQJ58jCONIX5kk64uITe8CRgccdHs=';
     const API_CLIENT_USER_ID = 592;
     const MAIN_SPACE_ID = 454;
+    
+    const CHECKOUT_OP_SUBSCRIPTION = 1;
+    const CHECKOUT_OP_VOUCHER = 2;
 
     /**
      * Display the specified resource.
@@ -27,7 +30,7 @@ class WalleeController extends Controller {
      * @param Cart $cart
      * @param User $user
      */
-    public function startCheckout($payment, $cart, $user) {
+    public function startCheckout($payment, $cart, $user, $operation = null) {
         $jsonResponse = array('success' => 0);
         if(checkModel($payment) && checkModel($cart) && checkModel($user)){
             try{
@@ -67,13 +70,21 @@ class WalleeController extends Controller {
                     $transactionPending->setCurrency($cart->getCurrencyLabel());
                     $transactionPending->setCustomerEmailAddress($user->getEmail());
                     $transactionPending->setLineItems($lineItems);
-                    $transactionPending->setFailedUrl(url('/complete_order').'?error=1');
-                    $transactionPending->setSuccessUrl(url('/complete_order').'?success=1');
+                    
+                    $failedUrl = url('/transaction/error').'?id_cart='.$cart->getUuid();
+                    $successUrl = url('/transaction/success').'?id_cart='.$cart->getUuid();
+                    switch($operation){
+                        case self::CHECKOUT_OP_SUBSCRIPTION:
+                            $successUrl = url('/establishment/register/success?id_user='.$user->getUuid());
+                            $failedUrl = url('/establishment/register/failure?id_user='.$user->getUuid());
+                            break;
+                    }
+                    $transactionPending->setFailedUrl($failedUrl);
+                    $transactionPending->setSuccessUrl($successUrl);
 
                     $transaction = $service->create(self::MAIN_SPACE_ID, $transactionPending);
                 }
 
-        //        $paymentMethodConfiguration = $service->fetchPossiblePaymentMethods(454, $transaction->getId());
                 if(!empty($transaction) && $transaction->isValid() && !empty($transaction->getId())){
                     $payment->setIdTransaction($transaction->getId())->save();
                     $url = $service->buildJavaScriptUrl(self::MAIN_SPACE_ID, $transaction->getId());
@@ -134,22 +145,82 @@ class WalleeController extends Controller {
         return $responsePrepared;
     }
     
-    public function completeOrder(\Illuminate\Http\Request $request){
-        $idUser = SessionController::getInstance()->getIdPendingUser();
-        $idTransaction = SessionController::getInstance()->getIdTransactionProUser();
+    public function transactionSucceed(\Illuminate\Http\Request $request){
+        $idCart = $request->get('id_cart');
         
-        if(!empty($idTransaction) && !empty($idUser)){
-            $payment = Payment::where('id_transaction', '=', $idTransaction)->first();
-            if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUser){
-                if($request->get('success')){
-                    $payment->setStatus(Payment::STATUS_AUTHORIZED)->save();
-                } else {
-                    $payment->setStatus(Payment::STATUS_DENIED)->save();
-                }
-            }
+        if(!empty($idCart)){
+//            $payment = Payment::where('id_transaction', '=', $idTransaction)->first();
+//            if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUser){
+//                $user = User::find($idUser);
+//                $payment->setStatus(Payment::STATUS_AUTHORIZED)->save();
+//            }
         }
-        print_r($request->all());
+        print_r('Transaction succeed!');
         die();
     }
 
+    public function transactionFailed(\Illuminate\Http\Request $request){
+        $idCart = $request->get('id_cart');
+        
+        print_r('Transaction failed!');
+        die();
+    }
+    
+    public function subscriptionSucceed(\Illuminate\Http\Request $request){
+        $idUserUrl = $request->get('id_user');
+        $idUserSession = SessionController::getInstance()->getIdPendingUser();
+        $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
+        
+        if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
+            $user = User::find($idUserSession);
+            if(checkModel($user)){
+                $cart = $user->cart()->orderBy('updated_at', 'DESC')->first();
+                if(checkModel($cart) && $cart instanceof App\Models\Cart){
+                    $payment = $cart->payments()->orderBy('updated_at', 'DESC')->first();
+                    if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUserSession && $payment->getIdTransaction() === $idTransactionSession){
+                        $payment->setStatus(Payment::STATUS_AUTHORIZED)->save();
+                        $bill = $cart->bills()->first();
+                        if(checkModel($bill) && $bill instanceof \App\Models\Bill){
+                            $bill->setStatus(\App\Models\Bill::STATUS_PAID)->save();
+                            $contract = $bill->contract()->first();
+                            if(checkModel($contract) && $contract instanceof \App\Models\Contract){
+                                $contract->setStatus(\App\Models\Contract::STATUS_ACTIVE)->save();
+                                $subscription = \App\Models\Subscription::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id_bill', $bill->getUuid()))->first();
+                                if(checkModel($subscription) && $subscription instanceof \App\Models\Subscription){
+                                    $subscription->setStatus(\App\Models\Subscription::STATUS_ACTIVE)->save();
+                                    $establishment = $subscription->establishment()->first();
+                                    if(checkModel($establishment) && $establishment instanceof \App\Models\Establishment){
+                                        $establishment->setBusinessStatus(25)->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        print_r('User registered!');
+        die();
+    }
+    
+    public function subscriptionFailed(\Illuminate\Http\Request $request){
+        $idUserUrl = $request->get('id_user');
+        $idUserSession = SessionController::getInstance()->getIdPendingUser();
+        $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
+        
+        if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
+            $user = User::find($idUserSession);
+            if(checkModel($user)){
+                $cart = $user->cart()->orderBy('updated_at', 'DESC')->first();
+                if(checkModel($cart) && $cart instanceof App\Models\Cart){
+                    $payment = $cart->payments()->orderBy('updated_at', 'DESC')->first();
+                    if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUserSession && $payment->getIdTransaction() === $idTransactionSession){
+                        $payment->setStatus(Payment::STATUS_DENIED)->save();
+                    }
+                }
+            }
+        }
+        print_r('User registration failed!');
+        die();
+    }
 }

@@ -28,6 +28,35 @@ class Subscription extends Model {
     ];
     protected $guarded = [];
     
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function bill(){
+        return $this->hasOne(Bill::class, 'id', 'id_bill');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function buyableItem(){
+        return $this->hasOne(BuyableItem::class, 'id', 'id_buyable_item');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function establishment(){
+        return $this->hasOne(Establishment::class, 'id', 'id_establishment');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function user(){
+        return $this->hasOne(User::class, 'id', 'id_user');
+    }
+    
     function getStatus() {
         return $this->status;
     }

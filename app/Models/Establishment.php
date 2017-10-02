@@ -13,13 +13,15 @@ class Establishment extends Model implements GlobalObjectManageable{
 
     const TYPE_BUSINESS_RESTAURANT = 1;
 
-    const STATUS_INCOMPLETE = 2;
     const STATUS_ACTIVE = 1;
+    const STATUS_INCOMPLETE = 2;
     const STATUS_TO_LOCALIZE = 3;
+    const STATUS_TO_VALID = 4;
     
     public $timestamps = true;
     protected $fillable = [
         'status',
+        'business_status',
         'name',
         'slug',
         'url_id',
@@ -32,6 +34,7 @@ class Establishment extends Model implements GlobalObjectManageable{
         'star',
         'nb_last_week_visits',
         'accept_voucher',
+        'accept_booking',
         'site_url',
         'description',
         'average_price_min',
@@ -84,65 +87,127 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $picPath;
     }
     
-    public function address(){
-        return $this->hasOne(Address::class, 'id', 'id_address');
-    }
-    
-    public function userOwner(){
-        return $this->hasOne(User::class, 'id', 'id_user_owner');
-    }
-    
-    public function logo(){
-        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
-    }
-    
-    public function video(){
-        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_video');
-    }
-    
-    public function homePictures(){
-        return $this->hasMany(EstablishmentMedia::class, 'id_object_related', 'id')->where('type_use', '=', Media::TYPE_USE_ETS_HOME_PICS);
-    }
-    
-    public function callNumbers(){
-        return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
-    }
-
-    public function businessCategoryLinks(){
-        return $this->hasMany(EstablishmentBusinessCategory::class, 'id_establishment', 'id');
-    }
-    
-    public function businessCategories(){
-        return $this->belongsToMany(BusinessCategory::class, EstablishmentBusinessCategory::TABLENAME, 'id_establishment', 'id_business_category');
-    }    
-    
-    public function openingHours(){
-        return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
-    }
-    
-    public function closePeriods(){
-        return $this->hasMany(ClosePeriod::class, 'id_establishment', 'id');
-    }
-    
-    public function galleries(){
-        return $this->hasMany(Gallery::class, 'id_establishment', 'id');
+    public function calculateBusinessStatus($autoSave = true){
+        $businessStatus = 0;
+        
+        $userOwner = $this->userOwner()->count();
+        if($userOwner === 1){
+            $businessStatus = 25;
+        }
+        
+        $address = $this->address()->get();
+        if(checkModel($address) && $address instanceof Address){
+            $geocoded = $address->getGeocoded();
+            if($geocoded){
+                $callNumbers = $this->callNumbers()->count();
+                if($callNumbers >= 2){
+                    switch($this->getIdBusinessType()){
+                        case BusinessType::TYPE_BUSINESS_RESTAURANT:
+                            $cookingType = $this->businessCategories()->where('type', '=', BusinessCategory::TYPE_COOKING_TYPE)->count();
+                            if($cookingType >= 1){
+                                $businessStatus = 50;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
     }
     
     /**
      * 
-     * @return Employee
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function address(){
+        return $this->hasOne(Address::class, 'id', 'id_address');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function userOwner(){
+        return $this->hasOne(User::class, 'id', 'id_user_owner');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function logo(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function video(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_video');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function homePictures(){
+        return $this->hasMany(EstablishmentMedia::class, 'id_object_related', 'id')->where('type_use', '=', Media::TYPE_USE_ETS_HOME_PICS);
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function callNumbers(){
+        return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
+    }
+/**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function businessCategoryLinks(){
+        return $this->hasMany(EstablishmentBusinessCategory::class, 'id_establishment', 'id');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function businessCategories(){
+        return $this->belongsToMany(BusinessCategory::class, EstablishmentBusinessCategory::TABLENAME, 'id_establishment', 'id_business_category');
+    }    
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function openingHours(){
+        return $this->hasMany(OpeningHour::class, 'id_establishment', 'id');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function closePeriods(){
+        return $this->hasMany(ClosePeriod::class, 'id_establishment', 'id');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function galleries(){
+        return $this->hasMany(Gallery::class, 'id_establishment', 'id');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
      */
     public function employees(){
         return $this->hasMany(Employee::class, 'id_establishment', 'id');
     }
-    
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
     public function stories(){
         return $this->hasMany(EstablishmentHistory::class, 'id_establishment', 'id');
     }
-    
     /**
      * 
-     * @return Menu
+     * @return \App\Database\Eloquent\Builder
      */
     public function menus($excludeDaily = true){
         $menus = $this->hasMany(Menu::class, 'id_establishment', 'id');
@@ -153,23 +218,21 @@ class Establishment extends Model implements GlobalObjectManageable{
     }
     /**
      * 
-     * @return Menu
+     * @return \App\Database\Eloquent\Builder
      */
     public function dailyMenu(){
         return $this->hasOne(Menu::class, 'id_establishment', 'id')->where('is_daily_menu', '=', true)->orderBy('created_at', 'DESC');
     }
-    
     /**
      * 
-     * @return Dish
+     * @return \App\Database\Eloquent\Builder
      */
     public function dishes(){
         return $this->hasMany(Dish::class, 'id_establishment', 'id');
     }
-    
     /**
      * 
-     * @return Promotion
+     * @return \App\Database\Eloquent\Builder
      */
     public function promotions(){
         return $this->hasMany(Promotion::class, 'id_establishment', 'id');
@@ -579,6 +642,7 @@ class Establishment extends Model implements GlobalObjectManageable{
 
     function setSlug($slug) {
         $this->slug = $slug;
+        return $this;
     }
     
     function getUrlId() {
@@ -587,6 +651,7 @@ class Establishment extends Model implements GlobalObjectManageable{
 
     function setUrlId($url_id) {
         $this->url_id = $url_id;
+        return $this;
     }
     
     function getIdCurrency() {
@@ -595,6 +660,7 @@ class Establishment extends Model implements GlobalObjectManageable{
 
     function setIdCurrency($id_currency) {
         $this->id_currency = $id_currency;
+        return $this;
     }
 
     function getIdVideo() {
@@ -603,6 +669,25 @@ class Establishment extends Model implements GlobalObjectManageable{
 
     function setIdVideo($id_video) {
         $this->id_video = $id_video;
+        return $this;
+    }
+
+    function getAcceptBooking() {
+        return $this->accept_booking;
+    }
+
+    function getBusinessStatus() {
+        return $this->business_status;
+    }
+
+    function setAcceptBooking($accept_booking) {
+        $this->accept_booking = $accept_booking;
+        return $this;
+    }
+
+    function setBusinessStatus($business_status) {
+        $this->business_status = $business_status;
+        return $this;
     }
 
 

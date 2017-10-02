@@ -55,6 +55,17 @@ class StoreUserPro extends \App\Http\FormRequest {
             
             'accept_cgv' => 'required',
         ];
+//        switch($idPaymentMethod){
+//            case PaymentMethod::METHOD_30_DAYS_BILL:
+//                if($idCountry == Country::CHE){
+//                    $jsonResponse['relocateMode'] = 1;
+//                    $jsonResponse['location'] = '/admin';
+//                    unset($jsonResponse['triggerMode']);
+//                    $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
+//                    $billStatus = \App\Models\Bill::STATUS_CREATED;
+//                } else {
+//                    $jsonResponse['error'] = "Le paiement en facture à 30 jours est disponible uniquement pour les résidents suisses.";
+//                }
         return $rules;
     }
 

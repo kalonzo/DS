@@ -880,6 +880,19 @@ form:not(.navbar-form){
 }
 
 #checkoutModal{
+    .modal-content{
+        overflow: hidden;
+        border: 1px solid #333;
+    }
+    .modal-header{
+        background: #454545;
+        background: -moz-linear-gradient(top, #454545 0%, #666666 100%);
+        background: -webkit-linear-gradient(top, #454545 0%,#666666 100%);
+        background: linear-gradient(to bottom, #454545 0%,#666666 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#454545', endColorstr='#666666',GradientType=0 );
+        border-bottom: 0px;
+        text-align: center;
+    }
     .modal-body{
         padding: 20px;
         .row{
@@ -887,10 +900,22 @@ form:not(.navbar-form){
         }
         #pay-button{
             width: 100%;
+            font-size: 1.5em;
+            padding: 15px;
+            background: #666666;
+            background: -moz-linear-gradient(top, #666666 0%, #454545 100%);
+            background: -webkit-linear-gradient(top, #666666 0%,#454545 100%);
+            background: linear-gradient(to bottom, #666666 0%,#454545 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666666', endColorstr='#454545',GradientType=0 );
+            @include borderRadius(4px);
+            border: 0px;
         }
     }
     .loading-bar{
         margin: 20px auto;
+    }
+    .modal-footer{
+        display: none;
     }
 }
 .phone-form-group{

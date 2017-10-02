@@ -348,7 +348,7 @@ if(checkModel($establishment)){
             if(!isGeocoded()){
                 var callbacks = $.Callbacks();
                 callbacks.add(
-                        geocodeAddress($form.children().get(0))
+                    geocodeAddress($form.children().get(0))
                 );
                 callbacks.fire();
             }
@@ -381,7 +381,7 @@ if(checkModel($establishment)){
         });
         
         $('body').on('change', '#ets-location input, #ets-location select', function(e){
-                setGeocoded(false);
+            setGeocoded(false);
         });
         
         $('body').on('ajaxFormSubmitted', 'form#feed-establishment', function(e, data){

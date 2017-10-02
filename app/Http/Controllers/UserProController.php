@@ -183,17 +183,14 @@ class UserProController extends Controller {
                             
                             $subscriptionStatus = null;
                             $billStatus = null;
+                            $contractStatus = \App\Models\Contract::STATUS_PROCESSING;
+                            $businessStatus = 0;
                             switch($idPaymentMethod){
                                 case PaymentMethod::METHOD_30_DAYS_BILL:
-                                    if($idCountry == Country::CHE){
-                                        $jsonResponse['relocateMode'] = 1;
-                                        $jsonResponse['location'] = '/admin';
-                                        unset($jsonResponse['triggerMode']);
-                                        $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
-                                        $billStatus = \App\Models\Bill::STATUS_CREATED;
-                                    } else {
-                                        $jsonResponse['error'] = "Le paiement en facture à 30 jours est disponible uniquement pour les résidents suisses.";
-                                    }
+                                    $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
+                                    $billStatus = \App\Models\Bill::STATUS_CREATED;
+                                    $contractStatus = \App\Models\Contract::STATUS_ACTIVE;
+                                    $businessStatus = 25;
                                     break;
                                 case PaymentMethod::METHOD_PACKAGE_INCLUDED:
                                 case PaymentMethod::METHOD_FREE_PASS:
@@ -201,9 +198,11 @@ class UserProController extends Controller {
                                     $jsonResponse['relocateMode'] = 1;
                                     $jsonResponse['location'] = '/admin';
                                     unset($jsonResponse['triggerMode']);
+                                    $businessStatus = 25;
                                     if($idPaymentMethod === PaymentMethod::METHOD_FREE_PASS){
                                         $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
                                         $billStatus = \App\Models\Bill::STATUS_PAID;
+                                        $contractStatus = \App\Models\Contract::STATUS_ACTIVE;
                                     } else {
                                         $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
                                         $billStatus = \App\Models\Bill::STATUS_CREATED;
@@ -212,12 +211,10 @@ class UserProController extends Controller {
                                 default :
                                     $walleeController = App::make(WalleeController::class);
                                     if ($walleeController instanceof WalleeController) {
-                                        $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user);
+                                        $walleeJsonResponse = $walleeController->startCheckout($payment, $cart, $user, WalleeController::CHECKOUT_OP_SUBSCRIPTION);
                                         $jsonResponse = array_merge($jsonResponse, $walleeJsonResponse);
-                                        if($jsonResponse['success']){
-                                            $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
-                                            $billStatus = \App\Models\Bill::STATUS_PAID;
-                                        }
+                                        $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
+                                        $billStatus = \App\Models\Bill::STATUS_CREATED;
                                     } else {
                                         $jsonResponse['error'] = "Le controller de paiement a connu une erreur. Veuillez avertir le webmaster.";
                                     }
@@ -234,7 +231,7 @@ class UserProController extends Controller {
                                 
                                 $contract = \App\Models\Contract::create([
                                     'id' => UuidTools::generateUuid(),
-                                    'status' => \App\Models\Contract::STATUS_ACTIVE,
+                                    'status' => $contractStatus,
                                     'start_date' => $startDateFormatted,
                                     'end_date' => $endDateFormatted,
                                     'id_user_in_charge' => 0,
@@ -297,7 +294,26 @@ class UserProController extends Controller {
                                 ]);
                                 $createdObjects[] = $subscription;
                                 
-                                 // TODO Auth user activation
+                                $establishment = Establishment::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'status' => Establishment::STATUS_INCOMPLETE,
+                                    'id_user_owner' => $user->getId(),
+                                    'id_address' => 0,
+                                    'id_business_type' => $businessType,
+                                    'business_status' => $businessStatus,
+                                ]);
+                                $createdObjects[] = $establishment;
+                                
+                                if($idPaymentMethod !== PaymentMethod::METHOD_CB){
+                                    $jsonResponse['relocateMode'] = 1;
+                                    unset($jsonResponse['triggerMode']);
+                                    if(isAdmin()){
+                                        $jsonResponse['location'] = '/admin';
+                                    } else {
+                                        $jsonResponse['location'] = '/establishment/register/success?id_user='.$user->getUuid();
+                                        // TODO Auth user activation
+                                    }
+                                }
                             }
                         } else {
                             $jsonResponse['error'] = "Le processus de paiement n'a pas pu être initié";
@@ -372,6 +388,7 @@ class UserProController extends Controller {
         $businessTypes = array();
         $businessTypeData = DB::table(BusinessType::TABLENAME)
                 ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ',label')
+                ->where('status', '=', BusinessType::STATUS_ACTIVE)
                 ->orderBy('label')
                 ->get();
         foreach ($businessTypeData as $businessCategoryData) {
