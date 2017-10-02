@@ -110,13 +110,12 @@ class ImportRestaurantController extends Controller {
                                         } elseif ($col_slug === 'cadre_ambiance') {
                                             $ambiance = explode('-', $cellContent);
                                         }
-                                       
                                     }
                                 }
 
-                                $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', 'like', '%'.$street.'%')
-                                                ->where('postal_code', 'like', '%'.$postalCode.'%')->where('city', '=', $city)->first();
-                                $establishmentName = Establishment::where('name', 'like', '%'.$nameEstablishment.'%')->first();
+                                $addressEstablishment = Address::where('street_number', '=', $streetNumber)->where('street', 'like', '%' . $street . '%')
+                                                ->where('postal_code', 'like', '%' . $postalCode . '%')->where('city', '=', $city)->first();
+                                $establishmentName = Establishment::where('name', 'like', '%' . $nameEstablishment . '%')->first();
 
                                 //On vérifie que la requête soit suffisamment compléte pour la geolocalisation
                                 if ((!checkModel($establishmentName) && !checkModel($addressEstablishment) && !empty($nameEstablishment) && !empty($street) && !empty($streetNumber) && !empty($postalCode) && !empty($city))) {
@@ -198,9 +197,9 @@ class ImportRestaurantController extends Controller {
                             retour
                         </a>
                         <input type="button" value="Rafraichir" id="refresh" onclick="{
-                                    location.reload()
-                                }" />
-                        <?php
+                                                            location.reload()
+                                                        }" />
+                               <?php
                     }
                 });
                 Storage::delete($relPath);
@@ -305,9 +304,9 @@ class ImportRestaurantController extends Controller {
                         'id_currency' => $idCurrency,
             ]);
 
-            
-                    //Insertion numéro principal PRO
-                    $callNumber = \App\Models\CallNumber::where('number', '=', $phone)->where('id_establishment', '=', $ets->getId())->first();
+
+            //Insertion numéro principal PRO
+            $callNumber = \App\Models\CallNumber::where('number', '=', $phone)->where('id_object_related', '=', $ets->getId())->first();
             if (!checkModel($callNumber)) {
                 \App\Models\CallNumber::create([
                     'id' => UuidTools::generateUuid(),
@@ -328,7 +327,8 @@ class ImportRestaurantController extends Controller {
                     'id_country' => $countryId,
                     'prefix' => $prefix,
                     'number' => $phone,
-                    'id_establishment' => $ets->getId()
+                    'id_object_related' => $ets->getId(),
+                    'type_object_related' => Establishment::TYPE_GLOBAL_OBJECT,
                 ]);
                 $callNumber->save();
             }
