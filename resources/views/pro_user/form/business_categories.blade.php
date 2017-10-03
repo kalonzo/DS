@@ -10,18 +10,24 @@
     <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
         <div class="panel-body container">
             <div class="row business-type-tiles">
-                @foreach($form_data['business_types'] as $businessType => $label)
-                    @php
-                    $disabled = false;
+                @foreach($form_data['business_types'] as $businessTypeId => $businessTypeData)
+                    <?php
+                    $disabled = true;
                     $selected = false;
-                    if(isset($form_values['business_type']) && $form_values['business_type'] == $businessType){
+                    if(isset($form_values['business_type']) && $form_values['business_type'] == $businessTypeId){
                         $selected = true;
                     }
-                    @endphp
-                    <div class="business-type-tile @if($disabled) disabled @endif @if($selected) selected @endif">
-                        {{ $label }}
-                        <br/>
-                        {!! Form::radio('business_type', $businessType, $selected, ['disabled' => $disabled]) !!}
+                    if(isset($businessTypeData['enabled']) && $businessTypeData['enabled']){
+                        $disabled = false;
+                    }
+                    ?>
+                    <div class="business-type-tile col-xs-6 col-sm-4 col-md-2 @if($disabled) disabled @endif @if($selected) selected @endif"
+                         style="@if(isset($businessTypeData['url_media'])) background-image: url('{{ $businessTypeData['url_media'] }}');@endif">
+                        <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                        <div class='business-label'>{{ $businessTypeData['label'] }}</div>
+                        @if($disabled)
+                        {!! Form::radio('business_type', $businessTypeId, $selected, ['disabled' => $disabled]) !!}
+                        @endif
                     </div>
                 @endforeach
             </div>
@@ -34,16 +40,12 @@
             </div>
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function(event) { 
-                    $('body').on('change', '[name=business_type]', function(){
-                        var tile = $(this).parentsInclude('.business-type-tile');
-                        var selected = $(this).is(':checked');
-                        if(checkExist(tile)){
-                            if(selected){
-                                $(tile).addClass('selected');
-                            } else {
-                                $(tile).removeClass('selected');
-                            }
-                        }
+                    $('body').on('click', '.business-type-tile:not(.disabled)', function(){
+                        $('.business-type-tile.selected').find('input[name=business_type]').removeAttr('checked');
+                        $(this).find('input[name=business_type]').attr('checked', 'checked');
+                        
+                        $('.business-type-tile.selected').removeClass('selected');
+                        $(this).addClass('selected');
                     });
                 });
             </script>

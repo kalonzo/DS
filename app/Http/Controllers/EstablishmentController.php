@@ -431,7 +431,7 @@ class EstablishmentController extends Controller {
                     }
                 }
                 if (checkModelId($idLocation)) {
-                    $address = Address::find(UuidTools::getUuid($establishment->getIdAddress()));
+                    $address = Address::findUuid(UuidTools::getUuid($establishment->getIdAddress()));
                     if (checkModel($address)) {
                         // Update establishment address
                         $address->update([
@@ -1092,7 +1092,7 @@ class EstablishmentController extends Controller {
                     $filesToUpload = $request->allFiles();
                     if(isset($filesToUpload['gallery']) && !empty($filesToUpload['gallery'])){
                         foreach($filesToUpload['gallery'] as $uuidGallery => $uploadedFiles){
-                            $gallery = \App\Models\Gallery::find($uuidGallery);
+                            $gallery = \App\Models\Gallery::findUuid($uuidGallery);
                             if(checkModel($gallery)){
                                 $galleryMedias = FileController::storeFileMultiple('gallery.'.$uuidGallery, \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM, $gallery);
                                 if(count($galleryMedias) === count($uploadedFiles)){
