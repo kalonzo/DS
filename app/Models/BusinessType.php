@@ -77,6 +77,31 @@ class BusinessType extends Model {
         return $businessLabel;
     }
     
+    
+    public static function getLabelByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_ACTIVE] = 'Activé';
+        $labelByStatus[self::STATUS_DISABLED] = 'Désactivé';
+        return $labelByStatus;
+    }
+    
+    public static function getLabelFromStatus($status){
+        $statusLabel = 'Statut non défini';
+        $businessStatusLabels = self::getLabelByStatus();
+        if(isset($businessStatusLabels[$status])){
+            $statusLabel = $businessStatusLabels[$status];
+        }
+        return $statusLabel;
+    }
+    
+    /**
+     * 
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function media(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_media');
+    }
+    
     /**
      * @return mixed
      */

@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 Route::get('/logout', 'Auth\LoginController@logout');
 
+
+/* * **************************** ADMIN **************************************** */
+
+App\Http\Controllers\AdminController::routes();
+
 /* * **************************** FRONT **************************************** */
 Route::get('/', 'HomeController@index');
 Route::match(['get', 'post'], '/search', 'SearchController@search');
@@ -91,10 +96,6 @@ Route::get('/test/email', function () {
     die();
 });
 
-
-/* * **************************** ADMIN **************************************** */
-
-App\Http\Controllers\AdminController::routes();
 
 /* * ************************** AJAX CALLS ************************************* */
 
