@@ -301,10 +301,12 @@ class UserProController extends Controller {
                                     'id_address' => 0,
                                     'id_business_type' => $businessType,
                                     'business_status' => $businessStatus,
+                                    'slug' => '',
+                                    'url_id' => 0,
                                 ]);
                                 $createdObjects[] = $establishment;
                                 
-                                if($idPaymentMethod !== PaymentMethod::METHOD_CB){
+                                if($idPaymentMethod != PaymentMethod::METHOD_CB){
                                     $jsonResponse['relocateMode'] = 1;
                                     unset($jsonResponse['triggerMode']);
                                     if(isAdmin()){

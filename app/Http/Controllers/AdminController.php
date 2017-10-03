@@ -80,6 +80,35 @@ class AdminController extends Controller {
                 return $controllerClass->callAction($action, $params);
             }
         })->middleware('auth');
+
+        Route::get('/admin/edit/{table_name}/{id}', function($table_name, $id) {
+            $controllerClass = null;
+
+            switch ($table_name) {
+                case \App\Models\BusinessType::TABLENAME:
+                    $controllerClass = App::make(BusinessTypeController::class);
+                    break;
+            }
+            if ($controllerClass instanceof Controller) {
+                return $controllerClass->callAction('edit', array('id' => $id));
+            }
+        })->middleware('auth');
+
+        Route::match(['put', 'post'], '/admin/update/'.\App\Models\BusinessType::TABLENAME.'/{businessType}', 'BusinessTypeController@update');
+//        Route::match(['put', 'post'], '/admin/update/{table_name}/{id}', function($table_name, $id) {
+//            $controllerClass = null;
+//            $params = ['id' => $id];
+//
+//            switch ($table_name) {
+//                case \App\Models\BusinessType::TABLENAME:
+//                    $controllerClass = App::make(BusinessTypeController::class);
+//                    $params['request'] = Request::instance();
+//                    break;
+//            }
+//            if ($controllerClass instanceof Controller) {
+//                return $controllerClass->callAction('update', $params);
+//            }
+//        })->middleware('auth');
         
         Route::match(['put', 'post'], '/admin/create/{table_name}', function($table_name) {
             $controllerClass = null;
@@ -152,6 +181,8 @@ class AdminController extends Controller {
         $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingPro::DT_ID);
 
         $businessCategoriesDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBusinessCategoryAdmin::DT_ID);
+        
+        $businessTypesDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBusinessTypeAdmin::DT_ID);
 
         $promotionsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtPromotionAdmin::DT_ID);
 
@@ -163,6 +194,7 @@ class AdminController extends Controller {
                 ->with($businessCategoriesDatatableFeeder->getId(), $businessCategoriesDatatableFeeder->getViewParamsArray())
                 ->with($promotionsDatatableFeeder->getId(), $promotionsDatatableFeeder->getViewParamsArray())
                 ->with($eventDatatableFeeder->getId(), $eventDatatableFeeder->getViewParamsArray())
+                ->with($businessTypesDatatableFeeder->getId(), $businessTypesDatatableFeeder->getViewParamsArray())
         ;
         return $view;
     }

@@ -237,6 +237,12 @@ class FileController {
                     }
                 }
                 break;
+            case \App\Models\Media::TYPE_USE_BUSINESS_TYPE:
+                if($relatedObject instanceof \App\Models\BusinessType){
+                    $path .= 'business_types/'.$relatedObject->getId().'/';
+                    $resolved = true;
+                }
+                break;
         }
         if(!$resolved){
             $path = null;
@@ -257,20 +263,25 @@ class FileController {
             case \App\Models\Media::TYPE_USE_ETS_VIDEO:
             case \App\Models\Media::TYPE_USE_ETS_HOME_PICS:
             case \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM:
-                $instance = new \App\Models\EstablishmentMedia();
-                $instance->setPublic(TRUE);
-                $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
-                $instance->setTypeUse($fileType);
-                $instance->setStatus(\App\Models\Media::STATUS_PENDING);
-                if($relatedObject instanceof \App\Models\Gallery){
-                    $instance->setIdGallery($relatedObject->getId());
-                }
-            break;
             case \App\Models\Media::TYPE_USE_ETS_MENU:
             case \App\Models\Media::TYPE_USE_ETS_DISH:
             case \App\Models\Media::TYPE_USE_ETS_EMPLOYEE:
             case \App\Models\Media::TYPE_USE_ETS_STORY:
             case \App\Models\Media::TYPE_USE_ETS_PROMO:
+                $instance = new \App\Models\EstablishmentMedia();
+                $instance->setPublic(TRUE);
+                $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
+                $instance->setTypeUse($fileType);
+                if(isAdmin()){
+                    $instance->setStatus(\App\Models\Media::STATUS_VALIDATED);
+                } else {
+                    $instance->setStatus(\App\Models\Media::STATUS_PENDING);
+                }
+                if($relatedObject instanceof \App\Models\Gallery){
+                    $instance->setIdGallery($relatedObject->getId());
+                }
+            break;
+            case \App\Models\Media::TYPE_USE_BUSINESS_TYPE:
                 $instance = new \App\Models\EstablishmentMedia();
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);

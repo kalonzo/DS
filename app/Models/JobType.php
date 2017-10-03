@@ -13,6 +13,8 @@ class JobType extends Model {
     const TYPE_RESTO_CHEF = 1;
     const TYPE_RESTO_STAFF = 2;
     
+    public $incrementing = true;
+    public static $hasUuid = false;
     public $timestamps = true;
     protected $fillable = [
         'name',

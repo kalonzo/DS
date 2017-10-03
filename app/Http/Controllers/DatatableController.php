@@ -32,6 +32,10 @@ class DatatableController {
                 $dtFeeder = new \App\Datatables\DtBusinessCategoryAdmin();
                 $dtFeeder->run();
                 break;
+            case \App\Datatables\DtBusinessTypeAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtBusinessTypeAdmin();
+                $dtFeeder->run();
+                break;
             case \App\Datatables\DtPromotionAdmin::DT_ID:
                 $dtFeeder = new \App\Datatables\DtPromotionAdmin();
                 $dtFeeder->run();

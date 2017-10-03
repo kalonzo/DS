@@ -26,6 +26,10 @@
 
     @endcomponent
 
+    @component('components.tile', ['title' => 'Types de business', 'tabledata' => $dt_business_type_admin])
+
+    @endcomponent
+
     @component('components.tile', ['title' => 'Promotions', 'add_href' => 'javascript:getOnClickModal("Créer une promotion", "/admin/create/promotions")', 
                                     'tabledata' => $dt_promotion_admin])
 

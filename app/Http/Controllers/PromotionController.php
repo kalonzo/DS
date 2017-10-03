@@ -22,7 +22,7 @@ class PromotionController extends Controller
         $this->buildCreateFormValues();
         $formData = StorageHelper::getInstance()->get('feed_promotion.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_promotion.form_values');
-        $view = View::make('admin.promotion.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('promotion', null)
+        $view = View::make('admin.admin.promotion.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('promotion', null)
                 ;
         return $view;
     }
