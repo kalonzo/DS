@@ -118,6 +118,15 @@ if(checkModel($establishment)){
                 <a class="btn" href="/admin">
                     Retour au dashboard
                 </a>
+                <?php
+                if(isAdmin() && checkModel($establishment)){
+                    ?>
+                    <button class="btn" id="validSheet" type="button" disabled="disabled">
+                        Valider la fiche
+                    </button>
+                    <?php
+                }
+                ?>
                 {!! Form::button('Enregistrer les modifications', ['class' => 'btn form-data-button', 'type' => 'button']) !!}
             </div>
         </div>
@@ -360,7 +369,7 @@ if(checkModel($establishment)){
             $(this).find('#form-ajax-loading').hide();
             $(this).find('#form-ajax-confirm').hide();
             
-            $formListErrors = $('#form-list-errors');
+            var $formListErrors = $('#form-list-errors');
             $formListErrors.empty();
             if(!errors.error){
                 var nbInputErrors = Object.keys(errors).length;
@@ -389,6 +398,74 @@ if(checkModel($establishment)){
             $(this).find('#form-ajax-alert').hide();
             $(this).find('#form-ajax-confirm').show();
         });
+        
+        <?php
+        if(isAdmin() && checkModel($establishment)){
+            ?>
+            $('body').on('click', '#validSheet', function(e){
+                var confirmValid = confirm("Veuillez confirmer la validation de la fiche.");
+                if(confirmValid){
+                    $('#form-list-errors').empty();
+                    $('#form-panel-errors').collapse('hide');
+
+                    var $form = $('form#feed-establishment');
+                    $form.find('#form-ajax-confirm').hide();
+                    $form.find('#form-ajax-alert').hide();
+                    $form.find('#form-ajax-loading').show();
+                    
+                    var ajaxParams = {};
+                    $.ajax({
+                        url: '/admin/valid_establishment/{!!$establishment->getUuid()!!}',
+                        data: ajaxParams,
+                        dataType: 'json',
+                        method: 'POST',
+                        success: function( data ) {
+                            if(data.success){
+                                $form.find('#form-ajax-loading').hide();
+                                $form.find('#form-ajax-alert').hide();
+                                $form.find('#form-ajax-confirm').show();
+                            } else {
+                                $form.find('#form-ajax-loading').hide();
+                                $form.find('#form-ajax-confirm').hide();
+                                
+                                if(data.error){
+                                    var $formListErrors = $('#form-list-errors');
+                                    $formListErrors.empty();
+                                    var $alert = $form.find('#form-ajax-alert');
+                                    $alert.find('.alert-message').empty().html(data.error);
+                                    $alert.show();
+                                }
+                            }
+                        },
+                        error: function( data ) {
+                            $form.find('#form-ajax-loading').hide();
+                            $form.find('#form-ajax-confirm').hide();
+
+                            var $formListErrors = $('#form-list-errors');
+                            $formListErrors.empty();
+                            var $alert = $('form#feed-establishment').find('#form-ajax-alert');
+                            $alert.find('.alert-message').empty().html(data);
+                            $alert.show();
+                        },
+                    });
+                }
+            });
+            
+            $(window).on("scroll", function() {
+                var clientHeight = document.body.clientHeight;
+                var documentHeight = $(document).height();
+                var scrollPosition = $(window).scrollTop();
+                if (scrollPosition === (documentHeight - clientHeight)) {
+                    $('#validSheet').removeAttr('disabled');
+                } else {
+                    if(!$('#validSheet').is(':disabled')){
+                        $('#validSheet').attr('disabled', 'disabled');
+                    }
+                }
+            });
+            <?php
+        }
+         ?>   
     });
     
     function addCollectionItem(triggerButton, callback){
@@ -463,6 +540,7 @@ if(checkModel($establishment)){
 <script src="/js/google-map.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 <script src="/libraries/bootstrap-fileinput/js/plugins/sortable.min.js"></script>
+
 <script src="/libraries/bootstrap-fileinput/js/fileinput.min.js"></script>
 <script src="/libraries/ckeditor/ckeditor.js"></script>
 @endsection

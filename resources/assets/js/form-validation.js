@@ -41,7 +41,7 @@ $('body').on('click', '.form-data-button', function () {
                             inputName  += '[' + inputNameArray[i] + ']';
                         }
                     }
-                    var $input = $(form).find('[name="' + inputName + '"]').first();
+                    var $input = $(form).find('[name="' + inputName + '"]:not([type=hidden])').first();
                     if (checkExist($input)) {
                         if (first) {
                             first = false;

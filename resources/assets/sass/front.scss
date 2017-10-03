@@ -651,9 +651,9 @@ select:not(.select2){
     }
 }
 
-.checkbox > label{
+/*.checkbox > label{
     line-height: 1.85;
-}
+}*/
 
 #homeAdvertCarousel{
     height: 450px;
@@ -800,6 +800,9 @@ $mapThumbnailWidth: 145px;
         #formActions{
             .btn{
                 padding: 10px;
+            }
+            #validSheet{
+                
             }
         }
     }

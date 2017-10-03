@@ -6,17 +6,21 @@
 <link href="/libraries/baguettebox/baguetteBox.min.css" rel="stylesheet">
 @endsection
 
+@if($establishment->getAcceptBooking())
 @section('navbar-right')
     <li>
         <button type="button" class="btn book-button sidebar-booking-toggler" >Réservez une table</button>
     </li>
 @endsection
+@endif
 
 @section('content')
+    @if($establishment->getAcceptBooking())
     <aside id="sidebar-booking" class="custom-sidebar sidebar-fixed-right ref-scroller" data-toggler=".sidebar-booking-toggler">
            @component('establishment.restaurant.feed.booking', ['establishment' => $establishment, 'form_data' => $form_data])
            @endcomponent
     </aside>
+    @endif
     <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">
             <div class="ets-nav-bookmark bookmark-voucher app-disabled hidden" title="Bon cadeau">
@@ -41,30 +45,24 @@
                 </a>
             </div>
             @endif
-            @if($page != null)
             <div class="ets-nav-bookmark bookmark-home" title="Le restaurant">
                 <a href="{{ $establishment->getUrl() }}" class="simple">
                     <span>Le restaurant</span>
                     <span class="bookmark-icon glyphicon glyphicon-home" aria-hidden="true"></span>
                 </a>
             </div>
-            @endif
-            @if($page != 'menu')
             <div class="ets-nav-bookmark bookmark-menu" title="Menus">
                 <a href="{{ $establishment->getUrl() }}menu" class="simple">
                     <span>Menus</span>
                     <span class="bookmark-icon glyphicon glyphicon-cutlery" aria-hidden="true"></span>
                 </a>
             </div>
-            @endif
-            @if($page != 'photos')
             <div class="ets-nav-bookmark bookmark-photos" title="Photos">
                 <a href="{{ $establishment->getUrl() }}photos" class="simple">
                     <span>Photos</span>
                     <span class="bookmark-icon glyphicon glyphicon-picture" aria-hidden="true"></span>
                 </a>
             </div>
-            @endif
         </div>
         <!------------- RESTAURANT INTRO -------------------------------------->
         <section class="container-fluid ets-intro">
@@ -106,9 +104,11 @@
                     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
                     {{ $data['address'] }}
                 </div>
+                @if($establishment->getAcceptBooking())
                 <div class="row">
                     <button type="button" class="btn book-button sidebar-booking-toggler" >Réservez une table</button>
                 </div>
+                @endif
                 @if(isset($data['phone_number']))
                 <div class="row contact-number">
                     <a href="tel:{{ $data['phone_number'] }}">

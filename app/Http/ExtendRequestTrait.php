@@ -26,12 +26,13 @@ trait ExtendRequestTrait {
                         $arrayCursor =  &$arrayCursor[$subkey];
                     }
                 } else {
-                    return $this->route($key);
+                    return parent::get($key, $default);
+//                    return $this->route($key);
                 }
                 $counter++;
             }
             if(!empty($offset)){
-                return data_get($arrayCursor, $offset);
+                return data_get($arrayCursor, $offset, $default);
             }
         } else {
             return parent::get($key, $default);
