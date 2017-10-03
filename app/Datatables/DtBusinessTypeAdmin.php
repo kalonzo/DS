@@ -5,9 +5,8 @@ namespace App\Datatables;
 use App\Feeders\DatatableFeeder;
 use App\Feeders\DatatableFilter;
 use App\Feeders\DatatableRowAction;
-use App\Http\Controllers\SessionController;
 use App\Models\BusinessType;
-use App\Utilities\UuidTools;
+use App\Models\EstablishmentMedia;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -31,7 +30,7 @@ class DtBusinessTypeAdmin extends DatatableFeeder {
     }
 
     public function buildColumns() {
-        $columns = array('label' => 'Nom du business', 'status' => 'Etat', 'updated_at' => 'Modifié le');
+        $columns = array('label' => 'Nom du business', 'status' => 'Etat', 'image' => "Image", 'updated_at' => 'Modifié le');
         return $columns;
     }
 
@@ -58,8 +57,10 @@ class DtBusinessTypeAdmin extends DatatableFeeder {
     }
     
     public function buildQuery() {
-        $businessQuery = DB::table(BusinessType::TABLENAME);
-        $businessQuery->orderBy(BusinessType::TABLENAME . '.label', 'asc');
+        $businessQuery = DB::table(BusinessType::TABLENAME)
+                ->select([BusinessType::TABLENAME.'.*', EstablishmentMedia::TABLENAME.'.local_path'])
+                ->leftJoin(EstablishmentMedia::TABLENAME, EstablishmentMedia::TABLENAME.'.id', '=', BusinessType::TABLENAME.'.id_media')
+                ->orderBy(BusinessType::TABLENAME . '.label', 'asc');
         
         return $businessQuery;
     }
@@ -71,6 +72,7 @@ class DtBusinessTypeAdmin extends DatatableFeeder {
             $id = $queryResult->id;
             $results[$id]['id'] = $queryResult->id;
             $results[$id]['label'] = $queryResult->label;
+            $results[$id]['image'] = !empty($queryResult->local_path) ? "<img style='background-color: black; height: 20px;' src='".asset($queryResult->local_path)."'/>" : "";
             $results[$id]['status'] = BusinessType::getLabelFromStatus($queryResult->status);
             $results[$id]['updated_at'] = $queryResult->updated_at;
         }
