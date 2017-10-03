@@ -33,14 +33,17 @@ class StoreEstablishment extends \App\Http\FormRequest {
      */
     public function rules() {
         $rules = array();
-        
+
         switch ($this->get('action')) {
             case 'add_gallery':
-                //var_dump($this->file('new_gallery'));
+                var_dump($this->get('undefined'));
                 $rules = [
                     'new_gallery_name' => 'required|min:2|max:255',
                     'new_gallery' => 'required',
                 ];
+                break;
+            case 'add_media_to_gallery':
+
                 break;
             case 'add_dish':
                 $rules = [
@@ -51,6 +54,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 ];
             case 'delete_gallery':
                 break;
+            case 'delete_close_period':
+
+                
+                break;
+
             case 'add_close_period':
                 $closeStartDate = new \DateTime($this->get('close_start'));
                 $rules = [
@@ -59,23 +67,23 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     'close_end' => 'required_with:close_name|date_format:Y-m-d|after:' . $closeStartDate->format('Y/m/d'),
                 ];
                 break;
-            case 'add_media_to_gallery':
-                //TODO
-                break;
             case 'add_menu':
                 $rules = [
                     'menu_name' => 'required|min:2|max:255',
-                    'new_menu' => 'required',
+                    'new_menu' => 'mimes:jpg,jpeg',
                 ];
                 break;
             case 'add_video':
-                //TODO
+                $rules = [
+                    'video' => 'required|mimes:mp4',
+                ];
 
                 break;
             case 'add_employee':
                 $rules = [
                     'new_employee_firstname' => 'required|min:2|max:255',
                     'new_employee_lastname' => 'required|min:2|max:255',
+                    'job' => 'required',
                     'job_type' => 'required',
                     'new_employee_position' => 'required',
                 ];
@@ -102,6 +110,13 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     }
                 }
 
+                $nbr = count($this->input('home_pictures')) - 1;
+                foreach (range(0, $nbr) as $index) {
+                    echo $index;
+                    $rules['home_pictures.' . $index] = 'required|max:4000';
+                }
+
+
                 //minima maxima for dishes
                 $min = $this->get('average_price_min');
                 $max = $this->get('average_price_max');
@@ -109,7 +124,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     //self::$rules_phone,
                     // Location
                     'name' => 'required|min:2|max:255',
-                    'address.geocoded' => 'required|'. \Illuminate\Validation\Rule::in(['true', 1]),
+                    'address.geocoded' => 'required|' . \Illuminate\Validation\Rule::in(['true', 1]),
                     'address.street' => 'required|min:3|max:255',
                     'address.street_number' => 'required|max:45',
                     'address.postal_code' => 'required|max:11',
@@ -125,8 +140,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     'businessCategories.1' => 'required|array|min:1|max:5',
                     'businessCategories.2' => 'nullable|array|max:5',
                     //galerie
-                    'logo' => 'nullable|mimes:png,jpg,jpeg,svg',
-                    //'home_pictures' => 'nullable|mimes:png,jpg,jpeg',
+                    'logo' => 'nullable|mimes:png,jpg,jpeg',
                     //Menu average price
                     'average_price_max' => 'nullable|required_with:average_price_min|numeric|min:1|between:' . $min . ',' . $max,
                     'average_price_min' => 'nullable|required_with:average_price_max',
@@ -145,7 +159,12 @@ class StoreEstablishment extends \App\Http\FormRequest {
 //                    $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
 //                    $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
 //                }
-            break;
+                break;
+
+            case 'add_daily_menu':
+                $rules = [
+                    'new_daily_menu' => 'required|mimes:png,jpg,jpeg',
+                ];
         }
         return $rules;
     }
@@ -174,18 +193,18 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'call_number.4.required' => 'Veuillez indiquer un numéro pour vous joindre.',
             'call_number.4.regex' => 'Veuillez indiquer un numéro pour vous joindre.',
             'call_number.3.regex' => 'Le numéro de fax ne doit pas contenir plus de 11 numéro.',
-            'call_number.2.regex' => 'Le numéro de réservation ne doit pas contenir de caractères',
+            'call_number.2.regex' => 'Le numéro de réservation ne doit pas contenir de caractères.',
             //Web
             'site_url.regex' => 'Veuillez saisir une adresse correcte pour votre site internet.',
             'email.email' => 'Veuillez saisir une adresse e mail valide.',
             //cooking type
-            'businessCategories.1.required' => 'Veuillez sélectionner au minimum un types de cuisine pour être correctement référencer par l\'application',
-            'businessCategories.1.array' => 'Veuillez spécifier au minimum un type de cuisine',
-            'businessCategories.1.max' => 'Un maximum de 5 types de cuisine est accepté',
-            'businessCategories.2.max' => 'Un maximum de 5 types de spécialité est accepté',
+            'businessCategories.1.required' => 'Veuillez sélectionner au minimum un types de cuisine pour être correctement référencer par l\'application.',
+            'businessCategories.1.array' => 'Veuillez spécifier au minimum un type de cuisine.',
+            'businessCategories.1.max' => 'Un maximum de 5 types de cuisine est accepté.',
+            'businessCategories.2.max' => 'Un maximum de 5 types de spécialité est accepté.',
             //Validation Ajax (gallery)
-            'new_gallery_name.required' => 'Veuillez spécifier un nom pour votre gallerie',
-            'new_gallery.required_with' => 'Veuillez saisir un nom pour votre gallerie',
+            'new_gallery_name.required' => 'Veuillez spécifier un nom pour votre gallerie.',
+            'new_gallery.required_with' => 'Veuillez saisir un nom pour votre gallerie.',
             //menu
             'menu_name.required' => 'Veuillez saisir un nom pour votre menu',
             'menu_name.min' => 'le nom de votre menu est trop cout',
@@ -230,7 +249,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'new_employee_lastname.required' => 'Le prenom est requis',
             'new_employee_lastname.min' => 'Le prenom est trop court',
             'new_employee_lastname.max' => 'Le prenom est trop long',
-            'job_type.required' => 'Veuillez choisir le type d\'employé',
+            'job_type.type.required' => 'Veuillez choisir le type d\'employé',
             'new_employee_position.required' => '',
             //history
             'new_story_year.required' => 'Veuillez séléctionner une date',
