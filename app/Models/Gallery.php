@@ -5,7 +5,7 @@ namespace App\Models;
 /**
  * Class Gallery
  */
-class Gallery extends Model {
+class Gallery extends Model implements Interfaces\EstablishmentBoundable{
 
     protected $table = 'galleries';
     const TABLENAME = 'galleries';

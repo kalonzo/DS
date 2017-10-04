@@ -5,7 +5,7 @@ namespace App\Models;
 /**
  * Class Promotion
  */
-class Promotion extends Model {
+class Promotion extends Model implements Interfaces\EstablishmentBoundable{
 
     protected $table = 'promotions';
 

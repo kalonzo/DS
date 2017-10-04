@@ -5,7 +5,7 @@ namespace App\Models;
 /**
  * Class EstablishmentHistory
  */
-class EstablishmentHistory extends Model {
+class EstablishmentHistory extends Model implements Interfaces\EstablishmentBoundable{
 
     protected $table = 'establishment_history';
     const TABLENAME = 'establishment_history';

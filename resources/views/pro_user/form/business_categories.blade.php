@@ -25,7 +25,7 @@
                          style="@if(isset($businessTypeData['url_media'])) background-image: url('{{ $businessTypeData['url_media'] }}');@endif">
                         <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
                         <div class='business-label'>{{ $businessTypeData['label'] }}</div>
-                        @if($disabled)
+                        @if(!$disabled)
                         {!! Form::radio('business_type', $businessTypeId, $selected, ['disabled' => $disabled]) !!}
                         @endif
                     </div>
