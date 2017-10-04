@@ -187,6 +187,8 @@ class AdminController extends Controller {
         $promotionsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtPromotionAdmin::DT_ID);
 
         $eventDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEventAdmin::DT_ID);
+        
+        $mediaModerationDatatable = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentMediaModeration::DT_ID);
 
         $view = View::make('admin.admin.dashboard')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
@@ -195,6 +197,7 @@ class AdminController extends Controller {
                 ->with($promotionsDatatableFeeder->getId(), $promotionsDatatableFeeder->getViewParamsArray())
                 ->with($eventDatatableFeeder->getId(), $eventDatatableFeeder->getViewParamsArray())
                 ->with($businessTypesDatatableFeeder->getId(), $businessTypesDatatableFeeder->getViewParamsArray())
+                ->with($mediaModerationDatatable->getId(), $mediaModerationDatatable->getViewParamsArray())
         ;
         return $view;
     }

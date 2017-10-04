@@ -450,6 +450,7 @@ class EstablishmentController extends Controller {
                             'id_location_index' => $idLocation,
                         ]);
 
+                        $status = $establishment->getStatus();
                         // Update establishment
                         $establishment->update([
                             'status' => Establishment::STATUS_ACTIVE,

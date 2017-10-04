@@ -17,6 +17,10 @@
                                     'tabledata' => $dt_establishment_admin])
 
     @endcomponent
+
+    @component('components.tile', ['title' => 'Modération des médias (établissements)', 'tabledata' => $dt_establishment_media_moderation])
+
+    @endcomponent
     
     @component('components.booking-tile-calendar', ['title' => 'Réservations', 'tabledata' => $dt_booking_pro])
 
