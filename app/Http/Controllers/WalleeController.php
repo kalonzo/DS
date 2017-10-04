@@ -172,7 +172,7 @@ class WalleeController extends Controller {
         $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
         
         if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
-            $user = User::find($idUserSession);
+            $user = User::findUuid($idUserSession);
             if(checkModel($user)){
                 $cart = $user->cart()->orderBy('updated_at', 'DESC')->first();
                 if(checkModel($cart) && $cart instanceof App\Models\Cart){
@@ -209,7 +209,7 @@ class WalleeController extends Controller {
         $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
         
         if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
-            $user = User::find($idUserSession);
+            $user = User::findUuid($idUserSession);
             if(checkModel($user)){
                 $cart = $user->cart()->orderBy('updated_at', 'DESC')->first();
                 if(checkModel($cart) && $cart instanceof App\Models\Cart){

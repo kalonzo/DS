@@ -9,7 +9,7 @@ namespace App\Models;
  */
 trait ExtendModelTrait{
     
-    public static $hasUuid = true;
+    protected static $hasUuid = true;
     
     public function save(array $options = array()) {
         if(!checkModelId($this->id) && $this->hasUuid()){
@@ -27,11 +27,16 @@ trait ExtendModelTrait{
     }
     
     function hasUuid() {
-        return self::$hasUuid;
+        return static::$hasUuid;
     }
 
     function setHasUuid($hasUuid) {
+        static::$hasUuid = $hasUuid;
         self::$hasUuid = $hasUuid;
+    }
+    
+    public static function hasUuidStatic() {
+        return static::$hasUuid;
     }
 
     /**
@@ -66,27 +71,36 @@ trait ExtendModelTrait{
      */
     public static function findUuid($uuid, $columns = ['*']){
         $classObject = null;
-        $className = static::getClass();
-        $tableName = static::getTableName();
-        $object = \Illuminate\Support\Facades\DB::table($tableName)->whereRaw(' HEX(id) = "'.$uuid.'" ')->get($columns)->first();
-        if(!is_null($object)){
-            $objectArray = array($object);
-            $objectCollection = $className::hydrate($objectArray);
-            $classObject = $objectCollection->first();
+        if(self::hasUuidStatic()){
+            if (is_array($uuid) || $uuid instanceof Arrayable) {
+                $classObject = static::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $uuid))->get($columns)->get();
+            } else {
+                $className = static::getClass();
+                $tableName = static::getTableName();
+                $object = \Illuminate\Support\Facades\DB::table($tableName)->whereRaw(' HEX(id) = "'.$uuid.'" ')->get($columns)->first();
+                if(!is_null($object)){
+                    $objectArray = array($object);
+                    $objectCollection = $className::hydrate($objectArray);
+                    $classObject = $objectCollection->first();
+                }
+            }
+        } else {
+            $classObject = static::find($uuid, $columns);
         }
         return $classObject;
     }
     
-    public static function find($id, $columns = ['*']){
-        if(self::$hasUuid){
-            if (is_array($id) || $id instanceof Arrayable) {
-                return self::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $id))->get($columns)->get();
-            }
-            return self::findUuid($id, $columns);
-        } else {
-            return parent::find($id, $columns);
-        }
-    }
+//    public static function find($id, $columns = ['*']){
+//        if(self::hasUuidStatic()){
+//            var_dump(self::hasUuidStatic());
+//            if (is_array($id) || $id instanceof Arrayable) {
+//                return self::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $id))->get($columns)->get();
+//            }
+//            return self::findUuid($id, $columns);
+//        } else {
+//            return parent::find($id, $columns);
+//        }
+//    }
     
     public static function getClass(){
         return get_class(new static);

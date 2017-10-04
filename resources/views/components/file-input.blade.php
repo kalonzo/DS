@@ -1,7 +1,11 @@
 <?php
+if(!isset($overwriteInitial)){
+    $overwriteInitial = false;
+}
 if(!isset($multiple)){
     $multiple = false;
     $class .= ' file-input-single';
+    $overwriteInitial = true;
 } else if($multiple){
     $name .= '[]';
     $class .= ' file-input-multiple';
@@ -122,7 +126,7 @@ if(!isset($browseLabel)){
                     removeLabel: "@lang('Supprimer')",
                     uploadLabel: "{!! $uploadLabel !!}",
                     maxFileSize: {!! $maxFileSize !!},
-                    overwriteInitial: false,
+                    overwriteInitial: {!! $overwriteInitial !!},
                     previewFileType: 'any',
                     initialPreview: {!! $existingFiles !!},
                     initialPreviewAsData: true,

@@ -174,7 +174,7 @@ class UserProController extends Controller {
                             $cart->setStatus(\App\Models\Cart::STATUS_CHECKEDOUT)->save();
                             
                             if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN)){
-                                $establishment = Establishment::find($uuidEstablishment);
+                                $establishment = Establishment::findUuid($uuidEstablishment);
                                 if(checkModel($establishment)){
                                     $establishment->setIdUserOwner($user->getId());
                                     $establishment->save();
@@ -388,13 +388,16 @@ class UserProController extends Controller {
     public function buildFeedFormData() {
         // Business categories
         $businessTypes = array();
-        $businessTypeData = DB::table(BusinessType::TABLENAME)
-                ->selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ',label')
-                ->where('status', '=', BusinessType::STATUS_ACTIVE)
-                ->orderBy('label')
-                ->get();
-        foreach ($businessTypeData as $businessCategoryData) {
-            $businessTypes[$businessCategoryData->uuid] = $businessCategoryData->label;
+        $businessTypesData = BusinessType::select([BusinessType::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                                        ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
+                                                    , BusinessType::TABLENAME.'.id_media')
+//                                        ->where(BusinessType::TABLENAME.'.status', '=', BusinessType::STATUS_ACTIVE)
+                                        ->orderBy(BusinessType::TABLENAME.'.id')
+                                        ->get();
+        foreach ($businessTypesData as $businessTypeData) {
+            $businessTypes[$businessTypeData->id]['label'] = $businessTypeData->label;
+            $businessTypes[$businessTypeData->id]['url_media'] = asset($businessTypeData->local_path);
+            $businessTypes[$businessTypeData->id]['enabled'] = $businessTypeData->status === BusinessType::STATUS_ACTIVE ? true : false;
         }
 
         // Payment methods

@@ -24,6 +24,7 @@ class BusinessTypeController extends Controller
         
         $businessType = BusinessType::find($idBusinessType);
         if(checkModel($businessType)){
+            $jsonResponse['test'] = $businessType->getId();
             $view = View::make('admin.admin.business_type.feed')->with('businessType', $businessType)
                     ->with('status', BusinessType::getLabelByStatus());
             $jsonResponse['content'] = $view->render();
@@ -43,24 +44,20 @@ class BusinessTypeController extends Controller
     public function update(\App\Http\Requests\StoreBusinessType $request, BusinessType $businessType) {
         $response = response();
         $jsonResponse = array('success' => 0);
-        $jsonResponse['test'] = 44;
-            $responsePrepared = $response->json($jsonResponse);
-            return $responsePrepared;
         $createdObjects = array();
         try {
-//            $businessType = BusinessType::find($idBusinessType);
             if(checkModel($businessType)){
                 $businessType->update([
                     'label' => $request->get('label'),
                     'status' => $request->get('status'),
                 ]);
-                if(checkModel($businessType)){
-                    $jsonResponse['success'] = 1;
-                    $media = FileController::storeFile('media', Media::TYPE_USE_BUSINESS_TYPE, $businessType, $businessType->media()->first());
-                    if(checkModel($media)){
-                        $businessType->setIdMedia($media->getId())->save();
-                    }
+                $jsonResponse['success'] = 1;
+                $jsonResponse['test'] = $businessType->getLabel();
+                $media = FileController::storeFile('media', Media::TYPE_USE_BUSINESS_TYPE, $businessType, $businessType->media()->first());
+                if(checkModel($media)){
+                    $businessType->setIdMedia($media->getId());
                 }
+                $businessType->save();
             }
         } catch (Exception $ex) {
             foreach ($createdObjects as $createdObject) {
@@ -71,11 +68,11 @@ class BusinessTypeController extends Controller
             $jsonResponse['error'] = $ex->getMessage();
         }
         
-//        if($request->ajax()){
+        if($request->ajax()){
             $responsePrepared = $response->json($jsonResponse);
             return $responsePrepared;
-//        } else {
-//            return redirect('/admin');
-//        }
+        } else {
+            return redirect('/admin');
+        }
     }
 }
