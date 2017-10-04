@@ -289,6 +289,9 @@ class FileController {
                 $instance->setStatus(\App\Models\Media::STATUS_VALIDATED);
             break;
         }
+        if($relatedObject instanceof \App\Models\Interfaces\EstablishmentBoundable){
+            $instance->setIdEstablishment($relatedObject->getIdEstablishment());
+        }
         return $instance;
     }
     

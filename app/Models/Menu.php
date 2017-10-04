@@ -5,7 +5,7 @@ namespace App\Models;
 /**
  * Class Menu
  */
-class Menu extends Model {
+class Menu extends Model implements Interfaces\EstablishmentBoundable{
 
     protected $table = 'menus';
 

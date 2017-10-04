@@ -5,7 +5,7 @@ namespace App\Models;
 /**
  * Class Employee
  */
-class Employee extends Model {
+class Employee extends Model implements Interfaces\EstablishmentBoundable{
 
     protected $table = 'employees';
     const TABLENAME = 'employees';
