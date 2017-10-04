@@ -44,6 +44,10 @@ class DatatableController {
                 $dtFeeder = new \App\Datatables\DtEventAdmin();
                 $dtFeeder->run();
                 break;
+            case \App\Datatables\DtEstablishmentMediaModeration::DT_ID:
+                $dtFeeder = new \App\Datatables\DtEstablishmentMediaModeration();
+                $dtFeeder->run();
+                break;
         }
         return $dtFeeder;
     }

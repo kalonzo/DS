@@ -307,6 +307,7 @@ class UserProController extends Controller {
                                 $createdObjects[] = $establishment;
                                 
                                 if($idPaymentMethod != PaymentMethod::METHOD_CB){
+                                    $jsonResponse['success'] = 1;
                                     $jsonResponse['relocateMode'] = 1;
                                     unset($jsonResponse['triggerMode']);
                                     if(isAdmin()){
@@ -331,6 +332,7 @@ class UserProController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
+            $jsonResponse['error'] = $e->getMessage();
             try{
                 foreach ($createdObjects as $createdObject) {
                     if ($createdObject instanceof Model) {
@@ -340,9 +342,9 @@ class UserProController extends Controller {
                     }
                 }
             } catch(Exception $ex){
-                print_r($ex->getMessage());
-                print_r($ex->getTraceAsString());
+                $jsonResponse['error'] = $ex->getMessage();
             }
+            $jsonResponse['success'] = 0;
         }
         if(!$jsonResponse['success'] && checkModel($payment)){
             $payment->setStatus(\App\Models\Payment::STATUS_ERROR_CHECKOUT)->save();
