@@ -531,7 +531,6 @@ class UserProController extends Controller {
                             break;
                     }
                     $prefixCountryUuid = $request->get($prefix.'.id_country_prefix.' . $typeNumber);
-                    var_dump($prefixCountryUuid);
                     if (isset($prefixByIdCountry[$prefixCountryUuid])) {
                         $prefix = $prefixByIdCountry[$prefixCountryUuid];
                     }
