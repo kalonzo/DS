@@ -78,6 +78,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     'new_daily_menu' => 'required',
                 ];
                 break;
+            case 'add_daily_menu':
+                $rules = [
+                    'new_daily_menu' => 'required',
+                ];
+                break;
             case 'add_video':
                 $rules = [
                     'video' => 'required|mimes:mp4',
