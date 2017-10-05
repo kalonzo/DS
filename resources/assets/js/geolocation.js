@@ -10,12 +10,13 @@ function initGeolocation(){
     var cookiePositionLat = dsGetCookie('userLat');
     var cookiePositionLng = dsGetCookie('userLng');
     
+        console.log(cookiePositionLng);
+    
     if(isEmpty(cookiePositionLat) || isEmpty(cookiePositionLng)){
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                     userPositionLat = position.coords.latitude * 1;
                     userPositionLng = position.coords.longitude * 1;
-
                     $(document).trigger('googleGeolocReady');
     //                saveNewPosition(userPositionLat, userPositionLng);
                     reloadPage({'userLat': userPositionLat, 'userLng': userPositionLng}, function(){
