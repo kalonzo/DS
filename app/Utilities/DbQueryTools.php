@@ -46,7 +46,7 @@ class DbQueryTools {
      * @return string
      */
     public static function genSqlForWhereRawUuidConstraint($tableField, $uuidRef, $tableName = '', $notIn = false){
-        $rawSql = "";
+        $rawSql = "1 = 0";
         if(!empty($uuidRef)){
             if(is_array($uuidRef)){
                 $inValues = implode(',', $uuidRef);

@@ -7,7 +7,6 @@ use App\Models\BusinessCategory;
 use App\Models\Establishment;
 use App\Models\EstablishmentBusinessCategory;
 use App\Models\Promotion;
-use App\Models\Restaurant;
 use App\Models\Utilities\LatLng;
 use App\Utilities\DbQueryTools;
 use App\Utilities\StringTools;
@@ -34,6 +33,7 @@ class HomeController extends Controller {
         $attempt = 1;
         $nbResults = 0;
         do{
+            $ignoreStep = false;
             switch($attempt){
                 case 2:
                     $distance = 20;
@@ -42,19 +42,27 @@ class HomeController extends Controller {
                     $distance = 50;
                     break;
                 case 4:
-                    $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
-                    $userLatLng = GeolocationController::getRawInitialGeolocation();
-                    $defaultGeoloc = true;
+                    if($defaultGeoloc || $nbResults === 0){
+                        $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+                        $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        $defaultGeoloc = true;
+                    } else {
+                        $ignoreStep = true;
+                    }
                     break;
             }
             $sliderEtsQuery = Establishment::select([Establishment::TABLENAME . '.*', DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
                     ->where('id_business_type', '=', $typeEts)
-//                    ->where('status', '=', Establishment::STATUS_ACTIVE) // TODO Uncomment when statuses are OK
+                    ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                    ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
                     ;
             $geolocLimitSuccess = DbQueryTools::setGeolocLimits($sliderEtsQuery, $userLatLng, $distance, Establishment::TABLENAME);
             $nbResults = $sliderEtsQuery->limit(10)->count();
-            if ($geolocLimitSuccess && $nbResults >= 10) {
+            if ($ignoreStep || ($geolocLimitSuccess && $nbResults >= 10)) {
                 $sliderEts = $sliderEtsQuery->get();
+            }
+            if($ignoreStep){
+                break;
             }
             $attempt++;
         } while($nbResults < 10 && $attempt < 5);
@@ -75,7 +83,8 @@ class HomeController extends Controller {
                 ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                 ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', 'logo.id', '=', Establishment::TABLENAME . '.id_logo')
                 ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
-//                    ->where('status', '=', Establishment::STATUS_ACTIVE) // TODO Uncomment when statuses are OK
+                ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
         ;
         $establishmentsQueryWithoutDistance = clone $establishmentsQuery;
         
@@ -105,6 +114,7 @@ class HomeController extends Controller {
                         if($defaultGeoloc || $nbResults === 0){
                             $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
                             $userLatLng = GeolocationController::getRawInitialGeolocation();
+                            $defaultGeoloc = true;
                         } else {
                             $ignoreStep = true;
                         }
@@ -113,6 +123,7 @@ class HomeController extends Controller {
                         if($defaultGeoloc || $nbResults === 0){
                             $distance = 20;
                             $userLatLng = GeolocationController::getRawInitialGeolocation();
+                            $defaultGeoloc = true;
                         } else {
                             $ignoreStep = true;
                         }
@@ -162,7 +173,7 @@ class HomeController extends Controller {
                     ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuids, EstablishmentBusinessCategory::TABLENAME))
                     ->orderBy(EstablishmentBusinessCategory::TABLENAME.'.created_at')
                     ->get();
-                    ;
+                    
                 foreach($businessCategories as $etsCategoryData){
                     $idEstablishment = $etsCategoryData->id_establishment;
                     $uuidEstablishment = $etsCategoryData->uuid;

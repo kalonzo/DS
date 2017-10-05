@@ -82,6 +82,8 @@ class SearchController {
                         ])
                         ->where('name', 'LIKE', "%$terms%")
                         ->where('id_business_type', '=', $typeEts)
+                        ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                        ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
                 ;
                 $geolocLimitSuccess = DbQueryTools::setGeolocLimits($rawDistanceEstablishmentsQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
                 $nbResults = $rawDistanceEstablishmentsQuery->count();
@@ -176,6 +178,8 @@ class SearchController {
                         ->where(BusinessCategory::TABLENAME . '.name', 'LIKE', "%$terms%")
                         ->where(BusinessCategory::TABLENAME . '.type', '=', $businessCategoryType1)
                         ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
+                        ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                        ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
                         ->groupBy(BusinessCategory::TABLENAME . '.id')
                         ->orderBy(BusinessCategory::TABLENAME . '.name')
                         ->limit(self::NB_QUICK_RESULTS_PER_TYPE)
@@ -284,6 +288,8 @@ class SearchController {
                     ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', 'logo.id', '=', Establishment::TABLENAME . '.id_logo')
                     ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
                     ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
+                    ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                    ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
 //                            ->having('rawDistance', '<=', ($distance*1000))
             ;
             $geolocLimitSuccess = DbQueryTools::setGeolocLimits($establishmentsQuery, $userLatLng, $distance, Establishment::TABLENAME);

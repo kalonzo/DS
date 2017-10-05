@@ -50,6 +50,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     'new_dish_price_cents' => 'required|max:2',
                 ];
             case 'delete_gallery':
+            case 'delete_close_period':
                 break;
             case 'add_close_period':
                 $closeStartDate = new \DateTime($this->get('close_start'));
@@ -123,7 +124,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     'address.id_country' => 'required',
                     //Web 
                     'site_url' => 'nullable|regex:/(https?:\/\/)?([\a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._-da-z\.-]+)\.?([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-                    'email' => 'nullable|email',
+                    'email' => 'required|email',
                     //description
                     'description' => 'nullable|min:2',
                     // Cooking types
@@ -183,6 +184,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             //Web
             'site_url.regex' => 'Veuillez saisir une adresse correcte pour votre site internet.',
             'email.email' => 'Veuillez saisir une adresse e mail valide.',
+            'email.required' => 'Veuillez saisir une adresse e-mail.',
             //cooking type
             'businessCategories.1.required' => 'Veuillez sélectionner au minimum un types de cuisine pour être correctement référencer par l\'application',
             'businessCategories.1.array' => 'Veuillez spécifier au minimum un type de cuisine',

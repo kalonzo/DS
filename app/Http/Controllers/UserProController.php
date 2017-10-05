@@ -294,17 +294,19 @@ class UserProController extends Controller {
                                 ]);
                                 $createdObjects[] = $subscription;
                                 
-                                $establishment = Establishment::create([
-                                    'id' => UuidTools::generateUuid(),
-                                    'status' => Establishment::STATUS_INCOMPLETE,
-                                    'id_user_owner' => $user->getId(),
-                                    'id_address' => 0,
-                                    'id_business_type' => $businessType,
-                                    'business_status' => $businessStatus,
-                                    'slug' => '',
-                                    'url_id' => 0,
-                                ]);
-                                $createdObjects[] = $establishment;
+                                if(!checkModelId($uuidEstablishment)){
+                                    $establishment = Establishment::create([
+                                        'id' => UuidTools::generateUuid(),
+                                        'status' => Establishment::STATUS_INCOMPLETE,
+                                        'id_user_owner' => $user->getId(),
+                                        'id_address' => 0,
+                                        'id_business_type' => $businessType,
+                                        'business_status' => $businessStatus,
+                                        'slug' => '',
+                                        'url_id' => 0,
+                                    ]);
+                                    $createdObjects[] = $establishment;
+                                }
                                 
                                 if($idPaymentMethod != PaymentMethod::METHOD_CB){
                                     $jsonResponse['success'] = 1;

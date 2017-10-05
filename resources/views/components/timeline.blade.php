@@ -19,6 +19,8 @@ foreach($items as $item){
 }
 if($startRange !== null && $endRange !== null){
     $range = $endRange - $startRange;
+} else {
+    $range = $range - $startRange;
 }
 
 if(empty($selectedItemId)){

@@ -431,8 +431,27 @@ class EstablishmentController extends Controller {
                     }
                 }
                 if (checkModelId($idLocation)) {
-                    $address = Address::findUuid(UuidTools::getUuid($establishment->getIdAddress()));
-                    if (checkModel($address)) {
+                    $address = $establishment->address()->first();
+                    if (!checkModel($address)) {
+                        $address = Address::create([
+                            'id' => \App\Utilities\UuidTools::generateUuid(),
+                            'geocoded' => $request->get('address.geocoded') ? 1 : 0,
+                            'street' => $request->get('address.street'),
+                            'street_number' => $request->get('address.street_number'),
+                            'address_additional' => $request->get('address.address_additional'),
+                            'region' => $request->get('address.region'),
+                            'district' => $request->get('address.district'),
+                            'postal_code' => $request->get('address.postal_code'),
+                            'po_box' => $request->get('address.po_box'),
+                            'city' => $request->get('address.city'),
+                            'latitude' => $request->get('latitude'),
+                            'longitude' => $request->get('longitude'),
+                            'id_country' => $idCountry,
+                            'id_location_index' => $idLocation,
+                            'id_object_related' => $establishment->getId(),
+                            'type_object_related' => Establishment::TYPE_GLOBAL_OBJECT,
+                        ]);
+                    } else {
                         // Update establishment address
                         $address->update([
                             'geocoded' => $request->get('address.geocoded') ? 1 : 0,
@@ -449,8 +468,9 @@ class EstablishmentController extends Controller {
                             'id_country' => $idCountry,
                             'id_location_index' => $idLocation,
                         ]);
+                    }
 
-                        $status = $establishment->getStatus();
+                    if(checkModel($address)){
                         // Update establishment
                         $establishment->update([
                             'status' => Establishment::STATUS_ACTIVE,
@@ -464,6 +484,7 @@ class EstablishmentController extends Controller {
                             'average_price_min' => $request->get('average_price_min'),
                             'average_price_max' => $request->get('average_price_max'),
                             'accept_booking' => $request->get('accept_booking'),
+                            'id_address' => $address->getId(),
                         ]);
                         if (checkModel($establishment)) {
                             // Update phone numbers
@@ -727,79 +748,62 @@ class EstablishmentController extends Controller {
                 if (checkModel($address)) {
                     $createdObjects[] = $address;
 
-                    // Create establishment user owner
-                    $user = User::create([
-                                'id' => \App\Utilities\UuidTools::generateUuid(),
+                    // Create establishment
+                    $establishment = Establishment::create([
+                                'id' => $idEstablishment,
                                 'name' => $request->get('name'),
-                                'type' => User::TYPE_USER_AUTO_INSERTED,
-                                'gender' => 0,
+                                'latitude' => $request->get('latitude'),
+                                'longitude' => $request->get('longitude'),
+                                'status' => Establishment::STATUS_ACTIVE,
+                                'email' => $request->get('email'),
+                                'site_url' => $request->get('site_url'),
+                                'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
+                                'id_location_index' => $idLocation,
+                                'average_price_min' => $request->get('average_price_min'),
+                                'average_price_max' => $request->get('average_price_max'),
+                                'id_user_owner' => 0,
                                 'id_address' => $address->getId(),
-                                'id_inbox' => 0,
-                                'id_company' => 0,
+                                'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
+                                'accept_booking' => $request->get('accept_booking'),
+                                'id_logo' => 0
                     ]);
+                    if (checkModel($establishment)) {
+                        $createdObjects[] = $establishment;
+                        // Create phone numbers
+                        $createdObjects = array_merge($createdObjects, $this->feedCallNumbers($request, $establishment));
 
-                    if (checkModel($user)) {
-                        $createdObjects[] = $user;
+                        // Create cooking types
+                        $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_COOKING_TYPE));
+                        // Create ambiences
+                        $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_RESTAURANT_AMBIENCE));
+                        // Create services
+                        $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_SERVICES));
+                        // Create food specialties
+                        $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
 
-                        // Create establishment
-                        $establishment = Establishment::create([
-                                    'id' => $idEstablishment,
-                                    'name' => $request->get('name'),
-                                    'latitude' => $request->get('latitude'),
-                                    'longitude' => $request->get('longitude'),
-                                    'status' => Establishment::STATUS_ACTIVE,
-                                    'email' => $request->get('email'),
-                                    'site_url' => $request->get('site_url'),
-                                    'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),
-                                    'id_location_index' => $idLocation,
-                                    'average_price_min' => $request->get('average_price_min'),
-                                    'average_price_max' => $request->get('average_price_max'),
-                                    'id_user_owner' => $user->getId(),
-                                    'id_address' => $address->getId(),
-                                    'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
-                                    'accept_booking' => $request->get('accept_booking'),
-                                    'id_logo' => 0
-                        ]);
-                        if (checkModel($establishment)) {
-                            $createdObjects[] = $establishment;
-                            // Create phone numbers
-                            $createdObjects = array_merge($createdObjects, $this->feedCallNumbers($request, $establishment));
+                        // Create opening hours
+                        $createdObjects = array_merge($createdObjects, $this->feedOpeningHours($request, $establishment));
 
-                            // Create cooking types
-                            $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_COOKING_TYPE));
-                            // Create ambiences
-                            $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_RESTAURANT_AMBIENCE));
-                            // Create services
-                            $createdObjects = array_merge($createdObjects, $this->feedLinkBusinessCategories($request, $establishment, BusinessCategory::TYPE_SERVICES));
-                            // Create food specialties
-                            $this->feedLinkBusinessCategoriesWithTagging($request, $establishment, BusinessCategory::TYPE_FOOD_SPECIALTY);
-
-                            // Create opening hours
-                            $createdObjects = array_merge($createdObjects, $this->feedOpeningHours($request, $establishment));
-
-                            // Create medias
-                            $logo = FileController::storeFile('logo', \App\Models\Media::TYPE_USE_ETS_LOGO, $establishment);
-                            if (checkModel($logo)) {
-                                $createdObjects[] = $logo;
-                                $establishment->setIdLogo($logo->getId());
-                                $establishment->save();
-                            }
-
-                            $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, null);
-                            if (!empty($homePictures)) {
-                                $createdObjects[] = $homePictures;
-                            }
-
-                            $establishment->calculateBusinessStatus();
-                            
-                            $jsonResponse['success'] = 1;
-                            $jsonResponse['relocateMode'] = 1;
-                            $jsonResponse['location'] = '/edit/establishment/'.$establishment->getUuid();
-                        } else {
-                            $jsonResponse['error'] = "L'établissement n'a pu être enregistré.";
+                        // Create medias
+                        $logo = FileController::storeFile('logo', \App\Models\Media::TYPE_USE_ETS_LOGO, $establishment);
+                        if (checkModel($logo)) {
+                            $createdObjects[] = $logo;
+                            $establishment->setIdLogo($logo->getId());
+                            $establishment->save();
                         }
+
+                        $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment, null);
+                        if (!empty($homePictures)) {
+                            $createdObjects[] = $homePictures;
+                        }
+
+                        $establishment->calculateBusinessStatus();
+
+                        $jsonResponse['success'] = 1;
+                        $jsonResponse['relocateMode'] = 1;
+                        $jsonResponse['location'] = '/edit/establishment/'.$establishment->getUuid();
                     } else {
-                        $jsonResponse['error'] = "Le propriétaire de l'établissement n'a pu être enregistré.";
+                        $jsonResponse['error'] = "L'établissement n'a pu être enregistré.";
                     }
                 } else {
                     $jsonResponse['error'] = "L'adresse de l'établissement n'a pu être enregistrée.";
