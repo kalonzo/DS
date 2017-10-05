@@ -72,6 +72,18 @@
                                 @slot('filebatchselected')
                                     $('#ets-story .kv-fileinput-caption').show();
                                 @endslot
+                                @slot('fileerror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                                @slot('fileuploaderror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                                @slot('filebatchuploaderror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                                @slot('filedeleteerror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
                             @endcomponent
                         </div>
                     </div>

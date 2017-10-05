@@ -126,7 +126,7 @@ if(!isset($browseLabel)){
                     removeLabel: "@lang('Supprimer')",
                     uploadLabel: "{!! $uploadLabel !!}",
                     maxFileSize: {!! $maxFileSize !!},
-                    overwriteInitial: {!! $overwriteInitial !!},
+                    overwriteInitial: @if($overwriteInitial) true @else false @endif,
                     previewFileType: 'any',
                     initialPreview: {!! $existingFiles !!},
                     initialPreviewAsData: true,

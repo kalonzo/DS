@@ -80,14 +80,14 @@ class DtEstablishmentMediaModeration extends DatatableFeeder {
                     EstablishmentMedia::TABLENAME . '.id AS id_media',
                     Establishment::TABLENAME . '.id AS id_establishment',
                     Establishment::TABLENAME . '.name AS establishment_name',
-                    User::TABLENAME . '.id AS id_owner',
-                    DB::raw('CONCAT('.User::TABLENAME . '.lastname, " ", '.User::TABLENAME . '.firstname) AS owner')
+//                    User::TABLENAME . '.id AS id_owner',
+//                    DB::raw('CONCAT('.User::TABLENAME . '.lastname, " ", '.User::TABLENAME . '.firstname) AS owner')
                 ])
                 ->join(Establishment::TABLENAME, Establishment::TABLENAME . '.id', '=', EstablishmentMedia::TABLENAME.'.id_establishment')
                 ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
-                ->join(User::TABLENAME, User::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_user_owner')
+//                ->join(User::TABLENAME, User::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_user_owner')
                 ->where(EstablishmentMedia::TABLENAME.'.status', '=', EstablishmentMedia::STATUS_PENDING)
-        ;
+                ;
         
         $establishmentsQuery->orderBy(EstablishmentMedia::TABLENAME . '.updated_at', 'asc');
         
@@ -102,7 +102,7 @@ class DtEstablishmentMediaModeration extends DatatableFeeder {
 
             $results[$uuid]['id'] = $uuid;
             $results[$uuid]['name'] = $queryResult->filename;
-            $results[$uuid]['type'] = EstablishmentMedia::getLabelFromTypeUse($queryResult->type);
+            $results[$uuid]['type'] = EstablishmentMedia::getLabelFromTypeUse($queryResult->type_use);
             $results[$uuid]['ets'] = $queryResult->establishment_name;
             $results[$uuid]['city'] = $queryResult->city;
             $results[$uuid]['country'] = Country::getCountryLabel($queryResult->id_country);

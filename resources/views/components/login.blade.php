@@ -73,7 +73,7 @@
         if(Illuminate\Support\Facades\Auth::user()->getType() === App\Models\User::TYPE_USER_PRO){
             ?>
             <li>
-                <a href="{{ url('/establishment/') }}">
+                <a href="{{ url('/edit/establishment/'.getCurrentEstablishment()->getUuid()) }}">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                     <span class="section-item">Editer établissement</span>
                 </a>

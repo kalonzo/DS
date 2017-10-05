@@ -279,6 +279,7 @@ class Country extends Model {
     const ATA_BAT = 269;
     const AUT = 283;
 
+    protected static $hasUuid = false;
     public $timestamps = true;
     protected $fillable = [
         'iso',

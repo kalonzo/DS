@@ -291,6 +291,8 @@ class FileController {
         }
         if($relatedObject instanceof \App\Models\Interfaces\EstablishmentBoundable){
             $instance->setIdEstablishment($relatedObject->getIdEstablishment());
+        } else if($relatedObject instanceof \App\Models\Establishment){
+            $instance->setIdEstablishment($relatedObject->getId());
         }
         return $instance;
     }
