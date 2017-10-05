@@ -73,6 +73,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     'new_menu' => 'mimes:jpg,jpeg',
                 ];
                 break;
+            case 'add_daily_menu':
+                $rules = [
+                    'new_daily_menu' => 'required',
+                ];
+                break;
             case 'add_video':
                 $rules = [
                     'video' => 'required|mimes:mp4',
@@ -249,8 +254,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
             'new_employee_lastname.required' => 'Le prenom est requis',
             'new_employee_lastname.min' => 'Le prenom est trop court',
             'new_employee_lastname.max' => 'Le prenom est trop long',
-            'job_type.type.required' => 'Veuillez choisir le type d\'employé',
-            'new_employee_position.required' => '',
+            'job_type.required' => 'Veuillez choisir le type d\'employé',
+            'new_employee_position.required' => 'Veuillez sélectionner un type de poste',
             //history
             'new_story_year.required' => 'Veuillez séléctionner une date',
             'new_story_title.required' => 'Veuillez entrer un tire évoquant votre histoire',

@@ -994,8 +994,12 @@ class EstablishmentController extends Controller {
      */
     public function buildEditFormValues(Establishment $establishment) {
         // Default ID country
-        $idCountry = $establishment->address()->first()->getIdCountry();
-
+        $idCountry = 0;
+        $address = $establishment->address()->first();
+        if(checkModel($address)){
+            $idCountry = $address->getIdCountry();
+        }
+        
         // Call numbers
         $callNumbers = $establishment->callNumbers()->get();
         $callNumbersData = array();
