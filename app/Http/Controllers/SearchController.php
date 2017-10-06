@@ -285,7 +285,10 @@ class SearchController {
                     ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_establishment')
                     ->join(BusinessCategory::TABLENAME . ' AS biz_category1', 'biz_category1.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
                     ->leftJoin(Promotion::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
-                    ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', 'logo.id', '=', Establishment::TABLENAME . '.id_logo')
+                    ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', function ($join) {
+                        $join->on('logo.id', '=', Establishment::TABLENAME . '.id_logo')
+                             ->where('logo.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                    })
                     ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
                     ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                     ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)

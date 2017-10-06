@@ -69,7 +69,7 @@ Route::post('/delete/{media_type}/{id_media}', function($media_type, $id_media) 
     $media = null;
     $mediaClass = App\Models\Media::getClassFromTablename($media_type);
     if ($mediaClass !== null) {
-        $media = $mediaClass::find(\App\Utilities\UuidTools::getUuid($id_media));
+        $media = $mediaClass::findUuid(\App\Utilities\UuidTools::getUuid($id_media));
     }
     $mediaController = Illuminate\Support\Facades\App::make(App\Http\Controllers\MediaController::class);
     return $mediaController->callAction('destroy', array('media' => $media));

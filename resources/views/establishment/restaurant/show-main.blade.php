@@ -1,16 +1,29 @@
 <!------------- RESTAURANT DETAILS ------------------------------------>
- @if(checkFlow($data, ['services', 'ambiences']) || $establishment->video()->exists() || !empty($establishment->getDescription()) )
+<?php
+$video = null;
+$videoQuery = $establishment->video()->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+if($videoQuery->exists()){
+    $video = $videoQuery->first();
+}
+?>
+ @if(checkFlow($data, ['services', 'ambiences']) || checkModel($video) || !empty($establishment->getDescription()) )
 <section class="container-fluid ets-details">
     <div class="section-bg"></div>
     <div class="container">
         <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
             <h1>Qui <strong>sommes-nous</strong></h1>
-            @if($establishment->video()->exists())
-            <video width="100%" controls controlsList="nodownload">
-                <source src="{{ asset($establishment->video()->first()->getLocalPath()) }}" type="{{ $establishment->video()->first()->getMimeType() }}">
-                @lang("Votre navigateur ne supporte pas l'affichage de vidéo au standard HTML5.")
-            </video>
-            @endif
+            <?php
+            if(checkModel($video)){
+                $localPath = $video->getLocalPath();
+                $mineType = $video->getMimeType();
+                ?>
+                <video width="100%" controls controlsList="nodownload">
+                    <source src="{{ asset($localPath) }}" type="{{ $mineType }}">
+                    @lang("Votre navigateur ne supporte pas l'affichage de vidéo au standard HTML5.")
+                </video>
+                <?php
+            }
+            ?>
             <p class="description">
                 {{ $establishment->getDescription() }}
             </p>

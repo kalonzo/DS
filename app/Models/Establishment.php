@@ -64,9 +64,14 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $businessLabel;
     }
     
-    public function getDefaultPicture(){
+    public function getDefaultPicture($validated = true){
         $picPath = null;
-        $logo = $this->logo()->first();
+        $logo = null;
+        $logoQuery = $this->logo();
+        if($validated){
+            $logoQuery->where('status', '=', EstablishmentMedia::STATUS_VALIDATED);
+        }
+        $logo = $logoQuery->first();
         if(checkModel($logo)){
             $picPath = $logo->getLocalPath();
         } else {
@@ -75,9 +80,14 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $picPath;
     }
     
-    public function getDefaultBanner(){
+    public function getDefaultBanner($validated = true){
         $picPath = null;
-        $banner = $this->homePictures()->orderBy('position')->limit(1)->first();
+        $banner = null;
+        $bannerQuery = $this->homePictures();
+        if($validated){
+            $bannerQuery->where('status', '=', EstablishmentMedia::STATUS_VALIDATED);
+        }
+        $banner = $bannerQuery->orderBy('position')->limit(1)->first();
         if(checkModel($banner)){
             $picPath = $banner->getLocalPath();
         } else {

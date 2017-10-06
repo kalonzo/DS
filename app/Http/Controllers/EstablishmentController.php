@@ -90,8 +90,10 @@ class EstablishmentController extends Controller {
                 $data['daily_menu'] = array();
                 $menusWithMedia = $establishment->menus(false)
                                             ->select([\App\Models\Menu::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
-                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
-                                                    , \App\Models\Menu::TABLENAME.'.id_file')
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                                $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id', '=', \App\Models\Menu::TABLENAME.'.id_file')
+                                                     ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                            })
                                             ->orderBy(\App\Models\Menu::TABLENAME.'.created_at')
                                             ->get();
                 foreach ($menusWithMedia as $menuWithMedia) {
@@ -112,8 +114,10 @@ class EstablishmentController extends Controller {
                 $dishesWithMedia = $establishment->dishes()
                                             ->select([\App\Models\Dish::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path',
                                                 \App\Models\Currency::TABLENAME.'.symbol'])
-                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
-                                                    , \App\Models\Dish::TABLENAME.'.id_photo')
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                                $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id', '=', \App\Models\Dish::TABLENAME.'.id_photo')
+                                                     ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                            })
                                             ->join(\App\Models\Currency::TABLENAME, \App\Models\Currency::TABLENAME.'.id', '='
                                                     , \App\Models\Dish::TABLENAME.'.currency')
                                             ->orderBy(\App\Models\Dish::TABLENAME.'.created_at')
@@ -151,8 +155,10 @@ class EstablishmentController extends Controller {
                 $galleriesData = $establishment->galleries()
                                     ->select([\App\Models\Gallery::TABLENAME.'.*', DB::raw('count('.\App\Models\Gallery::TABLENAME.'.id) as nbMedias'),
                                                 DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', \App\Models\Gallery::TABLENAME))])
-                                    ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id_gallery', '='
-                                            , \App\Models\Gallery::TABLENAME.'.id')
+                                    ->join(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                        $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id_gallery', '=', \App\Models\Gallery::TABLENAME.'.id')
+                                             ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                    })
                                     ->orderBy(\App\Models\Gallery::TABLENAME.'.created_at')
                                     ->groupBy(\App\Models\Gallery::TABLENAME.'.id')
                                     ->get();
@@ -160,7 +166,7 @@ class EstablishmentController extends Controller {
                 if(!empty($galleriesUuids)){
                     $galleryMedias = \App\Models\EstablishmentMedia
                                         ::select([DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_gallery')), 'local_path'])
-    //                                    ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
+                                        ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
                                         ->where('position', '=', 1)
                                         ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_gallery', $galleriesUuids))
                                         ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at')
@@ -192,7 +198,7 @@ class EstablishmentController extends Controller {
                                     ::join(\App\Models\Gallery::TABLENAME, \App\Models\Gallery::TABLENAME.'.id', '=', 
                                             \App\Models\EstablishmentMedia::TABLENAME.'.id_gallery')
                                     ->select([\App\Models\EstablishmentMedia::TABLENAME.'.*'])
-//                                    ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
+                                    ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
                                     ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishment->getUuid(), 
                                                                                             \App\Models\Gallery::TABLENAME))
                                     ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at', 'DESC')
@@ -226,8 +232,10 @@ class EstablishmentController extends Controller {
                 $data['staff'] = array();
                 $employeesWithMedia = $establishment->employees()
                                             ->select([\App\Models\Employee::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
-                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
-                                                    , \App\Models\Employee::TABLENAME.'.id_photo')
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                                $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id', '=', \App\Models\Employee::TABLENAME.'.id_photo')
+                                                     ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                            })
                                             ->orderBy(\App\Models\Employee::TABLENAME.'.created_at')
                                             ->get();
                 foreach ($employeesWithMedia as $employeeWithMedia) {
@@ -243,8 +251,10 @@ class EstablishmentController extends Controller {
                 $data['promotions'] = array();
                 $promosWithMedia = $establishment->promotions()
                                             ->select([\App\Models\Promotion::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
-                                            ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id_object_related', '='
-                                                    , \App\Models\Promotion::TABLENAME.'.id')
+                                            ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                                $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id_object_related', '=', \App\Models\Promotion::TABLENAME.'.id')
+                                                     ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                            })
                                             ->whereRaw(\App\Models\Promotion::TABLENAME.'.end_date > NOW()')
                                             ->orderBy(\App\Models\Promotion::TABLENAME.'.start_date')
                                             ->get();
@@ -268,8 +278,10 @@ class EstablishmentController extends Controller {
                 $data['story'] = array();
                 $storiesWithMedia = $establishment->stories()
                                             ->select([\App\Models\EstablishmentHistory::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
-                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME.'.id', '='
-                                                    , \App\Models\EstablishmentHistory::TABLENAME.'.id_photo')
+                                            ->join(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                                $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id', '=', \App\Models\EstablishmentHistory::TABLENAME.'.id_photo')
+                                                     ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                            })
                                             ->orderBy(\App\Models\EstablishmentHistory::TABLENAME.'.year')
                                             ->get();
                 foreach ($storiesWithMedia as $storyWithMedia) {
@@ -533,7 +545,7 @@ class EstablishmentController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getMessage());
+            $jsonResponse['error'] = $e->getMessage();
 
             foreach ($createdObjects as $createdObject) {
                 if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
@@ -541,7 +553,6 @@ class EstablishmentController extends Controller {
                 }
             }
         }
-        
         $responsePrepared = $response->json($jsonResponse);
         return $responsePrepared;
     }
@@ -657,7 +668,7 @@ class EstablishmentController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getMessage());
+            $jsonResponse['error'] = $e->getMessage();
 
             foreach ($createdObjects as $createdObject) {
                 if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
@@ -813,8 +824,7 @@ class EstablishmentController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getMessage());
-
+            $jsonResponse['error'] = $e->getMessage();
             foreach ($createdObjects as $createdObject) {
                 if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
                     $createdObject->delete();
