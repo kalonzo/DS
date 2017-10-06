@@ -133,6 +133,7 @@
         <script src="/js/plugins.js"></script>    
         <script src="/js/geolocation.js"></script>    
         <script src="/js/form-validation.js"></script>
+        <script src="/js/bookmarkslider.js"></script>
         @yield('js_imports_footer')
         <script src="/js/js-loaded-trigger.js"></script>    
     </body>
