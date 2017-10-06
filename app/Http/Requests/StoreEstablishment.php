@@ -33,17 +33,12 @@ class StoreEstablishment extends \App\Http\FormRequest {
      */
     public function rules() {
         $rules = array();
-
         switch ($this->get('action')) {
             case 'add_gallery':
-                var_dump($this->get('undefined'));
                 $rules = [
                     'new_gallery_name' => 'required|min:2|max:255',
                     'new_gallery' => 'required',
                 ];
-                break;
-            case 'add_media_to_gallery':
-
                 break;
             case 'add_dish':
                 $rules = [
@@ -54,12 +49,9 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 ];
             case 'delete_gallery':
             case 'delete_close_period':
-                break;
-            case 'delete_close_period':
-
+            case 'add_media_to_gallery':
                 
                 break;
-
             case 'add_close_period':
                 $closeStartDate = new \DateTime($this->get('close_start'));
                 $rules = [
@@ -123,10 +115,8 @@ class StoreEstablishment extends \App\Http\FormRequest {
 
                 $nbr = count($this->input('home_pictures')) - 1;
                 foreach (range(0, $nbr) as $index) {
-                    echo $index;
                     $rules['home_pictures.' . $index] = 'required|max:4000';
                 }
-
 
                 //minima maxima for dishes
                 $min = $this->get('average_price_min');

@@ -128,8 +128,9 @@
         <?php
         $nbSection = 7;
         $i = 0;
-        if($establishment->homePictures()->exists()){
-            foreach($establishment->homePictures()->get() as $i => $media){
+        $homePicturesQuery = $establishment->homePictures()->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+        if($homePicturesQuery->exists()){
+            foreach($homePicturesQuery->get() as $i => $media){
                 ?>
                 .show-page section:nth-of-type(<?php echo $i+1;?>) .section-bg{
                     background-image: url('<?php echo asset($media->getLocalPath());?>');

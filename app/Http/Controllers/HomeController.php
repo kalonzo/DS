@@ -81,7 +81,10 @@ class HomeController extends Controller {
                         , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
                     ])
                 ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
-                ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', 'logo.id', '=', Establishment::TABLENAME . '.id_logo')
+                ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', function ($join) {
+                        $join->on('logo.id', '=', Establishment::TABLENAME . '.id_logo')
+                             ->where('logo.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                    })
                 ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                 ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
                 ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
