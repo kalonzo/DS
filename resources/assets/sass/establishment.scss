@@ -37,6 +37,17 @@
     .kv-fileinput-error{
         display: none !important;
     }
+    #logo-submit-container{
+        .logo-submit-draft{
+            .logo-draft-container{
+                background-color: black;
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: contain;
+                height: 288px;
+            }
+        }
+    }
 }
 
 #foodSpecialties{

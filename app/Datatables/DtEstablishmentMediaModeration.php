@@ -4,13 +4,13 @@ namespace App\Datatables;
 
 use App\Feeders\DatatableFeeder;
 use App\Feeders\DatatableFilter;
+use App\Feeders\DatatableRowAction;
 use App\Http\Controllers\SessionController;
 use App\Models\Address;
 use App\Models\BusinessType;
 use App\Models\Country;
 use App\Models\Establishment;
 use App\Models\EstablishmentMedia;
-use App\Models\User;
 use App\Utilities\UuidTools;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -26,8 +26,8 @@ class DtEstablishmentMediaModeration extends DatatableFeeder {
     const DT_ID = 'dt_establishment_media_moderation';
 
     public function buildActions() {
-//        $this->enableAction(DatatableRowAction::ACTION_EDIT);
-//        $this->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/edit/establishment/{{id}}');
+        $this->enableAction(DatatableRowAction::ACTION_VALID);
+        $this->customizeAction(DatatableRowAction::ACTION_VALID)->setOnclick("getOnClickModal('Modération de média', '/admin/media/moderate/{{id}}');");
     }
 
     public function buildColumns() {

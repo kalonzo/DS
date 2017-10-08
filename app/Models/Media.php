@@ -47,6 +47,7 @@ class Media extends Model {
         'position',
         'id_gallery',
         'id_draft_media',
+        'id_original_media',
         'drive',
         'public',
         'id_object_related'
@@ -56,6 +57,18 @@ class Media extends Model {
     public function delete() {
         if(checkModel($this)){
             switch($this->getTypeUse()){
+                case self::TYPE_USE_ETS_LOGO:
+                    $establishment = $this->establishment()->first();
+                    if(checkModel($establishment)){
+                        $establishment->setIdLogo(0)->save();
+                    }
+                    break;
+                case self::TYPE_USE_ETS_VIDEO:
+                    $establishment = $this->establishment()->first();
+                    if(checkModel($establishment)){
+                        $establishment->setIdVideo(0)->save();
+                    }
+                    break;
                 case self::TYPE_USE_ETS_MENU:
                     $this->menu()->delete();
                     break;
@@ -161,6 +174,19 @@ class Media extends Model {
             $story = $this->hasOne(EstablishmentHistory::class, 'id', 'id_object_related');
         }
         return $story;
+    }
+    
+    public function establishment(){
+        $establishment = $this->hasOne(Establishment::class, 'id', 'id_establishment');
+        return $establishment;
+    }
+    
+    public function mediaOriginal(){
+        return $this->hasOne(static::class, 'id', 'id_original_media');
+    }
+    
+    public function mediaDraft(){
+        return $this->hasOne(static::class, 'id', 'id_draft_media');
     }
 
     /**
@@ -363,6 +389,16 @@ class Media extends Model {
         $this->status = $status;
         return $this;
     }
+
+    function getIdOriginalMedia() {
+        return $this->id_original_media;
+    }
+
+    function setIdOriginalMedia($id_original_media) {
+        $this->id_original_media = $id_original_media;
+        return $this;
+    }
+
 
 
 }

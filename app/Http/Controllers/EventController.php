@@ -23,7 +23,7 @@ class EventController extends Controller {
         $this->buildCreateFormValues();
         $formData = StorageHelper::getInstance()->get('feed_event.form_data');
         $formValues = StorageHelper::getInstance()->get('feed_event.form_values');
-        $view = View::make('admin.event.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('event', null)
+        $view = View::make('admin.admin.event.feed')->with('form_data', $formData)->with('form_values', $formValues)->with('event', null)
         ;
         return $view;
     }

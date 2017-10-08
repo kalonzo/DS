@@ -9,25 +9,47 @@
     </div>
     <div id="collapse9" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading9">
         <div class="panel-body container">
-            <div class="row form-group">
+            <div class="row form-group" id="logo-submit-container">
                 <div class="col-xs-12">
-                    @php
-                        $medias = null;
-                    @endphp
-                    @if(checkModel($establishment) && $establishment->logo()->exists())
-                        @php
-                        $medias = [$establishment->logo()->first()];
-                        @endphp
-                    @endif
                     <h5>Logo</h5>
+                    <?php
+                    $logoOriginal = null;
+                    $logoDraft = null;
+                    $logoQuery = $establishment->logo();
+                    if(checkModel($establishment) && $logoQuery->exists()){
+                        $logoOriginal = $logoQuery->first();
+                    }
+                    if(checkModel($logoOriginal) && checkModelId($logoOriginal->getIdDraftMedia())){
+                        $logoDraft = $logoOriginal->mediaDraft()->first();
+                    }
+                    if(checkModel($logoDraft)){
+                        ?>
+                        <div class="col-xs-6">
+                            <h6>Logo actuel</h6>
+                        <?php
+                    }
+                    ?>
                     @component('components.file-input', 
                                         ['name' => 'logo',
                                         'class' => 'form-control',
-                                        'medias' => $medias,
+                                        'medias' => $logoOriginal,
                                         'fileType' => 'image'
                                         ])
                     
                     @endcomponent
+                    <?php
+                    if(checkModel($logoDraft)){
+                        ?>
+                        </div>
+                        <div class="col-xs-6 logo-submit-draft">
+                            <h6>Logo en attente de validation</h6>
+                            <div class="col-xs-12 logo-draft-container" style="background-image: url('{{ $logoDraft->getLocalPath() }}');">
+
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
                 </div>
             </div>
             <br/>

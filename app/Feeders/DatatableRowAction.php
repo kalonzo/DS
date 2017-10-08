@@ -10,6 +10,7 @@ namespace App\Feeders;
 class DatatableRowAction {
     const ACTION_EDIT = 1;
     const ACTION_REMOVE = 2;
+    const ACTION_VALID = 3;
     
     protected $type;
     protected $icon;
@@ -29,6 +30,11 @@ class DatatableRowAction {
                 $action->setType($actionType);
                 $action->setIcon('glyphicon-trash');
                 $action->setTitle('Effacer');
+                break;
+            case self::ACTION_VALID:
+                $action->setType($actionType);
+                $action->setIcon('glyphicon-ok-circle');
+                $action->setTitle('Valider');
                 break;
         }
         return $action;

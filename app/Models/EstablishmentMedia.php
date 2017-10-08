@@ -36,6 +36,15 @@ class EstablishmentMedia extends Media
         return $businessLabel;
     }
     
+    public function getTypeUseLabel(){
+        $typeUseLabel = 'Type non défini';
+        $businessTypeLabels = self::getLabelByTypeUse();
+        if(isset($businessTypeLabels[$this->getTypeUse()])){
+            $typeUseLabel = $businessTypeLabels[$this->getTypeUse()];
+        }
+        return $typeUseLabel;
+    }
+    
     function getIdEstablishment() {
         return $this->id_establishment;
     }

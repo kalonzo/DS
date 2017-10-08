@@ -484,8 +484,15 @@ class EstablishmentController extends Controller {
 
                     if(checkModel($address)){
                         // Update establishment
+                        $establishmentStatus = $establishment->getStatus();
+                        switch($establishmentStatus){
+                            case Establishment::STATUS_INCOMPLETE:
+                            case Establishment::STATUS_TO_LOCALIZE:
+                                $establishmentStatus = Establishment::STATUS_TO_VALID;
+                                break;
+                        }
                         $establishment->update([
-                            'status' => Establishment::STATUS_ACTIVE,
+                            'status' => $establishmentStatus,
                             'name' => $request->get('name'),
                             'latitude' => $request->get('latitude'),
                             'longitude' => $request->get('longitude'),
@@ -520,14 +527,10 @@ class EstablishmentController extends Controller {
                                 if (checkModel($logo)) {
                                     $establishment->setIdLogo($logo->getId());
                                     $establishment->save();
-                                    $createdObjects[] = $logo;
                                 }
                             }
                             if ($request->file('home_pictures')) {
                                 $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment);
-                                if (!empty($homePictures)) {
-                                    $createdObjects[] = $homePictures;
-                                }
                             }
                             $establishment->calculateBusinessStatus();
                             $jsonResponse['success'] = 1;

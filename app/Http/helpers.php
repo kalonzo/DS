@@ -93,7 +93,7 @@ function getImageHeight($filePath){
  * 
  * @param App\Models\Media $medias
  */
-function getMediaConfigForInputFile($medias, $jsonEncoded = true){
+function getMediaConfigForInputFile($medias, $jsonEncoded = true, $allowRemove = true){
     $mediaConfig = array();
     if($medias instanceof App\Models\Media){
         $medias = array($medias);
@@ -106,7 +106,9 @@ function getMediaConfigForInputFile($medias, $jsonEncoded = true){
                     'size' => $media->getSize(),
                     'key' => $media->getUuid(),
                 );
-                $instanceConfig['url'] = '/delete/'.$media::TABLENAME.'/'.$media->getUuid();
+                if($allowRemove){
+                    $instanceConfig['url'] = '/delete/'.$media::TABLENAME.'/'.$media->getUuid();
+                }
                 if(!empty($media->getType())){
                     switch($media->getType()){
                         case \App\Models\Media::TYPE_IMAGE:

@@ -152,6 +152,14 @@ class AdminController extends Controller {
         Route::match(['post'], '/admin/valid_establishment/{establishment}', 'EstablishmentController@validateEstablishment')
         ->middleware('auth');
         
+        // Moderate media
+        Route::match(['get'], '/admin/media/moderate/{media}', 'MediaController@moderateMedia')
+        ->middleware('auth');
+        Route::match(['get'], '/admin/media/validate/{media}', 'MediaController@validateMedia')
+        ->middleware('auth');
+        Route::match(['get'], '/admin/media/deny/{media}', 'MediaController@denyMedia')
+        ->middleware('auth');
+        
 
         // IMPORT
         // upload file

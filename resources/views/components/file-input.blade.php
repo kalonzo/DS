@@ -30,42 +30,45 @@ if(!isset($fileExtensions)){
 //['image', 'html', 'text', 'video', 'audio', 'flash', 'object']
 if(!isset($fileType)){
     $fileType = array();
+} else {
+    if(!is_array($fileType)){
+        $fileType = array($fileType);
+    }
 }
-if(!is_array($fileType)){
-    $fileType = array($fileType);
-}
-foreach($fileType as $type){
-    switch($type){
-        default:
-            $typeMaxFileSize= 5000;
-            if($typeMaxFileSize > $maxFileSize){
-                $maxFileSize = $typeMaxFileSize;
-            }
-        break;
-        case 'image':
-            $fileExtensions[] = 'jpg';
-            $fileExtensions[] = 'png';
-            $typeMaxFileSize= 5000;
-            if($typeMaxFileSize > $maxFileSize){
-                $maxFileSize = $typeMaxFileSize;
-            }
-        break;
-        case 'text':
-            $fileExtensions[] = 'doc';
-            $fileExtensions[] = 'docx';
-            $fileExtensions[] = 'pdf';
-            $typeMaxFileSize= 5000;
-            if($typeMaxFileSize > $maxFileSize){
-                $maxFileSize = $typeMaxFileSize;
-            }
-        break;
-        case 'video':
-            $fileExtensions[] = 'mp4';
-            $typeMaxFileSize= 40000;
-            if($typeMaxFileSize > $maxFileSize){
-                $maxFileSize = $typeMaxFileSize;
-            }
-        break;
+if(!empty($fileType)){
+    foreach($fileType as $type){
+        switch($type){
+            default:
+                $typeMaxFileSize= 5000;
+                if($typeMaxFileSize > $maxFileSize){
+                    $maxFileSize = $typeMaxFileSize;
+                }
+            break;
+            case 'image':
+                $fileExtensions[] = 'jpg';
+                $fileExtensions[] = 'png';
+                $typeMaxFileSize= 5000;
+                if($typeMaxFileSize > $maxFileSize){
+                    $maxFileSize = $typeMaxFileSize;
+                }
+            break;
+            case 'text':
+                $fileExtensions[] = 'doc';
+                $fileExtensions[] = 'docx';
+                $fileExtensions[] = 'pdf';
+                $typeMaxFileSize= 5000;
+                if($typeMaxFileSize > $maxFileSize){
+                    $maxFileSize = $typeMaxFileSize;
+                }
+            break;
+            case 'video':
+                $fileExtensions[] = 'mp4';
+                $typeMaxFileSize= 40000;
+                if($typeMaxFileSize > $maxFileSize){
+                    $maxFileSize = $typeMaxFileSize;
+                }
+            break;
+        }
     }
 }
 if(!empty($fileType)){
@@ -102,16 +105,19 @@ if(!isset($browseLabel)){
                         showUpload: false,
                     @endif
                     @if(isset($showRemove))
-                        showRemove: {!! $showRemove !!},
+                        showRemove: @if($showRemove) true @else false @endif,
+                    @endif
+                    @if(isset($showBrowse))
+                        showBrowse: @if($showBrowse) true @else false @endif,
                     @endif
                     @if(isset($showCaption))
-                        showCaption: {!! $showCaption !!},
+                        showCaption: @if($showCaption) true @else false @endif,
                     @endif
                     @if(isset($showClose))
-                        showClose: {!! $showClose !!},
+                        showClose: @if($showClose) true @else false @endif,
                     @endif
                     @if(isset($showPreview))
-                        showPreview: {!! $showPreview !!},
+                        showPreview: @if($showPreview) true @else false @endif,
                     @endif
                     @if(isset($required))
                         required: {!! $required !!},

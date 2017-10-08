@@ -57,8 +57,6 @@ class FileController {
                                 $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
                                 $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
 
-                                $media->setId(\App\Utilities\UuidTools::generateUuid());
-
                                 // Set media info
                                 $media->setType($resolvedMimeType);
                                 $media->setFilename($fileName);
@@ -90,6 +88,7 @@ class FileController {
      * @return \App\Models\Media 
      */
     public static function storeFile($formInputFileName, $fileType, $relatedObject, $media = null){
+        $originalMedia = null;
         $file = \Illuminate\Support\Facades\Request::file($formInputFileName);
         if(!empty($file)){
             if ($file->isValid()) {
@@ -110,7 +109,10 @@ class FileController {
                         // Check if file is different from previous saved media
                         if($media->getExtension() == $fileExtension && $media->getSize() == $fileSize && $media->getType() === $resolvedMimeType){
                             $hasChanged = false;
-                        } 
+                        } else {
+                            $originalMedia = $media;
+                            $media = self::manageReplacingMediaInstance($fileType, $relatedObject, $originalMedia);
+                        }
                     }
                     if($hasChanged && $media instanceof \App\Models\Media){
                         $options = array();
@@ -128,9 +130,7 @@ class FileController {
                             // Get definitive file paths
                             $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
                             $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
-                            if(!checkModel($media)){
-                                $media->setId(\App\Utilities\UuidTools::generateUuid());
-                            } else {
+                            if(checkModel($media)){
                                 // Delete previous uploaded file
                                 \Illuminate\Support\Facades\Storage::delete($media->getLocalPath());
                             }
@@ -152,7 +152,11 @@ class FileController {
                 }
             }
         }
-        return $media;
+        if(checkModel($originalMedia) && $originalMedia->getId() != $media->getId()){
+            return $originalMedia;
+        } else {
+            return $media;
+        }
     }
     
     /**
@@ -269,6 +273,7 @@ class FileController {
             case \App\Models\Media::TYPE_USE_ETS_STORY:
             case \App\Models\Media::TYPE_USE_ETS_PROMO:
                 $instance = new \App\Models\EstablishmentMedia();
+                $instance->setId(\App\Utilities\UuidTools::generateUuid());
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
                 $instance->setTypeUse($fileType);
@@ -283,6 +288,7 @@ class FileController {
             break;
             case \App\Models\Media::TYPE_USE_BUSINESS_TYPE:
                 $instance = new \App\Models\EstablishmentMedia();
+                $instance->setId(\App\Utilities\UuidTools::generateUuid());
                 $instance->setPublic(TRUE);
                 $instance->setDrive(\App\Models\Media::DRIVE_LOCAL);
                 $instance->setTypeUse($fileType);
@@ -293,6 +299,45 @@ class FileController {
             $instance->setIdEstablishment($relatedObject->getIdEstablishment());
         } else if($relatedObject instanceof \App\Models\Establishment){
             $instance->setIdEstablishment($relatedObject->getId());
+        }
+        return $instance;
+    }
+    
+    /**
+     * 
+     * @param type $fileType
+     * @param \App\Models\Model $relatedObject
+     * @param \App\Models\EstablishmentMedia $originalMedia
+     * @return \App\Models\EstablishmentMedia
+     */
+    public static function manageReplacingMediaInstance($fileType, $relatedObject, $originalMedia){
+        $instance = null;
+        
+        if(isAdmin()){
+            $instance = $originalMedia;
+        } else {
+            switch($fileType){
+                case \App\Models\Media::TYPE_USE_ETS_LOGO:
+                case \App\Models\Media::TYPE_USE_ETS_VIDEO:
+                    if($originalMedia->getStatus() === \App\Models\Media::STATUS_VALIDATED){
+                        $instance = self::resolveMediaInstance($fileType, $relatedObject);
+                        $instance->setIdOriginalMedia($originalMedia->getId());
+
+                        if(checkModelId($originalMedia->getIdDraftMedia())){
+                            $draftMedia = $originalMedia->mediaDraft()->first();
+                            if(checkModel($draftMedia)){
+                                $draftMedia->setIdEstablishment(0);
+                                $draftMedia->delete();
+                            }
+                        }
+                        $originalMedia->setIdDraftMedia($instance->getId());
+                        $originalMedia->save();
+                    }
+                    break;
+                default :
+                    $instance = $originalMedia;
+                    break;
+            }
         }
         return $instance;
     }
