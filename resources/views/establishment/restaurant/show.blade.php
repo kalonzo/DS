@@ -1,9 +1,16 @@
 @extends('layouts.front') 
 
+@php
+$loadDelay = 0.5
+@endphp
+
+<!--Git push again-->
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
 <link href="/css/sidebar.css" rel="stylesheet">
 <link href="/libraries/baguettebox/baguetteBox.min.css" rel="stylesheet">
+<!--Uses animation library from the first version beta-->
+<link href="/libraries/wow/animate.css" rel="stylesheet">
 @endsection
 
 @if($establishment->getAcceptBooking())
@@ -69,10 +76,10 @@
             <div class="section-bg"></div>
             @component('components.divcell', ['style' => 'height: 100%;'])
                 @slot('content')
-                    <h1>{{ $establishment->getName() }}</h1>
-                    <h2>@lang('Cuisine') {{ $data['cooking_type'] }}</h2>
+                    <h1 class="hdng__off2 wow fadeInLeft animated" data-wow-delay="{{$loadDelay}}s">{{ $establishment->getName() }}</h1>
+                    <h2 class="hdng__off2 wow fadeInRight animated" data-wow-delay="0.8s">@lang('Cuisine') {{ $data['cooking_type'] }}</h2>
                     @if(isset($data['specialties']))
-                    <h3>
+                    <h3 class="hdng__off2 wow fadeInLeft animated" data-wow-delay="0.8s">
                         @foreach($data['specialties'] as $specialty)
                             @if($loop->index > 0)
                             <span class='point-separator'>&#9679;</span>
@@ -98,19 +105,19 @@
          <section class="container-fluid ets-contact" id="contact">
             <div class="section-bg"></div>
             <div class="container">
-                <h1><strong>Nous</strong> contacter</h1>
-                <div class="quick-map" data-lat="{{ $establishment->getLatitude() }}" data-lng="{{ $establishment->getLongitude() }}"></div>
-                <div class="row ets-address">
+                <h1 wow fadeInLeft><strong>Nous</strong> contacter</h1>
+                <div class="quick-map wow fadeInRight" data-wow-delay="0.8s" data-lat="{{ $establishment->getLatitude() }}" data-lng="{{ $establishment->getLongitude() }}"></div>
+                <div class="row ets-address wow fadeInLeft" data-wow-delay="0.8s">
                     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
                     {{ $data['address'] }}
                 </div>
                 @if($establishment->getAcceptBooking())
                 <div class="row">
-                    <button type="button" class="btn book-button sidebar-booking-toggler" >Réservez une table</button>
+                    <button type="button" class="wow fadeInLeft btn book-button sidebar-booking-toggler" data-wow-delay="0.8s">Réservez une table</button>
                 </div>
                 @endif
                 @if(isset($data['phone_number']))
-                <div class="row contact-number">
+                <div class="wow fadeInRight row contact-number" data-wow-delay="0.8s">
                     <a href="tel:{{ $data['phone_number'] }}">
                         <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span>
                         {{ $data['phone_number'] }}
@@ -156,5 +163,11 @@
 <script src="/js/sidebar.js"></script>
 <script src="/libraries/baguettebox/baguetteBox.min.js"></script>
 <script src="/js/search.js"></script>
+<script src="/js/bookmarkslider.js"></script>
+<!--<script src="/js/etsscrollanimations.js"></script>-->
+<script src="/libraries/wow/wow.js"></script>
+<script>
+new WOW().init();
+</script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection

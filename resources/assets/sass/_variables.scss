@@ -73,3 +73,8 @@ $sidebar-padding: 16px;
 $sidebar-divider: $sidebar-padding/2;
 
 $border-radius-usual: 5px;
+
+// ets-Display default state
+//used by etsscrollanimations.js
+//Change this to diplay text and table content as default
+$defaultDisplay: none;

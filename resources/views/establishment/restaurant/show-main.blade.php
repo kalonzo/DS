@@ -6,6 +6,7 @@ if($videoQuery->exists()){
     $video = $videoQuery->first();
 }
 ?>
+<!--New comment to get git push-->
  @if(checkFlow($data, ['services', 'ambiences']) || checkModel($video) || !empty($establishment->getDescription()) )
 <section class="container-fluid ets-details">
     <div class="section-bg"></div>
@@ -290,8 +291,8 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-timetable">
     <div class="section-bg"></div>
     <div class="container">
-        <h1><strong>Horaires</strong> d'ouverture</h1>
-        <div class="row">
+        <h1 class="wow fadeInLeft" data-wow-delay="0.8s"><strong>Horaires</strong> d'ouverture</h1>
+        <div class="row wow fadeInRight" data-wow-delay="0.8s">
             <div class="col-xs-5_5 col-sm-2_5">
                 &nbsp;
             </div> 
@@ -302,7 +303,7 @@ if($videoQuery->exists()){
                 Diner
             </div>    
         </div>
-        <div class="row timetable-show">
+        <div class="row timetable-show wow fadeInLeft" data-wow-delay="0.8s">
             @foreach($data['timetable'] as $dayLabel => $timeslot)
             <div class="row timetable-row">
                 <div class="col-xs-5_5 col-sm-2_5 timetable-day">
@@ -331,7 +332,7 @@ if($videoQuery->exists()){
         </div>
         @if(checkFlow($data, ['close_periods']))
         <br class="cleaner"/><br/>
-        <div class="row close-show">
+        <div class="row close-show wow fadeInRight" data-wow-delay="0.8s">
             <div class="col-xs-5_5 col-sm-2_5 text-right">
                 <h2>Fermeture exceptionnelle</h2>
             </div>   

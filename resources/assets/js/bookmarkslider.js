@@ -12,14 +12,13 @@ transition: $menus-transition-speed ease;
 //Try to target the whole outer div for correct movement
 //e.g: $(".class").moveitbars();
 $.fn.moveitbars = function(speed) {
-    var transitionSpeeds = speed;
     var offset = 41;
-    var contactsize =  offset - this.width();
+    var bookmarkSize =  offset - this.width();
     var thetarget = this;
     
     this.hover(function(event){
 	    event.preventDefault();
-	    thetarget.css({"margin-right" : contactsize + "px", "transition" : transitionSpeeds +"s ease"}); 
+	    thetarget.css({"margin-right" : bookmarkSize + "px", "transition" : speed +"s ease"}); 
 	  });
   
     this.mouseleave(function(event){
