@@ -2,7 +2,7 @@
 
 <!--Change here for changing the load delay variable for animation-->
 @php
-$loadDelay = 0.5
+$loadDelay = 0.9
 @endphp
 
 <!--Git push again-->
