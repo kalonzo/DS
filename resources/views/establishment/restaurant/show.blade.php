@@ -77,9 +77,9 @@ $loadDelay = 0.5
             @component('components.divcell', ['style' => 'height: 100%;'])
                 @slot('content')
                     <h1 class="hdng__off2 wow fadeInLeft animated" data-wow-delay="{{$loadDelay}}s">{{ $establishment->getName() }}</h1>
-                    <h2 class="hdng__off2 wow fadeInRight animated" data-wow-delay="0.8s">@lang('Cuisine') {{ $data['cooking_type'] }}</h2>
+                    <h2 class="hdng__off2 wow fadeInRight animated" data-wow-delay="{{$loadDelay}}s">@lang('Cuisine') {{ $data['cooking_type'] }}</h2>
                     @if(isset($data['specialties']))
-                    <h3 class="hdng__off2 wow fadeInLeft animated" data-wow-delay="0.8s">
+                    <h3 class="hdng__off2 wow fadeInLeft animated" data-wow-delay="{{$loadDelay}}s">
                         @foreach($data['specialties'] as $specialty)
                             @if($loop->index > 0)
                             <span class='point-separator'>&#9679;</span>
@@ -105,19 +105,19 @@ $loadDelay = 0.5
          <section class="container-fluid ets-contact" id="contact">
             <div class="section-bg"></div>
             <div class="container">
-                <h1 wow fadeInLeft><strong>Nous</strong> contacter</h1>
-                <div class="quick-map wow fadeInRight" data-wow-delay="0.8s" data-lat="{{ $establishment->getLatitude() }}" data-lng="{{ $establishment->getLongitude() }}"></div>
-                <div class="row ets-address wow fadeInLeft" data-wow-delay="0.8s">
+                <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s"><strong>Nous</strong> contacter</h1>
+                <div class="quick-map wow fadeInRight" data-wow-delay="{{$loadDelay}}s" data-lat="{{ $establishment->getLatitude() }}" data-lng="{{ $establishment->getLongitude() }}"></div>
+                <div class="row ets-address wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">
                     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
                     {{ $data['address'] }}
                 </div>
                 @if($establishment->getAcceptBooking())
                 <div class="row">
-                    <button type="button" class="wow fadeInLeft btn book-button sidebar-booking-toggler" data-wow-delay="0.8s">Réservez une table</button>
+                    <button type="button" class="wow fadeInLeft btn book-button sidebar-booking-toggler" data-wow-delay="{{$loadDelay}}s">Réservez une table</button>
                 </div>
                 @endif
                 @if(isset($data['phone_number']))
-                <div class="wow fadeInRight row contact-number" data-wow-delay="0.8s">
+                <div class="wow fadeInRight row contact-number" data-wow-delay="{{$loadDelay}}s">
                     <a href="tel:{{ $data['phone_number'] }}">
                         <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span>
                         {{ $data['phone_number'] }}
