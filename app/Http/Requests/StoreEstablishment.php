@@ -86,7 +86,6 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 $rules = [
                     'new_employee_firstname' => 'required|min:2|max:255',
                     'new_employee_lastname' => 'required|min:2|max:255',
-                    'job' => 'required',
                     'job_type' => 'required',
                     'new_employee_position' => 'required',
                 ];

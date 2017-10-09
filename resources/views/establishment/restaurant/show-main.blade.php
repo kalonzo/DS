@@ -1,6 +1,6 @@
 <!--Change here for changing the load delay variable for animation-->
 @php
-$loadDelay = 0.9
+$loadDelay = 0.7
 @endphp
 
 <!------------- RESTAURANT DETAILS ------------------------------------>
@@ -243,15 +243,15 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-staff">
     <div class="section-bg"></div>
     <div class="container">
-        <h1>Notre <strong>équipe</strong></h1>
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">Notre <strong>équipe</strong></h1>
         <div class="row">
             @foreach($data['staff'] as $staff)
             <div class="col-xs-6 col-sm-4 thumbnail-item">
-                <img src="{{ $staff['picture'] }}" alt="{{ $staff['name'] }} picture"/>
-                <div class="thumbnail-name">
+                <img class="wow fadeInRight" data-wow-delay="{{$loadDelay}}s" src="{{ $staff['picture'] }}" alt="{{ $staff['name'] }} picture"/>
+                <div class="thumbnail-name wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
                     {{ $staff['name'] }}
                 </div>
-                <div class="thumbnail-description">
+                <div class="thumbnail-description wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
                     {{ $staff['position'] }}
                 </div>
             </div>                    
@@ -265,8 +265,8 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-story">
     <div class="section-bg"></div>
     <div class="container">
-        <h1><strong>Notre</strong> histoire</h1>
-        <div class="row">
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s"><strong>Notre</strong> histoire</h1>
+        <div class="row wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
             @component('components.timeline', ['items' => $data['story'] ])
                 @foreach($data['story'] as $story)
                     @slot("content_".$story['id'])
