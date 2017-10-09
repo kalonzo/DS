@@ -1,5 +1,6 @@
 @extends('layouts.front') 
 
+<!--Change here for changing the load delay variable for animation-->
 @php
 $loadDelay = 0.5
 @endphp
