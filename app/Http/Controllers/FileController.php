@@ -67,6 +67,7 @@ class FileController {
                                 $media->setWidth($width);
                                 $media->setHeight($height);
                                 $media->setIdObjectRelated($relatedObject->getId());
+                                //$media->setPosition($currentPosition);
                                 $media->save();
 
                                 $createdMedias[] = $media;

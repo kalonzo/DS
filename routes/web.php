@@ -46,6 +46,7 @@ Route::post('/edit/establishment/{establishment}', 'EstablishmentController@upda
 // ajax processes through update 
 Route::post('/edit/establishment/{establishment}/ajax/', 'EstablishmentController@ajax');
 
+
 // store booking
 Route::post('/establishment/booking/{establishment}', 'EstablishmentController@createBooking');
 Route::match(['get', 'post'], '/establishment/booking/{establishment}/ajax/', 'EstablishmentController@createBookingAjax');
@@ -81,6 +82,12 @@ Route::match(['get', 'post'], '/transaction/success', 'WalleeController@transact
 Route::match(['get', 'post'], '/transaction/failure', 'WalleeController@transactionFailed');
 Route::match(['get', 'post'], '/establishment/register/success', 'WalleeController@subscriptionSucceed');
 Route::match(['get', 'post'], '/establishment/register/failure', 'WalleeController@subscriptionFailed');
+
+//ajax update order of media items
+//ajax process on drag and drop rearrange orders
+//Route::post('/edit/establishment/ajaxUpdateOrder', 'EstablishmentController@ajaxChangeOrder');
+Route::post('/edit/ajaxUpdateOrder', 'ajaxChangeOrder@ajaxChangeOrder');
+//Route::get('/edit/ajaxUpdateOrder', 'ajaxChangeOrder@ajaxChangeOrdertest');
 
 /* * ****************************TEST ROUTE************************************* */
 Route::get('/welcome/{locale}', function ($local) {
