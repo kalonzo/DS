@@ -30,13 +30,14 @@ class ajaxChangeOrder extends Controller
                 for($i = 0; $i < count($input);$i++){
                     //sanitize and check inputs hex strings
                     $input[$i] = htmlspecialchars($input[$i]);
+                    //remove backslashs
                     $input[$i] = str_replace('\\', '', $input[$i]);
                     var_dump($input[$i]);
                     
                     //SQL statement, position is set as clean statement, reason is '' needs to be on HEX
                     //so unhex function can work properly to convert to binary, throws off prep statement
                     if(strlen($input[$i]) == 32){
-                    DB::statement("update establishment_medias set position =:position  where id = unhex('$input[$i]')", array('position' => $i));
+                        DB::statement("update establishment_medias set position =:position  where id = unhex('$input[$i]')", array('position' => $i));
                     }
                 }
                 

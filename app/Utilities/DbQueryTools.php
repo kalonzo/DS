@@ -71,6 +71,52 @@ class DbQueryTools {
         return $rawSql;
     }
     
+    public static function genSqlForWhereRawUuidConstraintSanitized($tableField, $uuidRef, $tableName = '', $notIn = false){
+        $rawSql = "";
+        if(!empty($uuidRef)){
+            
+            //if we have an array of $uuidRefs
+            if(is_array($uuidRef)){
+                
+                for ($i = 0; $i < \count($uuidRef); $i++) {
+                    //remove backslashs
+                    $uuidRef[$i] = str_replace('\\', '', $uuidRef[$i]);
+                    //sanitize and check inputs hex strings
+                    $uuidRef[$i] = htmlspecialchars($uuidRef[$i]);
+                    //save as unhex()
+                    $uuidRef[$i] = "unhex('$uuidRef[$i]')";
+                }
+                
+                $inValues = implode(',', $uuidRef);
+                
+                $inValuesStringified = "'".str_replace(',',  "','", $inValues)."'";
+                
+                if(!empty($tableName)){
+                    $rawSql .= $tableName.'.';
+                }
+                
+                $rawSql .= $tableField;
+                
+                if($notIn){
+                    $rawSql .= ' NOT ';
+                }
+                
+                $rawSql .= ' IN ('.$inValuesStringified.') ';
+            } else {
+                //if we have on uuidRef
+                if(!empty($tableName)){
+                    $rawSql .= $tableName.'.';
+                }
+                //strip and sanitize
+                $uuidRef = htmlspecialchars($uuidRef);
+                $uuidRef = str_replace('\\', '', $uuidRef);
+                //pass into raw
+                $rawSql .= $tableField.' = unhex("'.$uuidRef.'") ';
+            }
+        }
+        return $rawSql;
+    }
+    
     /**
      * 
      * @param type $tableField
