@@ -68,7 +68,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-12 form-group">
+                <div class="col-xs-12 form-group" id="formCountry">
                     {!! Form::label('address[id_country]','* Pays') !!}
                     {!! Form::select('address[id_country]', $form_data['country_ids'], $form_values['id_country'], [
                         'class' => 'form-control select2 full-width']) !!}

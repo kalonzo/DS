@@ -13,13 +13,18 @@ class AddDefaultAutoincrementPosition extends Migration
      */
     public function up()
     {   
+       DB::unprepared('
+           USE `dinerscope`;
+           UPDATE `establishment_medias` SET position = 0 WHERE position IS NULL;
+       ');
+       
        //add binary value to ID, not NULL AUTO_INCREMENT
-       DB::statement('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NOT NULL;');
+       DB::unprepared('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NOT NULL;');
        
        //Pseudo autoincrement, since not on primary index.
        //If the inserted position is NULL, Trigger finds the MAX position currently in DB and sets the
        //position to the the max position + 1
-       DB::statement('
+       DB::unprepared('
             USE `dinerscope`;
             DELIMITER $$
             DROP TRIGGER IF EXISTS dinerscope.maxIncrement$$
@@ -42,9 +47,9 @@ class AddDefaultAutoincrementPosition extends Migration
     public function down()
     {
         //removes new null contrain
-        DB::statement('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NULL;');
+        DB::unprepared('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NULL;');
         //Drops the trigger
-        DB::statement('
+        DB::unprepared('
                 USE `dinerscope`;
                 DROP TRIGGER IF EXISTS dinerscope.maxIncrement;
             ');

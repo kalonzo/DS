@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-/*
+
 (function(funcName, baseObj) {
     "use strict";
     // The public function name defaults to window.docReady
@@ -81,9 +81,49 @@
 })("docReady", window);
 // modify this previous line to pass in your own method name 
 // and object for the method to be attached to
+
 docReady(function() {
-      var arrayTest= [];
-      
+    console.log('Test script loaded in consoleJqueryDevTest.js');
+     
+    $("#formCountry").click(function(){
+        
+        $("#select2-addressid_country-results").children().each(function () {
+            //console.log(this.id); // "this" is the current element in the loop
+            //console.log(this.id);
+            var targetsID = '#' + this.id; 
+            var countryTarget = $(targetsID).html();
+             
+            //console.log(countryTarget);
+            //si Pas la France ou la Suisse Remove
+            if (countryTarget == 'France' || countryTarget == 'Suisse'){
+                console.log("DoNothing");
+            } else {
+                $(targetsID).remove();
+            }
+        });
+        
+    }).delay(1);
+    
+    //.select2-search.select2-search--dropdown input[type="search"]
+    $('.select2-search.select2-search--dropdown input[type="search"').keyup(function() {
+        console.log("KeyDetected");
+        
+        $("#select2-addressid_country-results").children().each(function () {
+            //console.log(this.id); // "this" is the current element in the loop
+            //console.log(this.id);
+            var targetsID = '#' + this.id; 
+            var countryTarget = $(targetsID).html();
+             
+            //console.log(countryTarget);
+            //si Pas la France ou la Suisse Remove
+            if (countryTarget == 'France' || countryTarget == 'Suisse'){
+                console.log("DoNothing");
+            } else {
+                $(targetsID).remove();
+            }
+        });
+        
+    }).delay(1);
     
     
-});*/
+});
