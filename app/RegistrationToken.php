@@ -2,9 +2,14 @@
 
 namespace App;
 
-use Carbon\Carbon;
-use Kitano\Aktiv8me\ActivatesUsers;
+use App\Models\User;
+use App\Utilities\DbQueryTools;
+use App\Utilities\UuidTools;
+use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Kitano\Aktiv8me\ActivatesUsers;
 
 /**
  * App\RegistrationToken
@@ -14,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $token
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @property-read Models\User $user
+ * @property-read User $user
  * @method static \Illuminate\Database\Query\Builder|\App\RegistrationToken whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\RegistrationToken whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\RegistrationToken whereToken($value)
@@ -40,21 +45,22 @@ class RegistrationToken extends Model
     /**
      * Relationship
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user()
     {
-        return $this->belongsTo(Models\User::class);
+        return $this->hasOne(User::class, 'id', 'user_id');
+//        return $this->belongsTo(Models\User::class);
     }
 
     /**
      * Creates a token for a given user
      *
-     * @param Models\User $user
+     * @param User $user
      *
-     * @return static|Models\User
+     * @return static|User
      */
-    public static function createFor(Models\User $user)
+    public static function createFor(User $user)
     {
         return static::create([
             'user_id' => $user->getId(),
@@ -68,11 +74,11 @@ class RegistrationToken extends Model
      * @param int $id  User ID
      *
      * @return bool|null
-     * @throws \Exception
+     * @throws Exception
      */
     public static function deleteCode($id)
     {
-        return static::whereRaw(Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', Utilities\UuidTools::getUuid($id)))->delete();
+        return static::whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', UuidTools::getUuid($id)))->delete();
     }
 
     /**
@@ -80,11 +86,11 @@ class RegistrationToken extends Model
      *
      * @param $userId
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return Collection|static[]
      */
     public static function findCodes($userId)
     {
-        return static::whereRaw(Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', $uid))->get();
+        return static::whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', $uid))->get();
     }
 
     /**
@@ -92,7 +98,7 @@ class RegistrationToken extends Model
      *
      * @param $code
      *
-     * @return \Illuminate\Database\Eloquent\Model|null|static
+     * @return Model|null|static
      */
     public static function findToken($code)
     {
@@ -102,23 +108,23 @@ class RegistrationToken extends Model
     /**
      * @param $email
      *
-     * @return \App\RegistrationToken|Models\User
+     * @return RegistrationToken|User
      */
     public static function makeToken($email)
     {
-        return static::createFor(Models\User::findByEmail($email));
+        return static::createFor(User::findByEmail($email));
     }
 
     /**
      * Updates a token for a given user
      *
-     * @param Models\User $user
+     * @param User $user
      *
-     * @return \App\RegistrationToken|null|static
+     * @return RegistrationToken|null|static
      */
-    public static function updateFor(Models\User $user)
+    public static function updateFor(User $user)
     {
-        $user_token = static::whereRaw(Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', $user->getUuid()))->first();
+        $user_token = static::whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', $user->getUuid()))->first();
         $user_token->token = ActivatesUsers::generateToken();
         $user_token->save();
 

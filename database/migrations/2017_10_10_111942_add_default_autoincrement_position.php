@@ -13,6 +13,7 @@ class AddDefaultAutoincrementPosition extends Migration
      */
     public function up()
     {   
+        /*
        //add binary value to ID, not NULL AUTO_INCREMENT
        DB::statement('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NOT NULL;');
        
@@ -32,6 +33,8 @@ class AddDefaultAutoincrementPosition extends Migration
                 END IF;
             END$$
             DELIMITER ;');
+         * 
+         */
     }
 
     /**
@@ -41,6 +44,7 @@ class AddDefaultAutoincrementPosition extends Migration
      */
     public function down()
     {
+        
         //removes new null contrain
         DB::statement('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NULL;');
         //Drops the trigger
