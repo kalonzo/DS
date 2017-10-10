@@ -161,11 +161,12 @@ if(!isset($browseLabel)){
                 })
                 .on('filesorted', function(event, params) {
                 // Drag and Drop Ajax ordering
-                $tablename = 'estMedia';
+                $tablename = 'establishment_medias';
                 /*To be used if we dynamically pull table name
                  * if(!empty($tablename){
                  * 
                  * }
+                 * 
                  */
                 
                 //console.log('File sorted ', params.previewId, params.oldIndex, params.newIndex, params.stack);

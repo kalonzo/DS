@@ -20,13 +20,17 @@ class ajaxChangeOrder extends Controller
         var_dump($input);
         //get the Table
         $table = $input['Table'];
+        //sanitize table input
+        $table = htmlspecialchars($table);
+        //remove backslashs
+        $table = str_replace('\\', '', $table);
         
         //remove table to only getkeys
         unset($input['Table']);
         
         switch ($table) {
             //estMedia Targets establishment_medias table
-            case 'estMedia':
+            case 'establishment_medias':
                 for($i = 0; $i < count($input);$i++){
                     //sanitize and check inputs hex strings
                     $input[$i] = htmlspecialchars($input[$i]);
@@ -37,7 +41,7 @@ class ajaxChangeOrder extends Controller
                     //SQL statement, position is set as clean statement, reason is '' needs to be on HEX
                     //so unhex function can work properly to convert to binary, throws off prep statement
                     if(strlen($input[$i]) == 32){
-                        DB::statement("update establishment_medias set position =:position  where id = unhex('$input[$i]')", array('position' => $i));
+                        DB::statement("update $table set position =:position  where id = unhex('$input[$i]')", array('position' => $i));
                     }
                 }
                 
