@@ -67,7 +67,7 @@
                                     'name' => 'gallery['.$gallery->getUuid().']',
                                     'class' => 'form-control',
                                     'multiple' => true,
-                                    'medias' => $gallery->medias()->orderBy('created_at')->get(),
+                                    'medias' => $gallery->medias()->orderBy('position')->get(),
                                     'fileType' => 'image',
                                     'showRemove' => 'false',
                                     'directUpload' => 'true',

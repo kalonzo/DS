@@ -1,5 +1,10 @@
+<!--Change here for changing the load delay variable for animation-->
+@php
+$loadDelay = 0.7
+@endphp
+
 <!------------- RESTAURANT DETAILS ------------------------------------>
-<?php
+    <?php
 $video = null;
 $videoQuery = $establishment->video()->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
 if($videoQuery->exists()){
@@ -12,20 +17,20 @@ if($videoQuery->exists()){
     <div class="section-bg"></div>
     <div class="container">
         <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
-            <h1>Qui <strong>sommes-nous</strong></h1>
+            <h1 class="wow fadeInRight" data-wow-delay="{{$loadDelay}}s">Qui <strong>sommes-nous</strong></h1>
             <?php
             if(checkModel($video)){
                 $localPath = $video->getLocalPath();
                 $mineType = $video->getMimeType();
                 ?>
-                <video width="100%" controls controlsList="nodownload">
+                <video class="wow fadeInRight" data-wow-delay="{{$loadDelay}}s" width="100%" controls controlsList="nodownload" >
                     <source src="{{ asset($localPath) }}" type="{{ $mineType }}">
                     @lang("Votre navigateur ne supporte pas l'affichage de vidéo au standard HTML5.")
                 </video>
                 <?php
             }
             ?>
-            <p class="description">
+            <p class="description wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">
                 {{ $establishment->getDescription() }}
             </p>
             <!--
@@ -33,7 +38,7 @@ if($videoQuery->exists()){
             -->
             <div class="row">
                 @if(isset($data['services']) && !empty($data['services']))
-                <div class="col-sm-6">
+                <div class="col-sm-6 wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">
                     <h2>Services</h2>
                     @foreach($data['services'] as $service)
                     <ul class="category-list">
@@ -43,7 +48,7 @@ if($videoQuery->exists()){
                 </div>
                 @endif
                 @if(isset($data['ambiences']) && !empty($data['ambiences']))
-                <div class="col-sm-6">
+                <div class="col-sm-6 wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
                     <h2>Cadre & ambiance</h2>
                     @foreach($data['ambiences'] as $ambience)
                     <ul class="category-list">
@@ -62,10 +67,10 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-events">
     <div class="section-bg"></div>
     <div class="container">
-        <h1>Nos <strong>événements</strong> et <strong>promotions</strong></h1>
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">Nos <strong>événements</strong> et <strong>promotions</strong></h1>
         <br/><br/>
         <div class="row">
-            <div class="col-sm-4_5">
+            <div class="col-sm-4_5 wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">
                 <?php
                 $dates = array();
                 foreach($data['promotions'] as $promo){
@@ -179,7 +184,7 @@ if($videoQuery->exists()){
                     });
                 </script>
             </div>
-            <div class="col-sm-7 col-sm-offset-0_5" id="event-items-list">
+            <div class="col-sm-7 col-sm-offset-0_5 wow fadeInRight" data-wow-delay="{{$loadDelay}}s" id="event-items-list">
                 <?php
                 $minTimestp = null;
                 if(isset($data['promotions'][0])){
@@ -238,15 +243,15 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-staff">
     <div class="section-bg"></div>
     <div class="container">
-        <h1>Notre <strong>équipe</strong></h1>
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">Notre <strong>équipe</strong></h1>
         <div class="row">
             @foreach($data['staff'] as $staff)
             <div class="col-xs-6 col-sm-4 thumbnail-item">
-                <img src="{{ $staff['picture'] }}" alt="{{ $staff['name'] }} picture"/>
-                <div class="thumbnail-name">
+                <img class="wow fadeInRight" data-wow-delay="{{$loadDelay}}s" src="{{ $staff['picture'] }}" alt="{{ $staff['name'] }} picture"/>
+                <div class="thumbnail-name wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
                     {{ $staff['name'] }}
                 </div>
-                <div class="thumbnail-description">
+                <div class="thumbnail-description wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
                     {{ $staff['position'] }}
                 </div>
             </div>                    
@@ -260,8 +265,8 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-story">
     <div class="section-bg"></div>
     <div class="container">
-        <h1><strong>Notre</strong> histoire</h1>
-        <div class="row">
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s"><strong>Notre</strong> histoire</h1>
+        <div class="row wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
             @component('components.timeline', ['items' => $data['story'] ])
                 @foreach($data['story'] as $story)
                     @slot("content_".$story['id'])
@@ -291,8 +296,8 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-timetable">
     <div class="section-bg"></div>
     <div class="container">
-        <h1 class="wow fadeInLeft" data-wow-delay="0.8s"><strong>Horaires</strong> d'ouverture</h1>
-        <div class="row wow fadeInRight" data-wow-delay="0.8s">
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}ss"><strong>Horaires</strong> d'ouverture</h1>
+        <div class="row wow fadeInRight" data-wow-delay="{{$loadDelay}}ss">
             <div class="col-xs-5_5 col-sm-2_5">
                 &nbsp;
             </div> 
@@ -303,7 +308,7 @@ if($videoQuery->exists()){
                 Diner
             </div>    
         </div>
-        <div class="row timetable-show wow fadeInLeft" data-wow-delay="0.8s">
+        <div class="row timetable-show wow fadeInLeft" data-wow-delay="{{$loadDelay}}ss">
             @foreach($data['timetable'] as $dayLabel => $timeslot)
             <div class="row timetable-row">
                 <div class="col-xs-5_5 col-sm-2_5 timetable-day">
@@ -332,7 +337,7 @@ if($videoQuery->exists()){
         </div>
         @if(checkFlow($data, ['close_periods']))
         <br class="cleaner"/><br/>
-        <div class="row close-show wow fadeInRight" data-wow-delay="0.8s">
+        <div class="row close-show wow fadeInRight" data-wow-delay="{{$loadDelay}}ss">
             <div class="col-xs-5_5 col-sm-2_5 text-right">
                 <h2>Fermeture exceptionnelle</h2>
             </div>   

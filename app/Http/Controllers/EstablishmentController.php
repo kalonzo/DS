@@ -24,6 +24,7 @@ use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 use View;
 
 class EstablishmentController extends Controller {
@@ -1073,6 +1074,7 @@ class EstablishmentController extends Controller {
         $response = response();
         $jsonResponse = array('success' => 0);
         $createdObjects = array();
+        $jsonResponse['inputData']['previewRequest'] = $request->get('id_gallery');
         try {
             $action = $request->get('action');
             switch ($action){
@@ -1110,8 +1112,10 @@ class EstablishmentController extends Controller {
                         }
                     }
                     break;
+                //Adds media to gallery, called by ajax form request on admin page
                 case 'add_media_to_gallery':
                     $filesToUpload = $request->allFiles();
+                    $keyID = $request->get("key");
                     if(isset($filesToUpload['gallery']) && !empty($filesToUpload['gallery'])){
                         foreach($filesToUpload['gallery'] as $uuidGallery => $uploadedFiles){
                             $gallery = \App\Models\Gallery::findUuid($uuidGallery);
