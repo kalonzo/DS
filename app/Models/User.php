@@ -47,10 +47,19 @@ class User extends Authenticatable implements GlobalObjectManageable{
         'longitude',
         'latitude',
         'id_photo',
-        'id_company'
+        'id_company',
     ];
     protected $guarded = [];
 
+    /**
+     * Aditional attributes not persisted on the table
+     *
+     * @var array
+     */
+    protected $appends = [
+        'verified'
+    ];
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -104,6 +113,44 @@ class User extends Authenticatable implements GlobalObjectManageable{
         return $this->hasMany(CallNumber::class, 'id_object_related', 'id');
     }
     
+    /**
+     * Relationship
+     *
+     * Function name should be 'tokens', but 'codes' was kept
+     * to reuse some code I already had.
+     * You are welcome to refactor.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function codes() {
+        return $this->hasMany(\App\RegistrationToken::class)->orderBy('created_at', 'DESC');
+    }
+
+    /**
+     * @param $email
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null|static|User
+     */
+    public static function findByEmail($email) {
+        return static::whereEmail($email)->first();
+    }
+
+    /**
+     * @param $email
+     *
+     * @return \App\RegistrationToken[]|\Illuminate\Database\Eloquent\Collection|mixed
+     */
+    public static function getTokens($email) {
+        return static::findByEmail($email)->codes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getVerifiedAttribute() {
+        return (bool) !$this->codes->count();
+    }
+
     /**
      * @return mixed
      */

@@ -216,3 +216,11 @@ function getCurrentEstablishment(){
     }
     return $currentEstablishment;
 }
+
+function envDev(){
+    $envDev = false;
+    if(env('APP_ENV') === 'dev' || env('APP_ENV') === 'local'){
+        $envDev = true;
+    }
+    return $envDev;
+}

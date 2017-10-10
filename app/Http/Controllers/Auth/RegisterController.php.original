@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\RegistrationToken;
+use App\User as User2;
 use App\Utilities\UuidTools;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -36,7 +37,7 @@ use ActivatesUsers,
     /** @var Request */
     protected $request;
 
-    /** @var User */
+    /** @var User2 */
     protected $user;
 
     /** @var string */
@@ -48,10 +49,6 @@ use ActivatesUsers,
      * @var array
      */
     protected $status = [];
-    
-    protected $error = null;
-    
-    const ERROR_USER_CREATION = 1;
 
     /**
      * Create a new controller instance.
@@ -62,19 +59,6 @@ use ActivatesUsers,
         $this->request = $request;
 
         $this->middleware(['guest']);
-    }
-    
-    public function getErrorMessage(){
-        $errorMessage = '';
-        switch($this->getError()){
-            case self::ERROR_USER_CREATION:
-                $errorMessage = "";
-                break;
-            default :
-                $errorMessage = $this->getError();
-                break;
-        }
-        return $errorMessage;
     }
 
     public function showRegistrationForm(Request $request) {
@@ -159,8 +143,7 @@ use ActivatesUsers,
     }
 
     protected function redirectTo() {
-        $redirectTo = "/";
-//        $redirectTo = "/register_done";
+        $redirectTo = "/register_done";
 //        $user = \Illuminate\Support\Facades\Auth::user();
 //        
 //        switch($user->getType()){
@@ -174,15 +157,28 @@ use ActivatesUsers,
     }
 
     public function register(Request $request) {
-        try{
-            $this->validator($this->request->input())->validate();
+        $this->validator($this->request->input())->validate();
+//        $this->registerValidator($this->request->input())->validate();
 
-            $this->storeUser();
+        $this->storeUser();
 
-            return $this->sendRegisterResponse();
-        } catch(\Exception $e){
-            return $this->sendRegisterFailedResponse();
-        }
+        return $this->sendRegisterResponse();
+        /*
+          $this->validator($request->all())->validate();
+
+          event(new Registered($user = $this->create($request->all())));
+
+          if ($request->ajax()) {
+          return response()->json([
+          'success' => 1,
+          'relocateMode' => 1,
+          'location' => $this->redirectPath()
+          ], 200);
+          } else {
+          return $this->registered($request, $user)
+          ?: redirect($this->redirectPath());
+          }
+         */
     }
 
     /**
@@ -324,8 +320,8 @@ use ActivatesUsers,
      *
      * @return $this
      */
-    protected function destroyToken($userId) {
-        RegistrationToken::deleteCode($userId);
+    protected function destroyToken($user) {
+        RegistrationToken::deleteCode($user);
 
         return $this;
     }
@@ -395,67 +391,42 @@ use ActivatesUsers,
                         'success' => 1,
                         'relocateMode' => 1,
                         'location' => $this->redirectPath()
-                            ], 200);
-        } else {
-            return redirect($this->redirectPath())
-                            ->with('status', $this->status);
+                            ], $this->status['http_code']);
         }
-    }
-    
-    /**
-     * @return JsonResponse|RedirectResponse
-     */
-    protected function sendRegisterFailedResponse() {
-        if ($this->request->expectsJson()) {
-            return response()->json([
-                        'error' => $this->getErrorMessage()
-                            ], 401);
-        } else {
-            return redirect($this->redirectPath())
-                            ->with('status', $this->status);
-        }
+
+        return redirect($this->redirectPath())
+                        ->with('status', $this->status);
     }
 
     /**
      * Create a new user instance after a valid registration.
      *
-     * @return static|User
+     * @return static|User2
      */
     protected function storeUser() {
-        try{
-            $data = $this->request->input();
+        $data = $this->request->input();
 
-            $status = User::STATUS_CREATED;
-            $this->user = User::create([
-                        'id' => UuidTools::generateUuid(),
-                        'status' => $status,
-                        'name' => $data['email'],
-                        'firstname' => $data['firstname'],
-                        'lastname' => $data['lastname'],
-                        'email' => $data['email'],
-                        'password' => bcrypt($data['password']),
-                        'type' => $data['type_user'],
-                        'gender' => 0,
-                        'id_address' => 0,
-                        'id_inbox' => 0,
-                        'id_company' => 0,
-            ]);
-            $this->registered();
-        } catch(\Exception $e){
-            $this->setError($e->getMessage());
-            if(checkModel($this->user)){
-                $this->user->delete();
-            }
-            throw $e;
-        }
-    }
-
-    function getError() {
-        return $this->error;
-    }
-
-    function setError($error) {
-        $this->error = $error;
+//        $this->user = User::create([
+//            'name' => $data['name'],
+//            'email' => $data['email'],
+//            'password' => bcrypt($data['password']),
+//        ]);
+        $status = User::STATUS_CREATED;
+        $this->user = User::create([
+                    'id' => UuidTools::generateUuid(),
+                    'status' => $status,
+                    'name' => $data['email'],
+                    'firstname' => $data['firstname'],
+                    'lastname' => $data['lastname'],
+                    'email' => $data['email'],
+                    'password' => bcrypt($data['password']),
+                    'type' => $data['type_user'],
+                    'gender' => 0,
+                    'id_address' => 0,
+                    'id_inbox' => 0,
+                    'id_company' => 0,
+        ]);
+        $this->registered();
     }
 
 }

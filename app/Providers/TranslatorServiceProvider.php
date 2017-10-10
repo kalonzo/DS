@@ -7,6 +7,7 @@ class TranslatorServiceProvider extends TranslationServiceProvider
 {
     public function boot()
     {
+        $this->registerLoader();
         $this->app->singleton('translator', function($app)
         {
             $loader = $app['translation.loader'];
