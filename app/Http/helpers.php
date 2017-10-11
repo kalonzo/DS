@@ -175,23 +175,23 @@ function formatPrice($price, $currency = null, $formatConst = null, $locale = nu
         $locale = Illuminate\Support\Facades\App::getLocale();
     }
     if(empty($formatConst)){
-        $formatConst = NumberFormatter::CURRENCY;
+        $formatConst = \NumberFormatter::CURRENCY;
     }
     if(!empty($currency)){
-        $kernelDSPriceFormatter = new NumberFormatter($locale, $formatConst);
+        $kernelDSPriceFormatter = new \NumberFormatter($locale, $formatConst);
         $formattedPrice = $kernelDSPriceFormatter->formatCurrency($price, $currency);
     } else {
-        $kernelDSPriceFormatter = new NumberFormatter($locale, NumberFormatter::SCIENTIFIC);
+        $kernelDSPriceFormatter = new \NumberFormatter($locale, \NumberFormatter::SCIENTIFIC);
         $formattedPrice = $kernelDSPriceFormatter->format($price);
     }
     return $formattedPrice;
 }
 
-function formatDate($datetime, $dateFormat = IntlDateFormatter::GREGORIAN, $timeFormat = IntlDateFormatter::NONE){
+function formatDate($datetime, $dateFormat = \IntlDateFormatter::GREGORIAN, $timeFormat = \IntlDateFormatter::NONE){
     if(is_string($datetime)){
         $datetime = new DateTime($datetime);
     }
-    $intlDateFormatter = new IntlDateFormatter(\Illuminate\Support\Facades\App::getLocale(), $dateFormat, $timeFormat);
+    $intlDateFormatter = new \IntlDateFormatter(\Illuminate\Support\Facades\App::getLocale(), $dateFormat, $timeFormat);
     return $intlDateFormatter->format($datetime);
 }
 
