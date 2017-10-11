@@ -16,6 +16,7 @@ body{
     &[data-footer=hidden]{
         margin-bottom: 0px;
     }
+    overflow-x: hidden;
 }
 
 a.disabled{

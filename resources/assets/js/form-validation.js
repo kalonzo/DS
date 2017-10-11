@@ -28,9 +28,11 @@ $('body').on('click', '.form-data-button', function () {
                 $(form).find('.has-error [data-toggle=tooltip]').tooltip('destroy');
                 $(form).find('.has-error').removeClass('has-error');
                 var first = true;
+                var scrollRefIsBody = false;
                 var $scrollRefElement = $(form).parentsInclude('.ref-scroller');
                 if (!checkExist($scrollRefElement)) {
                     $scrollRefElement = $('body');
+                    scrollRefIsBody = true;
                 }
                 $.each(errors, function (key, value) {
                     var inputName = key;
@@ -43,11 +45,11 @@ $('body').on('click', '.form-data-button', function () {
                     }
                     var $input = $(form).find('[name="' + inputName + '"]:not([type=hidden])').first();
                     var $positionElementRef = $input;
-                    var $inputContainer = null;
-                    var inputHidden = $input.css('display') == 'none';
+                    var inputHidden = $input.css('display') == 'none' || $input.attr('type') == 'hidden';
                     if(inputHidden){
-                        $inputContainer = $input.parentsInclude(':visible');
-                        $positionElementRef = $inputContainer;
+                        while($positionElementRef === null || $positionElementRef.css('display') == 'none' || $positionElementRef.attr('type') == 'hidden'){
+                            $positionElementRef = $positionElementRef.parent();
+                        }
                     }
                     if (checkExist($input)) {
                         if (first) {
@@ -58,12 +60,19 @@ $('body').on('click', '.form-data-button', function () {
                                 if(checkExist($accordionPanel)){
                                     $accordionPanel.collapse('show');
                                 }
-                                var inputTopPosition = $positionElementRef.offset().top;
+                                var inputTopOffset = $positionElementRef.offset().top;
+                                var inputTopPosition = $positionElementRef.position().top;
                                 var inputHeight = $positionElementRef.outerHeight();
-                                var refScrollTopPosition = $scrollRefElement.offset().top;
-                                var refScrollHeight = $scrollRefElement.height();
-                                
-                                var targetTopPosition = refScrollTopPosition - inputTopPosition + refScrollHeight - (inputHeight + 50);
+                                var refScrollTopPosition = $scrollRefElement.position().top;
+//                                var refScrollClientHeight = $scrollRefElement.get(0).clientHeight;
+//                                var refScrollHeight = $scrollRefElement.height();
+                                var refScrollScrolled = 0;
+                                if(!scrollRefIsBody){
+                                    refScrollScrolled = $scrollRefElement.scrollTop();
+                                    var targetTopPosition = (refScrollScrolled - inputTopPosition - refScrollTopPosition) - (inputHeight);
+                                } else {
+                                    var targetTopPosition = (inputTopOffset - refScrollTopPosition) - (inputHeight + 100);
+                                }
                                 $($scrollRefElement).animate({
                                     scrollTop: targetTopPosition
                                 }, 500);
@@ -75,7 +84,7 @@ $('body').on('click', '.form-data-button', function () {
                         if(typeof value === 'object'){
                             tooltipTitle = value.join(', ');
                         }
-                        var tooltip = $positionElementRef.tooltip({
+                        $positionElementRef.tooltip({
                             title: tooltipTitle,
                             trigger: 'manual',
                             template: '<div class="tooltip form-error-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
