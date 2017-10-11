@@ -34,7 +34,7 @@
     
     <div class="col-xs-12 checkbox newsletter-subscription">
         <label>
-            {!! Form::checkbox('subscribe_emailing', 1, false) !!}
+            {!! Form::checkbox('subscribe_emailing', 1, true) !!}
             Recevoir la newsletter et les promotions
         </label>
     </div>

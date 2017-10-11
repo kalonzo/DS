@@ -180,7 +180,8 @@ return [
         Propaganistas\LaravelPhone\PhoneServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\TranslationManager\ManagerServiceProvider::class,
-
+        Kitano\Aktiv8me\Aktiv8meServiceProvider::class,
+        
         /*
          * Application Service Providers...
          */

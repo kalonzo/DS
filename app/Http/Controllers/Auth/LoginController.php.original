@@ -23,13 +23,8 @@ class LoginController extends Controller {
       | to conveniently provide its functionality to your applications.
       |
      */
-    
-    const ERROR_USER_NOT_ACTIVE = 1;
-    const ERROR_BAD_CREDENTIALS = 2;
 
     use AuthenticatesUsers;
-    
-    protected $loginError = null;
 
     /**
      * Create a new controller instance.
@@ -40,24 +35,12 @@ class LoginController extends Controller {
         $this->middleware('guest')->except('logout');
     }
 
-    public function showResetPasswordForm(Request $request) {
-        if ($request->ajax()) {
-            $response = response();
-            $jsonResponse = array('success' => 0);
-
-            $typeUser = $request->get('type_user');
-
-            //TODO Check if current user has right to invoke this view
-            $view = View::make('auth.passwords.reset');
-            $jsonResponse['content'] = $view->render();
-            $jsonResponse['success'] = 1;
-
-            $responsePrepared = $response->json($jsonResponse);
-            return $responsePrepared;
-        } else {
-            return view('front.home');
-        }
-    }
+//    public function authenticate(){
+//        if (Auth::attempt(['email' => $email, 'password' => $password])) {
+//            // Authentication passed...
+//            return redirect()->intended('dashboard');
+//        }
+//    }
 
     protected function redirectTo() {
         $redirectTo = "/";
@@ -72,16 +55,6 @@ class LoginController extends Controller {
 
         return $redirectTo;
     }
-    
-    public function getErrorMessage(){
-        $errorMessage = Lang::get('auth.failed');
-        switch($this->getLoginError()){
-            case self::ERROR_USER_NOT_ACTIVE:
-                $errorMessage = "Ce compte utilisateur n'a pas été activé. Pour procéder à son activation, veuillez <a href='/aktiv8me/resend'>cliquer ici</a>.";
-                break;
-        }
-        return $errorMessage;
-    }
 
     protected function sendLoginResponse(Request $request) {
         $request->session()->regenerate();
@@ -95,14 +68,14 @@ class LoginController extends Controller {
     protected function sendFailedLoginResponse(Request $request) {
         if ($request->ajax()) {
             return response()->json([
-                        'error' => $this->getErrorMessage()
+                        'error' => Lang::get('auth.failed')
                             ], 401);
         }
         return redirect()->back()
                         ->withInput($request->only($this->username(), 'remember'))
                         ->withErrors([
-                            $this->username() => $this->getErrorMessage(),
-                        ]);
+                            $this->username() => Lang::get('auth.failed'),
+        ]);
     }
 
     /**
@@ -123,16 +96,13 @@ class LoginController extends Controller {
             $user = Auth::user();
 
             if ($user->active) {
-                return $this->sendLoginResponse($request);
-//                return response()->json(['user' => $user]);
+                return response()->json(['user' => $user]);
             } else {
-                $this->setLoginError(self::ERROR_USER_NOT_ACTIVE);
+                return response()->redirectTo($this->redirectPath());
             }
 
             $this->guard()->logout();
             $request->session()->invalidate();
-        } else {
-            $this->setLoginError(self::ERROR_BAD_CREDENTIALS);
         }
 
         $this->incrementLoginAttempts($request);
@@ -161,14 +131,5 @@ class LoginController extends Controller {
             'type' => 'success',
         ]);
     }
-
-    function getLoginError() {
-        return $this->loginError;
-    }
-
-    function setLoginError($loginError) {
-        $this->loginError = $loginError;
-    }
-
 
 }

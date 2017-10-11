@@ -12,10 +12,11 @@ class Translator extends \Illuminate\Translation\Translator {
      * @return string
      */
     protected function makeReplacements($line, array $replace) {
-        if (!empty($replace)) {
-            // TODO for detect untranslated string
-            echo $replace;
-        }
+        
+        // TODO for detect untranslated string
+//        if (!empty($replace)) {
+//            echo $replace;
+//        }
         return parent::makeReplacements($line, $replace);
     }
 

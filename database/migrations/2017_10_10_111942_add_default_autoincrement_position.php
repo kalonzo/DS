@@ -13,6 +13,7 @@ class AddDefaultAutoincrementPosition extends Migration
      */
     public function up()
     {   
+    /*
        DB::unprepared('
            USE `dinerscope`;
            UPDATE `establishment_medias` SET position = 0 WHERE position IS NULL;
@@ -37,6 +38,8 @@ class AddDefaultAutoincrementPosition extends Migration
                 END IF;
             END$$
             DELIMITER ;');
+    */
+        
     }
 
     /**
@@ -46,6 +49,7 @@ class AddDefaultAutoincrementPosition extends Migration
      */
     public function down()
     {
+        
         //removes new null contrain
         DB::unprepared('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NULL;');
         //Drops the trigger

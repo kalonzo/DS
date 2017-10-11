@@ -59,6 +59,10 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'admin@dinerscope.com'),
         'name' => env('MAIL_FROM_NAME', 'Dinerscope'),
     ],
+    'to' => [
+        'address' => 'nico.trendonline@gmail.com',
+        'name' => 'Nico'
+    ],
 
     /*
     |--------------------------------------------------------------------------

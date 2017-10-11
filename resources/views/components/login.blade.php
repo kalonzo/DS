@@ -13,7 +13,8 @@
                 <br class="cleaner"/>
                 <div class="input-group col-xs-12">
                     <input id="password" type="password" class="form-control" name="password" required placeholder="Mot de passe">
-                    <a class="login-forgot-password" href="{{ route('password.request') }}">
+                    <a class="login-forgot-password" href="javascript:void(0);" onclick="getOnClickModal('Réinitialisation de votre mot de passe', '/password/reset', 
+                                null, 'auth-modal', 'modal-md')">
                         Mot de passe oublié ?
                     </a> 
                 </div>
@@ -33,6 +34,7 @@
             </div>
         </form>
     </div>
+    @if(envDev())
     <div class="row login-register-section">
         <div class="col-xs-12 text-center">
             <h3>Pas encore inscrit ?</h3>
@@ -55,6 +57,7 @@
         </div>
         <br class="cleaner"/>
     </div>
+    @endif
     @else
     <ul class="logout-section">
         <li>
