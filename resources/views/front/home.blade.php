@@ -17,7 +17,9 @@
             <a class="item @if( $loop->iteration == 1) active @endif" style="background-image: url('{{ $establishment->getDefaultBanner() }}');"
                href="{{ $establishment->getUrl() }}"> 
                 <div class="carousel-caption d-none d-md-block">
-                    <img src="{{ $establishment->getDefaultPicture() }}" alt="Logo {{ $establishment->getName() }}"/>
+                    <div class="carousel-caption-picture" style="background-image: url('{{ $establishment->getDefaultPicture() }}');">
+                        <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                    </div>
                     <h3>{{ $establishment->getName() }} | </h3>
                     <p>{{ $establishment->cooking_type }}</p>
                 </div>

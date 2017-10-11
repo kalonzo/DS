@@ -42,6 +42,13 @@ $('body').on('click', '.form-data-button', function () {
                         }
                     }
                     var $input = $(form).find('[name="' + inputName + '"]:not([type=hidden])').first();
+                    var $positionElementRef = $input;
+                    var $inputContainer = null;
+                    var inputHidden = $input.css('display') == 'none';
+                    if(inputHidden){
+                        $inputContainer = $input.parentsInclude(':visible');
+                        $positionElementRef = $inputContainer;
+                    }
                     if (checkExist($input)) {
                         if (first) {
                             first = false;
@@ -51,9 +58,8 @@ $('body').on('click', '.form-data-button', function () {
                                 if(checkExist($accordionPanel)){
                                     $accordionPanel.collapse('show');
                                 }
-                                console.log($input);
-                                var inputTopPosition = $input.offset().top;
-                                var inputHeight = $input.outerHeight();
+                                var inputTopPosition = $positionElementRef.offset().top;
+                                var inputHeight = $positionElementRef.outerHeight();
                                 var refScrollTopPosition = $scrollRefElement.offset().top;
                                 var refScrollHeight = $scrollRefElement.height();
                                 
@@ -65,13 +71,17 @@ $('body').on('click', '.form-data-button', function () {
                         }
                         var $formGroup = $input.parentsInclude('.form-group');
                         $formGroup.addClass('has-error');
-                        $input.tooltip({
-                            title: value.join(', '),
+                        var tooltipTitle = value;
+                        if(typeof value === 'object'){
+                            tooltipTitle = value.join(', ');
+                        }
+                        var tooltip = $positionElementRef.tooltip({
+                            title: tooltipTitle,
                             trigger: 'manual',
                             template: '<div class="tooltip form-error-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
                         }).tooltip('show');
                         $input.change(function () {
-                            $(this).tooltip('destroy');
+                            $positionElementRef.tooltip('destroy');
                             $formGroup.removeClass('has-error');
                         });
                     }
