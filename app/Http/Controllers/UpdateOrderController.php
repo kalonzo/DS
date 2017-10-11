@@ -1,23 +1,22 @@
 <?php
 
+
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use App\Models\Media;
 use Illuminate\Support\Facades\DB;
 
-
-class ajaxChangeOrder extends Controller
-{   
+class UpdateOrderController extends Controller
+{
     //the request should be in format {Table: "table_name", 0: "uuid"...n:"uuid"}
     //will update the items in table position based upon uuid of items
-    public function ajaxChangeOrder(Request $request) {
+    public function ChangeOrder(Request $request) {
         
-        //treat request
-        //$updated = new Media; 
+
         $input = $request -> all();
         //return this to dump to the ajax for checking purposes 
-        var_dump($input);
+        
         //get the Table
         $table = $input['Table'];
         //sanitize table input
@@ -27,9 +26,11 @@ class ajaxChangeOrder extends Controller
         
         //remove table to only getkeys
         unset($input['Table']);
+        var_dump($input);
+        var_dump($table);
         
         switch ($table) {
-            //estMedia Targets establishment_medias table
+            //Targets establishment_medias table
             case 'establishment_medias':
                 for($i = 0; $i < count($input);$i++){
                     //sanitize and check inputs hex strings

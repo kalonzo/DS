@@ -160,31 +160,18 @@ if(!isset($browseLabel)){
                     }
                 })
                 .on('filesorted', function(event, params) {
-                // Drag and Drop Ajax ordering
-                $tablename = 'establishment_medias';
-                /*To be used if we dynamically pull table name
-                 * if(!empty($tablename){
-                 * 
-                 * }
-                 * 
-                 */
-                
-                //console.log('File sorted ', params.previewId, params.oldIndex, params.newIndex, params.stack);
-                //Parse stack to get keys in order to send to controller first test as GET easier for testing then change to POST
+                    // Drag and Drop Ajax ordering JS store in DB
+                    $tablename = 'establishment_medias';
+                    
                     var key = {};
                     for (var i = 0; i < params.stack.length; i++) {
                         key[i] = params.stack[i].key
                     }
-                    //add a table name, to the array key "Table", we will use this to switch
-                    //to different tables that we update with media file types
+                    
                     key["Table"] = $tablename;
-                    //console.log(key)
+                    
                     //the request should be in format {Table: "table_name", 0: "uuid"...n:"uuid"}
-                    //will update the items in table position based upon uuid of items
-                    //post to: /edit/establishment/ajaxUpdateOrder with controller ajaxChangeOrder
-                    $.post("/edit/ajaxUpdateOrder",key,function( data ) {
-                        //we do not need a return as the items are already updated on page
-                        //so we don't need to pull from DB again
+                    $.post("/edit/UpdateOrder",key,function( data ) {
                         console.log( "Data Loaded: " + data );
                     });
                     
