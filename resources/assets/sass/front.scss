@@ -680,22 +680,39 @@ select:not(.select2){
                 bottom: 60px;
                 padding: 0px;
                 text-align: left;
+                display: flex;
+                .carousel-caption-picture{
+                    display: inline-block;
+                    height: 100%;
+                    margin-right: 1em;
+                    background-size: contain;
+                    background-repeat: no-repeat;
+                    background-position-x: center;
+                    background-position-y: center;
+                    vertical-align: top;
+                    .square-pattern{
+                        height: 100%;
+                        @include opacity(0);
+                    }
+                }
                 h3, p{
                     margin: 0px;
                     display: inline-block;
                     line-height: 80px;
-                }
-                img{
-                    height: 100%;
-                    margin-right: 1em;
-                    vertical-align: top;
+                    overflow: hidden;
                 }
                 h3{
                     font-size: 3.5em; 
                     font-weight: bold;
+                    flex-shrink: 10;
                 }
                 p{
                     font-size: 1.5em; 
+                    padding-right: 1em;
+                    padding-left: 0.5em;
+                    flex-grow: 4;
+                    align-self: flex-end;
+                    line-height: 3.2em;
                 }
             }
         }

@@ -122,9 +122,8 @@ class LoginController extends Controller {
         if ($this->attemptLogin($request)) {
             $user = Auth::user();
 
-            if ($user->active) {
+            if ($user->verified) {
                 return $this->sendLoginResponse($request);
-//                return response()->json(['user' => $user]);
             } else {
                 $this->setLoginError(self::ERROR_USER_NOT_ACTIVE);
             }
