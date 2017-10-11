@@ -213,6 +213,6 @@ if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN) && !empty(Illuminate\Su
 
 @section('js_imports_footer')
 <script src="/js/google-map.js"></script>
-<script src="/js/consoleJqueryDevTest.js"></script>
+<script src="/js/prePaymentCheck.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKK5Lh46iA_fwTsblMioJyfU04-K8JUCo&callback=initGoogleAPI&libraries=places" type="text/javascript"></script>
 @endsection
