@@ -90,7 +90,7 @@ class RegistrationToken extends Model
      */
     public static function findCodes($userId)
     {
-        return static::whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', $uid))->get();
+        return static::whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('user_id', $userId))->get();
     }
 
     /**
