@@ -1,6 +1,6 @@
 <!--Change here for changing the load delay variable for animation-->
 @php
-$loadDelay = 0.7
+$loadDelay = 0.6
 @endphp
 
 <!------------- RESTAURANT DETAILS ------------------------------------>

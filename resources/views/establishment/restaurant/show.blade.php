@@ -2,7 +2,7 @@
 
 <!--Change here for changing the load delay variable for animation-->
 @php
-$loadDelay = 0.7
+$loadDelay = 0.6
 @endphp
 
 <!--Git push again-->
@@ -165,7 +165,6 @@ $loadDelay = 0.7
 <script src="/libraries/baguettebox/baguetteBox.min.js"></script>
 <script src="/js/search.js"></script>
 <script src="/js/bookmarkslider.js"></script>
-<!--<script src="/js/etsscrollanimations.js"></script>-->
 <script src="/libraries/wow/wow.js"></script>
 <script>
 new WOW().init();
