@@ -20,7 +20,7 @@ class CurrencyTools {
     
     public static function getIdCurrencyFromLocale(){
         $currency = self::DEFAULT_CURRENCY;
-        $locale = App::getLocale();
+        $locale = \App\Http\Controllers\GeolocationController::getLocaleCountry();
         if(isset(self::$currencyByCountry[$locale])){
             $currency = self::$currencyByCountry[$locale];
         }
@@ -29,7 +29,7 @@ class CurrencyTools {
     
     public static function getSymbolFromCurrency($currencyIso, $locale = null){
         if(empty($locale)){
-            $locale = Illuminate\Support\Facades\App::getLocale();
+            $locale = \App\Http\Controllers\GeolocationController::getLocaleCountry();
         }
         $fmt = new NumberFormatter( $locale."@currency=$currencyIso", NumberFormatter::CURRENCY);
         $symbol = $fmt->getSymbol(NumberFormatter::CURRENCY_SYMBOL);

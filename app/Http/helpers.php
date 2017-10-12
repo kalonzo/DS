@@ -172,7 +172,7 @@ function getMediaUrlForInputFile($medias, $jsonEncoded = true){
 function formatPrice($price, $currency = null, $formatConst = null, $locale = null){
     $formattedPrice = $price;
     if(empty($locale)){
-        $locale = Illuminate\Support\Facades\App::getLocale();
+        $locale = \App\Http\Controllers\GeolocationController::getLocaleCountry();
     }
     if(empty($formatConst)){
         $formatConst = \NumberFormatter::CURRENCY;
@@ -191,7 +191,7 @@ function formatDate($datetime, $dateFormat = \IntlDateFormatter::GREGORIAN, $tim
     if(is_string($datetime)){
         $datetime = new DateTime($datetime);
     }
-    $intlDateFormatter = new \IntlDateFormatter(\Illuminate\Support\Facades\App::getLocale(), $dateFormat, $timeFormat);
+    $intlDateFormatter = new \IntlDateFormatter(\App\Http\Controllers\GeolocationController::getLocaleCountry(), $dateFormat, $timeFormat);
     return $intlDateFormatter->format($datetime);
 }
 

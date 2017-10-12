@@ -34,7 +34,8 @@ class CallNumber extends Model {
             $countryIso = $country->getIso();
         }
         try{
-            $label = (string)\Propaganistas\LaravelPhone\PhoneNumber::make($this->getNumber(), $countryIso)->formatForCountry(\Illuminate\Support\Facades\App::getLocale());
+            $label = (string)\Propaganistas\LaravelPhone\PhoneNumber::make($this->getNumber(), $countryIso)->formatForCountry(
+                    \App\Http\Controllers\GeolocationController::getLocaleCountry());
         } catch(\Exception $e){
             $label = $this->getNumber();
         }

@@ -989,7 +989,7 @@ class EstablishmentController extends Controller {
             }
         }
         
-        $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
+        $idCountry = Country::where('iso', '=', GeolocationController::getLocaleCountry())->first()->getId();
         StorageHelper::getInstance()->add('show_establishment.form_data.id_country', $idCountry);
         StorageHelper::getInstance()->add('show_establishment.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('show_establishment.form_data.time_slots', $timeslots);
@@ -1000,7 +1000,7 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
+        $idCountry = Country::where('iso', '=', GeolocationController::getLocaleCountry())->first()->getId();
         $idCurrency = \App\Utilities\CurrencyTools::getIdCurrencyFromLocale();
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_currency', $idCurrency);

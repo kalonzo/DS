@@ -11,6 +11,7 @@
     if(Request::get('display_locale')){
         echo "Locale : ".App::getLocale();
         echo "<br/>Browser conf : ".$_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        echo "<br/>Country Locale : ".\App\Http\Controllers\GeolocationController::getLocaleCountry();
     }
     ?>
     @component('components.tile', ['title' => 'Etablissements', 'add_href' => '/create/establishment', 
