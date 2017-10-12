@@ -15,9 +15,8 @@
                     <?php
                     $logoOriginal = null;
                     $logoDraft = null;
-                    $logoQuery = $establishment->logo();
-                    if(checkModel($establishment) && $logoQuery->exists()){
-                        $logoOriginal = $logoQuery->first();
+                    if(checkModel($establishment)){
+                        $logoOriginal = $establishment->logo()->first();
                     }
                     if(checkModel($logoOriginal) && checkModelId($logoOriginal->getIdDraftMedia())){
                         $logoDraft = $logoOriginal->mediaDraft()->first();
