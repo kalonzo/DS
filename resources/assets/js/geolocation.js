@@ -10,31 +10,32 @@ function initGeolocation(){
     var cookiePositionLat = dsGetCookie('userLat');
     var cookiePositionLng = dsGetCookie('userLng');
     
-        console.log(cookiePositionLng);
-    
     if(isEmpty(cookiePositionLat) || isEmpty(cookiePositionLng)){
+        var popoverError = null;
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                     userPositionLat = position.coords.latitude * 1;
                     userPositionLng = position.coords.longitude * 1;
                     $(document).trigger('googleGeolocReady');
-    //                saveNewPosition(userPositionLat, userPositionLng);
                     reloadPage({'userLat': userPositionLat, 'userLng': userPositionLng}, function(){
                         $(document).trigger('positionSaved');
                     });
                 }, function () {
-                    console.log("Erreur lors de la géolocalisation");
+                    popoverError = "Votre navigateur n'autorise pas la géolocalisation. Veuillez activer les cookies et la géolocalisation pour profiter d'une"
+                        +" expérience complète.";
+                    alertGeolocationError(popoverError, $('#search_location'));
                 }
             );
         } else {
-            console.log("Browser doesn't support Geolocation");
+            popoverError = "Votre navigateur ne supporte pas la fonctionnalité de géolocalisation. Veuillez mettre à jour votre navigateur ou en utiliser un"
+                        + " autre pour profiter d'une expérience complète.";
+            alertGeolocationError(popoverError, $('#search_location'));
         }
     } else {
         userPositionLat = cookiePositionLat * 1;
         userPositionLng = cookiePositionLng * 1;
         $(document).trigger('googleGeolocReady');
     }
-//    saveNewPosition(userPositionLat, userPositionLng);
 }
 
 $(document).on('googleGeolocReady', function(){
@@ -97,6 +98,7 @@ function saveNewPosition(lat, lng){
 }
 
 function geolocateMe(){
+    var popoverError = null;
     if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 userPositionLat = position.coords.latitude * 1;
@@ -105,10 +107,27 @@ function geolocateMe(){
                 fillUserAddress(userPositionLat, userPositionLng);
                 relocateUserPosition(userPositionLat, userPositionLng)
             }, function () {
-                console.log("Erreur lors de la géolocalisation");
+                    popoverError = "Votre navigateur n'autorise pas la géolocalisation. Veuillez activer les cookies et la géolocalisation pour profiter d'une"
+                        +" expérience complète.";
+                    alertGeolocationError(popoverError, $('#search_location'));
             }
         );
     } else {
-        console.log("Browser doesn't support Geolocation");
+        popoverError = "Votre navigateur ne supporte pas la fonctionnalité de géolocalisation. Veuillez mettre à jour votre navigateur ou en utiliser un"
+                    + " autre pour profiter d'une expérience complète.";
+        alertGeolocationError(popoverError, $('#search_location'));
     }
+}
+
+function alertGeolocationError(error, element){
+    $(element).popover({
+        container: 'nav',
+        title: 'Géolocalisation impossible',
+        content: error,
+        placement: 'bottom',
+        trigger: 'manual',
+        toggle: true,
+        template: '<div class="popover popover-toggle" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+    }).popover("show")
+    ;
 }

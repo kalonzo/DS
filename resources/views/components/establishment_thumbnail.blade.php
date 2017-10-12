@@ -5,7 +5,6 @@
             <div class="thumbnail-picture" style="background-image: url('{{ $establishment['img'] }}');">
                 <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
             </div>
-            <!--<img class="col-xs-12 no-gutter" src="{{ $establishment['img'] }}" alt="Establishment picture"/>-->
             <div class="thumbnail-distance">
                 {{ $establishment['raw_distance'] }}
             </div>
@@ -15,7 +14,11 @@
                 {{ $establishment['name'] }}
             </div>
             <div class="thumbnail-info col-xs-12 no-gutter">
-                {{$establishment['biz_category_1']}}, {{$establishment['city']}} - {{$establishment['country']}}
+                {{$establishment['biz_category_1']}}
+            </div>
+            <div class="thumbnail-location col-xs-12 no-gutter">
+                {{$establishment['city']}} - 
+                @if(isset($establishment['country_iso'])) {{$establishment['country_iso']}} @else {{$establishment['country']}} @endif
             </div>
             @if(isset($establishment['promo_name']))
             <div class="thumbnail-promo col-xs-12 no-gutter">

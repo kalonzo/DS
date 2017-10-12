@@ -35,7 +35,7 @@
                             <span class="input-group-addon clickable" onclick="geolocateMe();" title="Cliquer ici pour me géolocaliser">
                                 <span class="geolocMeIcon glyphicon glyphicon-screenshot" aria-hidden="true"></span>
                             </span>
-                            <input type="text" class="form-control" placeholder="Ville, adresse, NPA" id="search_location">
+                            <input type="text" class="form-control" data-toggle="popover" placeholder="Ville, adresse, NPA" id="search_location">
                         </div>
                     {!! form::close() !!}
                     @endif

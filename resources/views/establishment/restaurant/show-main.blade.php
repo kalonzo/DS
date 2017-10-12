@@ -296,7 +296,7 @@ if($videoQuery->exists()){
 <section class="container-fluid ets-timetable">
     <div class="section-bg"></div>
     <div class="container">
-        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}ss"><strong>Horaires</strong> d'ouverture</h1>
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}ss"><strong>Horaires</strong> de service</h1>
         <div class="row wow fadeInRight" data-wow-delay="{{$loadDelay}}ss">
             <div class="col-xs-5_5 col-sm-2_5">
                 &nbsp;

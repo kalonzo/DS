@@ -111,3 +111,15 @@ $(document).on('googleGeolocReady', function () {
         }
     });
 });
+
+$('body').on('click', function (e) {
+    $('.popover-toggle').each(function () {
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('destroy');
+        }
+    });
+});
+
+$('body').on('click', '.popover-toggle', function (e) {
+    $(this).remove();
+});
