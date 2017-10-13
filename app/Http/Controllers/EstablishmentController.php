@@ -1144,10 +1144,8 @@ class EstablishmentController extends Controller {
                         }
                     }
                     break;
-                //Adds media to gallery, called by ajax form request on admin page
                 case 'add_media_to_gallery':
                     $filesToUpload = $request->allFiles();
-                    $keyID = $request->get("key");
                     if(isset($filesToUpload['gallery']) && !empty($filesToUpload['gallery'])){
                         foreach($filesToUpload['gallery'] as $uuidGallery => $uploadedFiles){
                             $gallery = \App\Models\Gallery::findUuid($uuidGallery);
@@ -1366,8 +1364,7 @@ class EstablishmentController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getMessage());
-
+            $jsonResponse['error'] = $e->getMessage();
             foreach ($createdObjects as $createdObject) {
                 if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
                     $createdObject->delete();
