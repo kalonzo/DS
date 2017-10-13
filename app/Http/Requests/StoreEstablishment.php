@@ -63,7 +63,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             case 'add_menu':
                 $rules = [
                     'menu_name' => 'required|min:2|max:255',
-                    'new_menu' => 'mimes:jpg,jpeg',
+                    'new_menu' => 'mimes:png,jpg,jpeg,pdf,doc,docx',
                 ];
                 break;
             case 'add_daily_menu':
@@ -163,8 +163,9 @@ class StoreEstablishment extends \App\Http\FormRequest {
 
             case 'add_daily_menu':
                 $rules = [
-                    'new_daily_menu' => 'required|mimes:png,jpg,jpeg',
+                    'new_daily_menu' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx',
                 ];
+                break;
         }
         return $rules;
     }
