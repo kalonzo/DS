@@ -64,7 +64,27 @@ class GeolocationController extends Controller
     }
     
     public static function getLocaleCountry(){
-        return \Illuminate\Support\Facades\App::getLocale();
+        $countryIso = self::DEFAULT_COUNTRY;
+                  
+        $acceptedLanguages = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+        $acceptedLanguagesArray = explode(';', $acceptedLanguages);
+        if(!empty($acceptedLanguagesArray) && isset($acceptedLanguagesArray[0])){
+            $prioLanguageArray = explode(',', $acceptedLanguagesArray[0]);
+            $prioLanguage = null;
+            foreach($prioLanguageArray as $prioLanguageItem){
+                if(strpos($prioLanguageItem, '-') !== false){
+                    $prioLanguage = $prioLanguageItem;
+                    break;
+                }
+            }
+            if(!empty($prioLanguage)){
+                $langCountryArray = explode('-', $prioLanguage);
+                if(!empty($langCountryArray) && count($langCountryArray) === 2){
+                    $countryIso = strtolower($langCountryArray[1]);
+                }
+            }
+        }
+        return $countryIso;
     }
     
 }

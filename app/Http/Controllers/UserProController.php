@@ -466,7 +466,7 @@ class UserProController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = Country::where('iso', 'LIKE', App::getLocale())->first()->getId();
+        $idCountry = Country::where('iso', 'LIKE', \App\Http\Controllers\GeolocationController::getLocaleCountry())->first()->getId();
 
 
         StorageHelper::getInstance()->add('feed_user.form_values.id_country', $idCountry);

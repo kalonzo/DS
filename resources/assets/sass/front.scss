@@ -508,14 +508,18 @@ select:not(.select2){
             padding-top: 0.4em;
             padding-bottom: 0.4em;
             .thumbnail-label{
-                text-transform: uppercase;
                 height: 2*$line-height-base-px;
                 overflow: hidden;
                 font-weight: bold;
             }
             .thumbnail-info{
                 font-size: 0.9em;
-                height: 2*$line-height-base-px;
+                height: $line-height-base-px;
+                overflow: hidden;
+            }
+            .thumbnail-location{
+                font-size: 0.9em;
+                height: $line-height-base-px;
                 overflow: hidden;
             }
             .thumbnail-promo{
@@ -818,9 +822,11 @@ $mapThumbnailWidth: 145px;
         #formActions{
             .btn{
                 padding: 10px;
+                height: 100%;
             }
-            #validSheet{
-                
+            .icon-btn{
+                font-size: 1.5em;
+                padding: 0px 15px;
             }
         }
     }
@@ -1192,4 +1198,21 @@ $timelinePointWidth: 15px;
 
 .text-promo{
     color: $promo-color;
+}
+
+$popoverRadius: 5px;
+.popover{
+    background-color: transparent;
+    border: 1px solid white;
+    @include borderRadius($popoverRadius);
+    padding: 0px;
+    .popover-title{
+        background-color: $main-dark-color;
+        border-bottom: 0px;
+        @include borderTopRadius($popoverRadius);
+    }
+    .popover-content{
+        background-color: $main-color;
+        @include borderBottomRadius($popoverRadius);
+    }
 }

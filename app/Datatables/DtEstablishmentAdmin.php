@@ -31,7 +31,8 @@ class DtEstablishmentAdmin extends DatatableFeeder {
     }
 
     public function buildColumns() {
-        $columns = array('name' => 'Nom', 'type' => 'Type', 'business_status' => "Statut", 'user' => 'Client', 'city' => 'Ville', 'country' => 'Pays', 'updated_at' => 'Modifié le');
+        $columns = array('name' => 'Nom', 'type' => 'Type', 'business_status' => "Statut", 'valid' => 'Validé',
+            'user' => 'Client', 'city' => 'Ville', 'country' => 'Pays', 'updated_at' => 'Modifié le');
         return $columns;
     }
 
@@ -62,6 +63,20 @@ class DtEstablishmentAdmin extends DatatableFeeder {
         $typeSearch->setValue(Request::get('filter.business_type', BusinessType::TYPE_BUSINESS_RESTAURANT));
         $typeSearch->setOptions(BusinessType::getLabelByType());
         $filters[] = $typeSearch;
+        
+        // Valid search
+        $statusSearch = new DatatableFilter();
+        $statusSearch->setInputType(DatatableFilter::INPUT_SELECT);
+        $statusSearch->setLabel('Statut');
+        $statusSearch->setName('status');
+        $statusSearch->setPlaceholder("Tous");
+        $statusSearch->setTable(Establishment::TABLENAME);
+        $statusSearch->setField('status');
+        $statusSearch->setEnableEmpty(false);
+        $statusSearch->setOperator(DatatableFilter::OPERATOR_EQUAL);
+        $statusSearch->setValue(Request::get('filter.status'));
+        $statusSearch->setOptions(Establishment::getLabelByStatus());
+        $filters[] = $statusSearch;
 
         return $filters;
     }
@@ -102,6 +117,11 @@ class DtEstablishmentAdmin extends DatatableFeeder {
             $results[$uuid]['name'] = $queryResult->name;
             $results[$uuid]['type'] = BusinessType::getLabelFromType($queryResult->id_business_type);
             $results[$uuid]['business_status'] = $queryResult->business_status.' %';
+            if($queryResult->status == Establishment::STATUS_ACTIVE){
+                $results[$uuid]['valid'] = "<span class='glyphicon glyphicon-ok text-success' aria-hidden='true'></span>";
+            } else {
+                $results[$uuid]['valid'] = "<span class='glyphicon glyphicon-remove text-danger' aria-hidden='true'></span>";
+            }
             if(!empty($queryResult->owner)){
                 $results[$uuid]['user'] = $queryResult->owner;
             } else {

@@ -63,7 +63,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             case 'add_menu':
                 $rules = [
                     'menu_name' => 'required|min:2|max:255',
-                    'new_menu' => 'mimes:jpg,jpeg',
+                    'new_menu' => 'mimes:png,jpg,jpeg,pdf,doc,docx',
                 ];
                 break;
             case 'add_daily_menu':
@@ -154,17 +154,18 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 // Opening hours
 //                foreach (\App\Utilities\DateTools::getDaysArray() as $dayIndex => $dayLabel) {
 //                    $rules['openingHours.' . $dayIndex . '.1.start'] = 'required';
-//                    $rules['openingHours.' . $dayIndex . '.1.end'] = 'required|after_or_equal:openingHours.' . $dayIndex . '.1.start';
+//                    $rules['openingHours.' . $dayIndex . '.1.end'] = 'after_or_equal:openingHours.' . $dayIndex . '.1.start';
 //
-//                    $rules['openingHours.' . $dayIndex . '.2.start'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
+//                    $rules['openingHours.' . $dayIndex . '.2.start'] = ':openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.1.end';
 //                    $rules['openingHours.' . $dayIndex . '.2.end'] = 'required_unless:openingHours.' . $dayIndex . '.1.no_break,1|after_or_equal:openingHours.' . $dayIndex . '.2.start';
 //                }
                 break;
 
             case 'add_daily_menu':
                 $rules = [
-                    'new_daily_menu' => 'required|mimes:png,jpg,jpeg',
+                    'new_daily_menu' => 'required|mimes:png,jpg,jpeg,pdf,doc,docx',
                 ];
+                break;
         }
         return $rules;
     }

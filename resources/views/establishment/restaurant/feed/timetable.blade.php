@@ -80,7 +80,7 @@
                             </div>
                         </div>    
                         <div class="col-sm-1_5 timetable-action">
-                            @if($loop->iteration == 1)
+                            @if(!$loop->last)
                             <button type="button" role="button" class="btn btn-md text-uppercase" onclick="duplicateTimeSlots(this);">
                                 Copier
                             </button>

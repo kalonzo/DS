@@ -62,6 +62,16 @@ class EstablishmentController extends Controller {
      */
     public function show(Establishment $establishment, $page = null) {
         $establishment->incrementWeeklyVisit();
+        return $this->displayMiniWebsite($establishment, $page);
+    }
+    
+    /**
+     * Display the specified resource.
+     *
+     * @param  Establishment $establishment
+     * @return Response
+     */    
+    public function displayMiniWebsite(Establishment $establishment, $page = null) {
         $data = array();
 
         // Business categories
@@ -345,7 +355,6 @@ class EstablishmentController extends Controller {
     public function showAjax(Request $request, Establishment $establishment, $page = null){
         $response = response();
         $jsonResponse = array('success' => 0);
-        $createdObjects = array();
         
         try {
             $action = $request->get('action');
@@ -360,7 +369,7 @@ class EstablishmentController extends Controller {
                         $gallery = $establishment->galleries()->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $uuidGallery))
                                 ->first();
                         if(checkModel($gallery)){
-                            $medias = $gallery->medias()/*->where('status', '=', \App\Models\Media::STATUS_VALIDATED)*/->get();
+                            $medias = $gallery->medias()->where('status', '=', \App\Models\Media::STATUS_VALIDATED)->get();
                             
                             $view = View::make('components.gallery-pics')->with('medias', $medias);
                             $jsonResponse['content'] = $view->render();
@@ -376,12 +385,6 @@ class EstablishmentController extends Controller {
         } catch (Exception $e) {
             // TODO Report error in log system
             print_r($e->getMessage());
-
-            foreach ($createdObjects as $createdObject) {
-                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
-                    $createdObject->delete();
-                }
-            }
         }
         
         $responsePrepared = $response->json($jsonResponse);
@@ -595,12 +598,18 @@ class EstablishmentController extends Controller {
                         'id_company' => 0,
             ]);
         }
+        // TODO confirmation email user + process réservation
+        
         $time = $request->get('time_reservation');
         $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$time);
 
+        $bookingStatus = \App\Models\Booking::STATUS_CREATED;
+        if($user->getStatus() === User::STATUS_ACTIVE){
+            $bookingStatus = \App\Models\Booking::STATUS_PENDING;
+        }
         $bookingReservation = \App\Models\Booking::create([
                     'id' => \App\Utilities\UuidTools::generateUuid(),
-                    'status' => \App\Models\Booking::STATUS_PENDING,
+                    'status' => $bookingStatus,
                     'lastname' => $request->get('lastname'),
                     'firstname' => $request->get('firstname'),
                     'email' => $request->get('email'),
@@ -650,8 +659,9 @@ class EstablishmentController extends Controller {
                             // Invert = 0 if selectedDay is up to come, Days = 0 if selectedDay is today
                             $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
                             if($closePeriods === 0){
-                                $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)->whereRaw('end_time >= NOW()')
-                                        ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
+                                $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)
+                                        ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')
+                                        ->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
                                         ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
                                         ->get();
                                 foreach($openingHours as $openingHour){
@@ -858,7 +868,29 @@ class EstablishmentController extends Controller {
         
         $responsePrepared = $response->json($jsonResponse);
         return $responsePrepared;
+    }
+    
+    public function unvalidateEstablishment(Establishment $establishment){
+        $response = response();
+        $jsonResponse = array('triggerMode' => 1,'success' => 0);
         
+        if($establishment->getStatus() !== Establishment::STATUS_TO_VALID){
+            $establishment->setStatus(Establishment::STATUS_TO_VALID);
+            $establishment->calculateBusinessStatus();
+            $jsonResponse['success'] = 1;
+        } else {
+            $jsonResponse['error'] = "L'établissement est déjà non-validé.";
+        }
+        
+        $responsePrepared = $response->json($jsonResponse);
+        return $responsePrepared;
+    }
+    
+    public function preview(Establishment $establishment, $page = null){
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if($establishment->getBusinessStatus() >= 50 && ($user->getType() === User::TYPE_USER_PRO || $user->getType() === User::TYPE_USER_ADMIN_PRO)){
+            return $this->displayMiniWebsite($establishment, $page)->with('preview', true);
+        }
     }
 
     public function buildFeedFormData() {
@@ -978,8 +1010,8 @@ class EstablishmentController extends Controller {
         $closePeriods = $establishment->closePeriods()->whereRaw('start_date <= NOW()')->whereRaw('end_date >= NOW()')->count();
         if($closePeriods === 0){
             $openingHours = $establishment->openingHours()->where('day', '=', $dayIndex)->where('closed', '=', 0)
-                    ->whereRaw('end_time >= NOW()')->orWhereRaw('start_time >= NOW()')
-                    ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
+                    ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')
+                    ->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
                     ->orderBy('day')->orderBy('day_order')->orderBy('start_time')
                     ->get();
             foreach($openingHours as $openingHour){
@@ -989,7 +1021,7 @@ class EstablishmentController extends Controller {
             }
         }
         
-        $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
+        $idCountry = Country::where('iso', '=', GeolocationController::getLocaleCountry())->first()->getId();
         StorageHelper::getInstance()->add('show_establishment.form_data.id_country', $idCountry);
         StorageHelper::getInstance()->add('show_establishment.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('show_establishment.form_data.time_slots', $timeslots);
@@ -1000,7 +1032,7 @@ class EstablishmentController extends Controller {
      * @param Establishment $establishment
      */
     public function buildCreateFormValues() {
-        $idCountry = Country::where('iso', '=', \Illuminate\Support\Facades\App::getLocale())->first()->getId();
+        $idCountry = Country::where('iso', '=', GeolocationController::getLocaleCountry())->first()->getId();
         $idCurrency = \App\Utilities\CurrencyTools::getIdCurrencyFromLocale();
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_currency', $idCurrency);
@@ -1112,10 +1144,8 @@ class EstablishmentController extends Controller {
                         }
                     }
                     break;
-                //Adds media to gallery, called by ajax form request on admin page
                 case 'add_media_to_gallery':
                     $filesToUpload = $request->allFiles();
-                    $keyID = $request->get("key");
                     if(isset($filesToUpload['gallery']) && !empty($filesToUpload['gallery'])){
                         foreach($filesToUpload['gallery'] as $uuidGallery => $uploadedFiles){
                             $gallery = \App\Models\Gallery::findUuid($uuidGallery);
@@ -1334,8 +1364,7 @@ class EstablishmentController extends Controller {
             }
         } catch (Exception $e) {
             // TODO Report error in log system
-            print_r($e->getMessage());
-
+            $jsonResponse['error'] = $e->getMessage();
             foreach ($createdObjects as $createdObject) {
                 if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
                     $createdObject->delete();
@@ -1459,6 +1488,12 @@ class EstablishmentController extends Controller {
                     }
                     if ((!empty($start) && !empty($end)) || ($dayOrder == 1 && $noBreak)) {
                         $openingHour = $etsOpeningHours->where('day', $day)->where('day_order', $dayOrder)->first();
+                        if($dayOrder == 1 && $noBreak){
+                            $pmHoursForNonStopDay = $etsOpeningHours->where('day', $day)->where('day_order', 2)->first();
+                            if(checkModel($pmHoursForNonStopDay)){
+                                $pmHoursForNonStopDay->delete();
+                            }
+                        }
                         $attributes = [
                             'day' => $day,
                             'day_order' => $dayOrder,
@@ -1474,6 +1509,9 @@ class EstablishmentController extends Controller {
                             $attributes['start_time'] = date('H:i', strtotime($start));
                             $attributes['end_time'] = date('H:i', strtotime($end));
                             $attributes['closed'] = false;
+                            if($start > $end){
+                                $attributes['overnight'] = 1;
+                            }
                         }
 
                         if (checkModel($openingHour)) {

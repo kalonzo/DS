@@ -115,14 +115,22 @@ if(checkModel($establishment)){
                 </div>
             </div>
             <div id="formActions" class="pull-right">
-                <a class="btn" href="/admin">
-                    Retour au dashboard
-                </a>
+                <button class="btn icon-btn" onclick="javascript:window.location.href='/admin';" type="button" title="Retour au dashboard">
+                    <span class="glyphicon glyphicon-chevron-left text-info" aria-hidden="true"></span>
+                </button>
+                @if(checkModel($establishment))
+                <button class="btn icon-btn" onclick="javascript:window.open('{{ $establishment->getPreviewUrl() }}');" type="button" title="Prévisualiser">
+                    <span class="glyphicon glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                </button>
+                @endif
                 <?php
                 if(isAdmin() && checkModel($establishment)){
                     ?>
-                    <button class="btn" id="validSheet" type="button" disabled="disabled">
-                        Valider la fiche
+                    <button class="btn icon-btn" id="unvalidSheet" type="button" disabled="disabled" title="Dépublier la fiche">
+                        <span class="glyphicon glyphicon-ban-circle text-danger" aria-hidden="true"></span>
+                    </button>
+                    <button class="btn icon-btn" id="validSheet" type="button" disabled="disabled" title="Valider la fiche">
+                        <span class="glyphicon glyphicon-ok-circle text-success" aria-hidden="true"></span>
                     </button>
                     <?php
                 }
@@ -243,15 +251,19 @@ if(checkModel($establishment)){
     
     function duplicateTimeSlots(triggerElement){
         var $timetableGrid = $(triggerElement).parentsInclude('#timetable-grid');
-        var startTimeAmRef = $timetableGrid.find('select[name="openingHours[1][1][start]"]').val();
-        var endTimeAmRef = $timetableGrid.find('select[name="openingHours[1][1][end]"]').val();
-
-        var startTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][start]"]').val();
-        var endTimePmRef = $timetableGrid.find('select[name="openingHours[1][2][end]"]').val();
-
-        var hasNoBreakRef = $timetableGrid.find('input[name="openingHours[1][1][no_break]"]').is(':checked');
+        var $timetableGridRow = $(triggerElement).parentsInclude('.timetable-grid-row');
+        var elementIndex = $timetableGrid.find('.timetable-grid-row').index($timetableGridRow) + 1;
         
-        for(var $i=2; $i<=7; $i++){
+        var startTimeAmRef = $timetableGrid.find('select[name="openingHours['+elementIndex+'][1][start]"]').val();
+        var endTimeAmRef = $timetableGrid.find('select[name="openingHours['+elementIndex+'][1][end]"]').val();
+
+        var startTimePmRef = $timetableGrid.find('select[name="openingHours['+elementIndex+'][2][start]"]').val();
+        var endTimePmRef = $timetableGrid.find('select[name="openingHours['+elementIndex+'][2][end]"]').val();
+
+        var hasNoBreakRef = $timetableGrid.find('input[name="openingHours['+elementIndex+'][1][no_break]"]').is(':checked');
+        
+        
+        for(var $i=(elementIndex+1); $i<=7; $i++){
             $timetableGrid.find('select[name="openingHours['+$i+'][1][start]"]').val(startTimeAmRef);
             $timetableGrid.find('select[name="openingHours['+$i+'][1][end]"]').val(endTimeAmRef);
         
@@ -420,32 +432,37 @@ if(checkModel($establishment)){
                         dataType: 'json',
                         method: 'POST',
                         success: function( data ) {
-                            if(data.success){
-                                $form.find('#form-ajax-loading').hide();
-                                $form.find('#form-ajax-alert').hide();
-                                $form.find('#form-ajax-confirm').show();
-                            } else {
-                                $form.find('#form-ajax-loading').hide();
-                                $form.find('#form-ajax-confirm').hide();
-                                
-                                if(data.error){
-                                    var $formListErrors = $('#form-list-errors');
-                                    $formListErrors.empty();
-                                    var $alert = $form.find('#form-ajax-alert');
-                                    $alert.find('.alert-message').empty().html(data.error);
-                                    $alert.show();
-                                }
-                            }
+                            displayFeedbackForAjaxRequest(true, data);
                         },
                         error: function( data ) {
-                            $form.find('#form-ajax-loading').hide();
-                            $form.find('#form-ajax-confirm').hide();
+                            displayFeedbackForAjaxRequest(false, data);
+                        },
+                    });
+                }
+            });
+            
+            $('body').on('click', '#unvalidSheet', function(e){
+                var confirmValid = confirm("Veuillez confirmer la dépublication de la fiche.");
+                if(confirmValid){
+                    $('#form-list-errors').empty();
+                    $('#form-panel-errors').collapse('hide');
 
-                            var $formListErrors = $('#form-list-errors');
-                            $formListErrors.empty();
-                            var $alert = $('form#feed-establishment').find('#form-ajax-alert');
-                            $alert.find('.alert-message').empty().html(data);
-                            $alert.show();
+                    var $form = $('form#feed-establishment');
+                    $form.find('#form-ajax-confirm').hide();
+                    $form.find('#form-ajax-alert').hide();
+                    $form.find('#form-ajax-loading').show();
+                    
+                    var ajaxParams = {};
+                    $.ajax({
+                        url: '/admin/unvalid_establishment/{!!$establishment->getUuid()!!}',
+                        data: ajaxParams,
+                        dataType: 'json',
+                        method: 'POST',
+                        success: function( data ) {
+                            displayFeedbackForAjaxRequest(true, data);
+                        },
+                        error: function( data ) {
+                            displayFeedbackForAjaxRequest(false, data);
                         },
                     });
                 }
@@ -457,9 +474,13 @@ if(checkModel($establishment)){
                 var scrollPosition = $(window).scrollTop();
                 if (scrollPosition === (documentHeight - clientHeight)) {
                     $('#validSheet').removeAttr('disabled');
+                    $('#unvalidSheet').removeAttr('disabled');
                 } else {
                     if(!$('#validSheet').is(':disabled')){
                         $('#validSheet').attr('disabled', 'disabled');
+                    }
+                    if(!$('#unvalidSheet').is(':disabled')){
+                        $('#unvalidSheet').attr('disabled', 'disabled');
                     }
                 }
             });
@@ -467,6 +488,37 @@ if(checkModel($establishment)){
         }
          ?>   
     });
+    
+    function displayFeedbackForAjaxRequest(ajaxSuccess, data){
+        var $form = $('form#feed-establishment');
+        if(ajaxSuccess) {
+            if(data.success){
+                $form.find('#form-ajax-loading').hide();
+                $form.find('#form-ajax-alert').hide();
+                $form.find('#form-ajax-confirm').show();
+            } else {
+                $form.find('#form-ajax-loading').hide();
+                $form.find('#form-ajax-confirm').hide();
+
+                if(data.error){
+                    var $formListErrors = $('#form-list-errors');
+                    $formListErrors.empty();
+                    var $alert = $form.find('#form-ajax-alert');
+                    $alert.find('.alert-message').empty().html(data.error);
+                    $alert.show();
+                }
+            }
+        } else {
+            $form.find('#form-ajax-loading').hide();
+            $form.find('#form-ajax-confirm').hide();
+
+            var $formListErrors = $('#form-list-errors');
+            $formListErrors.empty();
+            var $alert = $('form#feed-establishment').find('#form-ajax-alert');
+            $alert.find('.alert-message').empty().html(data);
+            $alert.show();
+        }
+    }
     
     function addCollectionItem(triggerButton, callback){
         var $form = $(triggerButton).parentsInclude('form');

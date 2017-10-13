@@ -55,6 +55,24 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->latLng;
     }
     
+    public static function getLabelByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_ACTIVE] = 'Activé';
+        $labelByStatus[self::STATUS_INCOMPLETE] = 'Incomplet';
+        $labelByStatus[self::STATUS_TO_LOCALIZE] = 'A géolocaliser';
+        $labelByStatus[self::STATUS_TO_VALID] = 'A valider';
+        return $labelByStatus;
+    }
+    
+    public static function getLabelFromStatus($status){
+        $statusLabel = 'Statut non défini';
+        $etsStatusLabels = self::getLabelByStatus();
+        if(isset($etsStatusLabels[$status])){
+            $statusLabel = $etsStatusLabels[$status];
+        }
+        return $statusLabel;
+    }
+    
     public function getBusinessTypeLabel(){
         $businessLabel = 'Type non défini';
         $businessTypeLabels = BusinessType::getLabelByType();
@@ -287,6 +305,14 @@ class Establishment extends Model implements GlobalObjectManageable{
             }
         }
         return $this->url;
+    }
+    
+    public function getPreviewUrl(){
+        $previewUrl = "preview_not_available";
+        if(checkModel($this)){
+            $previewUrl = "/admin/preview_establishment/".$this->getUuid()."/";
+        }
+        return $previewUrl;
     }
     
     public static function getUrlStatic($typeBusiness, $city, $slug, $urlId){

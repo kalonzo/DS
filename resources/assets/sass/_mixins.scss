@@ -3,6 +3,22 @@
     -webkit-border-radius: $radius;
     -moz-border-radius: $radius;
 }
+@mixin borderTopRadius($radius){
+    border-top-left-radius: $radius;
+    border-top-right-radius: $radius;
+    -webkit-border-top-left-radius: $radius;
+    -webkit-border-top-right-radius: $radius;
+    -moz-border-top-left-radius: $radius;
+    -moz-border-top-right-radius: $radius;
+}
+@mixin borderBottomRadius($radius){
+    border-bottom-left-radius: $radius;
+    border-bottom-right-radius: $radius;
+    -webkit-border-bottom-left-radius: $radius;
+    -webkit-border-bottom-right-radius: $radius;
+    -moz-border-radius-bottomleft : $radius;
+    -moz-border-radius-bottomright : $radius;
+}
 
 @function calculateRem($size) {
     $remSize: $size / 16px;
