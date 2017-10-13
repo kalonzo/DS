@@ -822,9 +822,11 @@ $mapThumbnailWidth: 145px;
         #formActions{
             .btn{
                 padding: 10px;
+                height: 100%;
             }
-            #validSheet{
-                
+            .icon-btn{
+                font-size: 1.5em;
+                padding: 0px 15px;
             }
         }
     }

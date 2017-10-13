@@ -15,6 +15,7 @@ class OpeningHour extends Model {
         'day',
         'start_time',
         'end_time',
+        'overnight',
         'day_order',
         'no_break',
         'closed',
@@ -159,6 +160,15 @@ class OpeningHour extends Model {
     function setClosed($closed) {
         $this->closed = $closed;
     }
+
+    function getOvernight() {
+        return $this->overnight;
+    }
+
+    function setOvernight($overnight) {
+        $this->overnight = $overnight;
+    }
+
 
 
 }

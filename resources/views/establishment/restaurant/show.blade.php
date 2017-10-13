@@ -29,10 +29,16 @@ $loadDelay = 0.6
            @endcomponent
     </aside>
     @endif
+    <?php
+    $establishementUrl = $establishment->getUrl();
+    if(isset($preview) && $preview){
+        $establishementUrl = $establishment->getPreviewUrl();
+    }
+    ?>
     <div class="content show-page custom-sidebar-content-wrapper">
         <div id="ets-nav-bookmarks">
             <div class="ets-nav-bookmark bookmark-voucher app-disabled hidden" title="Bon cadeau">
-                <a href="{{ $establishment->getUrl() }}#voucher" class="simple">
+                <a href="{{ $establishementUrl }}#voucher" class="simple">
                     <span>Bon cadeau</span>
                     <span class="bookmark-icon glyphicon glyphicon-gift" aria-hidden="true"></span>
                 </a>
@@ -46,7 +52,7 @@ $loadDelay = 0.6
             @if(isset($data['events']) || isset($data['promo']))
             <div class="ets-nav-bookmark bookmark-event" title="Promotions et événements">
                 <span>Promotions et événements</span>
-                <a href="{{ $establishment->getUrl() }}#events" class="simple">
+                <a href="{{ $establishementUrl }}#events" class="simple">
                     <!--<span class="bookmark-icon glyphicon glyphicon-calendar" aria-hidden="true"></span>-->
                     <img class="bookmark-icon" alt="events" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
                     <!--<img class="bookmark-icon" alt="events" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>-->
@@ -54,19 +60,19 @@ $loadDelay = 0.6
             </div>
             @endif
             <div class="ets-nav-bookmark bookmark-home" title="Le restaurant">
-                <a href="{{ $establishment->getUrl() }}" class="simple">
+                <a href="{{ $establishementUrl }}" class="simple">
                     <span>Le restaurant</span>
                     <span class="bookmark-icon glyphicon glyphicon-home" aria-hidden="true"></span>
                 </a>
             </div>
             <div class="ets-nav-bookmark bookmark-menu" title="Menus">
-                <a href="{{ $establishment->getUrl() }}menu" class="simple">
+                <a href="{{ $establishementUrl }}menu" class="simple">
                     <span>Menus</span>
                     <span class="bookmark-icon glyphicon glyphicon-cutlery" aria-hidden="true"></span>
                 </a>
             </div>
             <div class="ets-nav-bookmark bookmark-photos" title="Photos">
-                <a href="{{ $establishment->getUrl() }}photos" class="simple">
+                <a href="{{ $establishementUrl }}photos" class="simple">
                     <span>Photos</span>
                     <span class="bookmark-icon glyphicon glyphicon-picture" aria-hidden="true"></span>
                 </a>

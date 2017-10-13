@@ -15,6 +15,7 @@ use function checkModel;
 use function response;
 
 class BookingController extends Controller{
+    
     public function calendarFeed(Request $request){
         $response = response();
         $jsonResponse = array();

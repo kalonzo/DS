@@ -307,6 +307,14 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this->url;
     }
     
+    public function getPreviewUrl(){
+        $previewUrl = "preview_not_available";
+        if(checkModel($this)){
+            $previewUrl = "/admin/preview_establishment/".$this->getUuid()."/";
+        }
+        return $previewUrl;
+    }
+    
     public static function getUrlStatic($typeBusiness, $city, $slug, $urlId){
         $url = null;
         $businessTypeLabels = BusinessType::getLabelByType();

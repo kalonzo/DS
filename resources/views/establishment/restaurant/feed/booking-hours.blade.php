@@ -18,17 +18,22 @@
             } else {
                 $end -= 30;
             }
+            if($start >= $end){
+                $end += 2400;
+            }
 
             echo Form::label('time_reservation', $label, ['class' => 'col-xs-12 control-label no-gutter']);
             ?>
             <div class="timeslots-sublist">
                 <?php
                 for($i = $start; $i <= $end; ($i%100 === 0) ? $i+=30 : $i+=70){
+                    $minValue = $i%100;
+                    $hourValue = $i/100%24;
                     ?>
                     <div class="timeslot-item">
                         <?php
-                        $hours = sprintf('%02d', $i/100);
-                        $minutes = sprintf('%02d', $i%100);
+                        $hours = sprintf('%02d', $hourValue);
+                        $minutes = sprintf('%02d', $minValue);
                         $time = $hours.':'.$minutes;
                         echo $time;
                         ?>

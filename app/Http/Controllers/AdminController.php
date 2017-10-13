@@ -151,6 +151,13 @@ class AdminController extends Controller {
         // Valid establishment
         Route::match(['post'], '/admin/valid_establishment/{establishment}', 'EstablishmentController@validateEstablishment')
         ->middleware('auth');
+        // Unvalid establishment
+        Route::match(['post'], '/admin/unvalid_establishment/{establishment}', 'EstablishmentController@unvalidateEstablishment')
+        ->middleware('auth');
+        
+        // Preview
+        Route::match(['get'], '/admin/preview_establishment/{establishment}/{page?}', 'EstablishmentController@preview')
+        ->middleware('auth');
         
         // Moderate media
         Route::match(['get'], '/admin/media/moderate/{media}', 'MediaController@moderateMedia')

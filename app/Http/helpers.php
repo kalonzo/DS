@@ -151,7 +151,9 @@ function getMediaUrlForInputFile($medias, $jsonEncoded = true){
     }
     if(!empty($medias)){
         foreach($medias as $media){
-            $mediaUrls[] = asset($media->getLocalPath());
+            if(checkModel($media)){
+                $mediaUrls[] = asset($media->getLocalPath());
+            }
         }
     }
     if($jsonEncoded){

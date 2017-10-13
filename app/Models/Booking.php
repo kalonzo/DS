@@ -10,10 +10,11 @@ class Booking extends Model {
     protected $table = 'bookings';
 
     const TABLENAME = 'bookings';
-    const STATUS_PENDING = 1;
-    const STATUS_CONFIRMED = 2;
-    const STATUS_DENIED = 3;
-    const STATUS_CANCELED = 4;
+    const STATUS_CREATED = 1;
+    const STATUS_PENDING = 2;
+    const STATUS_CONFIRMED = 3;
+    const STATUS_DENIED = 4;
+    const STATUS_CANCELED = 5;
 
     public $timestamps = true;
     protected $fillable = [
@@ -35,6 +36,7 @@ class Booking extends Model {
 
     public static function getLabelByStatus(){
         $labelByStatus = array();
+        $labelByStatus[self::STATUS_CREATED] = 'Créée';
         $labelByStatus[self::STATUS_PENDING] = 'En attente';
         $labelByStatus[self::STATUS_CONFIRMED] = 'Confirmé';
         $labelByStatus[self::STATUS_DENIED] = 'Refusé';

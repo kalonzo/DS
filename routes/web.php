@@ -36,15 +36,20 @@ Route::put('/establishment/register', 'UserProController@store');
 
 // ESTABLISHMENT
 // create view
-Route::get('/create/establishment', 'EstablishmentController@create');
+Route::get('/create/establishment', 'EstablishmentController@create')
+        ->middleware('auth');;
 // store process
-Route::post('/create/establishment', 'EstablishmentController@store');
+Route::post('/create/establishment', 'EstablishmentController@store')
+        ->middleware('auth');;
 // edit view
-Route::get('/edit/establishment/{establishment}', 'EstablishmentController@edit');
+Route::get('/edit/establishment/{establishment}', 'EstablishmentController@edit')
+        ->middleware('auth');;
 // update process
-Route::post('/edit/establishment/{establishment}', 'EstablishmentController@update');
+Route::post('/edit/establishment/{establishment}', 'EstablishmentController@update')
+        ->middleware('auth');;
 // ajax processes through update 
-Route::post('/edit/establishment/{establishment}/ajax/', 'EstablishmentController@ajax');
+Route::post('/edit/establishment/{establishment}/ajax/', 'EstablishmentController@ajax')
+        ->middleware('auth');;
 
 
 // store booking
