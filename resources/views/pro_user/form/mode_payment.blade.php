@@ -19,6 +19,9 @@
                     @endforeach
                 </div>
             </div>
+            <div class="row" id="payment-warning">
+                Facture à 30 jours valable seulement en Suisse, changez pays ou type de paiement
+            </div>
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">

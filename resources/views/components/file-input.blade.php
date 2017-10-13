@@ -1,4 +1,9 @@
 <?php
+/** file-input notes
+*Gallery reordering-> search "Drag and Drop Ajax ordering JS"
+*  
+*/
+
 if(!isset($overwriteInitial)){
     $overwriteInitial = false;
 }
@@ -88,6 +93,10 @@ if(!isset($uploadLabel)){
 if(!isset($browseLabel)){
     $browseLabel = __('Parcourir');
 }
+
+if(!isset($tablename)){
+    $tablename = "";
+};
 ?>
 
 <input type="file" name="{!! $name !!}" class="bootstrap-file-input {{ $class }}" @if($multiple) multiple @endif />
@@ -159,23 +168,79 @@ if(!isset($browseLabel)){
                         }
                     }
                 })
+                @if(!empty($tablename))
                 .on('filesorted', function(event, params) {
                     // Drag and Drop Ajax ordering JS store in DB
-                    $tablename = 'establishment_medias';
-                    
+                    var tableName = '{{$tablename}}';
                     var key = {};
                     for (var i = 0; i < params.stack.length; i++) {
                         key[i] = params.stack[i].key
                     }
-                    
-                    key["Table"] = $tablename;
-                    
-                    //the request should be in format {Table: "table_name", 0: "uuid"...n:"uuid"}
-                    $.post("/edit/UpdateOrder",key,function( data ) {
-                        console.log( "Data Loaded: " + data );
-                    });
+                    var dataGallery = {};
+                    dataGallery ["position"] = key;
+                    dataGallery["table"] = tableName;
+                    //JSON is sent {table:"table_name", position : {0:"uuid"....n:"uuid"}}
+                    $.ajax({
+                        url: "/edit/update_order",
+                        method: "POST",
+                        data: dataGallery,
+                        datatype: "Json",
+                        success: "success",
+                        
+                        error: function (jqXHR, exception) {
+                            var msg = '';
+                            var reload = false;
+
+                            switch (jqXHR.status) {
+                                case 0:
+                                    msg = 'Not connect.\n Verify Network.';
+                                    reload = true;
+                                break;
+
+                                case 404:
+                                    msg = 'Photo order not changed. [404]';
+                                    reload = true;
+                                break;
+
+                                case 500:
+                                    msg = 'Photo order not changed. [500].';
+                                    reload = true;
+                                break;
+
+                                default:
+
+                                    switch (exception) {
+                                         case 'parsererror':
+                                             msg = 'Photo order not changed. Parse Error';
+                                             console.log(jqXHR.responseText + msg);
+                                             break;
+
+                                         case 'timeout':
+                                             msg = 'Photo order not changed. Time Out';
+                                             reload = true;
+                                             break;
+
+                                         case 'abort':
+                                             msg = 'Photo order not changed. Ajax Abort';
+                                        reload = true;
+                                        break;
+                                        default:
+                                                msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                        reload = true;
+                                        break;
+                                        }
+                                        break;
+                                        }
+
+                                        if (reload === true) {
+                                        alert('error:' + msg);
+                                       
+                                        }
+                                        },
+                                });
                     
                 })
+                @endif
                 @if($directUpload || isset($filebatchselected))
                 .on("filebatchselected", function(event, files) {
                     @if($directUpload)

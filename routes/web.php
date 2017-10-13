@@ -85,7 +85,7 @@ Route::match(['get', 'post'], '/establishment/register/failure', 'WalleeControll
 
 //ajax update order of media items
 //ajax process on drag and drop rearrange orders
-Route::post('/edit/UpdateOrder', 'UpdateOrderController@ChangeOrder');
+Route::post('/edit/update_order', 'UpdateOrderController@changeOrder');
 
 
 /* * ****************************TEST ROUTE************************************* */

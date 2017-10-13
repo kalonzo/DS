@@ -492,3 +492,15 @@ a.link-disabled{
         transform: rotate(0deg);
     }
 }
+
+// User Pro payment warning
+#payment-warning {
+    color: $danger-color;
+    text-align: center;
+    visibility: hidden;
+}
+
+#country-warning {
+    color: $danger-color;
+    visibility: hidden;
+}

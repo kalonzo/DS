@@ -16,7 +16,7 @@ mix.js([
     .copyDirectory('resources/assets/css/', 'public/css')
     .copyDirectory('resources/assets/js/', 'public/js')
     .copyDirectory('resources/assets/img', 'public/img')
-    .copyDirectory('resources/assets/libraries/DinerscopeBeta', 'public/libraries/wow')
+    .copyDirectory('resources/assets/libraries/wow', 'public/libraries/wow')
     .copyDirectory('node_modules/ckeditor/', 'public/libraries/ckeditor')
     .copyDirectory('node_modules/baguettebox.js/dist/', 'public/libraries/baguettebox/')
     .copyDirectory('resources/assets/dashboard-innovate', 'public/dashboard-innovate')

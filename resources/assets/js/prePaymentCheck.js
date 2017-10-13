@@ -1,110 +1,103 @@
-/* 
- *Pre-payment warnings
- */
 
-$(document).ready(function(){
-    
-    //console.log('Test script loaded in consoleJqueryDevTest.js');
+
+$(document).ready(function () {
     var validPaymentTypeSubmit = true;
-    var messageWarning = "* Pays: Facture à 30 jours seulement valable en Suisse, changez pays ou type de paiement";
-    var theCountry = 'Suisse';
-    var theCountryCode = 168;
+    var countryCodeCH = 168;
+    var paymentModeThirty = 2;
     var thirtyDays = 0;
     var warned = false;
-    
-    function countryRequired (countryCriteria) {
-        //Pour Select2
-        var currentCountry = $('#select2-addressid_country-container').html();
-        //Pour des cas de non select2
-        // currentCountry = $(".form-control.select2.s2-done.select2-hidden-accessible").val();
-        
+    /**
+     * countryRequired(countryCriteria) 
+     * returns bool if the form country is the same as req country
+     * @param countryCriteria
+     * @const currentCountry
+     */
+    function countryRequired(countryCriteria) {
+        var currentCountry = $('#form-group-country select').val();
         var validityOutput;
-        if (currentCountry == countryCriteria){
+        if (currentCountry == countryCriteria) {
             validityOutput = true;
         } else {
             validityOutput = false;
         }
-        //Return true if country matches the desired country else false
-        //if not switzerland returns false
         return validityOutput;
-    };
+    }
 
-   function isBillingChecked () {
-       //return 1 if billing is selected
-       return $('.radio-inline input[name = "payment_method"][value = "2"]:checked').length;
-   };
-   
-   function displayWarning () {
-        $('#formCountry label[for="address[id_country]"]').text(messageWarning);
-        $('#formCountry').css({ color: "red" });
-        
-       if (warned == false){
-            $('#collapse4').append('<div class="row" style="text-align: center; color:red;" id="paymentwarning">Facture à 30 jours valable seulement en Suisse, changez pays ou type de paiement <br></div>'); 
+    /**
+     * isBillingChecked() 
+     * returns bool if payment method is checked
+     * @const paymentModeThiry
+     */
+    function isBillingChecked() {
+        return $('.radio-inline input[name = "payment_method"][value =' + paymentModeThirty + ']:checked').length;
+    }
+
+    /**
+     * displayWarning()() 
+     *Turns on warning messages in blade
+     */
+
+    function displayWarning() {
+        $('#form-group-country label[for="address[id_country]"]').hide();
+        $('#country-warning').css('visibility', 'visible');
+
+        if (warned == false) {
+            $('#payment-warning').css('visibility', 'visible');
             warned = true;
-       }
-       $('#collapse4').removeAttr('style');
-       $('#collapse4').addClass('in');
-       $('#collapse5').removeAttr('style');
-       $('#collapse5').addClass('in');
-   };
-   
-   //Value stuck on 61 with Select 2...
-   function currentDisplayVal () {
-       return $(".form-control.select2.s2-done.select2-hidden-accessible").val();
-   };
-   
-   //When the radio button 30 days is checked
-    $('.radio-inline input[name = "payment_method"][value = "2"]').click(function() {
-       thirtyDays = isBillingChecked();
-       if (thirtyDays > 0 && countryRequired(theCountry) == false){
-           console.log(countryRequired(theCountry));
-           validPaymentTypeSubmit = countryRequired(theCountry);
-           displayWarning();
-       } else {
-           //do nothing for now
-       }
+        }
+        $('#collapse4').removeAttr('style');
+        $('#collapse4').addClass('in');
+        $('#collapse5').removeAttr('style');
+        $('#collapse5').addClass('in');
+    }
+
+    $('.radio-inline input[name = "payment_method"][value = "2"]').click(function () {
+        thirtyDays = isBillingChecked();
+        if (thirtyDays > 0 && countryRequired(countryCodeCH) == false) {
+            console.log(countryRequired(countryCodeCH));
+            validPaymentTypeSubmit = countryRequired(countryCodeCH);
+            displayWarning();
+        } else {
+            //do nothing for now
+        }
     }).delay(1);
-    
-    //when any other radio button in box area is checked
-    $('#collapse4').click (function () {
-        if (isBillingChecked() < 1){
-            $("#paymentwarning").remove();
-            $('#formCountry label[for="address[id_country]"]').text('* Pays');
-            $('#formCountry').css({ color: "white" });
+
+    $('#collapse4').click(function () {
+        if (isBillingChecked() < 1 && warned == true) {
+            $("#payment-warning").css('visibility', 'hidden');
+            $('#form-group-country label[for="address[id_country]"]').show();
+            $('#country-warning').css('visibility', 'hidden');
             warned = false;
         }
-        
-    }).delay(1);
-    
-    //when mouse enters the bottom submit button
+
+    });
+
     $("#validToPayment").mouseenter(function () {
         if (isBillingChecked() > 0) {
-            validPaymentTypeSubmit = countryRequired(theCountry);
+            validPaymentTypeSubmit = countryRequired(countryCodeCH);
             console.log(validPaymentTypeSubmit);
         } else {
             validPaymentTypeSubmit = true;
         }
     });
-    
-    //on click, disable click action unless the payment is valid
+
     $("#validToPayment").click(function () {
-        if(validPaymentTypeSubmit === true){
+        if (validPaymentTypeSubmit === true) {
             //do nothing
         } else {
-            displayWarning ();
+            displayWarning();
             location.href = "#heading13";
             return false;
         }
-     });
-     
-    //On enter, i.e no click we check the billing type and country
-    $(window).keydown(function(event){
+    });
+
+    $(window).keydown(function (event) {
         if (isBillingChecked() > 0) {
-            validPaymentTypeSubmit = countryRequired(theCountry);
-            if(event.keyCode == 13 && validPaymentTypeSubmit == false) {
+            validPaymentTypeSubmit = countryRequired(countryCodeCH);
+            if (event.keyCode == 13 && validPaymentTypeSubmit == false) {
                 event.preventDefault();
                 console.log('No Enter key until payment option change');
-                displayWarning ();
+                displayWarning();
                 //location.href = "#address[po_box]";
                 location.href = "#heading13";
                 return false;
@@ -112,16 +105,16 @@ $(document).ready(function(){
         }
     });
 
-    $(".form-control.select2.s2-done.select2-hidden-accessible").change(function() {
-       if(isBillingChecked() > 0 && countryRequired(theCountry) == false) {
-           displayWarning ();
-       } else if(isBillingChecked() > 0 && countryRequired(theCountry) === true) {
-           $('#formCountry label[for="address[id_country]"]').text('* Pays');
-           $('#formCountry').css({ color: "white" });
-           $("#paymentwarning").remove();
-           warned = false;
-           console.log('reset fields');
-       }
+    $(".form-control.select2.s2-done.select2-hidden-accessible").change(function () {
+        if (isBillingChecked() > 0 && countryRequired(countryCodeCH) == false) {
+            displayWarning();
+        } else if (isBillingChecked() > 0 && countryRequired(countryCodeCH) === true) {
+            $('#form-group-country label[for="address[id_country]"]').show();
+            $('#country-warning').css('visibility', 'hidden');
+            $("#payment-warning").css('visibility', 'hidden');
+            warned = false;
+            console.log('reset fields');
+        }
     }).delay(1);
 
 });

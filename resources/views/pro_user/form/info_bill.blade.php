@@ -68,8 +68,9 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-12 form-group" id="formCountry">
-                    {!! Form::label('address[id_country]','* Pays') !!}
+                <div class="col-xs-12 form-group" id="form-group-country">
+                    {!! Form::label('address[id_country]','* Pays') !!} 
+                    <label id="country-warning">* Pays: Facture à 30 jours seulement valable en Suisse, changez pays ou type de paiement</label>
                     {!! Form::select('address[id_country]', $form_data['country_ids'], $form_values['id_country'], [
                         'class' => 'form-control select2 full-width']) !!}
                 </div>
