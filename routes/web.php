@@ -155,3 +155,15 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/aktiv8me/verify/{token}', '\App\Http\Controllers\Auth\RegisterController@verify')->name('register.verify');
 Route::get('/aktiv8me/resend', '\App\Http\Controllers\Auth\RegisterController@getResend');
 Route::post('/aktiv8me/resend', '\App\Http\Controllers\Auth\RegisterController@postResend')->name('register.resend');
+
+/**
+ * Sentry route test, to run after sentry install to check install is correct
+ */
+
+Route::get("/test", function() {
+    throw new \Illuminate\Database\Eloquent\MassAssignmentException;
+});
+
+Route::get("/test500", function() {
+    throw new \Symfony\Component\Debug\Exception\FatalErrorException;
+});
