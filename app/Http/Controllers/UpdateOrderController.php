@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Input;
+
 use Illuminate\Http\Request;
-use App\Models\Media;
 use Illuminate\Support\Facades\DB;
 
 class UpdateOrderController extends Controller
@@ -20,21 +18,17 @@ class UpdateOrderController extends Controller
  * 
  */
     public function changeOrder(Request $request) {
-        $input = $request -> all();
-        $table = $input['table'];
-        $position = $input['position'];
+        $table = $request->get('table');
+        $keyByPosition = $request->get('keyByPosition');
         
         switch ($table) {
-            case 'establishment_medias':
-                for($i = 0; $i < count($position); $i++){
-                    if(checkModelId($position[$i])){
-                        DB::table($table)->whereRaw("id = unhex('$position[$i]')")->update(['position' => $i]);
+            case \App\Models\EstablishmentMedia::TABLENAME:
+                foreach($keyByPosition as $position => $key){
+                    if(checkModelId($key)){
+                        DB::table($table)->whereRaw("id = unhex('$key')")->update(['position' => $position]);
                     }
                 }
-                
             break;
-             
         }
-        
     }
 }

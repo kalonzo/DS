@@ -50,6 +50,8 @@ Route::post('/edit/establishment/{establishment}', 'EstablishmentController@upda
 // ajax processes through update 
 Route::post('/edit/establishment/{establishment}/ajax/', 'EstablishmentController@ajax')
         ->middleware('auth');;
+//ajax process on drag and drop rearrange orders
+Route::match(['get', 'post'], '/edit/update_order', 'UpdateOrderController@changeOrder');
 
 
 // store booking
@@ -87,10 +89,6 @@ Route::match(['get', 'post'], '/transaction/success', 'WalleeController@transact
 Route::match(['get', 'post'], '/transaction/failure', 'WalleeController@transactionFailed');
 Route::match(['get', 'post'], '/establishment/register/success', 'WalleeController@subscriptionSucceed');
 Route::match(['get', 'post'], '/establishment/register/failure', 'WalleeController@subscriptionFailed');
-
-//ajax update order of media items
-//ajax process on drag and drop rearrange orders
-Route::post('/edit/update_order', 'UpdateOrderController@changeOrder');
 
 
 /* * ****************************TEST ROUTE************************************* */

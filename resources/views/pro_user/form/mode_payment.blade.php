@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="row" id="payment-warning">
-                Facture à 30 jours valable seulement en Suisse, changez pays ou type de paiement
+                La facturation à 30 jours est valable uniquement pour les domiciliés bancaires en Suisse, veuillez changez votre domiciliation ou choisir un autre type de paiement.
             </div>
             <div class="row">
                 <div class="col-xs-12">

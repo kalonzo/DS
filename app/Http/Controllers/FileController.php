@@ -115,6 +115,16 @@ class FileController {
                             $media = self::manageReplacingMediaInstance($fileType, $relatedObject, $originalMedia);
                         }
                     }
+                    if(checkModel($media) && !checkModelId($media->getIdEstablishment())){
+                        if($relatedObject instanceof \App\Models\Interfaces\EstablishmentBoundable){
+                            $media->setIdEstablishment($relatedObject->getIdEstablishment());
+                        } else if($relatedObject instanceof \App\Models\Establishment){
+                            $media->setIdEstablishment($relatedObject->getId());
+                        }
+                        if(!$hasChanged){
+                            $media->save();
+                        }
+                    }
                     if($hasChanged && $media instanceof \App\Models\Media){
                         $options = array();
                         if($media->getPublic() && $media->getDrive(\App\Models\Media::DRIVE_LOCAL)){
