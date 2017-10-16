@@ -194,6 +194,12 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        
+        /* 
+         * Sentry integration provider...
+         */
+        //Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
+
     ],
 
     /*
@@ -247,6 +253,10 @@ return [
     	'Form' => Collective\Html\FormFacade::class,
     	'Html' => Collective\Html\HtmlFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        /* 
+         * Sentry integration alias for Laravel 5.4
+         */
+        //'Sentry' => Sentry\SentryLaravel\SentryFacade::class,
     ],
 
 ];
