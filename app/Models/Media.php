@@ -27,6 +27,7 @@ class Media extends Model {
     const TYPE_USE_ETS_PROMO = 9;
     const TYPE_USE_ETS_EVENT = 10;
     const TYPE_USE_BUSINESS_TYPE = 11;
+    const TYPE_USE_ETS_THUMBNAIL = 12;
     
     const STATUS_PENDING = 1;
     const STATUS_VALIDATED = 2;
@@ -67,6 +68,12 @@ class Media extends Model {
                     $establishment = $this->establishment()->first();
                     if(checkModel($establishment)){
                         $establishment->setIdVideo(0)->save();
+                    }
+                    break;
+                case self::TYPE_USE_ETS_THUMBNAIL:
+                    $establishment = $this->establishment()->first();
+                    if(checkModel($establishment)){
+                        $establishment->setIdThumbnail(0)->save();
                     }
                     break;
                 case self::TYPE_USE_ETS_MENU:

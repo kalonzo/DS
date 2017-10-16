@@ -30,6 +30,7 @@ class Establishment extends Model implements GlobalObjectManageable{
         'DS_ranking',
         'id_logo',
         'id_video',
+        'id_thumbnail',
         'star',
         'nb_last_week_visits',
         'accept_voucher',
@@ -186,6 +187,13 @@ class Establishment extends Model implements GlobalObjectManageable{
      */
     public function video(){
         return $this->hasOne(EstablishmentMedia::class, 'id', 'id_video');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function thumbnail(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_thumbnail');
     }
     /**
      * 
@@ -727,6 +735,12 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $this;
     }
 
+    function getIdThumbnail() {
+        return $this->id_thumbnail;
+    }
 
-    
+    function setIdThumbnail($id_thumbnail) {
+        $this->id_thumbnail = $id_thumbnail;
+    }
+
 }

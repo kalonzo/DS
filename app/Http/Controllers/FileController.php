@@ -192,6 +192,12 @@ class FileController {
                     $resolved = true;
                 }
                 break;
+            case \App\Models\Media::TYPE_USE_ETS_THUMBNAIL:
+                if($relatedObject instanceof \App\Models\Establishment){
+                    $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/thumbnail';
+                    $resolved = true;
+                }
+                break;
             case \App\Models\Media::TYPE_USE_ETS_HOME_PICS:
                 if($relatedObject instanceof \App\Models\Establishment){
                     $path .= 'ets/'.$relatedObject->getIdBusinessType().'/'.$relatedObject->getUuid().'/home_pics';
@@ -276,6 +282,7 @@ class FileController {
         switch($fileType){
             case \App\Models\Media::TYPE_USE_ETS_LOGO:
             case \App\Models\Media::TYPE_USE_ETS_VIDEO:
+            case \App\Models\Media::TYPE_USE_ETS_THUMBNAIL:
             case \App\Models\Media::TYPE_USE_ETS_HOME_PICS:
             case \App\Models\Media::TYPE_USE_ETS_GALLERY_ITEM:
             case \App\Models\Media::TYPE_USE_ETS_MENU:
@@ -330,6 +337,7 @@ class FileController {
             switch($fileType){
                 case \App\Models\Media::TYPE_USE_ETS_LOGO:
                 case \App\Models\Media::TYPE_USE_ETS_VIDEO:
+                case \App\Models\Media::TYPE_USE_ETS_THUMBNAIL:
                     if($originalMedia->getStatus() === \App\Models\Media::STATUS_VALIDATED){
                         $instance = self::resolveMediaInstance($fileType, $relatedObject);
                         $instance->setIdOriginalMedia($originalMedia->getId());

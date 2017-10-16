@@ -1361,6 +1361,22 @@ class EstablishmentController extends Controller {
                         }
                     }
                     break;
+                case 'add_thumbnail':
+                    if ($request->file('thumbnail')) {
+                        $thumbnail = $establishment->thumbnail()->first();
+                        $thumbnail = FileController::storeFile('thumbnail', \App\Models\Media::TYPE_USE_ETS_THUMBNAIL, $establishment, $thumbnail);
+                        if (checkModel($thumbnail)) {
+                            $establishment->setIdThumbnail($thumbnail->getId());
+                            $establishment->save();
+                            
+                            $existingFiles = getMediaUrlForInputFile($thumbnail, false);
+                            $existingFilesConfig = getMediaConfigForInputFile($thumbnail, false);
+                            $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                            $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                            $jsonResponse['success'] = 1;
+                        }
+                    }
+                    break;
             }
         } catch (Exception $e) {
             // TODO Report error in log system
@@ -1617,6 +1633,7 @@ class EstablishmentController extends Controller {
     }
 
     public static function buildThumbnailData(\Illuminate\Support\Collection $queryResultsCollection, $maxDistanceKm){
+//        print_r($queryResultsCollection);
         $thumbnailData = array();
         foreach ($queryResultsCollection as $queryResult) {
             if ($queryResult->rawDistance <= $maxDistanceKm) {
@@ -1626,9 +1643,12 @@ class EstablishmentController extends Controller {
                 $thumbnailData[$uuid]['id'] = $uuid;
                 $thumbnailData[$uuid]['name'] = $queryResult->name;
                 if(empty($queryResult->logo_path)){
-                    $thumbnailData[$uuid]['img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+                    $thumbnailData[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
                 } else {
-                    $thumbnailData[$uuid]['img'] = $queryResult->logo_path;
+                    $thumbnailData[$uuid]['logo_img'] = $queryResult->logo_path;
+                }
+                if(isset($queryResult->thumbnail_path) && !empty($queryResult->thumbnail_path)){
+                    $thumbnailData[$uuid]['thumbnail_img'] = $queryResult->thumbnail_path;
                 }
                 $thumbnailData[$uuid]['city'] = $queryResult->city;
                 $thumbnailData[$uuid]['country'] = \App\Models\Country::getCountryLabel($queryResult->id_country);

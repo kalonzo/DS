@@ -314,7 +314,8 @@ select:not(.select2){
 .footer {
     background-color: $main-color;
     height: $footerHeight;
-    padding-top: 1em;
+    padding-top: 0.5em;
+    font-size: 0.9em;
     *{
         color: white;
     }
@@ -485,13 +486,25 @@ select:not(.select2){
         .thumbnail-top{
             position: relative;
             .thumbnail-picture{
+                width: 100%;
+                img.square-pattern{
+                    width: 100%;
+                    @include opacity(0);
+                }
+                .crop{
+                    > img{
+                        max-height: 100%;
+                    }
+                }
+            }
+            .logo-picture{
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position-x: center;
                 background-position-y: center;
                 img.square-pattern{
                     width: 100%;
-                    @include opacity(0);
+                    visibility: hidden;
                 }
             }
             .thumbnail-distance{
@@ -710,6 +723,7 @@ select:not(.select2){
                     font-size: 3.5em; 
                     font-weight: bold;
                     flex-shrink: 10;
+                    padding-left: 0.5em;
                 }
                 p{
                     font-size: 1.5em; 

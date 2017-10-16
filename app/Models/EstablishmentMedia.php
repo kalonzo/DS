@@ -24,6 +24,7 @@ class EstablishmentMedia extends Media
         $labelByType[self::TYPE_USE_ETS_VIDEO] = 'Vidéo établissement';
         $labelByType[self::TYPE_USE_ETS_PROMO] = 'Image promotion';
         $labelByType[self::TYPE_USE_ETS_EVENT] = 'Image événement';
+        $labelByType[self::TYPE_USE_ETS_THUMBNAIL] = 'Vignette établissement';
         return $labelByType;
     }
     

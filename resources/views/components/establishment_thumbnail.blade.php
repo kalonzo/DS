@@ -2,9 +2,29 @@
      data-lat='{{ $establishment['latitude'] }}' data-lng='{{ $establishment['longitude'] }}' data-name="{{ $establishment['name'] }}">
     <a href="@if(isset($establishment['url'])) {{ $establishment['url'] }} @else javascript:void(0); @endif" @if(!isset($establishment['url'])) class="link-disabled" @endif>
         <div class="thumbnail-top col-xs-12 no-gutter">
-            <div class="thumbnail-picture" style="background-image: url('{{ $establishment['img'] }}');">
-                <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
-            </div>
+            <?php
+            if(isset($establishment['thumbnail_img'])){
+                ?>
+                <!--
+                <div class="thumbnail-picture" style="background-image: url('{{ asset($establishment['thumbnail_img']) }}');">
+                    <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                </div>
+                -->
+                <div class="thumbnail-picture square-container">
+                    <div class="crop">
+                        <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                        <img src="{{ asset($establishment['thumbnail_img']) }}" alt="Thumbnail"/>   
+                    </div>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="logo-picture" style="background-image: url('{{ asset($establishment['logo_img']) }}');">
+                    <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                </div>
+                <?php
+            }
+            ?>
             <div class="thumbnail-distance">
                 {{ $establishment['raw_distance'] }}
             </div>

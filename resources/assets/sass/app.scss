@@ -80,7 +80,7 @@ a.link-disabled{
         height: 100%;
         overflow: hidden;
         position: relative;
-        > img {
+        > img:not(.square-pattern) {
             display: block;
             min-width: 100%;
             min-height: 100%;

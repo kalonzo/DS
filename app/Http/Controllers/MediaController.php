@@ -81,6 +81,12 @@ class MediaController extends Controller
                                 $establishment->setIdVideo($media->getId())->save();
                             }
                             break;
+                        case Media::TYPE_USE_ETS_THUMBNAIL:
+                            $establishment = $media->establishment()->first();
+                            if(checkModel($establishment)){
+                                $establishment->setIdThumbnail($media->getId())->save();
+                            }
+                            break;
                     }
 
                     $originalMedia->setIdEstablishment(0);

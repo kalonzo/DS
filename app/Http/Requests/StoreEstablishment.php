@@ -80,7 +80,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
                 $rules = [
                     'video' => 'required|mimes:mp4',
                 ];
-
+                break;
+            case 'add_thumbnail':
+                $rules = [
+                    'thumbnail' => 'required|mimes:png,jpg,jpeg',
+                ];
                 break;
             case 'add_employee':
                 $rules = [

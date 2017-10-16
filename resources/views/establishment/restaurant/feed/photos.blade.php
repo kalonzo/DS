@@ -52,6 +52,60 @@
                 </div>
             </div>
             <br/>
+            <div class="row form-group" id='ets-thumbnail'>
+                @if(checkModel($establishment))
+                <div class="col-xs-12">
+                    <h5>Vignette</h5>
+                    <p>
+                        @lang("Veuillez télécharger une image qui sera affichée en tant que vignette de votre établissement dans les résultats de recherche.") 
+                    </p>
+                    <br/>
+                    @php
+                        $medias = null;
+                        if(checkModel($establishment) && $establishment->thumbnail()->exists()){
+                            $medias = [$establishment->thumbnail()->first()];
+                        }
+                    @endphp
+                    @component('components.file-input', 
+                                        [
+                                        'name' => 'thumbnail',
+                                        'class' => 'form-control',
+                                        'multiple' => false,
+                                        'medias' => $medias,
+                                        'fileType' => 'image',
+                                        'showRemove' => 'false',
+                                        'directUpload' => 'true',
+                                        'fileRefreshOnUpload' => 'true',
+                                        'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
+                                        ])
+                        @slot('extraData')
+                            {'action': 'add_thumbnail'}
+                        @endslot
+                        @slot('fileerror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                        @slot('fileuploaderror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                        @slot('filebatchuploaderror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                        @slot('filedeleteerror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                    @endcomponent
+                </div>
+
+                @else
+                
+                <div class="col-xs-12 incomplete-sheet-disclaimer">
+                    <p>
+                        L'ajout de vignette sera accessible une fois votre établissement enregistré avec les informations minimales requises.
+                    </p>
+                </div>
+                @endif
+            </div>
+            <br/>
             <div class="row form-group">
                 <div class="col-xs-12">
                     <h5>Page d'accueil</h5>
@@ -86,6 +140,7 @@
                     </div>
                 </div>
             </div>
+            <br/>
             @component('establishment.restaurant.feed.photos-galleries', ['establishment' => $establishment])
             @endcomponent
             <div class="row">

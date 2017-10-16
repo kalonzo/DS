@@ -77,13 +77,17 @@ class HomeController extends Controller {
                 ->select([
                         Establishment::TABLENAME . '.id as id_establishment'
                         , Establishment::TABLENAME . '.*', Address::TABLENAME . '.*'
-                        , 'logo.local_path as logo_path'
+                        , 'logo.local_path as logo_path', 'thumbnail.local_path as thumbnail_path'
                         , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
                     ])
                 ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                 ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', function ($join) {
                         $join->on('logo.id', '=', Establishment::TABLENAME . '.id_logo')
                              ->where('logo.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                    })
+                ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS thumbnail', function ($join) {
+                        $join->on('thumbnail.id', '=', Establishment::TABLENAME . '.id_thumbnail')
+                             ->where('thumbnail.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
                     })
                 ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                 ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
