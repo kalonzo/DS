@@ -73,7 +73,6 @@
                                     'directUpload' => 'true',
                                     'fileRefreshOnUpload' => 'true',
                                     'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
-                                    'tablename' => 'establishment_medias',
                                     ])
                     @slot('extraData')
                         {'action': 'add_media_to_gallery', 'id_gallery': '{!!$gallery->getUuid()!!}'}

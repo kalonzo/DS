@@ -100,6 +100,14 @@ $timetableRowHeight: 76px;
     .radio-inline:not(:last-child){
         margin-right: 2em;
     }
+    #payment-warning{
+        text-align: center;
+    }
+
+    #country-warning, #payment-warning{
+        color: $danger-color;
+        display: none;
+    }
 }
 #validToPayment{
     padding: 1em 3.5em;

@@ -1,22 +1,18 @@
-
 /**
-*transition effects for bookmark menu items
+* Transition effects for bookmark menu items
 */
-
 $.fn.moveItBars = function (speed) {
-    //offset = height of icon to show a square
-    var offset = this.height();
-    var bookmarkSize = offset - this.width();
-    var theTarget = this;
+    var visiblePartWidth = this.find('.glyphicon').width();
+    var hiddenPartWidth = this.width() - visiblePartWidth;
 
     this.hover(function (event) {
         event.preventDefault();
-        theTarget.css({"margin-right": bookmarkSize + "px", "transition": speed + "s ease"});
+        this.css({"margin-right": -hiddenPartWidth + "px", "transition": speed + "s ease"});
     });
 
     this.mouseleave(function (event) {
         event.preventDefault();
-        theTarget.css("margin-right", 0);
+        this.css("margin-right", 0);
     });
 
 };

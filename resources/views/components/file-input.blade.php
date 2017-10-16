@@ -172,72 +172,61 @@ if(!isset($tablename)){
                 .on('filesorted', function(event, params) {
                     // Drag and Drop Ajax ordering JS store in DB
                     var tableName = '{{$tablename}}';
-                    var key = {};
+                    var keyByPosition = {};
                     for (var i = 0; i < params.stack.length; i++) {
-                        key[i] = params.stack[i].key
+                        keyByPosition[i] = params.stack[i].key
                     }
-                    var dataGallery = {};
-                    dataGallery ["position"] = key;
-                    dataGallery["table"] = tableName;
+                    var ajaxParams = {};
+                    ajaxParams ["keyByPosition"] = keyByPosition;
+                    ajaxParams["table"] = tableName;
                     //JSON is sent {table:"table_name", position : {0:"uuid"....n:"uuid"}}
                     $.ajax({
                         url: "/edit/update_order",
                         method: "POST",
-                        data: dataGallery,
-                        datatype: "Json",
-                        success: "success",
-                        
+                        data: ajaxParams,
+                        datatype: "json",
                         error: function (jqXHR, exception) {
                             var msg = '';
                             var reload = false;
-
                             switch (jqXHR.status) {
                                 case 0:
                                     msg = 'Not connect.\n Verify Network.';
                                     reload = true;
                                 break;
-
                                 case 404:
                                     msg = 'Photo order not changed. [404]';
                                     reload = true;
                                 break;
-
                                 case 500:
                                     msg = 'Photo order not changed. [500].';
                                     reload = true;
                                 break;
-
                                 default:
-
                                     switch (exception) {
                                          case 'parsererror':
                                              msg = 'Photo order not changed. Parse Error';
-                                             console.log(jqXHR.responseText + msg);
                                              break;
-
                                          case 'timeout':
                                              msg = 'Photo order not changed. Time Out';
                                              reload = true;
                                              break;
-
                                          case 'abort':
                                              msg = 'Photo order not changed. Ajax Abort';
-                                        reload = true;
-                                        break;
+                                            reload = true;
+                                            break;
                                         default:
-                                                msg = 'Uncaught Error.\n' + jqXHR.responseText;
-                                        reload = true;
-                                        break;
-                                        }
-                                        break;
-                                        }
+                                            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                                            reload = true;
+                                            break;
+                                    }
+                                break;
+                            }
 
-                                        if (reload === true) {
-                                        alert('error:' + msg);
-                                       
-                                        }
-                                        },
-                                });
+                            if (reload === true) {
+                                alert('error:' + msg);
+                            }
+                        },
+                    });
                     
                 })
                 @endif
