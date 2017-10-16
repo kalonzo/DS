@@ -198,7 +198,7 @@ return [
         /* 
          * Sentry integration provider...
          */
-        //Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
+        Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
 
     ],
 
@@ -256,7 +256,7 @@ return [
         /* 
          * Sentry integration alias for Laravel 5.4
          */
-        //'Sentry' => Sentry\SentryLaravel\SentryFacade::class,
+        'Sentry' => Sentry\SentryLaravel\SentryFacade::class,
     ],
 
 ];

@@ -19,20 +19,12 @@ class Handler extends ExceptionHandler
     protected $dontReport = [
         \Illuminate\Auth\AuthenticationException::class,
         \Illuminate\Auth\Access\AuthorizationException::class,
-        //\Symfony\Component\HttpKernel\Exception\HttpException::class,
-        //\Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
     ];
 
-    /**
-     * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param  \Exception  $exception
-     * @return void
-     */
     
     /**
     * Install Sentry client
@@ -50,18 +42,22 @@ class Handler extends ExceptionHandler
     * add to .env in main folder: SENTRY_DSN=[https API key from Sentry account]
     */
     
+    /**
+     * Report or log an exception.
+     *
+     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
+     *
+     * @param  \Exception  $exception
+     * @return void
+     */
     public function report(Exception $exception)
     {   
-        //Sentry exception handler start
-        /**
-        if (app()->bound('sentry') && $this->shouldReport($exception)) {
-        app('sentry')->captureException($exception);
+        if(env('SENTRY_DSN')){
+            //Sentry exception handler start
+            if (app()->bound('sentry') && $this->shouldReport($exception)) {
+                app('sentry')->captureException($exception);
+            }
         }
-         * 
-         */
-        //Sentry exception handler end
-        
-        
         
         parent::report($exception);
         
@@ -77,19 +73,18 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {   
-       
         // Convert all non-http exceptions to a proper 500 http exception
         // if we don't do this exceptions are shown as a default template
         // instead of our own view in resources/views/errors/500.blade.php
-        /* uncomment this for when using sentry
-        if ($this->shouldReport($exception) && !$this->isHttpException($exception) && !config('app.debug')) {
-            $exception = new HttpException(500, 'Whoops!');
-        }
-        */
-        //if 404 error
-        if($exception instanceof HttpException){
-            return response()->view('/errors/404custom', [], 404);
+        if(!envDev()){
+            if ($this->shouldReport($exception) && !$this->isHttpException($exception) && !config('app.debug')){
+                $exception = new HttpException(500, 'Whoops!');
             }
+        }
+        //if 404 error
+//        if($exception instanceof HttpException){
+//            return response()->view('/errors/404custom', [], 404);
+//        }
         
         return parent::render($request, $exception);
         
