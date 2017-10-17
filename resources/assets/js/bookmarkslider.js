@@ -3,16 +3,16 @@
 */
 $.fn.moveItBars = function (speed) {
     var visiblePartWidth = this.find('.glyphicon').width();
-    var hiddenPartWidth = this.width() - visiblePartWidth;
+    var hiddenPartWidth = this.width() - visiblePartWidth - 15;
 
     this.hover(function (event) {
         event.preventDefault();
-        this.css({"margin-right": -hiddenPartWidth + "px", "transition": speed + "s ease"});
+        $(this).css({"margin-right": -hiddenPartWidth + "px", "transition": speed + "s ease"});
     });
 
     this.mouseleave(function (event) {
         event.preventDefault();
-        this.css("margin-right", 0);
+        $(this).css("margin-right", 0);
     });
 
 };

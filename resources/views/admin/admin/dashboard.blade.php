@@ -27,7 +27,8 @@
 
     @endcomponent
 
-    @component('components.tile', ['title' => 'Catégories classificatives pour les restaurants', 'tabledata' => $dt_business_category_admin])
+    @component('components.tile', ['title' => 'Catégories classificatives pour les restaurants', 'tabledata' => $dt_business_category_admin,
+                                    'add_href' => 'javascript:getOnClickModal("Créer une catégorie", "/admin/create/business_categories")'])
 
     @endcomponent
 

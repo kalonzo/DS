@@ -486,9 +486,9 @@ class SearchController {
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;
                     if(empty($establishmentData->logo_path)){
-                        $establishments[$uuid]['img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+                        $establishments[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
                     } else {
-                        $establishments[$uuid]['img'] = $establishmentData->logo_path;
+                        $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
                     }
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);

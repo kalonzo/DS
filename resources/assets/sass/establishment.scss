@@ -707,7 +707,18 @@ $timetableRowHeight: 76px;
         .thumbnail-item{
             text-align: center;
             margin-bottom: 2em;
-            img{
+            .thumbnail-picture{
+                @include borderRadius(100%);
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position-x: center;
+                background-position-y: center;
+                .square-pattern{
+                    width: 100%;
+                    visibility: hidden;
+                }
+            }
+            img:not(.square-pattern){
                 width: 80%;
                 margin: 10px auto 0px auto;
                 @include borderRadius(100%);

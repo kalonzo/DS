@@ -13,7 +13,7 @@ class UpdateMediaFieldsNulls extends Migration
      */
     public function up()
     {
-    DB::unprepared('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NULL DEFAULT 99;');
+        DB::unprepared('ALTER TABLE `establishment_medias` CHANGE `position` `position` INT(11) NULL DEFAULT 99;');
     }
     /**
      * Reverse the migrations.

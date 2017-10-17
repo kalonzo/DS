@@ -246,12 +246,14 @@ if($videoQuery->exists()){
         <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">Notre <strong>équipe</strong></h1>
         <div class="row">
             @foreach($data['staff'] as $staff)
-            <div class="col-xs-6 col-sm-4 thumbnail-item">
-                <img class="wow fadeInRight" data-wow-delay="{{$loadDelay}}s" src="{{ $staff['picture'] }}" alt="{{ $staff['name'] }} picture"/>
-                <div class="thumbnail-name wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
+            <div class="col-xs-6 col-sm-4 thumbnail-item wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
+                <div class="thumbnail-picture" style="background-image: url('{{ asset($staff['picture']) }}');">
+                    <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                </div>
+                <div class="thumbnail-name">
                     {{ $staff['name'] }}
                 </div>
-                <div class="thumbnail-description wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
+                <div class="thumbnail-description>
                     {{ $staff['position'] }}
                 </div>
             </div>                    
@@ -325,11 +327,13 @@ if($videoQuery->exists()){
                         @if(isset($timeslot[1]['time']))
                             {{ $timeslot[1]['time'] }}
                         @endif
+                        &nbsp;
                     </div>    
                     <div class="col-xs-5_5 col-xs-offset-0_5 col-sm-4_5 col-sm-offset-0 timetable-col timetable-col-pm">
                         @if(isset($timeslot[2]['time']))
                             {{ $timeslot[2]['time'] }}
                         @endif
+                        &nbsp;
                     </div>  
                 @endif
             </div>

@@ -30,7 +30,9 @@
             @foreach($data['dishes'] as $dish)
             <div class="col-xs-6 col-sm-4 thumbnail-item">
                 <div class="thumbnail-visual">
-                    <img src="{{ $dish['picture'] }}" alt="{{ $dish['name'] }} picture"/>
+                    <div class="thumbnail-picture" style="background-image: url('{{ asset($dish['picture']) }}');">
+                        <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
+                    </div>
                     <div class="thumbnail-badge">
                         <div class="thumbnail-badge-inner">
                             <span class="currency">{{ $dish['currency'] }}</span>

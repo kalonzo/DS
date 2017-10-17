@@ -5,11 +5,6 @@
             <?php
             if(isset($establishment['thumbnail_img'])){
                 ?>
-                <!--
-                <div class="thumbnail-picture" style="background-image: url('{{ asset($establishment['thumbnail_img']) }}');">
-                    <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
-                </div>
-                -->
                 <div class="thumbnail-picture square-container">
                     <div class="crop">
                         <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>

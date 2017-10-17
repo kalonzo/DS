@@ -58,6 +58,9 @@ class AdminController extends Controller {
                 case Event::TABLENAME:
                     $controllerClass = App::make(EventController::class);
                     break;
+                case BusinessCategory::TABLENAME:
+                    $controllerClass = App::make(BusinessCategoryController::class);
+                    break;
             }
             if ($controllerClass instanceof Controller) {
                 $params = [];
@@ -69,6 +72,9 @@ class AdminController extends Controller {
                             break;
                         case Event::TABLENAME:
                             $params['request'] = App::make(StoreEvent::class);
+                            break;
+                        case BusinessCategory::TABLENAME:
+                            $params['request'] = App::make(\App\Http\Requests\StoreBusinessCategory::class);
                             break;
                     }
                 } else {
@@ -120,6 +126,9 @@ class AdminController extends Controller {
                 case Event::TABLENAME:
                     $controllerClass = App::make(EventController::class);
                     break;
+                case BusinessCategory::TABLENAME:
+                    $controllerClass = App::make(BusinessCategoryController::class);
+                    break;
             }
             if ($controllerClass instanceof Controller) {
                 $params = [];
@@ -133,6 +142,9 @@ class AdminController extends Controller {
                         break;
                     case Event::TABLENAME:
                         $params['request'] = App::make(StoreEvent::class);
+                        break;
+                    case BusinessCategory::TABLENAME:
+                        $params['request'] = App::make(\App\Http\Requests\StoreBusinessCategory::class);
                         break;
                 }
                 return $controllerClass->callAction($action, $params);
