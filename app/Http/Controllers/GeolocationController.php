@@ -57,10 +57,10 @@ class GeolocationController extends Controller
                     }
                 }
             }
-            $geolocArray = self::$geolocArrayByCountryLanguage[$defaultCountry][$defaultlang];
-            if(!empty($geolocArray) && count($geolocArray) === 2){
-                $geoloc = new \App\Models\Utilities\LatLng($geolocArray['lat'], $geolocArray['lng']);
-            }
+        }
+        $geolocArray = self::$geolocArrayByCountryLanguage[$defaultCountry][$defaultlang];
+        if(!empty($geolocArray) && count($geolocArray) === 2){
+            $geoloc = new \App\Models\Utilities\LatLng($geolocArray['lat'], $geolocArray['lng']);
         }
         return $geoloc;
     }
@@ -68,21 +68,23 @@ class GeolocationController extends Controller
     public static function getLocaleCountry(){
         $countryIso = self::DEFAULT_COUNTRY;
                   
-        $acceptedLanguages = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
-        $acceptedLanguagesArray = explode(';', $acceptedLanguages);
-        if(!empty($acceptedLanguagesArray) && isset($acceptedLanguagesArray[0])){
-            $prioLanguageArray = explode(',', $acceptedLanguagesArray[0]);
-            $prioLanguage = null;
-            foreach($prioLanguageArray as $prioLanguageItem){
-                if(strpos($prioLanguageItem, '-') !== false){
-                    $prioLanguage = $prioLanguageItem;
-                    break;
+        if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
+            $acceptedLanguages = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+            $acceptedLanguagesArray = explode(';', $acceptedLanguages);
+            if(!empty($acceptedLanguagesArray) && isset($acceptedLanguagesArray[0])){
+                $prioLanguageArray = explode(',', $acceptedLanguagesArray[0]);
+                $prioLanguage = null;
+                foreach($prioLanguageArray as $prioLanguageItem){
+                    if(strpos($prioLanguageItem, '-') !== false){
+                        $prioLanguage = $prioLanguageItem;
+                        break;
+                    }
                 }
-            }
-            if(!empty($prioLanguage)){
-                $langCountryArray = explode('-', $prioLanguage);
-                if(!empty($langCountryArray) && count($langCountryArray) === 2){
-                    $countryIso = strtolower($langCountryArray[1]);
+                if(!empty($prioLanguage)){
+                    $langCountryArray = explode('-', $prioLanguage);
+                    if(!empty($langCountryArray) && count($langCountryArray) === 2){
+                        $countryIso = strtolower($langCountryArray[1]);
+                    }
                 }
             }
         }

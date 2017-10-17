@@ -98,40 +98,44 @@ function getMediaConfigForInputFile($medias, $jsonEncoded = true, $allowRemove =
     if($medias instanceof App\Models\Media){
         $medias = array($medias);
     }
-    if(!empty($medias)){
-        foreach($medias as $media){
-            if($media instanceof App\Models\Media){
-                $instanceConfig = array(
-                    'caption' => $media->getFilename(),
-                    'size' => $media->getSize(),
-                    'key' => $media->getUuid(),
-                );
-                if($allowRemove){
-                    $instanceConfig['url'] = '/delete/'.$media::TABLENAME.'/'.$media->getUuid();
+    try{
+        if(!empty($medias)){
+            foreach($medias as $media){
+                if($media instanceof App\Models\Media){
+                    $instanceConfig = array(
+                        'caption' => $media->getFilename(),
+                        'size' => $media->getSize(),
+                        'key' => $media->getUuid(),
+                    );
+                    if($allowRemove){
+                        $instanceConfig['url'] = '/delete/'.$media::TABLENAME.'/'.$media->getUuid();
+                    }
+                    if(!empty($media->getType())){
+                        switch($media->getType()){
+                            case \App\Models\Media::TYPE_IMAGE:
+                            case \App\Models\Media::TYPE_VIDEO:
+                                $instanceConfig['type'] = $media->getTypeLabel();
+                                $instanceConfig['filetype'] = $media->getMimeType();
+                                break;
+                            default :
+                                switch($media->getExtension()){
+                                    case 'pdf' :
+                                        $instanceConfig['type'] = $media->getExtension();
+                                        $instanceConfig['filetype'] = $media->getMimeType();
+                                        break;
+                                    default :
+                                        $instanceConfig['type'] = 'other';
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                    $mediaConfig[] = $instanceConfig;
                 }
-                if(!empty($media->getType())){
-                    switch($media->getType()){
-                        case \App\Models\Media::TYPE_IMAGE:
-                        case \App\Models\Media::TYPE_VIDEO:
-                            $instanceConfig['type'] = $media->getTypeLabel();
-                            $instanceConfig['filetype'] = $media->getMimeType();
-                            break;
-                        default :
-                            switch($media->getExtension()){
-                                case 'pdf' :
-                                    $instanceConfig['type'] = $media->getExtension();
-                                    $instanceConfig['filetype'] = $media->getMimeType();
-                                    break;
-                                default :
-                                    $instanceConfig['type'] = 'other';
-                                    break;
-                            }
-                            break;
             }
-                }
-            }
-            $mediaConfig[] = $instanceConfig;
         }
+    } catch(Exception $e){
+        throw $e;
     }
     if($jsonEncoded){
         return json_encode($mediaConfig);
@@ -146,13 +150,19 @@ function getMediaConfigForInputFile($medias, $jsonEncoded = true, $allowRemove =
  */
 function getMediaUrlForInputFile($medias, $jsonEncoded = true){
     $mediaUrls = array();
-    if($medias instanceof App\Models\Media){
-        $medias = array($medias);
-    }
-    if(!empty($medias)){
-        foreach($medias as $media){
-            $mediaUrls[] = asset($media->getLocalPath());
+    try{
+        if($medias instanceof App\Models\Media){
+            $medias = array($medias);
         }
+        if(!empty($medias)){
+            foreach($medias as $media){
+                if($media instanceof App\Models\Media){
+                    $mediaUrls[] = asset($media->getLocalPath());
+                }
+            }
+        }
+    } catch(Exception $e){
+        throw $e;
     }
     if($jsonEncoded){
         return json_encode($mediaUrls);

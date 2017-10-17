@@ -109,7 +109,7 @@
                     <h2>Besoin d'aide ?</h2>
                     <ul>
                         <li><a href="#">Contactez-nous</a></li>
-                        <li><a href="#">Questions fréquentes</a></li>
+                        <!--<li><a href="#">Questions fréquentes</a></li>-->
                         <li><a href="#">CGU et Mentions légales</a></li>
                     </ul>
                 </div>
