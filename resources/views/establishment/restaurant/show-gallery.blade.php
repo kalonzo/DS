@@ -4,24 +4,29 @@
     <div class="section-bg"></div>
     <div class="container">
         <h1><strong>Galeries</strong> photos</h1>
-        <div class="row">
-            @foreach($data['galleries'] as $gallery)
-            <div class="col-xs-12 col-sm-6 gallery-item" onclick='getOnClickModal("{{ $gallery['name'] }}", "{{ $establishment->getUrl() }}ajax",
-                                                                        {action: "show_gallery", id_gallery: "{{ $gallery['id'] }}"})'>
-                <div class="square-container">
-                    <div class="crop">
-                        <img src="{{ $gallery['picture'] }}" alt="{{ $gallery['name'] }} gallery"/>
-                    </div>
-                </div>
-                <div class="gallery-details">
-                    <div class="gallery-title">
-                        {{ $gallery['name'] }}
-                    </div>
-                    <div class="gallery-info">
-                        {{ $gallery['info'] }}
-                    </div>
-                </div>
-            </div>                    
+        <div class="row gallery-box">
+            @foreach($data['galleries'] as $galleryData)
+                @foreach($galleryData['medias'] as $mediaPath)
+                    @if($loop->first)
+                    <a class="col-xs-12 col-sm-6 gallery-item" href="{{ $mediaPath }}">
+                        <div class="square-container">
+                            <div class="crop">
+                                <img src="{{ $mediaPath }}" alt="{{ $galleryData['name'] }} gallery"/>
+                            </div>
+                        </div>
+                        <div class="gallery-details">
+                            <div class="gallery-title">
+                                {{ $galleryData['name'] }}
+                            </div>
+                            <div class="gallery-info">
+                                ({{ $galleryData['nb_media'].' '.__('photos') }})
+                            </div>
+                        </div>
+                    </a>
+                    @else
+                    <a class="gallery-item" href="{{ $mediaPath }}"></a>
+                    @endif
+                @endforeach
             @endforeach
         </div>
     </div>

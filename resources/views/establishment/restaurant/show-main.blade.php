@@ -253,7 +253,7 @@ if($videoQuery->exists()){
                 <div class="thumbnail-name">
                     {{ $staff['name'] }}
                 </div>
-                <div class="thumbnail-description>
+                <div class="thumbnail-description">
                     {{ $staff['position'] }}
                 </div>
             </div>                    

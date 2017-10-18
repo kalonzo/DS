@@ -164,15 +164,36 @@ class EstablishmentController extends Controller {
             case 'photos':
                 $data['galleries'] = array();
                 $galleriesData = $establishment->galleries()
-                                    ->select([\App\Models\Gallery::TABLENAME.'.*', DB::raw('count('.\App\Models\Gallery::TABLENAME.'.id) as nbMedias'),
+                                    ->select([\App\Models\Gallery::TABLENAME.'.*',  \App\Models\EstablishmentMedia::TABLENAME.'.local_path as media_path', 
+//                                                DB::raw('count('.\App\Models\Gallery::TABLENAME.'.id) as nbMedias'),
                                                 DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', \App\Models\Gallery::TABLENAME))])
                                     ->join(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
                                         $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id_gallery', '=', \App\Models\Gallery::TABLENAME.'.id')
                                              ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
                                     })
                                     ->orderBy(\App\Models\Gallery::TABLENAME.'.created_at')
-                                    ->groupBy(\App\Models\Gallery::TABLENAME.'.id')
+//                                    ->groupBy(\App\Models\Gallery::TABLENAME.'.id')
                                     ->get();
+                foreach ($galleriesData as $galleryData) {
+                    if ($galleryData instanceof \App\Models\Gallery) {
+                        $mediaPath = asset($galleryData->media_path);
+                        if(!empty($mediaPath)){
+                            if(!isset($data['galleries'][$galleryData->getUuid()])){
+                                $data['galleries'][$galleryData->getUuid()] = array(
+                                                    'id' => $galleryData->getUuid(),
+                                                    'name' => $galleryData->getName(),
+                                                    'nb_media' => 1,
+                                                    'info' => 'todo', // '('.$galleryData->nbMedias.' '.__('photos').')',
+                                                );
+                            } else {
+                                $data['galleries'][$galleryData->getUuid()]['nb_media']++;
+                            }
+                            $data['galleries'][$galleryData->getUuid()]['medias'][] = $mediaPath;
+                        }
+                    }
+                }
+                
+                            /*
                 $galleriesUuids = $galleriesData->pluck('uuid')->all();
                 if(!empty($galleriesUuids)){
                     $galleryMedias = \App\Models\EstablishmentMedia
@@ -203,6 +224,7 @@ class EstablishmentController extends Controller {
                         }
                     }
                 }
+                             */
                 
                 $data['last_pics'] = array();
                 $lastMedias = \App\Models\EstablishmentMedia
