@@ -1230,3 +1230,9 @@ $popoverRadius: 5px;
         @include borderBottomRadius($popoverRadius);
     }
 }
+
+#feedback-success, #feedback-info, #feedback-warning, #feedback-danger, #feedback-error{
+    margin: 0px;
+    @include borderRadius(0px);
+    font-weight: normal;
+}

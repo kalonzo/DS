@@ -279,7 +279,7 @@ class SearchController {
                     ->select([Establishment::TABLENAME . '.*', Address::TABLENAME . '.*'
                             , DB::raw("biz_category1.id as id_biz_category_1"), DB::raw("biz_category1.name as name_biz_category_1")
                             , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
-                            , 'logo.local_path as logo_path'
+                            , 'logo.local_path as logo_path', 'thumbnail.local_path as thumbnail_path'
                             ])
                     ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
                     ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_establishment')
@@ -288,6 +288,10 @@ class SearchController {
                     ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', function ($join) {
                         $join->on('logo.id', '=', Establishment::TABLENAME . '.id_logo')
                              ->where('logo.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                    })
+                    ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS thumbnail', function ($join) {
+                        $join->on('thumbnail.id', '=', Establishment::TABLENAME . '.id_thumbnail')
+                             ->where('thumbnail.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
                     })
                     ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
                     ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
@@ -489,6 +493,9 @@ class SearchController {
                         $establishments[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
                     } else {
                         $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
+                    }
+                    if(isset($establishmentData->thumbnail_path) && !empty($establishmentData->thumbnail_path)){
+                        $establishments[$uuid]['thumbnail_img'] = $establishmentData->thumbnail_path;
                     }
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);

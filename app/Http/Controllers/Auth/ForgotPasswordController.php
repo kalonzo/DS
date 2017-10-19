@@ -35,7 +35,7 @@ use SendsPasswordResetEmails;
             $response = response();
             $jsonResponse = array('success' => 0);
 
-            $view = View::make('auth.passwords.email')->with('email', $request->get('email'));
+            $view = View::make('auth.passwords.forgot-password')->with('email', $request->get('email'));
             $jsonResponse['content'] = $view->render();
             $jsonResponse['success'] = 1;
 
@@ -53,10 +53,11 @@ use SendsPasswordResetEmails;
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function sendResetLinkResponse($response) {
+        \Illuminate\Support\Facades\Request::session()->flash('status', "Un email vous a été envoyé pour réinitialiser votre mot de passe.");
         if (\Illuminate\Support\Facades\Request::ajax()) {
-            return response()->json(['success' => 1, 'status' => trans($response)], 200);
+            return response()->json(['success' => 1], 200);
         } else {
-            return back()->with('status', trans($response));
+            return back();
         }
     }
 

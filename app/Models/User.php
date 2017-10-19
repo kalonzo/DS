@@ -150,6 +150,10 @@ class User extends Authenticatable implements GlobalObjectManageable{
     public function getVerifiedAttribute() {
         return (bool) !$this->codes->count();
     }
+    
+    public function sendPasswordResetNotification($token){
+        $this->notify(new \App\Notifications\ResetPassword($token));
+    }
 
     /**
      * @return mixed

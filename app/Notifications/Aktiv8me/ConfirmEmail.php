@@ -44,12 +44,21 @@ class ConfirmEmail extends Notification
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
-    {
+    {   
         return (new MailMessage)
-            ->subject(trans('aktiv8me.notifications.confirm.subject'))
-            ->line(trans('aktiv8me.notifications.confirm.line1', ['username' => $this->username]))
-            ->action(trans('aktiv8me.notifications.confirm.action'), route('register.verify', $this->token))
-            ->line(trans('aktiv8me.notifications.confirm.line2', ['appname' => config('app.name')]));
+            ->subject("Dinerscope - Votre inscription")
+            ->greeting("Vous y êtes presque…")
+            ->line("Merci de vous être enregistré")
+            ->line("Veuillez confirmer votre compte")
+            ->action("Activez votre compte maintenant", route('register.verify', $this->token))
+            ->line("Les identifiants, ci-dessous, vous permettront de vous connecter sur ".url('/admin').".")
+            ->line("Vous pouvez à tout instant modifier l’ensemble de vos informations personnelles dans la rubrique Mon compte.")
+            ->line("Votre identifiant : ".$this->username)
+            ->line("Votre mot de passe est celui que vous avez défini lors de votre demande d'inscription. Si vous l'avez oublié, vous pourrez le redéfinir "
+                    . "après activation de votre compte.")
+            ->line("Nous vous remercions de votre confiance.")
+            ->line("A vous de jouer !")
+            ;
     }
 
     /**

@@ -165,7 +165,7 @@ a.link-disabled{
     }
 }
 
-#login-dropdown{
+#login-dropdown, #login-panel{
     &.login{
         width: 300px;
     }
@@ -215,6 +215,13 @@ a.link-disabled{
     }
     .login-forgot-password{
         float: right;
+        color: $main-text-color;
+        text-decoration: underline;
+        &:hover, &:focus{
+            color: $main-text-color;
+        }
+    }
+    #login-resend-activation{
         color: $main-text-color;
         text-decoration: underline;
         &:hover, &:focus{

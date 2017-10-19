@@ -59,7 +59,7 @@ class LoginController extends Controller {
         }
     }
 
-    protected function redirectTo() {
+    protected function redirectPath() {
         $redirectTo = "/";
         $user = Auth::user();
 
@@ -77,7 +77,8 @@ class LoginController extends Controller {
         $errorMessage = Lang::get('auth.failed');
         switch($this->getLoginError()){
             case self::ERROR_USER_NOT_ACTIVE:
-                $errorMessage = "Ce compte utilisateur n'a pas été activé. Pour procéder à son activation, veuillez <a href='/aktiv8me/resend'>cliquer ici</a>.";
+                $errorMessage = "Ce compte utilisateur n'a pas été activé. Pour procéder à son activation, veuillez "
+                    . "<a href='".url("/aktiv8me/resend?email=".\Illuminate\Support\Facades\Request::get('email'))."'>cliquer ici</a>.";
                 break;
         }
         return $errorMessage;
@@ -86,6 +87,7 @@ class LoginController extends Controller {
     protected function sendLoginResponse(Request $request) {
         $request->session()->regenerate();
         $this->clearLoginAttempts($request);
+        \Illuminate\Support\Facades\Request::session()->flash('status', "Vous êtes désormais connecté(e) à votre compte.");
         if ($request->ajax()) {
             return response()->json(['success' => 1], 200);
         }
@@ -94,15 +96,13 @@ class LoginController extends Controller {
 
     protected function sendFailedLoginResponse(Request $request) {
         if ($request->ajax()) {
-            return response()->json([
-                        'error' => $this->getErrorMessage()
-                            ], 401);
-        }
-        return redirect()->back()
+            return response()->json(['success' => 0, 'error' => $this->getErrorMessage()], 401);
+        } else {
+            \Illuminate\Support\Facades\Request::session()->flash('error', $this->getErrorMessage());
+            return redirect()->back()
                         ->withInput($request->only($this->username(), 'remember'))
-                        ->withErrors([
-                            $this->username() => $this->getErrorMessage(),
-                        ]);
+                        ;
+        }
     }
 
     /**
@@ -159,6 +159,23 @@ class LoginController extends Controller {
             'message' => trans('aktiv8me.status.logged_in', ['username' => $user->name]),
             'type' => 'success',
         ]);
+    }
+    
+    /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+        
+        \Illuminate\Support\Facades\Request::session()->flash('status', "Vous avez bien été déconnecté(e) de votre compte.");
+
+        return redirect('/');
     }
 
     function getLoginError() {

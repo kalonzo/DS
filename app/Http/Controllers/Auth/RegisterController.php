@@ -68,7 +68,7 @@ use ActivatesUsers,
         $errorMessage = '';
         switch($this->getError()){
             case self::ERROR_USER_CREATION:
-                $errorMessage = "";
+                $errorMessage = "La création du compte a échoué.";
                 break;
             default :
                 $errorMessage = $this->getError();
@@ -84,7 +84,6 @@ use ActivatesUsers,
 
             $typeUser = $request->get('type_user');
 
-            //TODO Check if current user has right to invoke this view
             $view = View::make('components.register')->with('type_user', $typeUser);
             $jsonResponse['content'] = $view->render();
             $jsonResponse['success'] = 1;
@@ -106,7 +105,7 @@ use ActivatesUsers,
         $rules = [
             'firstname' => 'required|min:2|string|max:255',
             'lastname' => 'required|min:2|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:6|confirmed',
         ];
         $messages = [
@@ -122,14 +121,26 @@ use ActivatesUsers,
             'email.string' => 'Le format de votre mail n\'est pas correct.',
             'email.email' => 'Veuillez saisir un email valide.',
             'email.max' => 'Votre email est trop long.',
-            'email.unique' => 'Un utilisateur est déja renseigné pour cet email.',
             'password.required' => 'Veuillez renseigner un mot de passe pour vous connecter à votre espace privé.',
             'password.min' => 'Mot de passe trop faible.',
             'password.min.string' => 'Mot de passe trop faible.',
             'password.confirmed' => 'Veuillez confirmer votre mot de passe.',
         ];
-
-        return Validator::make($data, $rules, $messages);
+        
+        $validator = Validator::make($data, $rules, $messages);
+        $validator->after(function ($validator) use ($data) {
+            $userQuery = User::where('email', 'LIKE', $data['email']);
+            if ($userQuery->exists()) {
+                $userNotActivated = $userQuery->where('status', '=', User::STATUS_CREATED)->exists();
+                if($userNotActivated){
+                    $validator->errors()->add('email', "Ce compte est actuellement inactif. "."Si ce compte vous appartient, veuillez "
+                                         . "<a href='".url("/aktiv8me/resend?email=".$data['email'])."'>cliquer ici</a> pour procéder à son activation.");
+                } else {
+                    $validator->errors()->add('email', "Cette adresse email n\'est pas disponible.");
+                }
+            }
+        });
+        return $validator;
     }
 
     /**
@@ -154,8 +165,6 @@ use ActivatesUsers,
                     'id_inbox' => 0,
                     'id_company' => 0,
         ]);
-//        $mail = \Illuminate\Support\Facades\Mail::to($data['email'])
-//                ->queue(new App\Mail\UserValidateRegistration($user));
     }
 
     protected function redirectTo() {
@@ -174,13 +183,12 @@ use ActivatesUsers,
     }
 
     public function register(Request $request) {
+        $this->validator($this->request->input())->validate();
         try{
-            $this->validator($this->request->input())->validate();
-
             $this->storeUser();
-
             return $this->sendRegisterResponse();
         } catch(\Exception $e){
+            $this->setError($e->getMessage());
             return $this->sendRegisterFailedResponse();
         }
     }
@@ -190,8 +198,8 @@ use ActivatesUsers,
      *
      * @return Factory|View2
      */
-    public function getResend() {
-        return view('auth.resend');
+    public function getResend(Request $request) {
+        return view('auth.resend')->with('email', $request->get('email'));
     }
 
     /**
@@ -225,7 +233,7 @@ use ActivatesUsers,
                     trans('aktiv8me.status.account_confirmation'), trans('aktiv8me.status.no_can_do'), 422
             );
 
-            return $this->sendResendResponse();
+            return $this->sendResendFailedResponse();
         }
 
         if ($this->user->verified) {
@@ -234,7 +242,7 @@ use ActivatesUsers,
             // popping up any info alert on the screen.
             $this->setStatus($this->sendUserIsActiveEmail($this->user));
 
-            return $this->sendResendResponse();
+            return $this->sendResendFailedResponse();
         }
 
         if (!$this->canSendToken($this->user->codes->count())) {
@@ -242,7 +250,7 @@ use ActivatesUsers,
                     trans('aktiv8me.status.account_confirmation'), trans('aktiv8me.status.max_tokens'), 403
             );
 
-            return $this->sendResendResponse();
+            return $this->sendResendFailedResponse();
         }
 
         // good to go! generate new token and mail it
@@ -280,12 +288,10 @@ use ActivatesUsers,
     public function verify($token) {
         /** @var RegistrationToken $valid_token */
         $valid_token = RegistrationToken::findToken($token);
-
         if (!$valid_token) {
             $this->status = $this->setStatus(
                     trans('aktiv8me.status.account_confirmation'), trans('aktiv8me.status.invalid_token'), 403
             );
-
             return redirect('/')->with('status', $this->status);
         }
 
@@ -293,12 +299,10 @@ use ActivatesUsers,
 
         if ($this->tokenIsExpired($valid_token)) {
             $this->renewToken();
-
             return redirect('/')->with('status', $this->status);
         }
 
-        $this->sendWelcomeEmail($this->user)
-                ->destroyToken($valid_token->user_id);
+        $this->sendWelcomeEmail($this->user)->destroyToken($valid_token->user_id);
 
         if ($this->autoLoginEnabled()) {
             $this->guard()->login($this->user);
@@ -306,7 +310,6 @@ use ActivatesUsers,
             $this->status = $this->setStatus(
                     trans('aktiv8me.status.account_confirmation'), trans('aktiv8me.status.account_confirmed_and_in', ['username' => $this->user->name]), false
             );
-
             return redirect('/')->with('status', $this->status);
         }
 
@@ -377,28 +380,50 @@ use ActivatesUsers,
      * @return RedirectResponse
      */
     protected function sendResendResponse() {
+        \Illuminate\Support\Facades\Request::session()->flash('status', 
+                "Votre demande d'activation a bien été prise en compte. Un mail de confirmation vous a été envoyé. "
+                . "Merci de cliquer sur le lien d'activation dans cet email pour confirmer votre adresse email.");
         if ($this->request->expectsJson()) {
-            return response()->json($this->status, $this->status['http_code']);
+            return response()->json([
+                                'success' => 1,
+                                'relocateMode' => 1,
+                                'location' => $this->redirectPath()
+                            ], $this->status['http_code']);
+        } else {
+            return redirect($this->redirectPath());
         }
+    }
 
-        return redirect($this->redirectPath())
+    /**
+     * @return RedirectResponse
+     */
+    protected function sendResendFailedResponse() {
+        if ($this->request->expectsJson()) {
+            return response()->json([
+                                'success' => 0,
+                                'error' => $this->status['title'].': '.$this->status['message'],
+                            ], $this->status['http_code']);
+        } else {
+            return redirect($this->redirectPath())
                         ->with('status', $this->status);
+        }
     }
 
     /**
      * @return JsonResponse|RedirectResponse
      */
     protected function sendRegisterResponse() {
+        \Illuminate\Support\Facades\Request::session()->flash('status', 
+                "Votre demande d'inscription a bien été enregistrée. Un mail de confirmation vous a été envoyé. "
+                . "Merci de cliquer sur le lien d'activation dans cet email pour confirmer votre adresse email.");
         if ($this->request->expectsJson()) {
-//            return response()->json($this->status, $this->status['http_code']);
             return response()->json([
                         'success' => 1,
                         'relocateMode' => 1,
                         'location' => $this->redirectPath()
                             ], 200);
         } else {
-            return redirect($this->redirectPath())
-                            ->with('status', $this->status);
+            return redirect($this->redirectPath());
         }
     }
     
@@ -408,7 +433,9 @@ use ActivatesUsers,
     protected function sendRegisterFailedResponse() {
         if ($this->request->expectsJson()) {
             return response()->json([
-                        'error' => $this->getErrorMessage()
+                        'success' => 0,
+                        'error' => $this->getErrorMessage(),
+                        'status' => $this->status
                             ], 401);
         } else {
             return redirect($this->redirectPath())

@@ -1,94 +1,11 @@
-@extends('layouts.app')
+@extends('layouts.front')
 
 @section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default panel-demo">
-                    <div class="panel-heading">
-                        {{ trans('aktiv8me.forms.login.login') }}
-                    </div>
+    <div class="row container-fluid">
+        <div id="login-panel" class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+        @component('components.login')
 
-                    <div class="panel-body">
-                        @if (session('status') && session('status.message'))
-                            <div class="alert alert-success">
-                                {{ session('status.message') }}
-                            </div>
-                        @endif
-                        <form class="form-horizontal" method="POST" action="{{ route('login') }}">
-                            {{ csrf_field() }}
-
-                            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                                <label for="email" class="col-md-4 control-label">
-                                    {{ trans('aktiv8me.forms.common.email') }}
-                                </label>
-
-                                <div class="col-md-6">
-                                    <input id="email"
-                                           type="email"
-                                           class="form-control"
-                                           name="email"
-                                           value="{{ old('email') }}"
-                                           required
-                                           autofocus>
-
-                                    @if ($errors->has('email'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('email') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                                <label for="password" class="col-md-4 control-label">
-                                    {{ trans('aktiv8me.forms.common.password') }}
-                                </label>
-
-                                <div class="col-md-6">
-                                    <input id="password"
-                                           type="password"
-                                           class="form-control"
-                                           name="password"
-                                           required>
-
-                                    @if ($errors->has('password'))
-                                        <span class="help-block">
-                                            <strong>{{ $errors->first('password') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-6 col-md-offset-4">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox"
-                                                   name="remember" {{ old('remember') ? 'checked' : '' }}>
-                                            {{ trans('aktiv8me.forms.login.remember') }}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-8 col-md-offset-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        {{ trans('aktiv8me.forms.login.login') }}
-                                    </button>
-
-                                    @if (envDev())
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ trans('aktiv8me.forms.login.forgot') }}
-                                    </a>
-                                    @endif
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        @endcomponent
         </div>
     </div>
 @endsection

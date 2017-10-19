@@ -73,6 +73,15 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {   
+        if($exception instanceof \Illuminate\Session\TokenMismatchException){
+            if($request->ajax()){
+                return response()->json(['success' => 0, 'error' => "La durée maximale d'inactivité de cette page a éré dépassée. "
+                    . "Merci d'actualiser la page pour poursuivre votre navigation."], 500);
+            } else {
+                return redirect();
+            }
+        }
+        
         // Convert all non-http exceptions to a proper 500 http exception
         // if we don't do this exceptions are shown as a default template
         // instead of our own view in resources/views/errors/500.blade.php

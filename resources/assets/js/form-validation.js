@@ -87,6 +87,7 @@ $('body').on('click', '.form-data-button', function () {
                         $positionElementRef.tooltip({
                             title: tooltipTitle,
                             trigger: 'manual',
+                            html: true,
                             template: '<div class="tooltip form-error-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
                         }).tooltip('show');
                         $input.change(function () {

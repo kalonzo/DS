@@ -55,6 +55,13 @@
                 </a>
             </div>
         </div>
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <a class="login-resend-activation" href="{{ url("/aktiv8me/resend") }}">
+                    Recevoir à nouveau un email d'activation
+                </a> 
+            </div>
+        </div>
         <br class="cleaner"/>
     </div>
     @endif
