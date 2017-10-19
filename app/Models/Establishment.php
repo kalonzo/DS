@@ -31,6 +31,7 @@ class Establishment extends Model implements GlobalObjectManageable{
         'id_logo',
         'id_video',
         'id_thumbnail',
+        'background_color',
         'star',
         'nb_last_week_visits',
         'accept_voucher',
@@ -742,5 +743,14 @@ class Establishment extends Model implements GlobalObjectManageable{
     function setIdThumbnail($id_thumbnail) {
         $this->id_thumbnail = $id_thumbnail;
     }
+
+    function getBackground_color() {
+        return $this->background_color;
+    }
+
+    function setBackground_color($background_color) {
+        $this->background_color = $background_color;
+    }
+
 
 }

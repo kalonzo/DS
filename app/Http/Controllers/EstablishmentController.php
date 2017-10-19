@@ -193,39 +193,6 @@ class EstablishmentController extends Controller {
                     }
                 }
                 
-                            /*
-                $galleriesUuids = $galleriesData->pluck('uuid')->all();
-                if(!empty($galleriesUuids)){
-                    $galleryMedias = \App\Models\EstablishmentMedia
-                                        ::select([DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_gallery')), 'local_path'])
-                                        ->where('status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED)
-                                        ->where('position', '=', 1)
-                                        ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_gallery', $galleriesUuids))
-                                        ->orderBy(\App\Models\EstablishmentMedia::TABLENAME.'.created_at')
-                                        ->get()
-                                    ;
-                    $mediaPathByGallery = $galleryMedias->mapWithKeys(function ($item) {
-                        return [$item->uuid => asset($item->local_path)];
-                    });
-                    foreach ($galleriesData as $galleryData) {
-                        if ($galleryData instanceof \App\Models\Gallery) {
-                            $mediaPath = null;
-                            if(isset($mediaPathByGallery[$galleryData->uuid])){
-                                $mediaPath = $mediaPathByGallery[$galleryData->uuid];
-                            }
-                            if(!empty($mediaPath)){
-                                $data['galleries'][] = array(
-                                                    'id' => $galleryData->getUuid(),
-                                                    'name' => $galleryData->getName(),
-                                                    'info' => '('.$galleryData->nbMedias.' '.__('photos').')',
-                                                    'picture' => $mediaPath
-                                                );
-                            }
-                        }
-                    }
-                }
-                             */
-                
                 $data['last_pics'] = array();
                 $lastMedias = \App\Models\EstablishmentMedia
                                     ::join(\App\Models\Gallery::TABLENAME, \App\Models\Gallery::TABLENAME.'.id', '=', 
@@ -530,6 +497,7 @@ class EstablishmentController extends Controller {
                             'average_price_max' => $request->get('average_price_max'),
                             'accept_booking' => $request->get('accept_booking'),
                             'id_address' => $address->getId(),
+                            'background_color' => $request->get('background_color'),
                         ]);
                         if (checkModel($establishment)) {
                             // Update phone numbers
@@ -812,6 +780,7 @@ class EstablishmentController extends Controller {
                                 'id_address' => $address->getId(),
                                 'id_business_type' => \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT,
                                 'accept_booking' => $request->get('accept_booking'),
+                                'background_color' => $request->get('background_color'),
                                 'id_logo' => 0
                     ]);
                     if (checkModel($establishment)) {

@@ -73,6 +73,15 @@ $(document).on('ready js-loaded ajaxSuccess', function(e){
         baguetteBox.run('.gallery-box');
     }
     
+    if (isPluginLoaded($.fn.colorpicker)) {
+        $('.colorpicker-component').each(function () {
+            $(this).addClass('colorpicker-done');
+            var options = {
+      
+            };
+            $(this).colorpicker(options);
+        });
+    }
 });
 
 $(document).on('googleGeolocReady', function () {

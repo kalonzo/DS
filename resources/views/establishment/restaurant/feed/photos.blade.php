@@ -9,6 +9,22 @@
     </div>
     <div id="collapse9" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading9">
         <div class="panel-body container">
+            <div class="row form-group" id='ets-color'>
+                <div class="col-xs-12">
+                    <h5>Couleur de fond</h5>
+                    <p>
+                        @lang("Veuillez sélectionner une couleur qui personnalisera l'affichage de votre établissement, notamment la couleur de fond de votre logo si "
+                        ."ce dernier est sur fond transparent.") 
+                    </p>
+                    <br/>
+                    <div class="text-center">
+                        <div class="input-group colorpicker-component">
+                            {!! Form::text('background_color', old('background_color'), ['class' => 'form-control']) !!}
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                </div>
+                </div>
+            </div>
             <div class="row form-group" id="logo-submit-container">
                 <div class="col-xs-12">
                     <h5>Logo</h5>

@@ -37,6 +37,12 @@
     .kv-fileinput-error{
         display: none !important;
     }
+    #ets-color{
+        .colorpicker-component{
+            width: 150px;
+            margin: 0px auto;
+        }
+    }
     #logo-submit-container{
         .logo-submit-draft{
             .logo-draft-container{

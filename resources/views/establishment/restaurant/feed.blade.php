@@ -3,6 +3,7 @@
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
 <link href="/libraries/bootstrap-fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/libraries/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" media="all" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('content')
@@ -594,4 +595,5 @@ if(checkModel($establishment)){
 
 <script src="/libraries/bootstrap-fileinput/js/fileinput.min.js"></script>
 <script src="/libraries/ckeditor/ckeditor.js"></script>
+<script src="/libraries/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
 @endsection
