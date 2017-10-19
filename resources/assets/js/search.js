@@ -2,8 +2,19 @@ $(function () {
     $("#search_keywords").autocomplete({
         source: "/search-autocomplete/",
         minLength: 2,
-        select: function( event, ui ) {
-            $("#search_keywords").parentsInclude('form').submit();
+//        select: function( event, ui ) {
+//            var item = ui.item;
+//            if(typeof item.empty != 'undefined' && item.empty){
+//                
+//            } else {
+////                $("#search_keywords").parentsInclude('form').submit();
+//            }
+//        },
+        response: function(event, ui) {
+            if (ui.content.length === 0) {
+                var noResult = { value:"", label:"No results found", empty:1};
+                ui.content.push(noResult);
+            }
         }
     }).autocomplete("instance")._create = function() {
         this._super();
@@ -18,29 +29,33 @@ $(function () {
         var currentCategory = "";
         var indexCategory = 0;
         $.each(items, function (index, item) {
-            if (item.section != currentCategory) {
-                indexCategory++;
-                var liSection = "<li class='ui-autocomplete-category' ";
-                if(typeof item.order_by != 'undefined'){
-                    liSection += " onclick=\"document.location.href='/search?order_by="+ item.order_by +"'\" ";
+            if(typeof item.empty != 'undefined' && item.empty){
+                that._renderItemData(ul, item);
+            } else {
+                if (item.section != currentCategory) {
+                    indexCategory++;
+                    var liSection = "<li class='ui-autocomplete-category' ";
+                    if(typeof item.order_by != 'undefined'){
+                        liSection += " onclick=\"document.location.href='/search?reset=1&order_by="+ item.order_by +"'\" ";
+                    }
+                    liSection +=  ">"
+                                + "<span class='category-label'>" 
+                                    + item.section 
+                                + "</span>";
+                    if(typeof item.order_by != 'undefined'){
+                        liSection += "<span class='category-opener'>+</span>"
+                    }
+                    liSection += "</li>";
+
+                    ul.append(liSection);
+                    currentCategory = item.section;
                 }
-                liSection +=  ">"
-                            + "<span class='category-label'>" 
-                                + item.section 
-                            + "</span>";
-                if(typeof item.order_by != 'undefined'){
-                    liSection += "<span class='category-opener'>+</span>"
+                var li;
+                li = that._renderItemData(ul, item);
+                if (item.section) {
+                    li.attr("aria-label", item.section + " : " + item.label);
+                    li.attr("data-index", indexCategory);
                 }
-                liSection += "</li>";
-                
-                ul.append(liSection);
-                currentCategory = item.section;
-            }
-            var li;
-            li = that._renderItemData(ul, item);
-            if (item.section) {
-                li.attr("aria-label", item.section + " : " + item.label);
-                li.attr("data-index", indexCategory);
             }
         });
         if(typeof map !== 'undefined'){
@@ -51,39 +66,42 @@ $(function () {
         var that = this;
         var li = $( "<li>" );
         var wrapper = $("<div>", {title: item.label});
-        var link = $('<a>');
-        if(!isEmpty(item.url)){
-            link.attr('href', item.url);
+        if(typeof item.empty != 'undefined' && item.empty){
+            li.addClass('no-results')
+            wrapper.append("<span class='ui-menu-item-text'>"+ 'Aucun résultat autour de vous' +"</span>");
         } else {
-            link.addClass('link-disabled');
-        }
-        
-        if(!item.avatar_bg_color){
-            item.avatar_bg_color = '#FFF';
-        }
-        var avatar = "<div class='ui-menu-item-avatar' style='background-color: "+item.avatar_bg_color+";'>";
-        if(item.picture){
-            avatar += "<img class='ui-menu-item-picture' src='"+ item.picture+"' alt='Logo'/>";
-        }
-        if(item.avatar_text){
-            avatar += "<span class='ui-menu-item-avatar-text'>"+ item.avatar_text+"</span>";
-        }
-        avatar += "</div>";
-        link.append(avatar);
-        
-        if ( item.label ) {
-                link.append("<span class='ui-menu-item-text'>"+ item.label+"</span>");
-        } else {
-                link.html( "&#160;" );
-        }
-        if ( item.text_right ) {
-                link.append("<span class='ui-menu-item-text-right'>"+ item.text_right+"</span>");
-        }
-        if ( item.disabled ) {
-            that._addClass( li, null, "ui-state-disabled" );
-        }
+            var link = $('<a>');
+            if(!isEmpty(item.url)){
+                link.attr('href', item.url);
+            } else {
+                link.addClass('link-disabled');
+            }
+            if(!item.avatar_bg_color){
+                item.avatar_bg_color = '#FFF';
+            }
+            var avatar = "<div class='ui-menu-item-avatar' style='background-color: "+item.avatar_bg_color+";'>";
+            if(item.picture){
+                avatar += "<img class='ui-menu-item-picture' src='"+ item.picture+"' alt='Logo'/>";
+            }
+            if(item.avatar_text){
+                avatar += "<span class='ui-menu-item-avatar-text'>"+ item.avatar_text+"</span>";
+            }
+            avatar += "</div>";
+            link.append(avatar);
 
-        wrapper.append(link);
+            if ( item.label ) {
+                    link.append("<span class='ui-menu-item-text'>"+ item.label+"</span>");
+            } else {
+                    link.html( "&#160;" );
+            }
+            if ( item.text_right ) {
+                    link.append("<span class='ui-menu-item-text-right'>"+ item.text_right+"</span>");
+            }
+            if ( item.disabled ) {
+                that._addClass( li, null, "ui-state-disabled" );
+            }
+            wrapper.append(link);
+        }
         return li.append( wrapper ).appendTo( ul );
     };
     
@@ -94,7 +112,7 @@ $(function () {
         }
     }).keypress(function(e) {
         if(e.which == 13) {
-            document.location.href= '/search?q=' + $(this).val();
+            $("#search_keywords").parentsInclude('form').submit();
         }
     });
     $(document).on('positionSaved', function(){

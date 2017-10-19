@@ -25,7 +25,7 @@
             </div>
         </div>
         <div class="thumbnail-text col-xs-12">
-            <div class="thumbnail-label col-xs-12 no-gutter">
+            <div class="thumbnail-label col-xs-12 no-gutter" title="{{ $establishment['name'] }}">
                 {{ $establishment['name'] }}
             </div>
             <div class="thumbnail-info col-xs-12 no-gutter">

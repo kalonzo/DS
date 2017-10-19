@@ -107,11 +107,16 @@
                     @endforeach
                     <a class="filter-list-see-more clickable @if( count($filter_labels['biz_category_2']) <= 8) hidden @endif"
                        data-toggle="modal" data-target="#filterModal">
-                        (+ de types de cuisine)
+                        (+ de types de cadres)
                     </a>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" style="margin-bottom: 15px;">
+                 <!-- NAME FILTER -->
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" name="term" value="{{ $filter_values['term'] }}" class="search-filter-input form-control"/>
+                </div>
                  <!-- PROMO FILTER -->
                 <div class="form-group">
                     <label>Promos</label>
@@ -156,3 +161,18 @@
     </div>
 </div>
 {{ $establishments->links() }}
+<script type="text/javascript">
+    var distance = {{ $filter_values['distance'] }};
+    var maxDistance = 50;
+    var minZoom = 9;
+    var maxZoom = 13;
+    var newZoom = Math.round((1 - (distance / maxDistance)) * (maxZoom - minZoom)) + minZoom;
+    if(typeof resetMapZoom != 'undefined'){
+        resetMapZoom(newZoom);
+    }
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        $(document).on('googleMapReady', function(){
+            resetMapZoom(newZoom);
+        });
+    });
+</script>

@@ -187,7 +187,7 @@ class SearchController {
                 
                 $geolocLimitSuccess = DbQueryTools::setGeolocLimits($businessCategoriesQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
                 $nbResults = $businessCategoriesQuery->count();
-                if ($geolocLimitSuccess && $nbResults >= (self::NB_QUICK_RESULTS_PER_TYPE / 2)) {
+                if ($attempt === 3 || ($geolocLimitSuccess && $nbResults >= (self::NB_QUICK_RESULTS_PER_TYPE / 2))) {
                     $businessCategoriesResults = $businessCategoriesQuery->get();
                 }
                 $attempt++;
@@ -204,7 +204,7 @@ class SearchController {
                         'avatar_text' => strtoupper($result->name[0]),
                         'text_right' => '(' . $result->nb_establishment . ')',
                         'section' => 'Type de cuisine',
-                        'url' => "/search?biz_category_1[]=".$uuid."&distance=".$searchDistance
+                        'url' => "/search?reset=1&biz_category_1[]=".$uuid."&distance=".$searchDistance
                     );
                 }
             }
@@ -213,11 +213,12 @@ class SearchController {
         return $results;
     }
 
-    public static function search() {
+    public function search(\Illuminate\Http\Request $request) {
         $view = null;
-        $reset = Request::get('reset');
+        $reset = $request->get('reset');
         if($reset){
             SessionController::getInstance()->resetSearchFilterValues();
+            self::getFilterValues('distance', 50);
         }
         self::buildFilterLabels();
         $establishmentsQuery = self::buildSearchQuery();
@@ -227,7 +228,7 @@ class SearchController {
             $filterValues = SessionController::getInstance()->getSearchFilterValues();
             $filterLabels = StorageHelper::getInstance()->get('search.filter_data');
             if (!empty($resultsPagination)) {
-                $reload = Request::get('reload');
+                $reload = $request->get('reload');
                 $viewName = null;
                 if ($reload) {
                     $viewName = 'components.search_results';
@@ -255,7 +256,8 @@ class SearchController {
             $userLatLng = GeolocationController::getRawInitialGeolocation();
         }
 
-        $terms = Request::get('term');
+//        $terms = Request::get('term');
+        $terms = self::getFilterValues('term', Request::get('term'));
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
         $price = self::getFilterValues('price');
         $orderBy = self::getFilterValues('order_by', self::SEARCH_ORDER_BY_PROXIMITY);

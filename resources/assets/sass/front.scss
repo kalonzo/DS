@@ -359,6 +359,19 @@ select:not(.select2){
     box-sizing: border-box;
     > .ui-menu-item{
         margin: 0.2em 0px;
+        &.no-results{
+            background-color: transparent !important;
+            &:hover, &:focus{
+                background-color: transparent !important;
+            }
+            .ui-state-active{
+                background-color: transparent !important;
+            }
+            cursor: default;
+            .ui-menu-item-wrapper{
+                line-height: 20px;
+            }
+        }
         .ui-menu-item-wrapper{
             padding: 0px;
             > a {
@@ -618,6 +631,12 @@ select:not(.select2){
                         }
                     }
                 }
+            }
+            input[type=text]{
+                color: $main-text-color;
+                border: 1px solid $main-text-color;
+                @include borderRadius(0px);
+                background: $body-bg;
             }
             .checkbox{
                 margin-top: 0px;

@@ -89,8 +89,13 @@ class LoginController extends Controller {
         $this->clearLoginAttempts($request);
         \Illuminate\Support\Facades\Request::session()->flash('status', "Vous êtes désormais connecté(e) à votre compte.");
         if ($request->ajax()) {
-            return response()->json(['success' => 1], 200);
+            return response()->json([
+                'success' => 1,
+                'relocateMode' => 1,
+                'location' => $this->redirectPath()
+            ], 200);
         }
+        print_r($this->redirectPath()); die();
         return $this->authenticated($request, $this->guard()->user()) ?: redirect()->intended($this->redirectPath());
     }
 

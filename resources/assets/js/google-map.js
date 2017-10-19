@@ -1,10 +1,11 @@
 var map = null;
 var markerPosition = null;
+var mapZoom = 15;
 
 $(document).on('googleGeolocReady', function(){
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -34.397, lng: 150.644},
-        zoom: 15,
+        zoom: mapZoom,
         streetViewControl: false,
 //        scrollwheel: false,
         styles: [{      
@@ -126,4 +127,11 @@ function customizeInfoWindow(infowindow){
         var iw = iwOuter.parent().parent();
         $(iw).addClass('gm-style-iw-container');
     });
+}
+
+resetMapZoom = function(zoom){
+    mapZoom = zoom;
+    if(typeof map !== 'undefined'){
+        map.setZoom(mapZoom);
+    }
 }

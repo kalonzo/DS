@@ -187,6 +187,7 @@ a.link-disabled{
                 }
                 a{
                     width: 100%;
+                    display: inline-block;
                     padding: 0px 15px;
                     color: $main-text-color;
                     vertical-align: middle;
@@ -221,7 +222,7 @@ a.link-disabled{
             color: $main-text-color;
         }
     }
-    #login-resend-activation{
+    .login-resend-activation{
         color: $main-text-color;
         text-decoration: underline;
         &:hover, &:focus{
