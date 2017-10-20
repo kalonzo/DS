@@ -504,11 +504,11 @@ select:not(.select2){
                     width: 100%;
                     @include opacity(0);
                 }
-                .crop{
+/*                .crop{
                     > img{
                         max-height: 100%;
                     }
-                }
+                }*/
             }
             .logo-picture{
                 background-size: contain;

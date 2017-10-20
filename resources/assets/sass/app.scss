@@ -91,6 +91,18 @@ a.link-disabled{
             bottom: -100%;
             left: -100%;
         }
+        &.crop-fit{
+            &.landscape{
+                > img:not(.square-pattern) {
+                    max-height: 100%;
+                }
+            }
+            &.portrait{
+                > img:not(.square-pattern) {
+                    max-width: 100%;
+                }
+            }
+        }
     }
 }
 

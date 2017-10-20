@@ -21,6 +21,9 @@
                                 'multiple' => true,
                                 'fileType' => 'image',
                                 ])
+                        @slot('fileuploaded')
+                            $('#gallery-reloader input[name=new_gallery_name]').val('');
+                        @endslot
                         @slot('fileerror')
                             alertFileInputError(event, data, msg);
                         @endslot
@@ -76,9 +79,6 @@
                                     ])
                     @slot('extraData')
                         {'action': 'add_media_to_gallery', 'id_gallery': '{!!$gallery->getUuid()!!}'}
-                    @endslot
-                    @slot('fileuploaded')
-                        $('#gallery-reloader input[name=new_gallery_name]').val('');
                     @endslot
                     @slot('fileerror')
                         alertFileInputError(event, data, msg);

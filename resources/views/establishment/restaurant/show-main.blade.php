@@ -273,7 +273,7 @@ if($videoQuery->exists()){
                 @foreach($data['story'] as $story)
                     @slot("content_".$story['id'])
                         <div class="timeline-content-image square-container">
-                            <div class="crop">
+                            <div class="crop crop-fit">
                                 <img src="{!! $story['picture'] !!}" alt="story illustration"/>
                             </div>
                         </div>

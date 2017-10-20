@@ -6,7 +6,7 @@
             if(isset($establishment['thumbnail_img'])){
                 ?>
                 <div class="thumbnail-picture square-container">
-                    <div class="crop">
+                    <div class="crop crop-fit">
                         <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
                         <img src="{{ asset($establishment['thumbnail_img']) }}" alt="Thumbnail"/>   
                     </div>

@@ -587,9 +587,6 @@ $timetableRowHeight: 76px;
                         height: 180px;
                         width: 180px;
                         float: left;
-                        img{
-                            width: 100%;
-                        }
                     }
                     .timeline-content-body{
                         display: flex;
@@ -635,9 +632,11 @@ $timetableRowHeight: 76px;
                     margin-top: 10px;
                 }
             }
-            .contact-number{
+            .contact-number, .contact-website{
                 font-size: 2.4em;
-                padding: 0.6em 0px;
+                &.contact-number{
+                    padding: 0.6em 0px;
+                }
                 a{
                     color: $main-text-color;
                     text-decoration: none;

@@ -78,7 +78,7 @@ class Handler extends ExceptionHandler
                 return response()->json(['success' => 0, 'error' => "La durée maximale d'inactivité de cette page a éré dépassée. "
                     . "Merci d'actualiser la page pour poursuivre votre navigation."], 500);
             } else {
-                redirect();
+                return response()->redirectToIntended();
             }
         }
         

@@ -131,6 +131,14 @@ $loadDelay = 0.6
                     </a>
                 </div>
                 @endif
+                @if(isset($data['website']) && !empty($data['website']))
+                <div class="wow fadeInLeft row contact-website" data-wow-delay="{{$loadDelay}}s">
+                    <a href="{{ formatUrl($data['website']) }}" target="_blank">
+                        <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
+                        Visiter le site web
+                    </a>
+                </div>
+                @endif
             </div>
         </section>
     </div>

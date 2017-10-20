@@ -82,6 +82,25 @@ $(document).on('ready js-loaded ajaxSuccess', function(e){
             $(this).colorpicker(options);
         });
     }
+    
+    $('.crop-fit:not(.crop-fitted)').each(function(){
+        $(this).addClass('crop-fitted');
+        var crop = this;
+        var $img = $(this).find('img:not(.square-pattern)');
+        if(checkExist($img)){
+            var image = new Image();
+            image.src = $img.attr("src");
+            image.onload = function() {
+                var imgWidth = this.width;
+                var imgHeight = this.height;
+                if(imgWidth > imgHeight){
+                    $(crop).addClass('landscape');
+                } else if(imgHeight > imgWidth){
+                    $(crop).addClass('portrait');
+                }
+            };
+        }
+    });
 });
 
 $(document).on('googleGeolocReady', function () {

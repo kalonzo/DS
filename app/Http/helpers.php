@@ -234,3 +234,12 @@ function envDev(){
     }
     return $envDev;
 }
+
+function formatUrl($url){
+    $formattedUrl = "";
+    if(strpos($url, "http") !== 0){
+        $formattedUrl = "http://";
+    }
+    $formattedUrl .= $url;
+    return $formattedUrl;
+}

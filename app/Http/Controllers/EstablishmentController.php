@@ -94,6 +94,7 @@ class EstablishmentController extends Controller {
         if (checkModel($callNumber)) {
             $data['phone_number'] = $callNumber->getDisplayable();
         }
+        $data['website'] = $establishment->getSiteUrl();
 
         switch ($page) {
             case 'menu':
