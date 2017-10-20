@@ -499,6 +499,7 @@ class SearchController {
                     if(isset($establishmentData->thumbnail_path) && !empty($establishmentData->thumbnail_path)){
                         $establishments[$uuid]['thumbnail_img'] = $establishmentData->thumbnail_path;
                     }
+                    $establishments[$uuid]['background_color'] = $establishmentData->background_color;
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
                     if(isset($isosByIdCountry[$establishmentData->id_country])){

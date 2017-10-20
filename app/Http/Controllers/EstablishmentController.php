@@ -1631,7 +1631,6 @@ class EstablishmentController extends Controller {
             if ($queryResult->rawDistance <= $maxDistanceKm) {
                 $uuid = UuidTools::getUuid($queryResult->id_establishment);
                 // Search results list
-                $etsUuids[] = $uuid;
                 $thumbnailData[$uuid]['id'] = $uuid;
                 $thumbnailData[$uuid]['name'] = $queryResult->name;
                 if(empty($queryResult->logo_path)){
@@ -1642,6 +1641,7 @@ class EstablishmentController extends Controller {
                 if(isset($queryResult->thumbnail_path) && !empty($queryResult->thumbnail_path)){
                     $thumbnailData[$uuid]['thumbnail_img'] = $queryResult->thumbnail_path;
                 }
+                $thumbnailData[$uuid]['background_color'] = $queryResult->background_color;
                 $thumbnailData[$uuid]['city'] = $queryResult->city;
                 $thumbnailData[$uuid]['country'] = \App\Models\Country::getCountryLabel($queryResult->id_country);
 //                    $dsSelectionEstablishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;

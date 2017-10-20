@@ -14,7 +14,8 @@
                 <?php
             } else {
                 ?>
-                <div class="logo-picture" style="background-image: url('{{ asset($establishment['logo_img']) }}');">
+                <div class="logo-picture" style="background-image: url('{{ asset($establishment['logo_img']) }}');
+                     @if(isset($establishment['background_color'])) background-color: {{ $establishment['background_color'] }}; @endif">
                     <img src="/img/square-pattern.png" alt="square pattern" class="square-pattern"/>
                 </div>
                 <?php
