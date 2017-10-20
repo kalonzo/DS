@@ -291,6 +291,13 @@ class Establishment extends Model implements GlobalObjectManageable{
     public function promotions(){
         return $this->hasMany(Promotion::class, 'id_establishment', 'id');
     }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function events(){
+        return $this->hasMany(Event::class, 'id_establishment', 'id');
+    }
     
     /**
      * Increments nbLastWeekVisits and save it

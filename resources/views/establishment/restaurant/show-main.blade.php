@@ -63,7 +63,7 @@ if($videoQuery->exists()){
 </section>
  @endif
 <!------------- RESTAURANT EVENTS & PROMO ----------------------------->
-@if(checkFlow($data, ['events', 'promotions']))
+@if(checkFlow($data, ['promo_events']))
 <section class="container-fluid ets-events">
     <div class="section-bg"></div>
     <div class="container">
@@ -73,8 +73,8 @@ if($videoQuery->exists()){
             <div class="col-sm-4_5 wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">
                 <?php
                 $dates = array();
-                foreach($data['promotions'] as $promo){
-                    $dates[] = array($promo['start_date'], $promo['end_date'], 'promo');
+                foreach($data['promo_events'] as $promoEvent){
+                    $dates[] = array($promoEvent['start_date'], $promoEvent['end_date'], $promoEvent['type']);
                 }
                 ?>
                 <div class="" id="mini-event-calendar">     
@@ -137,16 +137,24 @@ if($videoQuery->exists()){
                                     beforeShowDay: function(date){
                                         var selectable = false;
                                         var classes = '';
+                                        var datePlusOne = new Date(date);
+                                        datePlusOne.setDate(date.getDate()+1);
                                         $.each(eventsData, function (key, value) {
-                                            if(date >= value[0] && date <= value[1]){
-                                                classes += value[2];
+                                            var startEvent = value[0];
+                                            var endEvent = value[1];
+                                            var eventType = value[2];
+                                            
+                                            if(date >= startEvent && datePlusOne <= endEvent){
+                                                classes += ' ' + eventType + ' ';
                                                 selectable = true;
-                                                if(date.getTime() == value[0].getTime()){
-                                                    classes += ' start';
-                                                }
-                                                if(date.getTime() == value[1].getTime()){
-                                                    classes += ' end';
-                                                }
+                                            }
+                                            if(date <= startEvent && datePlusOne > startEvent){
+                                                classes += ' ' + eventType +' start ';
+                                                selectable = true;
+                                            } 
+                                            if(date <= endEvent && datePlusOne > endEvent){
+                                                classes += ' ' + eventType +' end ';
+                                                selectable = true;
                                             }
                                         });
                                         return [selectable, classes, ''];
@@ -187,12 +195,12 @@ if($videoQuery->exists()){
             <div class="col-sm-7 col-sm-offset-0_5 wow fadeInRight" data-wow-delay="{{$loadDelay}}s" id="event-items-list">
                 <?php
                 $minTimestp = null;
-                if(isset($data['promotions'][0])){
-                    $minTimestp = $data['promotions'][0]['start_timestp'];
+                if(isset($data['promo_events'][0])){
+                    $minTimestp = $data['promo_events'][0]['start_timestp'];
                 }
                 ?>
-                @foreach($data['promotions'] as $promo)
-                <div class="event-item promo @if((!empty($minTimestp) && $promo['start_timestp'] === $minTimestp) || $loop->iteration === 1) first @endif" 
+                @foreach($data['promo_events'] as $promo)
+                <div class="event-item {{ $promo['type'] }} @if((!empty($minTimestp) && $promo['start_timestp'] === $minTimestp) || $loop->iteration === 1) first @endif" 
                      data-start="{{ $promo['start_timestp'] }}" data-end="{{ $promo['end_timestp'] }}">
                     @if(isset($promo['picture']))
                     <div class="event-picture gallery-box">
@@ -215,7 +223,14 @@ if($videoQuery->exists()){
                                     </div>
                                     <div class="title-container">
                                         <h4 class="panel-title">{{ $promo['name'] }}</h4>
-                                        <div class="event-date">{!! formatDate($promo['start_date'], IntlDateFormatter::LONG) !!}</div>
+                                        <div class="event-date">
+                                            <?php
+                                            echo formatDate($promo['start_date'], IntlDateFormatter::LONG);
+                                            if(!empty($promo['end_date'])){
+                                                echo ' - '.formatDate($promo['end_date'], IntlDateFormatter::LONG);
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
                                 </div>
                             </a>

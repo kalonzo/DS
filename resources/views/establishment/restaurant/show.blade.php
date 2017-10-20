@@ -135,7 +135,7 @@ $loadDelay = 0.6
                 <div class="wow fadeInLeft row contact-website" data-wow-delay="{{$loadDelay}}s">
                     <a href="{{ formatUrl($data['website']) }}" target="_blank">
                         <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
-                        Visiter le site web
+                        Visiter notre site web
                     </a>
                 </div>
                 @endif

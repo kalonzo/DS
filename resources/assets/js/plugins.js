@@ -95,7 +95,7 @@ $(document).on('ready js-loaded ajaxSuccess', function(e){
                 var imgHeight = this.height;
                 if(imgWidth > imgHeight){
                     $(crop).addClass('landscape');
-                } else if(imgHeight > imgWidth){
+                } else if(imgWidth < imgHeight){
                     $(crop).addClass('portrait');
                 }
             };

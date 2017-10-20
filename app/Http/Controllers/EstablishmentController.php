@@ -249,7 +249,7 @@ class EstablishmentController extends Controller {
                     }
                 }
                 
-                $data['promotions'] = array();
+                $data['promo_events'] = array();
                 $promosWithMedia = $establishment->promotions()
                                             ->select([\App\Models\Promotion::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
                                             ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
@@ -262,6 +262,7 @@ class EstablishmentController extends Controller {
                 foreach ($promosWithMedia as $promoWithMedia) {
                     if ($promoWithMedia instanceof \App\Models\Promotion) {
                         $promoData = array(
+                                            'type' => 'promo',
                                             'name' => $promoWithMedia->getName(),
                                             'description' => $promoWithMedia->getDescription(),
                                             'start_date' => $promoWithMedia->getStartDate(),
@@ -272,7 +273,33 @@ class EstablishmentController extends Controller {
                         if(!empty($promoWithMedia->local_path)){
                             $promoData['picture'] = asset($promoWithMedia->local_path);
                         }
-                        $data['promotions'][] = $promoData;
+                        $data['promo_events'][] = $promoData;
+                    }
+                }
+                $eventsWithMedia = $establishment->events()
+                                            ->select([\App\Models\Event::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                                            ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, function ($join) {
+                                                $join->on(\App\Models\EstablishmentMedia::TABLENAME.'.id_object_related', '=', \App\Models\Event::TABLENAME.'.id')
+                                                     ->where(\App\Models\EstablishmentMedia::TABLENAME.'.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
+                                            })
+                                            ->whereRaw(\App\Models\Event::TABLENAME.'.end_date > NOW()')
+                                            ->orderBy(\App\Models\Event::TABLENAME.'.start_date')
+                                            ->get();
+                foreach ($eventsWithMedia as $eventWithMedia) {
+                    if ($eventWithMedia instanceof \App\Models\Event) {
+                        $eventData = array(
+                                            'type' => 'event',
+                                            'name' => $eventWithMedia->getName(),
+                                            'description' => $eventWithMedia->getDescription(),
+                                            'start_date' => $eventWithMedia->getStartDate(),
+                                            'end_date' => $eventWithMedia->getEndDate(),
+                                            'start_timestp' => DateTools::getStringTimestpFromDate($eventWithMedia->getStartDate()),
+                                            'end_timestp' => DateTools::getStringTimestpFromDate($eventWithMedia->getEndDate()),
+                                        );
+                        if(!empty($eventWithMedia->local_path)){
+                            $eventData['picture'] = asset($eventWithMedia->local_path);
+                        }
+                        $data['promo_events'][] = $eventData;
                     }
                 }
                 
@@ -770,7 +797,7 @@ class EstablishmentController extends Controller {
                                 'name' => $request->get('name'),
                                 'latitude' => $request->get('latitude'),
                                 'longitude' => $request->get('longitude'),
-                                'status' => Establishment::STATUS_ACTIVE,
+                                'status' => Establishment::STATUS_TO_VALID,
                                 'email' => $request->get('email'),
                                 'site_url' => $request->get('site_url'),
                                 'description' => htmlspecialchars($request->get('description'), ENT_QUOTES),

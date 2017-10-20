@@ -381,50 +381,91 @@ $timetableRowHeight: 76px;
                             padding: 0px 0px 3px 0px;
                             position: relative;
                             z-index: 2;
+                            height: 47px;
                             a{
                                 height: 35px;
                                 width: 100%;
-                                line-height: 27px;
+                                line-height: 37px;
+                                padding: 0px;
                                 font-weight: bold;
                                 color: white;
                                 text-align: center;
                                 display: inline-block;
                                 z-index: 2;
                             }
-                            &.promo a{
-                                height: 37px;
-                                background: $promo-color;
-                                border: 0px;
+                            &.promo{
+                                a{
+                                    height: 37px;
+                                    background: $promo-color;
+                                    border: 0px;
+                                } 
+/*                                &.event{
+                                    ::after{
+                                        content: "_";
+                                        height: 18px;
+                                        width: 50%;
+                                        border-radius: 0px;
+                                        position: absolute;
+                                        top: 18px;
+                                        right: 0px;
+                                        z-index: -1;
+                                        overflow: hidden;
+                                        background: $event-color;
+                                        color: $event-color;
+                                    }
+                                }*/
+                            }
+                            &.event:not(.promo) a{
+                                background: $event-color;
                             }
                             &.start:not(.end){
                                 ::before{
                                     content: "_";
-                                    background: $promo-color;
-                                    color: $promo-color;
                                     height: 37px;
                                     width: 50%;
                                     border-radius: 0px;
                                     position: absolute;
                                     top: 3px;
                                     right: 0px;
-                                    z-index: -1;
+                                    z-index: -2;
                                     overflow: hidden;
                                 }
-                                
+                                &.promo{
+                                    ::before{
+                                        background: $promo-color;
+                                        color: $promo-color;
+                                    }
+                                }
+                                &.event:not(.promo){
+                                    ::before{
+                                        background: $event-color;
+                                        color: $event-color;
+                                    }
+                                }
                             }
                             &.end:not(.start){
                                 ::before{
                                     content: "_";
-                                    background: $promo-color;
-                                    color: $promo-color;
                                     height: 37px;
                                     width: 50%;
                                     border-radius: 0px;
                                     position: absolute;
                                     top: 3px;
                                     left: 0px;
-                                    z-index: -1;
+                                    z-index: -2;
                                     overflow: hidden;
+                                }
+                                &.promo{
+                                    ::before{
+                                        background: $promo-color;
+                                        color: $promo-color;
+                                    }
+                                }
+                                &.event:not(.promo){
+                                    ::before{
+                                        background: $event-color;
+                                        color: $event-color;
+                                    }
                                 }
                             }
                             &.start, &.end{
@@ -462,15 +503,18 @@ $timetableRowHeight: 76px;
                             width: 100%;
                             height: 200px;
                             border: 9px solid white;
-                            img{
-                                width: 100%;
-                            }
                         }
                     }
                     &.promo{
                         .icon-container span{
                             padding-bottom: 3px;
                             border-color: $promo-color;
+                        }
+                    }
+                    &.event{
+                        .icon-container span{
+                            padding-bottom: 3px;
+                            border-color: $event-color;
                         }
                     }
                     &:not(.first){
