@@ -36,6 +36,7 @@ class DatatableFilter {
     protected $operator;
     protected $raw = null;
     protected $enableEmpty = true;
+    protected $isRaw = false;
     
     /**
      * 
@@ -58,10 +59,22 @@ class DatatableFilter {
                         case self::OPERATOR_LIKE_START:
                         case self::OPERATOR_LIKE_END:
                         case self::OPERATOR_LIKE_CONTAINS:
-                            $query->where($this->getFieldQuery(), $this->getOperatorQuery(), $this->getValueQuery());
+                            if($this->getIsRaw()){
+                                $queryValue = $this->getValueQuery();
+                                if(!is_numeric($queryValue)){
+                                    $queryValue = '"'.$queryValue.'"';
+                                }
+                                $query->whereRaw($this->getFieldQuery().' '.$this->getOperatorQuery().' '.$queryValue);
+                            } else {
+                                $query->where($this->getFieldQuery(), $this->getOperatorQuery(), $this->getValueQuery());
+                            }
                             break;
                         case self::OPERATOR_IN:
-                            $query->whereIn($this->getFieldQuery(), $this->getValueQuery());
+                            if($this->getIsRaw()){
+                                $query->whereRaw($this->getFieldQuery().' IN ('.implode(',', $this->getValueQuery()).')');
+                            } else {
+                                $query->whereIn($this->getFieldQuery(), $this->getValueQuery());
+                            }
                             break;
                     }
                 }
@@ -254,5 +267,12 @@ class DatatableFilter {
         $this->enableEmpty = $enableEmpty;
     }
 
+    function getIsRaw() {
+        return $this->isRaw;
+    }
+
+    function setIsRaw($isRaw) {
+        $this->isRaw = $isRaw;
+    }
 
 }

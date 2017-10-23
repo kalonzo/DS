@@ -69,6 +69,41 @@ class User extends Authenticatable implements GlobalObjectManageable{
         'password', 'remember_token',
     ];
     
+    public static function getLabelByType(){
+        $labelByType = array();
+        $labelByType[self::TYPE_USER_ADMIN_PRO] = 'Administrateur';
+        $labelByType[self::TYPE_USER_PRO] = 'Utilisateur pro';
+        $labelByType[self::TYPE_USER] = 'Utilisateur particulier';
+        return $labelByType;
+    }
+    
+    public static function getLabelFromType($type){
+        $typeLabel = 'Type non défini';
+        $typeLabels = self::getLabelByType();
+        if(isset($typeLabels[$type])){
+            $typeLabel = $typeLabels[$type];
+        }
+        return $typeLabel;
+    }
+    
+    
+    public static function getLabelByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_CREATION_PENDING] = 'Création en cours';
+        $labelByStatus[self::STATUS_CREATED] = 'Créé';
+        $labelByStatus[self::STATUS_ACTIVE] = 'Activé';
+        return $labelByStatus;
+    }
+    
+    public static function getLabelFromStatus($status){
+        $statusLabel = 'Statut non défini';
+        $statusLabels = self::getLabelByStatus();
+        if(isset($statusLabels[$status])){
+            $statusLabel = $statusLabels[$status];
+        }
+        return $statusLabel;
+    }
+    
     public function getCurrentPendingCart(){
         return $this->hasMany(Cart::class, 'id_user', 'id')->where('status', '=', Cart::STATUS_PENDING)->orderBy('updated_at', 'DESC')->first();
     }

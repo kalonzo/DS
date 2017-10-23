@@ -61,6 +61,9 @@ class AdminController extends Controller {
                 case BusinessCategory::TABLENAME:
                     $controllerClass = App::make(BusinessCategoryController::class);
                     break;
+                case \App\Models\User::TABLENAME:
+                    $controllerClass = App::make(UserAdminController::class);
+                    break;
             }
             if ($controllerClass instanceof Controller) {
                 $params = [];
@@ -75,6 +78,9 @@ class AdminController extends Controller {
                             break;
                         case BusinessCategory::TABLENAME:
                             $params['request'] = App::make(\App\Http\Requests\StoreBusinessCategory::class);
+                            break;
+                        case \App\Models\User::TABLENAME:
+                            $params['request'] = App::make(\App\Http\Requests\StoreUserAdmin::class);
                             break;
                     }
                 } else {
@@ -129,6 +135,9 @@ class AdminController extends Controller {
                 case BusinessCategory::TABLENAME:
                     $controllerClass = App::make(BusinessCategoryController::class);
                     break;
+                case \App\Models\User::TABLENAME:
+                    $controllerClass = App::make(UserAdminController::class);
+                    break;
             }
             if ($controllerClass instanceof Controller) {
                 $params = [];
@@ -145,6 +154,9 @@ class AdminController extends Controller {
                         break;
                     case BusinessCategory::TABLENAME:
                         $params['request'] = App::make(\App\Http\Requests\StoreBusinessCategory::class);
+                        break;
+                    case \App\Models\User::TABLENAME:
+                        $params['request'] = App::make(\App\Http\Requests\StoreUserAdmin::class);
                         break;
                 }
                 return $controllerClass->callAction($action, $params);
@@ -216,6 +228,8 @@ class AdminController extends Controller {
         $eventDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEventAdmin::DT_ID);
         
         $mediaModerationDatatable = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentMediaModeration::DT_ID);
+        
+        $userDatatable = DatatableController::buildDatatable(\App\Datatables\DtUserAdmin::DT_ID);
 
         $view = View::make('admin.admin.dashboard')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
@@ -225,6 +239,7 @@ class AdminController extends Controller {
                 ->with($eventDatatableFeeder->getId(), $eventDatatableFeeder->getViewParamsArray())
                 ->with($businessTypesDatatableFeeder->getId(), $businessTypesDatatableFeeder->getViewParamsArray())
                 ->with($mediaModerationDatatable->getId(), $mediaModerationDatatable->getViewParamsArray())
+                ->with($userDatatable->getId(), $userDatatable->getViewParamsArray())
         ;
         return $view;
     }

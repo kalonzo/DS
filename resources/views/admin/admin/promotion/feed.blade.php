@@ -61,4 +61,4 @@ if(checkModel($promotion)){
         {!! Form::button('Enregistrer', ['type' => 'button', 'class' => 'form-data-button btn btn-default pull-right']) !!}
     </div>
 </div>
-{!! form::close() !!}
+{!! Form::close() !!}

@@ -45,5 +45,10 @@
                                     'tabledata' => $dt_event_admin])
 
     @endcomponent
+    
+    @component('components.tile', ['title' => 'Utilisateurs', 'add_href' => 'javascript:getOnClickModal("Créer un administrateur", "/admin/create/users")', 
+                                    'tabledata' => $dt_user_admin])
+
+    @endcomponent
 
 @endsection

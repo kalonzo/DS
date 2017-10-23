@@ -20,6 +20,7 @@ abstract class DatatableFeeder {
     protected $paginator = null;
     protected $columns = array();
     protected $reloaded = false;
+    protected $debug = false;
     /**
      *
      * @var DatatableRowAction
@@ -71,6 +72,9 @@ abstract class DatatableFeeder {
         $columns = $this->buildColumns();
         $this->setColumns($columns);
         
+        if($this->getDebug() && envDev()){
+            print_r($this->getQuery()->toSql()); die();
+        }
         $results = $this->buildResults($this->getQuery()->get());
         $this->setResults($results);
         
@@ -209,5 +213,14 @@ abstract class DatatableFeeder {
     function setNbTotalResults($nbTotalResults) {
         $this->nbTotalResults = $nbTotalResults;
     }
+
+    function getDebug() {
+        return $this->debug;
+    }
+
+    function setDebug($debug) {
+        $this->debug = $debug;
+    }
+
 
 }

@@ -48,6 +48,10 @@ class DatatableController {
                 $dtFeeder = new \App\Datatables\DtEstablishmentMediaModeration();
                 $dtFeeder->run();
                 break;
+            case \App\Datatables\DtUserAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtUserAdmin();
+                $dtFeeder->run();
+                break;
         }
         return $dtFeeder;
     }
