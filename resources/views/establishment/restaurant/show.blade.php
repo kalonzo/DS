@@ -1,16 +1,13 @@
 @extends('layouts.front') 
 
-<!--Change here for changing the load delay variable for animation-->
 @php
 $loadDelay = 0.6
 @endphp
 
-<!--Git push again-->
 @section('css_imports')
 <link href="/css/establishment.css" rel="stylesheet">
 <link href="/css/sidebar.css" rel="stylesheet">
 <link href="/libraries/baguettebox/baguetteBox.min.css" rel="stylesheet">
-<!--Uses animation library from the first version beta-->
 <link href="/libraries/wow/animate.css" rel="stylesheet">
 @endsection
 

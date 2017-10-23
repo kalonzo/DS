@@ -382,7 +382,7 @@ $timetableRowHeight: 76px;
                             position: relative;
                             z-index: 2;
                             height: 47px;
-                            a{
+                            a, span.ui-state-default{
                                 height: 35px;
                                 width: 100%;
                                 line-height: 37px;
@@ -392,84 +392,147 @@ $timetableRowHeight: 76px;
                                 text-align: center;
                                 display: inline-block;
                                 z-index: 2;
+                                overflow: hidden;
+                                position: relative;
+                                &.ui-priority-secondary{
+                                    @include opacity(1);
+                                }
+                            }
+                            &.promo.ui-state-disabled, &.event.ui-state-disabled{
+                                @include opacity(0.5);
                             }
                             &.promo{
-                                a{
+                                a, span.ui-state-default{
                                     height: 37px;
-                                    background: $promo-color;
+                                    background: transparent;
                                     border: 0px;
                                 } 
-/*                                &.event{
-                                    ::after{
+                                a::before, span.ui-state-default::before{
+                                    content: "_";
+                                    width: 100%;
+                                    height: 37px;
+                                    position: absolute;
+                                    top: 0px;
+                                    right: 0px;
+                                    z-index: -1;
+                                    background: $promo-color;
+                                    color: $promo-color;
+
+                                }
+                                &.event{
+                                    &.start, &.end{
+                                        a::before, span.ui-state-default::before{
+                                            -webkit-border-radius: 50% / 60% 60% 40% 40%;
+                                            border-radius: 50% / 100% 100% 0 0;
+                                            border-top: none;
+                                            height: (37px/2);
+                                        }
+                                        a::after, span.ui-state-default::after{
+                                            -webkit-border-radius: 50% / 40% 40% 60% 60%;
+                                            border-radius: 50% / 0 0 100% 100% ;
+                                            border-top: none;
+                                        }
+                                    }
+                                    a::after, span.ui-state-default::after{
                                         content: "_";
-                                        height: 18px;
-                                        width: 50%;
-                                        border-radius: 0px;
+                                        height: (37px/2);
+                                        width: 100%;
                                         position: absolute;
-                                        top: 18px;
+                                        top: (37px/2);
                                         right: 0px;
                                         z-index: -1;
                                         overflow: hidden;
                                         background: $event-color;
                                         color: $event-color;
                                     }
-                                }*/
+                                }
                             }
-                            &.event:not(.promo) a{
+                            &.event:not(.promo) a, &.event:not(.promo) span.ui-state-default{
                                 background: $event-color;
                             }
                             &.start:not(.end){
-                                ::before{
+                                &::before{
                                     content: "_";
                                     height: 37px;
                                     width: 50%;
                                     border-radius: 0px;
                                     position: absolute;
-                                    top: 3px;
+                                    top: 0px;
                                     right: 0px;
                                     z-index: -2;
                                     overflow: hidden;
                                 }
                                 &.promo{
-                                    ::before{
+                                    &::before{
                                         background: $promo-color;
                                         color: $promo-color;
                                     }
+                                    &.event{
+                                        &::after{
+                                            content: "_";
+                                            height: (37px/2);
+                                            width: 50%;
+                                            border-radius: 0px;
+                                            position: absolute;
+                                            top: (37px/2);
+                                            right: 0px;
+                                            z-index: -2;
+                                            overflow: hidden;
+                                            background: $event-color;
+                                            color: $event-color;
+                                        }
+                                    }
                                 }
                                 &.event:not(.promo){
-                                    ::before{
+                                    &::before{
                                         background: $event-color;
                                         color: $event-color;
                                     }
                                 }
                             }
                             &.end:not(.start){
-                                ::before{
+                                &::before{
                                     content: "_";
                                     height: 37px;
                                     width: 50%;
                                     border-radius: 0px;
                                     position: absolute;
-                                    top: 3px;
+                                    top: 0px;
                                     left: 0px;
                                     z-index: -2;
                                     overflow: hidden;
                                 }
                                 &.promo{
-                                    ::before{
+                                    &::before{
                                         background: $promo-color;
                                         color: $promo-color;
                                     }
+                                    &.event{
+                                        &::after{
+                                            content: "_";
+                                            height: (37px/2);
+                                            width: 50%;
+                                            border-radius: 0px;
+                                            position: absolute;
+                                            top: (37px/2);
+                                            left: 0px;
+                                            z-index: -2;
+                                            overflow: hidden;
+                                            background: $event-color;
+                                            color: $event-color;
+                                        }
+                                    }
                                 }
                                 &.event:not(.promo){
-                                    ::before{
+                                    &::before{
                                         background: $event-color;
                                         color: $event-color;
                                     }
                                 }
                             }
+
                             &.start, &.end{
-                                a{
+                                a, span.ui-state-default{
                                     width: 40px;
                                     @include borderRadius(100%);
                                 }
@@ -482,9 +545,9 @@ $timetableRowHeight: 76px;
                                 color: white;
                                 text-align: center;
                             }
-                            &.ui-state-disabled{
+/*                            &.ui-state-disabled{
                                 @include opacity(1);
-                            }
+                            }*/
                             &.ui-datepicker-other-month{
                                 @include opacity(0.35);
                             }
@@ -708,6 +771,45 @@ $timetableRowHeight: 76px;
                 }
             }
         }
+        &.ets-dishes{
+            .thumbnail-item{
+                .thumbnail-visual{
+                    -webkit-transition: .3s -webkit-transform ease;
+                    -moz-transition: .3s -moz-transform ease;
+                    -o-transition: .3s -o-transform ease;
+                    transition: .3s transform ease;
+                }
+                .thumbnail-badge{
+                    -webkit-transition: .5s all ease;
+                    -moz-transition: .5s all ease;
+                    -o-transition: .5s all ease;
+                    transition: .5s all ease;
+                    -webkit-transform: scale(0);
+                    -moz-transform: scale(0);
+                    -ms-transform: scale(0);
+                    -o-transform: scale(0);
+                    transform: scale(0);
+                    opacity: 0;
+                    right: 100px;
+                    bottom: 100px;
+                }
+                &:hover{
+                    .thumbnail-badge{
+                        transform: scale(1);
+                        opacity: 1;
+                        right: 10px;
+                        bottom: 0px;
+                    }
+                    .thumbnail-visual{
+                        -webkit-transform: scale(.84594595);
+                        -moz-transform: scale(.84594595);
+                        -ms-transform: scale(.84594595);
+                        -o-transform: scale(.84594595);
+                        transform: scale(.84594595);
+                    }
+                }
+            }
+        }
         &.ets-galleries{
             .gallery-item{
                 margin-bottom: 30px;
@@ -796,27 +898,39 @@ $timetableRowHeight: 76px;
             .thumbnail-badge{
                 position: absolute;
                 bottom: 0px;
-                right: 10px;
+                right: 0px;
                 background-color: rgba(15, 102, 148, 0.85);
                 text-align: center;
                 display:table;
-                height: 80px;
-                width: 80px;
+                height: 90px;
+                width: 90px;
                 @include borderRadius(100%);
                 .thumbnail-badge-inner{
                     display:table-cell;
                     vertical-align:middle;
                     padding: 0px 8px;
                     white-space: nowrap;
-                    .currency{
-                        font-size: 0.7em;
-                        vertical-align: top;
-                        margin-top: -0.8em;
-                        display: inline-block;
-                    }
                     .price{
-                        font-size: 1.3em;
-                        margin-left: -8px;
+                        position: relative;
+                        font-weight: bold;
+                        .currency{
+                            font-size: 1.5em;
+                            position: absolute;
+                            left: 0.3em;
+                            top: -0.4em;
+                            line-height: 1em;
+                        }
+                        .priceLeft{
+                            font-size: 2.5em;
+                        }
+                        .splitter{
+                            display: none;
+                        }
+                        .priceRight{
+                            font-size: 1.3em;
+                            vertical-align: top;
+                            line-height: 2.2em;
+                        }
                     }
                 }
             }

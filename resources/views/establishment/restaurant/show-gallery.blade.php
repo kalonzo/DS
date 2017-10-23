@@ -1,10 +1,13 @@
+@php
+$loadDelay = 0.6
+@endphp
 <!------------- RESTAURANT GALLERIES -------------------------------------->
 @if(checkFlow($data, ['galleries']))
 <section class="container-fluid ets-galleries">
     <div class="section-bg"></div>
     <div class="container">
-        <h1><strong>Galeries</strong> photos</h1>
-        <div class="row gallery-box">
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s"><strong>Galeries</strong> photos</h1>
+        <div class="row gallery-box wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
             @foreach($data['galleries'] as $galleryData)
                 @foreach($galleryData['medias'] as $mediaPath)
                     @if($loop->first)
@@ -37,8 +40,8 @@
 <section class="container-fluid ets-last-pics">
     <div class="section-bg"></div>
     <div class="container">
-        <h1><strong>Dernières</strong> photos</h1>
-        <div class="row gallery-box">
+        <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s"><strong>Dernières</strong> photos</h1>
+        <div class="row gallery-box wow fadeInRight" data-wow-delay="{{$loadDelay}}s">
             @foreach($data['last_pics'] as $lastPics)
             <a class="col-xs-4 col-sm-2" href="{{ $lastPics['picture'] }}">
                 <div class="last-pic-item" style="background-image: url('{{ $lastPics['picture'] }}');">

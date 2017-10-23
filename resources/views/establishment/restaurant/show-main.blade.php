@@ -1,4 +1,3 @@
-<!--Change here for changing the load delay variable for animation-->
 @php
 $loadDelay = 0.6
 @endphp
@@ -11,7 +10,6 @@ if($videoQuery->exists()){
     $video = $videoQuery->first();
 }
 ?>
-<!--New comment to get git push-->
  @if(checkFlow($data, ['services', 'ambiences']) || checkModel($video) || !empty($establishment->getDescription()) )
 <section class="container-fluid ets-details">
     <div class="section-bg"></div>
@@ -102,13 +100,13 @@ if($videoQuery->exists()){
                                     minDate: 0,
                                     onSelect: function(dateText, inst){
                                         var dateSplit = dateText.split('/');
-                                        var timestp = dateSplit[2] + dateSplit[1] + dateSplit[0] + '000000';
+                                        var timestp = dateSplit[2] + dateSplit[1] + dateSplit[0];
                                         
                                         var $selectedItems = [];
                                         var mediaDisplayed = false;
                                         $('#event-items-list .event-item').hide().each(function(){
-                                            var start = $(this).attr('data-start');
-                                            var end = $(this).attr('data-end');
+                                            var start = $(this).attr('data-start').slice(0, 8);
+                                            var end = $(this).attr('data-end').slice(0, 8);
                                             if(timestp >= start && timestp <= end){
                                                 var $mediaElement = $(this).find('.event-picture');
                                                 $(this).show();
