@@ -254,6 +254,7 @@ select:not(.select2){
 }
 
 .pre-footer{
+    border-top: 1px dotted #aaa;
     padding-bottom: 2em;
     @include bp-sm{
         position: absolute;
@@ -458,6 +459,7 @@ select:not(.select2){
     background: white;
     color: $main-dark-color;
     float: left;
+    overflow: hidden;
     margin-bottom: 2em;
     @media (max-width: 767px) {
         width: 49%;
@@ -493,43 +495,148 @@ select:not(.select2){
     }
     > a{
         color: inherit;
-        &:hover{
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        &:hover, &:focus{
             color: inherit;
+            text-decoration: none;
         }
-        .thumbnail-top{
-            position: relative;
-            .thumbnail-picture{
-                width: 100%;
-                img.square-pattern{
-                    width: 100%;
-                    @include opacity(0);
-                }
-/*                .crop{
-                    > img{
-                        max-height: 100%;
-                    }
-                }*/
-            }
-            .logo-picture{
+        
+        $cornerHeight: 50px;
+        .thumbnail-logo-corner{
+            width: $cornerHeight;
+            height: $cornerHeight;
+            position: absolute;
+            top: -$cornerHeight;
+            left: -$cornerHeight;
+            z-index: 3;
+            pointer-events: all;
+            overflow: hidden;
+            
+            .thumbnail-logo{
+                height: 100%;
                 background-size: contain;
                 background-repeat: no-repeat;
-                background-position-x: center;
-                background-position-y: center;
-                img.square-pattern{
-                    width: 100%;
-                    visibility: hidden;
+                background-color: #333;
+            }
+            .thumbnail-corner{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 0 0 $cornerHeight $cornerHeight;
+                border-color: transparent transparent #fafafa transparent;
+                @at-root .ets-thumbnail.with-logo.thumbnail-anim-reveal{
+                    .thumbnail-corner{
+                        -webkit-transition: border-color 0.35s linear;
+                        transition: border-color 0.35s linear;
+                        border-color: transparent transparent #ddd transparent;
+                    }
+                }
+                @at-root .ets-thumbnail.with-logo.thumbnail-revealed{
+                    .thumbnail-corner{
+                        -webkit-transition: none;
+                        transition: none;
+                        border-color: transparent transparent #000 transparent;
+                        @include opacity(0.15);
+                    }
+                }
+                @at-root .ets-thumbnail.with-logo{
+                    &.thumbnail-revealed, &.thumbnail-anim-reveal{
+                        .thumbnail-corner::before{
+                            display: none;
+                        }
+                    }
+                }
+                @at-root .ets-thumbnail.with-logo.thumbnail-anim-back{
+                    border-color: transparent transparent #ddd transparent;
+                }
+                &::before{
+                    content: "";
+                    position: absolute;
+                    top: 0px;
+                    left: -$cornerHeight;
+                    width: $cornerHeight;
+                    height: $cornerHeight;
+                    @include opacity(0.15);
+                    border-style: solid;
+                    border-width: $cornerHeight $cornerHeight 0 0;
+                    border-color: black transparent transparent transparent;
                 }
             }
-            .thumbnail-distance{
-                background: rgba(0, 0, 0, 0.4); 
-                color: white;
-                font-weight: bold;
-                position: absolute; 
-                bottom: 0px; 
-                right: 0px;
-                padding: 0px 0.5em;
+        }
+        .thumbnail-logo-corner-shadow{
+            content: " ";
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: 0px;
+            left: -$cornerHeight;
+            z-index: 3;
+            @include opacity(0.2);
+            border-style: solid;
+            border-width: $cornerHeight $cornerHeight 0 0;
+            border-color: black transparent transparent transparent;
+        }
+        .thumbnail-top-layer{
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            background: white;    
+            display: inline-block;
+            @at-root .ets-thumbnail.with-logo.thumbnail-corner-revealed{
+                .thumbnail-top-layer{
+                    -webkit-clip-path: polygon(0% 50px, 50px 0%, 100% 0%, 100% 100%, 0% 100%);
+                    clip-path: polygon(0% 50px, 50px 0%, 100% 0%, 100% 100%, 0% 100%);
+                    
+                    -webkit-transition: -webkit-clip-path 0.3s linear;
+                    transition: clip-path 0.3s linear;
+                }
+                &.thumbnail-anim-reveal{
+                    .thumbnail-top-layer{
+                        -webkit-clip-path: polygon(0% 65%, 100% 0%, 100% 0%, 100% 100%, 0% 100%);
+                        clip-path: polygon(0% 65%, 100% 0%, 100% 0%, 100% 100%, 0% 100%);
+                    }
+                }
+            }
+            .thumbnail-top{
+                position: relative;
+                z-index: 1;
+                .thumbnail-picture{
+                    width: 100%;
+                    img.square-pattern{
+                        width: 100%;
+                        @include opacity(0);
+                    }
+                    .default-bg-ds{
+                        width: 100%;
+                    }
+                }
+                .logo-picture{
+                    background-size: contain;
+                    background-repeat: no-repeat;
+                    background-position-x: center;
+                    background-position-y: center;
+                    img.square-pattern{
+                        width: 100%;
+                        visibility: hidden;
+                    }
+                }
+                .thumbnail-distance{
+                    background: rgba(0, 0, 0, 0.4); 
+                    color: white;
+                    font-weight: bold;
+                    position: absolute; 
+                    bottom: 0px; 
+                    right: 0px;
+                    padding: 0px 0.5em;
+                }
             }
         }
+        
         .thumbnail-text{
             padding-top: 0.4em;
             padding-bottom: 0.4em;
@@ -553,6 +660,23 @@ select:not(.select2){
                 height: 2*$line-height-base-px;
                 overflow: hidden;
                 color: $promo-color;
+            }
+        }
+        .thumbnail-under-layer{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 1;
+            width: 100%;
+            background: white;
+            display: inline-block;
+            .logo-picture{
+                background-color: #333;
+                text-align: center;
+                img{
+                    width: 100%;
+                    max-height: 100%;
+                }
             }
         }
     }

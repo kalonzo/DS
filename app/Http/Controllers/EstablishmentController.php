@@ -1660,11 +1660,12 @@ class EstablishmentController extends Controller {
                 // Search results list
                 $thumbnailData[$uuid]['id'] = $uuid;
                 $thumbnailData[$uuid]['name'] = $queryResult->name;
-                if(empty($queryResult->logo_path)){
-                    $thumbnailData[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
-                } else {
-                    $thumbnailData[$uuid]['logo_img'] = $queryResult->logo_path;
-                }
+                $thumbnailData[$uuid]['logo_img'] = $queryResult->logo_path;
+//                if(empty($queryResult->logo_path)){
+//                    $thumbnailData[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+//                } else {
+//                    $thumbnailData[$uuid]['logo_img'] = $queryResult->logo_path;
+//                }
                 if(isset($queryResult->thumbnail_path) && !empty($queryResult->thumbnail_path)){
                     $thumbnailData[$uuid]['thumbnail_img'] = $queryResult->thumbnail_path;
                 }
