@@ -218,6 +218,10 @@ function isAdmin(){
     return $isAdmin;
 }
 
+/**
+ * 
+ * @return \App\Models\Establishment
+ */
 function getCurrentEstablishment(){
     $currentEstablishment = null;
     $user = \Illuminate\Support\Facades\Auth::user();
@@ -242,4 +246,16 @@ function formatUrl($url){
     }
     $formattedUrl .= $url;
     return $formattedUrl;
+}
+
+function formatPhone($prefix, $number, $numberCountryIso, $displayCountryIso = null){
+    try{
+        if($displayCountryIso === null){
+            $displayCountryIso = $numberCountryIso;
+        }
+        $label = (string)\Propaganistas\LaravelPhone\PhoneNumber::make($number, $numberCountryIso)->formatForCountry($displayCountryIso);
+    } catch(\Exception $e){
+        $label = $prefix + ' ' + $number;
+    }
+    return $label;
 }

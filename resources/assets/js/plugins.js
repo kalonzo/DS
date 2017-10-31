@@ -103,7 +103,7 @@ $(document).on('ready js-loaded ajaxSuccess', function(e){
     });
 });
 
-$(document).on('googleGeolocReady', function () {
+$(document).on('googleApiReady', function () {
     $('.quick-map').each(function () {
         var lat = $(this).attr('data-lat') * 1;
         var lng = $(this).attr('data-lng') * 1;

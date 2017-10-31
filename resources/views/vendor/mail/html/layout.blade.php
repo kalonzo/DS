@@ -45,6 +45,7 @@
                         </td>
                     </tr>
 
+                    {{ $prefooter or '' }}
                     {{ $footer or '' }}
                 </table>
             </td>

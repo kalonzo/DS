@@ -73,11 +73,11 @@ trait ExtendModelTrait{
         $classObject = null;
         if(self::hasUuidStatic()){
             if (is_array($uuid) || $uuid instanceof Arrayable) {
-                $classObject = static::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $uuid))->get($columns)->get();
+                $classObject = static::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id', $uuid))->get($columns);
             } else {
                 $className = static::getClass();
                 $tableName = static::getTableName();
-                $object = \Illuminate\Support\Facades\DB::table($tableName)->whereRaw(' HEX(id) = "'.$uuid.'" ')->get($columns)->first();
+                $object = \Illuminate\Support\Facades\DB::table($tableName)->whereRaw(' HEX(id) = "'.$uuid.'" ')->first($columns);
                 if(!is_null($object)){
                     $objectArray = array($object);
                     $objectCollection = $className::hydrate($objectArray);

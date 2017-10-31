@@ -50,6 +50,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
             case 'delete_gallery':
             case 'delete_close_period':
             case 'add_media_to_gallery':
+            case 'add_home_pictures':
                 
                 break;
             case 'add_close_period':
@@ -84,6 +85,11 @@ class StoreEstablishment extends \App\Http\FormRequest {
             case 'add_thumbnail':
                 $rules = [
                     'thumbnail' => 'required|mimes:png,jpg,jpeg',
+                ];
+                break;
+            case 'add_logo':
+                $rules = [
+                    'logo' => 'required|mimes:png,jpg,jpeg',
                 ];
                 break;
             case 'add_employee':

@@ -171,6 +171,8 @@ class WalleeController extends Controller {
         $idUserSession = SessionController::getInstance()->getIdPendingUser();
         $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
         
+        $errors = array();
+        
         if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
             $user = User::findUuid($idUserSession);
             if(checkModel($user)){
@@ -191,22 +193,66 @@ class WalleeController extends Controller {
                                     $establishment = $subscription->establishment()->first();
                                     if(checkModel($establishment) && $establishment instanceof \App\Models\Establishment){
                                         $establishment->setBusinessStatus(25)->save();
+                                        
+                                        $registerController = \Illuminate\Support\Facades\App::make(\App\Http\Controllers\Auth\RegisterController::class);
+                                        if($registerController instanceof Auth\RegisterController){
+                                            $registerController->registerUserPro($user);
+                                        }
+                                    } else {
+                                        $errors[] = "Impossible d'identifier l'établissement lié.";
                                     }
+                                } else {
+                                    $errors[] = "Impossible de retrouver les informations d'abonnement.";
                                 }
+                            } else {
+                                $errors[] = "Impossible de retrouver les informations du contrat.";
                             }
+                        } else {
+                            $errors[] = "Impossible de retrouver les informations de facturation.";
                         }
+                    } else {
+                        $errors[] = "Impossible de retrouver le détail du paiement.";
                     }
+                } else {
+                    $errors[] = "Impossible de retrouver le détail de la transaction.";
                 }
+            } else {
+                $errors[] = "Impossible d'identifier l'utilisateur.";
             }
+        } else {
+            $errors[] = "Impossible d'identifier l'utilisateur et/ou la transaction.";
         }
-        print_r('User registered!');
-        die();
+        
+        if(isAdmin()){
+            if(empty($errors)){
+                \Illuminate\Support\Facades\Request::session()->flash('status', 
+                    "L'utilisateur a bien été créé. Un email de confirmation lui a été envoyé avec un lien d'activation qui "
+                    . " ouvrira son espace client."
+                );
+                redirect(url("/edit/establishment/".$establishment->getId()));
+            } else {
+                \Illuminate\Support\Facades\Request::session()->flash('status', 
+                    "L'utilisateur a bien été créé et son paiement a été enregistré. Toutefois des erreurs ont été rencontrées et l'email d'activation n'a"
+                    . " pu lui être envoyé. Veuillez contrôler l'état de l'inscription."
+                );
+                redirect(url("/admin"));
+            }
+        } else {
+            $view = \Illuminate\Support\Facades\View::make('pro_user.register-feedback')
+                    ->with('success', true)
+                    ->with('errors', $errors)
+                    ;
+        }
+
+        return $view;
     }
     
     public function subscriptionFailed(\Illuminate\Http\Request $request){
         $idUserUrl = $request->get('id_user');
         $idUserSession = SessionController::getInstance()->getIdPendingUser();
         $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
+        
+        $errors = array();
         
         if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
             $user = User::findUuid($idUserSession);
@@ -216,11 +262,24 @@ class WalleeController extends Controller {
                     $payment = $cart->payments()->orderBy('updated_at', 'DESC')->first();
                     if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUserSession && $payment->getIdTransaction() === $idTransactionSession){
                         $payment->setStatus(Payment::STATUS_DENIED)->save();
+                    } else {
+                        $errors[] = "Impossible de retrouver le détail du paiement.";
                     }
+                } else {
+                    $errors[] = "Impossible de retrouver le détail de la transaction.";
                 }
+            } else {
+                $errors[] = "Impossible d'identifier l'utilisateur.";
             }
+        } else {
+            $errors[] = "Impossible d'identifier l'utilisateur et/ou la transaction.";
         }
-        print_r('User registration failed!');
-        die();
+        
+        $view = \Illuminate\Support\Facades\View::make('pro_user.register-feedback')
+                ->with('success', false)
+                ->with('errors', $errors)
+                ;
+
+        return $view;
     }
 }

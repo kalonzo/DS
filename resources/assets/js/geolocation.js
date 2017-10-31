@@ -3,6 +3,7 @@ var userPositionLng = null;
 var autoCompleteGoogle = null;
 
 function initGoogleAPI(){
+    $(document).trigger('googleApiReady');
     initGeolocation();
 }
 

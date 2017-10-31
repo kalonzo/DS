@@ -1,4 +1,4 @@
-$('body').on('click', '.form-data-button', function () {
+$('body').on('click valid-form', '.form-data-button', function () {
     var form = $(this).parentsInclude('form');
     var $button = $(this);
     var $alert = $(form).find('#form-ajax-alert');
@@ -96,7 +96,7 @@ $('body').on('click', '.form-data-button', function () {
                         });
                     }
                 });
-                if(errors.error){
+                if(typeof errors != 'undefined' && typeof errors.error != 'undefined'){
                     if(!checkExist($alert)){
                         $alert = $('<div id="form-ajax-alert" class="alert alert-danger alert-dismissible" role="alert">\n\
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\
@@ -105,6 +105,16 @@ $('body').on('click', '.form-data-button', function () {
                         $button.before($alert);
                     }
                     $alert.find('.alert-message').empty().html(errors.error);
+                    $alert.show();
+                } else {
+                    if(!checkExist($alert)){
+                        $alert = $('<div id="form-ajax-alert" class="alert alert-danger alert-dismissible" role="alert">\n\
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\
+                                            <span class="alert-message">Attention!</span>\n\
+                                        </div>');
+                        $button.before($alert);
+                    }
+                    $alert.find('.alert-message').empty().html("Une erreur est survenue, votre demande ne peut être traitée pour le moment.");
                     $alert.show();
                 }
             }

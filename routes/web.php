@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 /* * *********************** AUTH ********************************************** */
 Auth::routes();
 Route::get('/logout', 'Auth\LoginController@logout');
+//Route::get('/define_password/{token}', '\App\Http\Controllers\Auth\RegisterController@definePassword');
 
 
 /* * **************************** ADMIN **************************************** */
@@ -92,20 +93,28 @@ Route::match(['get', 'post'], '/establishment/register/failure', 'WalleeControll
 
 
 /* * ****************************TEST ROUTE************************************* */
-Route::get('/welcome/{locale}', function ($local) {
-    Lang::setLocale($local);
-    return view('dev.welcome');
-});
+if(envDev()){
+    Route::get('/welcome/{locale}', function ($local) {
+        Lang::setLocale($local);
+        return view('dev.welcome');
+    });
 
-Route::get('/test/email', function () {
-    $mail = Illuminate\Support\Facades\Mail::to('nico.trendonline@gmail.com')
-        ->send(new App\Mail\TestMail());
-    print_r($mail); 
-    echo "Mail sent";
-    die();
-});
+    Route::get('/testdev', function () {
+        $user = \App\Models\User::whereNotNull('email')->first();
+        var_dump($user->getEmail());
+        $token = app('auth.password.broker')->createToken($user);
+        print_r($token);
+        die();
+    });
 
-
+    Route::get('/test/email', function () {
+        $booking = App\Models\Booking::first();
+        $user = $booking->user()->first();
+        $ets = $booking->establishment()->first();
+        $user->notify(new \App\Notifications\BookingCreatedPro($user, $booking, $ets));
+        die();
+    });
+}
 /* * ************************** AJAX CALLS ************************************* */
 
 Route::get('/search-autocomplete', function () {

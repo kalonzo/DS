@@ -60,6 +60,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Dinerscope'),
     ],
     'to' => [
+//        'address' => 'support@dinerscope.com',
         'address' => 'nico.trendonline@gmail.com',
         'name' => 'Nico'
     ],

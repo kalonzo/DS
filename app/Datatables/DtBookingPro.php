@@ -70,6 +70,8 @@ class DtBookingPro extends DatatableFeeder {
                 $establishmentUuids = $establishmentsData->pluck('uuid')->all();
                 $bookingsQuery
                     ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishmentUuids));
+                
+                $bookingsQuery->whereIn('status', array(Booking::STATUS_PENDING, Booking::STATUS_CONFIRMED, Booking::STATUS_DENIED, Booking::STATUS_CANCELED));
                 break;
             case User::TYPE_USER:
                 $bookingsQuery

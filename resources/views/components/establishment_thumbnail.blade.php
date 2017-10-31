@@ -21,12 +21,12 @@
                         @if(isset($establishment['thumbnail_img']) && !empty($establishment['thumbnail_img']))
                             <img src="{{ asset($establishment['thumbnail_img']) }}" alt="Thumbnail"/>   
                         @else
-                            <img src="{{ asset(\App\Utilities\MediaTools::getRandomDsThumbnailPath()) }}" class="default-bg-ds" alt="Thumbnail"/>   
+                            <img src="{{ asset("/img/DS-LOGO-BLANC.svg") }}" class="default-bg-ds" alt="Thumbnail"/>   
                         @endif
                     </div>
-                </div>
-                <div class="thumbnail-distance">
-                    {{ $establishment['raw_distance'] }}
+                    <div class="thumbnail-distance @if(!isset($establishment['thumbnail_img']) || empty($establishment['thumbnail_img'])) bordered @endif">
+                        {{ $establishment['raw_distance'] }}
+                    </div>
                 </div>
             </div>
             <div class="thumbnail-text col-xs-12">

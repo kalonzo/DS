@@ -6,24 +6,21 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Description of ResetPassword
+ * Description of Test
  *
  * @author Nico
  */
-class ResetPassword extends Notification
+class Test extends Notification
 {
     use Queueable;
-    
-    public $token;
     
     /**
      * Create a new notification instance.
      *
      * @param string $token
      */
-    public function __construct($token)
+    public function __construct()
     {
-        $this->token = $token;
     }
     
     /**
@@ -45,12 +42,8 @@ class ResetPassword extends Notification
      */
     public function toMail($notifiable){   
         return (new MailMessage)
-            ->subject("Dinerscope - Mot de passe oublié")
-            ->line("Vous avez demandé à réinitialiser le mot de passe de votre compte ou vous l’avez oublié.")
-            ->line("Pour cette raison, cliquez sur le lien ci-dessous :")
-            ->action("Réinitialiser votre mot de passe", url("/password/reset/".$this->token))
-            ->line("Si vous n'avez pas demandé la réinitialisation de votre mot de passe, ignorez simplement cet email.")
-            ->line("Cette requête a été déposée le : ".formatDate(new \DateTime())."")
+            ->subject("Dinerscope - Test")
+            ->line("Ne pas tenir compte de cet email.")
             ;
     }
 }

@@ -192,6 +192,11 @@ use ActivatesUsers,
             return $this->sendRegisterFailedResponse();
         }
     }
+    
+    public function registerUserPro(User $user){
+        $this->user = $user;
+        $this->registered();
+    }
 
     /**
      * Show resend token form
@@ -302,6 +307,7 @@ use ActivatesUsers,
             return redirect('/')->with('status', $this->status);
         }
 
+        $this->user->setStatus(User::STATUS_ACTIVE)->save();
         $this->sendWelcomeEmail($this->user)->destroyToken($valid_token->user_id);
 
         if ($this->autoLoginEnabled()) {
@@ -316,8 +322,13 @@ use ActivatesUsers,
         $this->status = $this->setStatus(
                 trans('aktiv8me.status.account_confirmation'), trans('aktiv8me.status.account_confirmed'), false
         );
-
-        return redirect('/login')->with('status', $this->status);
+        
+        if(empty($this->user->getPassword()) || $this->user->getType() === User::TYPE_USER_AUTO_INSERTED){
+            $token = app('auth.password.broker')->createToken($this->user);
+            return $this->getDefinePassword($token, $this->user->getEmail())->with('status', $this->status);
+        } else {
+            return redirect('/login')->with('status', $this->status);
+        }
     }
 
     /**
@@ -475,6 +486,12 @@ use ActivatesUsers,
             }
             throw $e;
         }
+    }
+    
+    function getDefinePassword($token, $email){
+        return view('auth.passwords.define')->with(
+            ['token' => $token, 'email' => $email]
+        );
     }
 
     function getError() {

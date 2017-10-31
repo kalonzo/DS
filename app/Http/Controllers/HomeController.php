@@ -51,10 +51,15 @@ class HomeController extends Controller {
                     }
                     break;
             }
-            $sliderEtsQuery = Establishment::select([Establishment::TABLENAME . '.*', DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
+            $sliderEtsQuery = Establishment::select([
+                                    Establishment::TABLENAME . '.*', DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', \App\Models\Establishment::TABLENAME))
+                            ])
+                    ->join(\App\Models\EstablishmentMedia::TABLENAME, \App\Models\EstablishmentMedia::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
                     ->where('id_business_type', '=', $typeEts)
                     ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
                     ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                    ->where(\App\Models\EstablishmentMedia::TABLENAME . '.type_use', '=', \App\Models\EstablishmentMedia::TYPE_USE_ETS_HOME_PICS)
+                    ->groupBy(Establishment::TABLENAME . '.id')
                     ;
             $geolocLimitSuccess = DbQueryTools::setGeolocLimits($sliderEtsQuery, $userLatLng, $distance, Establishment::TABLENAME);
             $nbResults = $sliderEtsQuery->limit(10)->count();

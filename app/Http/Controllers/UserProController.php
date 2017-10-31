@@ -163,6 +163,17 @@ class UserProController extends Controller {
                         $cartLine = $subscriptionItem->convertToCartLine();
                         $createdObjects[] = $cartLine;
                         $cart->addLine($cartLine);
+                        
+                        $extraItemsUuids = $request->get('id_extra');
+                        if(!empty($extraItemsUuids)){
+                            $extraItems = \App\Models\BuyableItem::findUuid($extraItemsUuids);
+                            foreach($extraItems as $extraItem){
+                                $cartLine = $extraItem->convertToCartLine();
+                                $createdObjects[] = $cartLine;
+                                $cart->addLine($cartLine);
+                            }
+                        }
+                        
                         $cart->updateAmounts();
 
                         $payment = $cart->getOrCreatePayment();
@@ -222,11 +233,11 @@ class UserProController extends Controller {
                             }
                             
                             if($subscriptionStatus !== null){
-                                $duration = $request->get('duration');
+                                $duration = $subscriptionItem->getDuration();
                                 $startDate = new DateTime();
                                 $startDateFormatted = $startDate->format('Y-m-d H:i:s');
                                 
-                                $endDate = date_add($startDate, new DateInterval('P'.$duration.'Y'));
+                                $endDate = date_add($startDate, new DateInterval('P'.$duration.'M'));
                                 $endDateFormatted = $endDate->format('Y-m-d H:i:s');
                                 
                                 $contract = \App\Models\Contract::create([
@@ -290,7 +301,7 @@ class UserProController extends Controller {
                                     'id_user' => $user->getId(),
                                     'id_bill' => $bill->getId(),
                                     'id_buyable_item' => $subscriptionItem->getId(),
-                                    'duration' => $duration * 12
+                                    'duration' => $duration
                                 ]);
                                 $createdObjects[] = $subscription;
                                 
@@ -308,15 +319,24 @@ class UserProController extends Controller {
                                     $createdObjects[] = $establishment;
                                 }
                                 
+                                $user->setStatus(User::STATUS_CREATED)->save();
+                                
                                 if($idPaymentMethod != PaymentMethod::METHOD_CB){
                                     $jsonResponse['success'] = 1;
                                     $jsonResponse['relocateMode'] = 1;
                                     unset($jsonResponse['triggerMode']);
+                                    $registerController = \Illuminate\Support\Facades\App::make(\App\Http\Controllers\Auth\RegisterController::class);
+                                    if($registerController instanceof Auth\RegisterController){
+                                        $registerController->registerUserPro($user);
+                                    }
                                     if(isAdmin()){
-                                        $jsonResponse['location'] = '/admin';
+                                        \Illuminate\Support\Facades\Request::session()->flash('status', 
+                                            "L'utilisateur a bien été créé. Un email de confirmation lui a été envoyé avec un lien d'activation qui "
+                                            . " ouvrira son espace client."
+                                        );
+                                        $jsonResponse['location'] = "/edit/establishment/".$establishment->getId();
                                     } else {
                                         $jsonResponse['location'] = '/establishment/register/success?id_user='.$user->getUuid();
-                                        // TODO Auth user activation
                                     }
                                 }
                             }
@@ -335,6 +355,7 @@ class UserProController extends Controller {
         } catch (Exception $e) {
             // TODO Report error in log system
             $jsonResponse['error'] = $e->getMessage();
+            $jsonResponse['stack'] = $e->getTraceAsString();
             try{
                 foreach ($createdObjects as $createdObject) {
                     if ($createdObject instanceof Model) {
@@ -447,18 +468,21 @@ class UserProController extends Controller {
                                             \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL1,
                                             \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL2,
                                             \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL3,
-                                            \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_LEVEL4
                         ])->where('status', '=', \App\Models\BuyableItem::STATUS_ACTIVE)
                         ->orderBy('net_price', 'ASC')->get();
         
-        $durations = [1 => "1 an", 3 => "3 ans", 5 => "5 ans"];
-
+        $extraServices = \App\Models\BuyableItem::selectRaw(DbQueryTools::genRawSqlForGettingUuid() . ', id, designation, net_price, color')
+                        ->whereIn('type', [
+                                            \App\Models\BuyableItem::TYPE_PRO_SUBSCRIPTION_EXTRA
+                        ])->where('status', '=', \App\Models\BuyableItem::STATUS_ACTIVE)
+                        ->orderBy('net_price', 'ASC')->get();
+        
         StorageHelper::getInstance()->add('feed_user.form_data.business_types', $businessTypes);
         StorageHelper::getInstance()->add('feed_user.form_data.payment_methods', $paymentMethods);
         StorageHelper::getInstance()->add('feed_user.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('feed_user.form_data.country_ids', $countryNames);
         StorageHelper::getInstance()->add('feed_user.form_data.subscriptions', $subscriptions);
-        StorageHelper::getInstance()->add('feed_user.form_data.durations', $durations);
+        StorageHelper::getInstance()->add('feed_user.form_data.extra_services', $extraServices);
     }
 
     /**

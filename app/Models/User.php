@@ -149,6 +149,14 @@ class User extends Authenticatable implements GlobalObjectManageable{
     }
     
     /**
+     * 
+     * @return CallNumber
+     */
+    public function getMainCallNumber(){
+        return $this->callNumbers()->where('main', '=', 1)->first();
+    }
+    
+    /**
      * Relationship
      *
      * Function name should be 'tokens', but 'codes' was kept

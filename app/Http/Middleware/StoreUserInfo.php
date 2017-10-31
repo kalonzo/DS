@@ -34,8 +34,8 @@ class StoreUserInfo
             if(!empty($userDefaultLatLng)){
 //                SessionController::getInstance()->setUserLat($userDefaultLatLng->getLat());
 //                SessionController::getInstance()->setUserLng($userDefaultLatLng->getLng());
-//                Cookie::queue(cookie('userLat', $userDefaultLatLng->getLat(), 60*12, null, null, null, false));
-//                Cookie::queue(cookie('userLng', $userDefaultLatLng->getLng(), 60*12, null, null, null, false));
+                Cookie::queue(cookie('defaultUserLat', $userDefaultLatLng->getLat(), 60*12, null, null, null, false));
+                Cookie::queue(cookie('defaultUserLng', $userDefaultLatLng->getLng(), 60*12, null, null, null, false));
             }
         }
         // Type establishment

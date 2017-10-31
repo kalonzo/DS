@@ -14,6 +14,8 @@ class EncryptCookies extends BaseEncrypter
     protected $except = [
         'userLat',
         'userLng',
+        'defaultUserLat',
+        'defaultUserLng',
         'searchFilterCollapsed'
     ];
 }

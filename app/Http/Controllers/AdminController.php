@@ -191,6 +191,10 @@ class AdminController extends Controller {
         Route::match(['get'], '/admin/media/deny/{media}', 'MediaController@denyMedia')
         ->middleware('auth');
         
+        // Booking management
+        Route::match(['get'], '/admin/booking/confirm/{booking}', 'BookingController@confirm');
+        Route::match(['get'], '/admin/booking/deny/{booking}', 'BookingController@deny');
+        Route::match(['get'], '/admin/booking/cancel/{booking}', 'BookingController@cancel');
 
         // IMPORT
         // upload file
@@ -245,6 +249,33 @@ class AdminController extends Controller {
     }
     
     private function indexPro(){
+        $etsMessage = null;
+        $establishmentIncomplete = true;
+        $establishment = getCurrentEstablishment();
+        if(checkModel($establishment)){
+            switch($establishment->getBusinessStatus()){
+                case 0:
+                case 25:
+                    $etsMessage = "Votre établissement n'a pas encore été renseigné. Pensez à saisir vos informations au plus vite en "
+                                . "<a href='".url('/edit/establishment/'.$establishment->getUuid())."'>cliquant ici</a>.";
+                    break;
+                case 50:
+                    $etsMessage = "Votre établissement ne dispose que des informations obligatoires. Pensez à renseigner davantage d'informations en "
+                                . "<a href='".url('/edit/establishment/'.$establishment->getUuid())."'>cliquant ici</a>.";
+                    break;
+                case 75:
+                    $etsMessage = "Votre établissement est presque complet. Pensez à renseigner les informations manquantes en "
+                                . "<a href='".url('/edit/establishment/'.$establishment->getUuid())."'>cliquant ici</a>.";
+                    break;
+                case 100:
+                    $establishmentIncomplete = false;
+                    break;
+            }
+        }
+        if($establishmentIncomplete){
+            \Illuminate\Support\Facades\Request::session()->flash('error', $etsMessage);
+        }
+        
         $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingPro::DT_ID);
 
         $promotionsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtPromotionAdmin::DT_ID);

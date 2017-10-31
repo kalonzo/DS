@@ -44,14 +44,45 @@
                         <?php
                     }
                     ?>
-                    @component('components.file-input', 
-                                        ['name' => 'logo',
+                    @if(checkModel($establishment))
+                        @component('components.file-input', 
+                                        [
+                                        'name' => 'logo',
                                         'class' => 'form-control',
+                                        'multiple' => false,
                                         'medias' => $logoOriginal,
-                                        'fileType' => 'image'
+                                        'fileType' => 'image',
+                                        'showRemove' => 'false',
+                                        'directUpload' => 'true',
+                                        'fileRefreshOnUpload' => 'true',
+                                        'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
                                         ])
-                    
+                        @slot('extraData')
+                            {'action': 'add_logo'}
+                        @endslot
+                        @slot('fileerror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                        @slot('fileuploaderror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                        @slot('filebatchuploaderror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
+                        @slot('filedeleteerror')
+                            alertFileInputError(event, data, msg);
+                        @endslot
                     @endcomponent
+                    @else
+                        @component('components.file-input', 
+                                            ['name' => 'logo',
+                                            'class' => 'form-control',
+                                            'medias' => $logoOriginal,
+                                            'fileType' => 'image'
+                                            ])
+
+                        @endcomponent
+                    @endif
                     <?php
                     if(checkModel($logoDraft)){
                         ?>
@@ -144,15 +175,44 @@
                         <div class="gallery-header">
                             <h6 class="gallery-title">Images page d'accueil</h6>
                         </div>
-                        @component('components.file-input', 
-                                            ['name' => 'home_pictures',
-                                            'class' => 'form-control',
-                                            'medias' => $medias,
-                                            'multiple' => true,
-                                            'fileType' => 'image'
-                                            ])
+                        @if(checkModel($establishment))
+                            @component('components.file-input', 
+                                                ['name' => 'home_pictures',
+                                                'class' => 'form-control',
+                                                'medias' => $medias,
+                                                'multiple' => true,
+                                                'fileType' => 'image',
+                                                'directUpload' => 'true',
+                                                'fileRefreshOnUpload' => 'true',
+                                                'uploadUrl' => '/edit/establishment/'.$establishment->getUuid().'/ajax',
+                                ])
+                                @slot('extraData')
+                                    {'action': 'add_home_pictures'}
+                                @endslot
+                                @slot('fileerror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                                @slot('fileuploaderror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                                @slot('filebatchuploaderror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                                @slot('filedeleteerror')
+                                    alertFileInputError(event, data, msg);
+                                @endslot
+                            @endcomponent
+                        @else
+                            @component('components.file-input', 
+                                                ['name' => 'home_pictures',
+                                                'class' => 'form-control',
+                                                'medias' => $medias,
+                                                'multiple' => true,
+                                                'fileType' => 'image'
+                                                ])
 
-                        @endcomponent
+                            @endcomponent
+                        @endif
                     </div>
                 </div>
             </div>

@@ -543,6 +543,7 @@ class EstablishmentController extends Controller {
                             $this->feedOpeningHours($request, $establishment);
 
                             // Update medias
+                            /*
                             if ($request->file('logo')) {
                                 $logo = $establishment->logo()->first();
                                 $logo = FileController::storeFile('logo', \App\Models\Media::TYPE_USE_ETS_LOGO, $establishment, $logo);
@@ -551,6 +552,8 @@ class EstablishmentController extends Controller {
                                     $establishment->save();
                                 }
                             }
+                             * 
+                             */
                             if ($request->file('home_pictures')) {
                                 $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment);
                             }
@@ -591,56 +594,108 @@ class EstablishmentController extends Controller {
         $response = response();
         $jsonResponse = array('success' => 0);
         
-        $user = User::where('email', $request->get('email'))->first();
-        if (checkModel($user)) {
-            $userId = $user->getId();
-            $address = Address::where('id_object_related', $userId)->first();
-            if (checkModel($address)) {
-                $addressId = $address->getId();
-            } else {
-                //l'utilisateur donnée n'as pas encore renseigné son adresse.
-                $addressId = 0;
+        $createAccount = $request->get('create_account');
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if(!checkModel($user)){
+            $user = User::where('email', $request->get('email'))->first();
+            $password = null;
+            if($createAccount){
+                $password = bcrypt($request->get('password'));
             }
-        } else {
-            // Create booking user
-            $userId = \App\Utilities\UuidTools::generateUuid();
-            $addressId = 0;
-            $user = User::create([
-                        'id' => $userId,
-                        'name' => $request->get('firstname'),
-                        'type' => User::TYPE_USER_AUTO_INSERTED,
-                        'email' => $request->get('email'),
-                        'gender' => 0,
-                        'id_address' => $addressId,
-                        'id_inbox' => 0,
-                        'id_company' => 0,
-            ]);
+            if (checkModel($user)) {
+                if($createAccount){
+                    $user->update([
+                        'firstname' => $request->get('firstname'),
+                        'lastname' => $request->get('lastname'),
+                        'type' => User::TYPE_USER,
+                        'status' => User::STATUS_CREATED,
+                        'password' => $password,
+                    ]);
+                }
+            } else {
+                // Create user
+                $typeUser = User::TYPE_USER_AUTO_INSERTED;
+                if($createAccount){
+                    $typeUser = User::TYPE_USER;
+                }
+                $user = User::create([
+                            'id' => \App\Utilities\UuidTools::generateUuid(),
+                            'name' => $request->get('email'),
+                            'firstname' => $request->get('firstname'),
+                            'lastname' => $request->get('lastname'),
+                            'type' => $typeUser,
+                            'status' => User::STATUS_CREATED,
+                            'password' => $password,
+                            'email' => $request->get('email'),
+                            'gender' => 0,
+                            'id_address' => 0,
+                            'id_inbox' => 0,
+                            'id_company' => 0,
+                ]);
+            }
         }
         // TODO confirmation email user + process réservation
-        
-        $time = $request->get('time_reservation');
-        $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$time);
+        if (checkModel($user)) {
+            $time = $request->get('time_reservation');
+            $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$time);
+            $prefixCountry = DB::table(Country::TABLENAME)->where('id', '=', $request->get('prefix'))
+                            ->select(['prefix', 'iso', 'id'])->first();
+            $fullPhoneNumber = $request->get('phone_number');
+            if(checkModel($prefixCountry)){
+                $fullPhoneNumber = formatPhone($prefixCountry->prefix, $request->get('phone_number'), $prefixCountry->iso);
+                
+                if(!$user->callNumbers()->exists()){
+                    CallNumber::create([
+                            'id' => UuidTools::generateUuid(),
+                            'main' => true,
+                            'label' => "Téléphone",
+                            'type' => CallNumber::TYPE_PHONE_CONTACT,
+                            'prefix' => $request->get('prefix'),
+                            'id_country' => $prefixCountry->id,
+                            'number' => $request->get('phone_number'),
+                            'id_object_related' => $user->getId(),
+                            'type_object_related' => User::TYPE_GLOBAL_OBJECT,
+                    ]);
+                }
+            }
 
-        $bookingStatus = \App\Models\Booking::STATUS_CREATED;
-        if($user->getStatus() === User::STATUS_ACTIVE){
             $bookingStatus = \App\Models\Booking::STATUS_PENDING;
+            $booking = \App\Models\Booking::create([
+                        'id' => \App\Utilities\UuidTools::generateUuid(),
+                        'status' => $bookingStatus,
+                        'lastname' => $request->get('lastname'),
+                        'firstname' => $request->get('firstname'),
+                        'email' => $request->get('email'),
+                        'phone_number' => $fullPhoneNumber,
+                        'datetime_reservation' => $date->format('Y-m-d H:i'),
+                        'comment' => $request->get('comment'),
+                        'nb_adults' => $request->get('nb_adults'),
+                        'id_user' => $user->getId(),
+                        'id_establishment' => $establishment->getId(),
+            ]);
+
+            if(checkModel($booking)){
+                $jsonResponse['success'] = 1;
+                \Illuminate\Support\Facades\Request::session()->flash('status', 
+                    "Votre demande de réservation a bien été prise en compte. Vous, et vos éventuels invités, recevrez sous peu un email vous "
+                    . " indiquant si le restaurateur peut répondre favorablement ou non à votre demande."
+                );
+                // Notify user
+                \App\RegistrationToken::deleteCode($user->getId());
+                $token = \App\RegistrationToken::makeToken($user->getEmail());
+                $user->notify(new \App\Notifications\BookingCreatedUser($user, $booking, $establishment, $token));
+                // Notify user pro
+                $etsOwner = $establishment->userOwner();
+                if(checkModel($etsOwner)){
+                    $etsOwner->notify(new \App\Notifications\BookingCreatedPro());
+                }
+            }
         }
-        $bookingReservation = \App\Models\Booking::create([
-                    'id' => \App\Utilities\UuidTools::generateUuid(),
-                    'status' => $bookingStatus,
-                    'lastname' => $request->get('lastname'),
-                    'firstname' => $request->get('firstname'),
-                    'email' => $request->get('email'),
-                    'phone_number' => $request->get('phone_number'),
-                    'datetime_reservation' => $date->format('Y-m-d H:i'),
-                    'comment' => $request->get('comment'),
-                    'nb_adults' => $request->get('nb_adults'),
-                    'id_user' => $userId,
-                    'id_establishment' => $establishment->getId(),
-        ]);
         
-        if(checkModel($bookingReservation)){
-            $jsonResponse['success'] = 1;
+        if($jsonResponse['success'] !== 1){
+            \Illuminate\Support\Facades\Request::session()->flash('errors', 
+                        "Votre demande de réservation n'a pu aboutir. Veuillez réessayer ou prendre directement contact avec nos équipes."
+                    );
         }
         
         if($request->ajax()){
@@ -690,7 +745,7 @@ class EstablishmentController extends Controller {
                             }
                         }
                         $formData = ['time_slots' => $timeslots];
-                        $view = View::make('establishment.restaurant.feed.booking-hours')->with('form_data', $formData);
+                        $view = View::make('establishment.restaurant.booking.booking-hours')->with('form_data', $formData);
                         $jsonResponse['content'] = $view->render();
                         $jsonResponse['success'] = 1;
                     } else {
@@ -1393,6 +1448,38 @@ class EstablishmentController extends Controller {
                             $jsonResponse['inputData']['initialPreview'] = $existingFiles;
                             $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
                             $jsonResponse['success'] = 1;
+                        }
+                    }
+                    break;
+                case 'add_logo':
+                    if ($request->file('logo')) {
+                        $logo = $establishment->logo()->first();
+                        $logo = FileController::storeFile('logo', \App\Models\Media::TYPE_USE_ETS_LOGO, $establishment, $logo);
+                        if (checkModel($logo)) {
+                            $establishment->setIdLogo($logo->getId());
+                            $establishment->save();
+                            
+                            $existingFiles = getMediaUrlForInputFile($logo, false);
+                            $existingFilesConfig = getMediaConfigForInputFile($logo, false);
+                            $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                            $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
+                            $jsonResponse['success'] = 1;
+                        }
+                    }
+                    break;
+                case 'add_home_pictures':
+                    $filesToUpload = $request->allFiles();
+                    if(isset($filesToUpload['home_pictures']) && !empty($filesToUpload['home_pictures'])){
+                        foreach($filesToUpload['home_pictures'] as $uploadedFiles){
+                            $homePictures = FileController::storeFileMultiple('home_pictures', \App\Models\Media::TYPE_USE_ETS_HOME_PICS, $establishment);
+                            
+                            $medias = $establishment->homePictures()->get();
+                            $existingFiles = getMediaUrlForInputFile($medias, false);
+                            $existingFilesConfig = getMediaConfigForInputFile($medias, false);
+
+                            $jsonResponse['success'] = 1;
+                            $jsonResponse['inputData']['initialPreview'] = $existingFiles;
+                            $jsonResponse['inputData']['initialPreviewConfig'] = $existingFilesConfig;
                         }
                     }
                     break;

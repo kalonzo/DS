@@ -22,7 +22,7 @@ $loadDelay = 0.6
 @section('content')
     @if($establishment->getAcceptBooking())
     <aside id="sidebar-booking" class="custom-sidebar sidebar-fixed-right ref-scroller" data-toggler=".sidebar-booking-toggler">
-           @component('establishment.restaurant.feed.booking', ['establishment' => $establishment, 'form_data' => $form_data])
+           @component('establishment.restaurant.booking.booking', ['establishment' => $establishment, 'form_data' => $form_data])
            @endcomponent
     </aside>
     @endif

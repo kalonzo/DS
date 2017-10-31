@@ -613,6 +613,10 @@ select:not(.select2){
                     }
                     .default-bg-ds{
                         width: 100%;
+                        background: black;
+                        padding: 25px;
+                        border: 1px solid white;
+                        border-bottom: 0px;
                     }
                 }
                 .logo-picture{
@@ -633,6 +637,9 @@ select:not(.select2){
                     bottom: 0px; 
                     right: 0px;
                     padding: 0px 0.5em;
+                    &.bordered{
+                        right: 1px;
+                    }
                 }
             }
         }
@@ -1201,12 +1208,12 @@ form:not(.navbar-form){
 
 $subscriptionTileHeight: 400px;
 $subscriptionTileHeaderHeight: 100px;
-.subscription-tiles{
-    .subscription-tile{
+.subscription-tiles, .extra-tiles{
+    .buyable-tile{
         margin-bottom: 2em;
         height: $subscriptionTileHeight;
         &.selected{
-            .subscription-body{
+            .buyable-body{
                 border-width: 4px;
                 border-top: 0px;
             }
@@ -1214,12 +1221,12 @@ $subscriptionTileHeaderHeight: 100px;
         &.not-selected{
             @include opacity(0.6);
         }
-        .subscription-header{
+        .buyable-header{
             text-align: center;
             font-size: 3em;
             height: $subscriptionTileHeaderHeight;
         }
-        .subscription-body{
+        .buyable-body{
             border-top: 0px;
             border-width: 0px;
             border-style: solid;
@@ -1228,7 +1235,7 @@ $subscriptionTileHeaderHeight: 100px;
             display: flex;
             align-content: space-between;
             flex-direction: column;
-            input[type=radio]{
+            input[type=radio], input[type=checkbox]{
                 display: none;
             }
             > *{
@@ -1239,7 +1246,7 @@ $subscriptionTileHeaderHeight: 100px;
                 flex: none;
                 width: 100%;
                 text-align: center;
-                .btn-select-subscription{
+                .btn-select-buyable{
                     margin: 15px auto;
                     padding: 8px 18px;
                     &:hover, &:focus{
@@ -1247,6 +1254,11 @@ $subscriptionTileHeaderHeight: 100px;
                     }
                 }
             }
+        }
+    }
+    &.extra-tiles{
+        .buyable-header{
+            line-height: 1em;
         }
     }
 }

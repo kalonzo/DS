@@ -25,6 +25,7 @@ class Booking extends Model {
         'phone_number',
         'datetime_reservation',
         'comment',
+        'guests',
         'nb_adults',
         'nb_children',
         'latitude',
@@ -51,6 +52,24 @@ class Booking extends Model {
             $statusLabel = $statuses[$this->getStatus()];
         }
         return $statusLabel;
+    }
+    
+    public function getGuestsEmailArray(){
+        $guestsEmailArray = null;
+        if(!empty($this->getGuests())){
+            $guestsEmailArray = explode(',', $this->getGuests());
+        }
+        return $guestsEmailArray;
+    }
+    
+    public function establishment(){
+        $establishment = $this->hasOne(Establishment::class, 'id', 'id_establishment');
+        return $establishment;
+    }
+    
+    public function user(){
+        $user = $this->hasOne(User::class, 'id', 'id_user');
+        return $user;
     }
     
     /**
@@ -260,5 +279,15 @@ class Booking extends Model {
         $this->id_establishment = $value;
         return $this;
     }
+
+    function getGuests() {
+        return $this->guests;
+    }
+
+    function setGuests($guests) {
+        $this->guests = $guests;
+        return $this;
+    }
+
 
 }

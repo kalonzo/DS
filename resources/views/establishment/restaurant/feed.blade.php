@@ -34,22 +34,8 @@ if(checkModel($establishment)){
                     {!! Form::text('name', old('name'), ['class'=>'form-control', 'placeholder'=>'Nom de votre restaurant', 'id' => 'ets-name']) !!}
                 </div>
             </div>
-        </div>        
-        @if (Session::has('message'))
-        <div class="alert alert-info">{{ Session::get('message') }}</div>
-        @endif
+        </div>     
 
-        @if(count($errors))
-        <div class="alert alert-danger">
-            <strong>Erreur!</strong> Les informations saisies ne sont pas correctes.
-            <br/>
-            <ul>
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
         <div class="panel-group form-accordion" id="establishment_form_accordion" role="tablist" aria-multiselectable="true">
             @component('establishment.restaurant.feed.location', ['establishment' => $establishment, 'form_data' => $form_data, 'form_values' => $form_values])
             @endcomponent
@@ -150,7 +136,7 @@ if(checkModel($establishment)){
 
 <script type="text/javascript">
     function isGeocoded(){
-        return $('#addressGeocoded').val();
+        return ($('#addressGeocoded').val() == 'true');
     }
     
     function setGeocoded(geocoded){
@@ -222,6 +208,7 @@ if(checkModel($establishment)){
                 } else {
                     window.alert('Geocoder failed due to: ' + status);
                 }
+                $(document).trigger('addressGeocoded');
             });
         }
     }
@@ -358,7 +345,9 @@ if(checkModel($establishment)){
             }
         });
         
-        $('body').on('click', 'form#feed-establishment .form-data-button', function(e){
+        $('form#feed-establishment .form-data-button').on('click', function(e){
+            e.stopPropagation();
+            var $formDataButton = $(this);
             $('#form-list-errors').empty();
             $('#form-panel-errors').collapse('hide');
 
@@ -370,9 +359,16 @@ if(checkModel($establishment)){
             if(!isGeocoded()){
                 var callbacks = $.Callbacks();
                 callbacks.add(
-                    geocodeAddress($form.children().get(0))
+                    function(){
+                        $(document).on('addressGeocoded', function(){
+                            $formDataButton.trigger('valid-form');
+                        });
+                        geocodeAddress($form.children().get(0));
+                    }
                 );
                 callbacks.fire();
+            } else {
+                $formDataButton.trigger('valid-form');
             }
         });
         

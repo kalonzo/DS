@@ -491,11 +491,12 @@ class SearchController {
                     // Search results list
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;
-                    if(empty($establishmentData->logo_path)){
-                        $establishments[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
-                    } else {
-                        $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
-                    }
+                    $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
+//                    if(empty($establishmentData->logo_path)){
+//                        $establishments[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
+//                    } else {
+//                        $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
+//                    }
                     if(isset($establishmentData->thumbnail_path) && !empty($establishmentData->thumbnail_path)){
                         $establishments[$uuid]['thumbnail_img'] = $establishmentData->thumbnail_path;
                     }

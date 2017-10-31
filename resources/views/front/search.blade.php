@@ -35,6 +35,7 @@
 @endsection
 
 @section('js_imports_footer')
+<script src="/js/ets-thumbnails.js"></script>
 <script src="/js/geolocation.js"></script>
 <script src="/js/google-map.js"></script>
 <script src="/js/search.js"></script>

@@ -2,9 +2,11 @@ var map = null;
 var markerPosition = null;
 var mapZoom = 15;
 
-$(document).on('googleGeolocReady', function(){
+$(document).on('googleApiReady', function () {
+    var cookieDefaultPositionLat = dsGetCookie('defaultUserLat')*1;
+    var cookieDefaultPositionLng = dsGetCookie('defaultUserLng')*1;
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
+        center: {lat: cookieDefaultPositionLat, lng: cookieDefaultPositionLng},
         zoom: mapZoom,
         streetViewControl: false,
 //        scrollwheel: false,
@@ -13,7 +15,8 @@ $(document).on('googleGeolocReady', function(){
                   stylers: [{
                 visibility: 'off'
             }]     
-        },     {      
+        },     
+        {      
             featureType: 'transit',
                   elementType: 'labels.icon',
                   stylers: [{
@@ -22,7 +25,9 @@ $(document).on('googleGeolocReady', function(){
         }]
     });
     $(document).trigger('googleMapReady');
+});
     
+$(document).on('googleGeolocReady', function(){
     if (!isEmpty(userPositionLat) && !isEmpty(userPositionLng)) {
         var pos = {
             lat: userPositionLat,

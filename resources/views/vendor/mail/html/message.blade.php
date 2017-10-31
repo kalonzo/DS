@@ -19,9 +19,16 @@
     @endisset
 
     {{-- Footer --}}
+    @slot('prefooter')
+        @component('mail::pre-footer')
+            @component('vendor.notifications.pre-footer')
+            @endcomponent
+        @endcomponent
+    @endslot
     @slot('footer')
         @component('mail::footer')
-            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+            @component('vendor.notifications.footer')
+            @endcomponent
         @endcomponent
     @endslot
 @endcomponent

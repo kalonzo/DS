@@ -39,7 +39,7 @@ if (session('error')){
     <div id="feedback-error" class="alert alert-danger alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
         <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-        <span class="alert-message">{{ session('error') }}</span>
+        <span class="alert-message">{!! session('error') !!}</span>
     </div>
    <?php
 }

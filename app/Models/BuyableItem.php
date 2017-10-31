@@ -14,6 +14,7 @@ class BuyableItem extends Model {
     const TYPE_PRO_SUBSCRIPTION_LEVEL2 = 2;
     const TYPE_PRO_SUBSCRIPTION_LEVEL3 = 3;
     const TYPE_PRO_SUBSCRIPTION_LEVEL4 = 4;
+    const TYPE_PRO_SUBSCRIPTION_EXTRA = 5;
     const STATUS_ACTIVE = 1;
 
     public $timestamps = true;
@@ -38,6 +39,7 @@ class BuyableItem extends Model {
         'id_currency',
         'id_geographical_zone',
         'color',
+        'duration',
     ];
     protected $guarded = [];
     
@@ -370,4 +372,13 @@ class BuyableItem extends Model {
         return $this;
     }
     
+    function getDuration() {
+        return $this->duration;
+    }
+
+    function setDuration($duration) {
+        $this->duration = $duration;
+    }
+
+
 }

@@ -6,7 +6,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
 }
 
 body {
-    background-color: #f5f8fa;
+    background-color: #000000;
     color: #74787E;
     height: 100%;
     hyphens: auto;
@@ -82,7 +82,7 @@ img {
 /* Layout */
 
 .wrapper {
-    background-color: #f5f8fa;
+    background-color: #000000;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -103,16 +103,20 @@ img {
 /* Header */
 
 .header {
-    padding: 25px 0;
+    padding: 7px 0;
     text-align: center;
 }
 
 .header a {
-    color: #bbbfc3;
+    color: #fff;
     font-size: 19px;
     font-weight: bold;
     text-decoration: none;
     text-shadow: 0 1px 0 white;
+}
+
+.header a img{
+    height: 45px;
 }
 
 /* Body */
@@ -153,6 +157,33 @@ img {
 
 /* Footer */
 
+.pre-footer-cell{
+    background-color: #5c5c5c;
+    color: white;
+}
+
+.pre-footer-cell ul{
+    list-style: none;
+    display: inline;
+    padding: 0;
+}
+
+.pre-footer-cell ul > li{
+    display: inline-block;
+}
+
+.pre-footer-cell ul > li:first-child{
+    margin-left: 0px;
+}
+
+.pre-footer-cell ul > li a{
+    color: white;
+}
+
+.pre-footer-cell ul > li img{
+    width: 50px;
+}
+
 .footer {
     margin: 0 auto;
     padding: 0;
@@ -161,10 +192,23 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 570px;
+    color: white;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.footer a{
+    color: white;
+    text-decoration: none;
+}
+
+.footer .content-cell, .pre-footer-cell .content-cell{
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 .footer p {
-    color: #AEAEAE;
+    color: white;
     font-size: 12px;
     text-align: center;
 }
@@ -282,4 +326,8 @@ img {
 .promotion p {
     font-size: 15px;
     text-align: center;
+}
+
+.dual-column td{
+    width: 50%;
 }
