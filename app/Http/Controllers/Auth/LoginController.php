@@ -55,7 +55,7 @@ class LoginController extends Controller {
             $responsePrepared = $response->json($jsonResponse);
             return $responsePrepared;
         } else {
-            return view('front.home');
+            return View::make('auth.passwords.reset');
         }
     }
 

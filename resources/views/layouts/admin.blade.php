@@ -13,6 +13,7 @@
         <link href="/css/app.css" rel="stylesheet">
         <link href="/css/dashboard.css" rel="stylesheet">
         <link href="/css/admin.css" rel="stylesheet">
+        <link href="/css/datatables.css" rel="stylesheet">
         
         <link href="/libraries/bootstrap-fileinput/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
         <link rel='stylesheet' href='/libraries/fullcalendar/fullcalendar.css' />

@@ -42,7 +42,7 @@ use SendsPasswordResetEmails;
             $responsePrepared = $response->json($jsonResponse);
             return $responsePrepared;
         } else {
-            return view('front.home');
+            return View::make('auth.passwords.forgot-password')->with('email', $request->get('email'));
         }
     }
 

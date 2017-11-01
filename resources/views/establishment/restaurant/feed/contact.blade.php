@@ -42,6 +42,7 @@
                 </div>
             @endforeach
             </div>
+            @if(isset($form_values['allow_booking']) && !empty($form_values['allow_booking']))
             <div class="row">
                 <div class="col-xs-12 text-center">
                     <div class="checkbox">
@@ -52,6 +53,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <div class="row">
                 <div class="col-xs-12">
                     <button type="button" role="button" class="btn btn-md pull-right text-uppercase" onclick="goToNextAccordion(this);">

@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class BookingCreatedUser extends Notification
+class BookingDeniedUser extends Notification
 {
     use Queueable;
 
@@ -61,17 +61,18 @@ class BookingCreatedUser extends Notification
     public function toMail($notifiable)
     {
         $mailData = array();
-        $mailData['intro'] = "Nous accusons réception de votre demande de réservation pour le ". formatDate($this->booking->getDatetimeReservation())
-                                ." à ".formatDate($this->booking->getDatetimeReservation(), \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT)
-                                ." pour ".$this->booking->getNbAdults()." personne(s) dans l'établissement ".$this->establishment->getName().'.';
-        $mailData['cancelUrl'] = url("/admin/booking/cancel/".$this->booking->getUuid());
+        $mailData['lines'][] = "Nous avons bien reçu votre souhait de réservation du ". formatDate($this->booking->getDatetimeReservation())
+                            ." à ".formatDate($this->booking->getDatetimeReservation(), \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT)
+                            ." dans l'établissement ".$this->establishment->getName().', cependant nous regrettons de ne pouvoir accéder à votre demande.';
+        $mailData['lines'][] = "En effet, notre établissement est complet à cette date mais vous pouvez bien entendu modifier la date de réservation.";
+        $mailData['lines'][] = "En espérant pouvoir vous recevoir prochainement, nous vous prions d’agréer, Madame, Monsieur, nos sincères salutations.";
         if(!empty($this->token)){
             $mailData['activateUrl'] = route('register.verify', $this->token);
         }
         
         $message = (new MailMessage)
-            ->subject("Dinerscope - Votre demande de réservation")
-            ->markdown('emails.booking-confirmation', $mailData);
+            ->subject("Dinerscope - Votre réservation est déclinée")
+            ->markdown('emails.booking-denied', $mailData);
         return $message;
     }
 

@@ -139,6 +139,18 @@ getOnClickModal = function(title, url, params, modalId, modalClassSize, modalCla
     }
 };
 
+redirectToUrl = function(url){
+    document.location.href=url;
+}
+
+confirmChoice = function(text, ifTrue, ifFalse){
+    if(confirm(text)){
+        eval(ifTrue);
+    } else {
+        eval(ifFalse);
+    }
+}
+
 alertFileInputError = function(event, data, msg){
     var errors = data.jqXHR.responseJSON;
     var alertMsg = '';

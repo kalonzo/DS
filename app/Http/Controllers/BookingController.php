@@ -100,15 +100,49 @@ class BookingController extends Controller{
     }
     
     public function confirm(Request $request, Booking $booking){
-        if($booking->getStatus() === Booking::STATUS_PENDING){
-            $booking->setStatus(Booking::STATUS_CONFIRMED)->save();
-            \Illuminate\Support\Facades\Request::session()->flash('status', 
-                        "La réservation a bien été confirmée. Le client et ses éventuels invités vont être immédiatement avertis par email."
-                    );
-        } else {
-            \Illuminate\Support\Facades\Request::session()->flash('error', 
-                        "La réservation a déjà été traitée. Vous pouvez administrer les réservations directement depuis votre compte.");
+        $success = false;
+        $feedback = null;
+        try{
+            if(!$booking->isOver()){
+                if($booking->getStatus() === Booking::STATUS_PENDING){
+                    $customer = $booking->user()->first();
+                    $establishment = $booking->establishment()->first();
+                    if(checkModel($customer) && checkModel($establishment)){
+                        $feedback = "La réservation a bien été confirmée. Le client et ses éventuels invités vont être immédiatement avertis par email.";
+                        $booking->setStatus(Booking::STATUS_CONFIRMED)->save();
+                        $token = null;
+                        if($customer->getStatus() !== User::STATUS_ACTIVE){
+                            \App\RegistrationToken::deleteCode($customer->getId());
+                            $token = \App\RegistrationToken::makeToken($customer->getEmail());
+                        }
+                        $customer->notify(new \App\Notifications\BookingConfirmedUser($customer, $booking, $establishment, $token));
+                        if(!empty($booking->getGuests())){
+                            if($booking->getGuestsEmailCc()){
+                                $customer->notify(new \App\Notifications\BookingConfirmedGuest($customer, $booking, $establishment));
+                            }
+                            foreach($booking->getGuestsEmailArray() as $guestEmail){
+                                (new User())->forceFill([
+                                    'name' => $guestEmail,
+                                    'email' => $guestEmail,
+                                ])->notify(new \App\Notifications\BookingConfirmedGuest($customer, $booking, $establishment));
+                            }
+                        }
+                        $success = true;
+                    } else {
+                        $feedback = "Une erreur est survnenue, merci de contacter directement le client.";
+                    }
+                } else {
+                    $feedback = "La réservation a déjà été traitée.";
+                }
+            } else {
+                $feedback = "La réservation est périmée.";
+            }
+        } catch(Exception $e){
+            $feedback = "Une erreur est survenue. Merci de contacter un administrateur.";
         }
+        
+        \Illuminate\Support\Facades\Request::session()->flash($success ? 'status' : 'error', $feedback);
+        
         $redirectPath = '/';
         if(Auth::check()){
             $redirectPath = '/admin';
@@ -117,15 +151,38 @@ class BookingController extends Controller{
     }
     
     public function deny(Request $request, Booking $booking){
-        if($booking->getStatus() === Booking::STATUS_PENDING){
-            $booking->setStatus(Booking::STATUS_DENIED)->save();
-            \Illuminate\Support\Facades\Request::session()->flash('status', 
-                        "La réservation a été refusée. Le client va être immédiatement averti par email."
-                    );
-        } else {
-            \Illuminate\Support\Facades\Request::session()->flash('error', 
-                        "La réservation a déjà été traitée. Vous pouvez administrer les réservations directement depuis votre compte.");
+        $success = false;
+        $feedback = null;
+        try{
+            if(!$booking->isOver()){
+                if($booking->getStatus() === Booking::STATUS_PENDING){
+                    $customer = $booking->user()->first();
+                    $establishment = $booking->establishment()->first();
+                    if(checkModel($customer) && checkModel($establishment)){
+                        $feedback = "La réservation a été refusée. Le client va être immédiatement averti par email.";
+                        $booking->setStatus(Booking::STATUS_DENIED)->save();
+                        $token = null;
+                        if($customer->getStatus() !== User::STATUS_ACTIVE){
+                            \App\RegistrationToken::deleteCode($customer->getId());
+                            $token = \App\RegistrationToken::makeToken($customer->getEmail());
+                        }
+                        $customer->notify(new \App\Notifications\BookingDeniedUser($customer, $booking, $establishment, $token));
+                        $success = true;
+                    } else {
+                        $feedback = "Une erreur est survnenue, merci de contacter directement le client.";
+                    }
+                } else {
+                    $feedback = "La réservation a déjà été traitée.";
+                }
+            } else {
+                $feedback = "La réservation est périmée.";
+            }
+        } catch(Exception $e){
+            $feedback = "Une erreur est survenue. Merci de contacter un administrateur.";
         }
+        
+        \Illuminate\Support\Facades\Request::session()->flash($success ? 'status' : 'error', $feedback);
+        
         $redirectPath = '/';
         if(Auth::check()){
             $redirectPath = '/admin';
@@ -134,15 +191,33 @@ class BookingController extends Controller{
     }
     
     public function cancel(Request $request, Booking $booking){
-        if($booking->getStatus() !== Booking::STATUS_CANCELED){
-            $booking->setStatus(Booking::STATUS_CANCELED)->save();
-            \Illuminate\Support\Facades\Request::session()->flash('status', 
-                        "Votre réservation a été annulée."
-                    );
-        } else {
-            \Illuminate\Support\Facades\Request::session()->flash('error', 
-                        "La réservation a déjà été annulée.");
+        $success = false;
+        $feedback = null;
+        try{
+            if(!$booking->isOver()){
+                if($booking->getStatus() !== Booking::STATUS_CANCELED){
+                    $owner = $booking->getEstablishmentOwner();
+                    $customer = $booking->user()->first();
+                    if(checkModel($owner) && checkModel($customer)){
+                        $feedback = "Votre réservation a été annulée.";
+                        $booking->setStatus(Booking::STATUS_CANCELED)->save();
+                        $owner->notify(new \App\Notifications\BookingCancelPro($customer, $booking));
+                        $success = true;
+                    } else {
+                        $feedback = "Une erreur est survnenue, merci de contacter directement l'établissement.";
+                    }
+                } else {
+                    $feedback = "La réservation a déjà été annulée.";
+                }
+            } else {
+                $feedback = "La réservation est périmée.";
+            }
+        } catch(Exception $e){
+            $feedback = "Une erreur est survenue. Merci de contacter un administrateur.";
         }
+        
+        \Illuminate\Support\Facades\Request::session()->flash($success ? 'status' : 'error', $feedback);
+        
         $redirectPath = '/';
         if(Auth::check()){
             $redirectPath = '/admin';

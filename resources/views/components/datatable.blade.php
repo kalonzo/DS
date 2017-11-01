@@ -46,7 +46,7 @@
                 @endforeach
                 <!-- Actions extra column -->
                 @if(!empty($actions))
-                <th>Actions</th>
+                <th class="dt-column-action">Actions</th>
             @endif
             </tr>
         </thead>
@@ -59,38 +59,43 @@
 
             <!-- Actions -->
             @if(!empty($actions))
-                <td>
+                <td class="dt-column-action">
                 @foreach($actions as $actionId => $rowAction)
                     <?php
-                    $classes = $rowAction->getIcon();
-                    $href = $rowAction->getHref();
-                    if(!empty($rowAction->getHref())){
-                        if(strpos($href, '{{') !== false){
-                            $refAttribute = str_between($href, "{{", '}}');
-                            if(isset($row[$refAttribute])){
-                                $href = str_replace('{{'.$refAttribute.'}}', $row[$refAttribute], $href);
+                    $hide = $rowAction->getHiddenCond();
+                    if(empty($hide) || !$row[$hide]){
+                        $classes = $rowAction->getIcon();
+                        $href = $rowAction->getHref();
+                        if(!empty($rowAction->getHref())){
+                            if(strpos($href, '{{') !== false){
+                                $refAttribute = str_between($href, "{{", '}}');
+                                if(isset($row[$refAttribute])){
+                                    $href = str_replace('{{'.$refAttribute.'}}', $row[$refAttribute], $href);
+                                }
                             }
                         }
-                    }
-                    $onClick = $rowAction->getOnClick();
-                    if(!empty($rowAction->getOnClick())){
-                        $classes .= ' clickable';
-                        if(strpos($onClick, '{{') !== false){
-                            $refAttribute = str_between($onClick, "{{", '}}');
-                            if(isset($row[$refAttribute])){
-                                $onClick = str_replace('{{'.$refAttribute.'}}', $row[$refAttribute], $onClick);
+                        $onClick = $rowAction->getOnClick();
+                        if(!empty($rowAction->getOnClick())){
+                            $classes .= ' clickable';
+                            if(strpos($onClick, '{{') !== false){
+                                $refAttribute = str_between($onClick, "{{", '}}');
+                                if(isset($row[$refAttribute])){
+                                    $onClick = str_replace('{{'.$refAttribute.'}}', $row[$refAttribute], $onClick);
+                                }
                             }
                         }
+                        ?>
+                        @if(!empty($href))
+                        <a href="{{ $href }}">
+                        @endif
+                        <span class="glyphicon {{ $classes }}" title="{{ $rowAction->getTitle() }}" onclick="{{ $onClick }}"
+                              aria-hidden="true"></span>
+                        @if(!empty($href))
+                        </a>
+                        @endif
+                        <?php
                     }
                     ?>
-                    @if(!empty($href))
-                    <a href="{{ $href }}">
-                    @endif
-                    <span class="glyphicon {{ $classes }}" title="{{ $rowAction->getTitle() }}" onclick="{{ $onClick }}"
-                          aria-hidden="true"></span>
-                    @if(!empty($href))
-                    </a>
-                    @endif
                 @endforeach
                 </td>
             @endif

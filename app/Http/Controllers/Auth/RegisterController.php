@@ -91,7 +91,7 @@ use ActivatesUsers,
             $responsePrepared = $response->json($jsonResponse);
             return $responsePrepared;
         } else {
-            return view('front.home');
+            return View::make('components.register')->with('type_user', $typeUser);
         }
     }
 
@@ -410,10 +410,16 @@ use ActivatesUsers,
      */
     protected function sendResendFailedResponse() {
         if ($this->request->expectsJson()) {
-            return response()->json([
+            if(!empty($this->status)){
+                return response()->json([
                                 'success' => 0,
                                 'error' => $this->status['title'].': '.$this->status['message'],
                             ], $this->status['http_code']);
+            } else {
+                return response()->json([
+                                'success' => 0,
+                    ]);
+            }
         } else {
             return redirect($this->redirectPath())
                         ->with('status', $this->status);

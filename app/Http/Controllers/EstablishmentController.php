@@ -634,7 +634,7 @@ class EstablishmentController extends Controller {
                 ]);
             }
         }
-        // TODO confirmation email user + process réservation
+        
         if (checkModel($user)) {
             $time = $request->get('time_reservation');
             $date = new \DateTime(str_replace('/', '-', $request->get('datetime_reservation')).' '.$time);
@@ -658,7 +658,17 @@ class EstablishmentController extends Controller {
                     ]);
                 }
             }
-
+            
+            $guestsEmails = null;
+            if(!empty($request->get('invited_emails'))){
+                $guestsEmailArray = array();
+                $invitedEmails = explode(',', $request->get('invited_emails'));
+                foreach($invitedEmails as $i => $invitedEmail){
+                    $guestsEmailArray[] = trim($invitedEmail);
+                }
+                $guestsEmails = implode(',', $guestsEmailArray);
+            }
+            
             $bookingStatus = \App\Models\Booking::STATUS_PENDING;
             $booking = \App\Models\Booking::create([
                         'id' => \App\Utilities\UuidTools::generateUuid(),
@@ -669,6 +679,9 @@ class EstablishmentController extends Controller {
                         'phone_number' => $fullPhoneNumber,
                         'datetime_reservation' => $date->format('Y-m-d H:i'),
                         'comment' => $request->get('comment'),
+                        'guests' => $guestsEmails,
+                        'guests_message' => $request->get('message'),
+                        'guests_email_cc' => $request->get('copy_invitation'),
                         'nb_adults' => $request->get('nb_adults'),
                         'id_user' => $user->getId(),
                         'id_establishment' => $establishment->getId(),
@@ -681,13 +694,16 @@ class EstablishmentController extends Controller {
                     . " indiquant si le restaurateur peut répondre favorablement ou non à votre demande."
                 );
                 // Notify user
-                \App\RegistrationToken::deleteCode($user->getId());
-                $token = \App\RegistrationToken::makeToken($user->getEmail());
-                $user->notify(new \App\Notifications\BookingCreatedUser($user, $booking, $establishment, $token));
+                $token = null;
+                if($user->getStatus() !== User::STATUS_ACTIVE){
+                    \App\RegistrationToken::deleteCode($user->getId());
+                    $token = \App\RegistrationToken::makeToken($user->getEmail());
+                }
                 // Notify user pro
-                $etsOwner = $establishment->userOwner();
+                $etsOwner = $establishment->userOwner()->first();
                 if(checkModel($etsOwner)){
-                    $etsOwner->notify(new \App\Notifications\BookingCreatedPro());
+                    $user->notify(new \App\Notifications\BookingCreatedUser($user, $booking, $establishment, $token));
+                    $etsOwner->notify(new \App\Notifications\BookingCreatedPro($user, $booking, $establishment));
                 }
             }
         }
@@ -1110,6 +1126,7 @@ class EstablishmentController extends Controller {
         $idCurrency = \App\Utilities\CurrencyTools::getIdCurrencyFromLocale();
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_currency', $idCurrency);
+        StorageHelper::getInstance()->add('feed_establishment.form_values.allow_booking', false);
     }
 
     /**
@@ -1169,11 +1186,17 @@ class EstablishmentController extends Controller {
             $idCurrency = $establishment->getIdCurrency();
         }
         
+        $allowBooking = false;
+        if($establishment->userOwner()->where('status', '=', User::STATUS_ACTIVE)->exists()){
+            $allowBooking = true;
+        }
+        
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_country', $idCountry);
         StorageHelper::getInstance()->add('feed_establishment.form_values.id_currency', $idCurrency);
         StorageHelper::getInstance()->add('feed_establishment.form_values.call_numbers', $callNumbersData);
         StorageHelper::getInstance()->add('feed_establishment.form_values.business_categories', $businessCategoryIds);
         StorageHelper::getInstance()->add('feed_establishment.form_values.opening_hours', $openingHours);
+        StorageHelper::getInstance()->add('feed_establishment.form_values.allow_booking', $allowBooking);
     }
 
     public function ajax(StoreEstablishment $request, Establishment $establishment) {

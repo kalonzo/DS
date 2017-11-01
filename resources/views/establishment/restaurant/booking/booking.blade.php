@@ -129,7 +129,7 @@
     <div class="row booking-invitation" style="text-transform: none;">
         <h3 class="text-uppercase">Inviter des <strong>amis</strong></h3>
         <div class="col-xs-12 form-group">
-            {!! Form::label('invited_emails', 'Pour l\'envoyer à plusieur amis, merci de séparer les emails par des virgules') !!}
+            {!! Form::label('invited_emails', 'Pour l\'envoyer à plusieurs amis, merci de séparer les emails par des virgules') !!}
             {!! Form::textarea('invited_emails', old('invited_emails'), ['class' => 'form-control']) !!}  
         </div>
         <div class="col-xs-12 form-group">

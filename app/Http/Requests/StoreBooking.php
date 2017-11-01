@@ -17,8 +17,9 @@ class StoreBooking extends \App\Http\FormRequest {
     
     public function withValidator(\Illuminate\Validation\Validator $validator){
         $validator->after(function ($validator) {
-            if(!empty($this->get('email'))){
-                $userQuery = User::where('email', 'LIKE', $this->get('email'));
+            $email = $this->get('email');
+            if(!empty($email) && !\Illuminate\Support\Facades\Auth::check()){
+                $userQuery = User::where('email', 'LIKE', $email);
                 if ($userQuery->exists()) {
                     $userActivated = $userQuery->where('status', '=', User::STATUS_ACTIVE)->exists();
                     if($userActivated){

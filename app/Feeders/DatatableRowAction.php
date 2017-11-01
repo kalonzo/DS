@@ -11,12 +11,14 @@ class DatatableRowAction {
     const ACTION_EDIT = 1;
     const ACTION_REMOVE = 2;
     const ACTION_VALID = 3;
+    const ACTION_DENY = 4;
     
     protected $type;
     protected $icon;
     protected $title;
     protected $href;
     protected $onclick;
+    protected $hiddenCond;
     
     public static function getActionDefaultInfo($actionType){
         $action = new DatatableRowAction();
@@ -35,6 +37,11 @@ class DatatableRowAction {
                 $action->setType($actionType);
                 $action->setIcon('glyphicon-ok-circle');
                 $action->setTitle('Valider');
+                break;
+            case self::ACTION_DENY:
+                $action->setType($actionType);
+                $action->setIcon('glyphicon-remove-circle');
+                $action->setTitle('Refuser');
                 break;
         }
         return $action;
@@ -79,4 +86,14 @@ class DatatableRowAction {
     function setType($type) {
         $this->type = $type;
     }
+
+    function getHiddenCond() {
+        return $this->hiddenCond;
+    }
+
+    function setHiddenCond($hiddenCond) {
+        $this->hiddenCond = $hiddenCond;
+    }
+
+
 }

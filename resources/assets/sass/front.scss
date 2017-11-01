@@ -1390,4 +1390,11 @@ $popoverRadius: 5px;
     margin: 0px;
     @include borderRadius(0px);
     font-weight: normal;
+    position: fixed;
+    top: $navbarHeight;
+    left: 0px;
+    z-index: 1;
+    @include opacity(0.8);
+    width: 100%;
+    padding-left: 5em;
 }

@@ -103,7 +103,7 @@ class HomeController extends Controller {
         $geolocLimitSuccess = DbQueryTools::setGeolocLimits($establishmentsQuery, $userLatLng, $distance, Establishment::TABLENAME);
         if ($geolocLimitSuccess) {
             /************* DS Selection build *********************************/
-            $dsSelectionData = with(clone $establishmentsQuery)->limit(24)->get();
+            $dsSelectionData = with(clone $establishmentsQuery)->where(Establishment::TABLENAME . '.business_status', '>=', 100)->limit(24)->get();
             $dsSelectionEstablishments = EstablishmentController::buildThumbnailData($dsSelectionData, ($distance * 1000));
             foreach($dsSelectionEstablishments as $uuid => $dsSelectionEstablishment){
                 $etsUuids[$uuid] = $uuid;

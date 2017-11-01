@@ -93,6 +93,7 @@ class DtEstablishmentAdmin extends DatatableFeeder {
                 ->select([
                     Establishment::TABLENAME . '.*', Address::TABLENAME . '.*', 
                     Establishment::TABLENAME . '.id AS id_establishment',
+                    Establishment::TABLENAME . '.updated_at AS last_update',
                     User::TABLENAME . '.id AS id_owner',
                     DB::raw('CONCAT('.User::TABLENAME . '.lastname, " ", '.User::TABLENAME . '.firstname) AS owner')
                 ])
@@ -131,7 +132,7 @@ class DtEstablishmentAdmin extends DatatableFeeder {
             }
             $results[$uuid]['city'] = $queryResult->city;
             $results[$uuid]['country'] = Country::getCountryLabel($queryResult->id_country);
-            $results[$uuid]['updated_at'] = $queryResult->updated_at;
+            $results[$uuid]['updated_at'] = $queryResult->last_update;
         }
         
         return $results;

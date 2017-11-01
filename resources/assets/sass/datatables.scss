@@ -1,0 +1,23 @@
+// Variables
+@import "_variables";
+@import "_mixins";
+
+.dt-column-action{
+    text-align: center;
+}
+
+#dt_booking_pro{
+    .dt-column-action{
+        white-space: nowrap;
+    }
+    .glyphicon{
+        font-size: 1.5em;
+        &.glyphicon-ok-circle{
+            color: $success-color;
+            margin-right: 0.5em;
+        }
+        &.glyphicon-remove-circle{
+            color: $danger-color;
+        }
+    }
+}

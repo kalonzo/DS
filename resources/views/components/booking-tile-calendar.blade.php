@@ -101,8 +101,8 @@
                 element.find('.fc-title').append("<span class='glyphicon glyphicon-user' aria-hidden='true'></span>");
             },
             eventClick: function(calEvent, jsEvent, view) {
-                var id = calEvent.id;
-                console.log(calEvent);
+                var params = {id_booking: calEvent.id};
+                $('#<?php echo $tabledata['id'];?>').trigger('reload', params);
             },
             viewRender: function(view, element){
 //                console.log(view);

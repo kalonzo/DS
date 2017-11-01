@@ -8,6 +8,9 @@
 
 @foreach($lines as $line)
 {{ $line }}
+@if(!$loop->last)
+<br/><br/>
+@endif
 @endforeach
     
 <table class="dual-column">

@@ -108,10 +108,10 @@ if(envDev()){
     });
 
     Route::get('/test/email', function () {
-        $booking = App\Models\Booking::first();
+        $booking = App\Models\Booking::latest();
         $user = $booking->user()->first();
         $ets = $booking->establishment()->first();
-        $user->notify(new \App\Notifications\BookingCreatedPro($user, $booking, $ets));
+        $user->notify(new \App\Notifications\BookingConfirmedUser($user, $booking, $ets, null));
         die();
     });
 }

@@ -229,13 +229,13 @@ class WalleeController extends Controller {
                     "L'utilisateur a bien été créé. Un email de confirmation lui a été envoyé avec un lien d'activation qui "
                     . " ouvrira son espace client."
                 );
-                redirect(url("/edit/establishment/".$establishment->getId()));
+                return redirect(url("/edit/establishment/".$establishment->getId()));
             } else {
                 \Illuminate\Support\Facades\Request::session()->flash('status', 
                     "L'utilisateur a bien été créé et son paiement a été enregistré. Toutefois des erreurs ont été rencontrées et l'email d'activation n'a"
                     . " pu lui être envoyé. Veuillez contrôler l'état de l'inscription."
                 );
-                redirect(url("/admin"));
+                return redirect(url("/admin"));
             }
         } else {
             $view = \Illuminate\Support\Facades\View::make('pro_user.register-feedback')

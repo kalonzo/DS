@@ -63,7 +63,7 @@ class BookingCreatedPro extends Notification
                                 ." à ".formatDate($this->booking->getDatetimeReservation(), \IntlDateFormatter::NONE, \IntlDateFormatter::SHORT)
                                 ." pour ".$this->booking->getNbAdults()." personne(s) dans votre établissement.";
         if(!empty($this->booking->getComment())){
-            $mailData['lines'][] = "Commentaires du client : ".$this->booking->getComment();
+            $mailData['lines'][] = "<br/>Commentaires du client : ".$this->booking->getComment();
         }
         $mailData['confirmUrl'] = url("/admin/booking/confirm/".$this->booking->getUuid());
         $mailData['denyUrl'] = url("/admin/booking/deny/".$this->booking->getUuid());

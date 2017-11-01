@@ -26,6 +26,8 @@ class Booking extends Model {
         'datetime_reservation',
         'comment',
         'guests',
+        'guests_message',
+        'guests_email_cc',
         'nb_adults',
         'nb_children',
         'latitude',
@@ -54,6 +56,16 @@ class Booking extends Model {
         return $statusLabel;
     }
     
+    public function isOver(){
+        $over = false;
+        
+        $interval = date_diff(new \Datetime($this->getDatetimeReservation()), new \DateTime());
+        if($interval->format('%i') <= 0){
+            $over = true;
+        }
+        return $over;
+    }
+    
     public function getGuestsEmailArray(){
         $guestsEmailArray = null;
         if(!empty($this->getGuests())){
@@ -69,6 +81,14 @@ class Booking extends Model {
     
     public function user(){
         $user = $this->hasOne(User::class, 'id', 'id_user');
+        return $user;
+    }
+    
+    public function getEstablishmentOwner(){
+        $user = User::select([User::TABLENAME.'.*'])
+                ->join(Establishment::TABLENAME, Establishment::TABLENAME.'.id_user_owner', '=', User::TABLENAME.'.id')
+                ->where(Establishment::TABLENAME.'.id', '=', $this->getIdEstablishment())
+                ->first();
         return $user;
     }
     
@@ -286,6 +306,24 @@ class Booking extends Model {
 
     function setGuests($guests) {
         $this->guests = $guests;
+        return $this;
+    }
+
+    function getGuestsMessage() {
+        return $this->guests_message;
+    }
+
+    function setGuestsMessage($guests_message) {
+        $this->guests_message = $guests_message;
+        return $this;
+    }
+
+    function getGuestsEmailCc() {
+        return $this->guests_email_cc;
+    }
+
+    function setGuestsEmailCc($guests_email_cc) {
+        $this->guests_email_cc = $guests_email_cc;
         return $this;
     }
 
