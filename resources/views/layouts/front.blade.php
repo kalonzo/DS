@@ -45,18 +45,30 @@
                     </a>
                     <ul class="nav navbar-nav navbar-right">
                         @yield('navbar-right')
-                        <li id="promotionButton" class="hidden app-disabled">
-                            <a href="#">
-                                <img alt="user" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>
-                                <span class="badge">42</span>
-                            </a>
-                        </li>
-                        <li id="eventButton" class="hidden app-disabled">
-                            <a href="#">
-                                <img alt="user" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
-                                <span class="badge">8</span>
-                            </a>
-                        </li>
+                        <?php
+                        $eventController = Illuminate\Support\Facades\App::make(App\Http\Controllers\EventController::class);
+                        $promosList = $eventController::getPromotionsDropdownFeed();
+                        $eventsList = $eventController::getEventsDropdownFeed();
+                        ?>
+                        @component('components.navbar-dropdown', [
+                                                                    'containerId' => 'promotionButton',
+                                                                    'buttonImageSrc' => asset("/img/icons/ICONS-MAP-PROMOTIONS.svg"),
+                                                                    'buttonImageAlt' => 'Promos',
+                                                                    'dropdownTitle' => 'Promotions',
+                                                                    'eventsList' => $promosList
+                                                                    ])
+
+                        @endcomponent
+                        @component('components.navbar-dropdown', [
+                                                                    'containerId' => 'eventButton',
+                                                                    'buttonImageSrc' => asset("/img/icons/ICONS-CALENDAR-EVENTS.svg"),
+                                                                    'buttonImageAlt' => 'Evénements',
+                                                                    'dropdownTitle' => 'Evénements',
+                                                                    'eventsList' => $eventsList
+                                                                    ])
+
+                        @endcomponent
+
                         <li class="dropdown">
                             <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <img alt="user" src="/img/icons/ICONS-MENU-USER.svg"/>

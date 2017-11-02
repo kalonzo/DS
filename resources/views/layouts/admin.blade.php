@@ -81,17 +81,40 @@
                         <img alt="dinerscope" src="/img/LOGO-DINERSCOPE.svg"/>
                     </a>
                     <ul class="nav navbar-nav navbar-right">
-                        <li id="promotionButton" class="app-disabled hidden">
-                            <a href="#">
-                                <img alt="user" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>
-                                <span class="badge">42</span>
+                        <li id="promotionButton" class="dropdown">
+                            <?php
+                            $eventController = Illuminate\Support\Facades\App::make(App\Http\Controllers\EventController::class);
+                            $promosList = $eventController::getPromotionsDropdownFeed();
+                            ?>
+                            <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <img alt="Promos" src="/img/icons/ICONS-MAP-PROMOTIONS.svg"/>
+                                <span class="badge">{{ count($promosList) }}</span>
                             </a>
+                            <div class="dropdown-menu">
+                                @component('components.events-list', [
+                                                                    'title' => 'Promotions',
+                                                                    'items' => $promosList
+                                                                    ])
+
+                                @endcomponent
+                            </div>
                         </li>
-                        <li id="eventButton" class="app-disabled hidden">
-                            <a href="#">
-                                <img alt="user" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
-                                <span class="badge">8</span>
+                        <li id="eventButton" class="dropdown">
+                            <?php
+                            $eventsList = $eventController::getEventsDropdownFeed();
+                            ?>
+                            <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <img alt="Events" src="/img/icons/ICONS-CALENDAR-EVENTS.svg"/>
+                                <span class="badge">{{ count($eventsList) }}</span>
                             </a>
+                            <div class="dropdown-menu">
+                                @component('components.events-list', [
+                                                                    'title' => 'Evénements',
+                                                                    'items' => $eventsList
+                                                                    ])
+
+                                @endcomponent
+                            </div>
                         </li>
                         <li class="dropdown">
                             <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

@@ -62,7 +62,7 @@ if($videoQuery->exists()){
  @endif
 <!------------- RESTAURANT EVENTS & PROMO ----------------------------->
 @if(checkFlow($data, ['promo_events']))
-<section class="container-fluid ets-events">
+<section class="container-fluid ets-events" id="ets-show-events">
     <div class="section-bg"></div>
     <div class="container">
         <h1 class="wow fadeInLeft" data-wow-delay="{{$loadDelay}}s">Nos <strong>événements</strong> et <strong>promotions</strong></h1>

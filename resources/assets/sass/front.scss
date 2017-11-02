@@ -1397,4 +1397,15 @@ $popoverRadius: 5px;
     @include opacity(0.8);
     width: 100%;
     padding-left: 5em;
+    background-color: #fff;
+    border-color: #fff;
+    font-weight: bold;
+    color: black;
+    &.alert-success .glyphicon{
+        color: $success-color;
+    }
+
+    &.alert-danger .glyphicon{
+        color: $danger-color;
+    }
 }

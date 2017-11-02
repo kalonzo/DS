@@ -46,15 +46,15 @@ function reloadPage(extraParams, doneCallback){
     } else {
         var secondLevelLocation = pathArray[1];
     }
+    
+    var ajaxParams = {};
+    $.each(extraParams, function(index, item){
+        ajaxParams[index] = item;
+    });
+    ajaxParams['reload'] = true;
+    
     var $mainPageReloadContainer = $('body .mainPageReloadContainer');
-
     if(checkExist($mainPageReloadContainer)){
-        var ajaxParams = {};
-        $.each(extraParams, function(index, item){
-            ajaxParams[index] = item;
-        });
-        ajaxParams['reload'] = true;
-
         $.ajax({
             url: '/'+secondLevelLocation,
             data: ajaxParams,
@@ -64,6 +64,28 @@ function reloadPage(extraParams, doneCallback){
             if(!isEmpty(doneCallback) && typeof doneCallback === 'function'){
                 doneCallback();
             }
+        });
+    }
+    
+    var $promoButton = $('body #promotionButton');
+    if(checkExist($promoButton)){
+        $.ajax({
+            url: '/refresh-promos',
+            data: ajaxParams,
+        })
+        .done(function( data ) {
+            $promoButton.empty().html(data);
+        });
+    }
+    
+    var $eventButton = $('body #eventButton');
+    if(checkExist($eventButton)){
+        $.ajax({
+            url: '/refresh-events',
+            data: ajaxParams,
+        })
+        .done(function( data ) {
+            $eventButton.empty().html(data);
         });
     }
 };

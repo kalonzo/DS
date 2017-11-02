@@ -3,11 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEvent;
-use App\Http\Requests\StorePromotion;
+use App\Models\Address;
+use App\Models\Establishment;
 use App\Models\Event;
 use App\Models\EventType;
+use App\Models\Media;
+use App\Models\Promotion;
+use App\Models\Utilities\LatLng;
+use App\Utilities\DbQueryTools;
 use App\Utilities\StorageHelper;
+use App\Utilities\StringTools;
+use App\Utilities\StyleTools;
+use App\Utilities\UuidTools;
+use DateTime;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use View;
 
@@ -69,28 +80,28 @@ class EventController extends Controller {
         try {
 
             $startHour = $request->get('start_hour');
-            $startDate = new \DateTime(str_replace('/', '-', $request->get('start_date')).' '.$startHour);
+            $startDate = new DateTime(str_replace('/', '-', $request->get('start_date')).' '.$startHour);
             
             $endHour = $request->get('end_hour');
-            $endDate = new \DateTime(str_replace('/', '-', $request->get('end_date')).' '.$endHour);
+            $endDate = new DateTime(str_replace('/', '-', $request->get('end_date')).' '.$endHour);
 
             $event = Event::create([
-                        'id' => \App\Utilities\UuidTools::generateUuid(),
+                        'id' => UuidTools::generateUuid(),
                         'name' => $request->get('name'),
                         'status' => Event::STATUS_ACTIVE,
                         'description' => $request->get('description'),
                         'start_date' => $startDate->format('Y-m-d H:i'),
                         'end_date' => $endDate->format('Y-m-d H:i'),
                         'type_event' => $request->get('type_event'),
-                        'id_establishment' => \App\Utilities\UuidTools::getId($request->get('id_establishment')),
+                        'id_establishment' => UuidTools::getId($request->get('id_establishment')),
             ]);
             if (checkModel($event)) {
                 $jsonResponse['success'] = 1;
-                $media = FileController::storeFile('media', \App\Models\Media::TYPE_USE_ETS_EVENT, $event);
+                $media = FileController::storeFile('media', Media::TYPE_USE_ETS_EVENT, $event);
             }
         } catch (Exception $ex) {
             foreach ($createdObjects as $createdObject) {
-                if ($createdObject instanceof \Illuminate\Database\Eloquent\Model) {
+                if ($createdObject instanceof Model) {
                     $createdObject->delete();
                 }
             }
@@ -105,23 +116,6 @@ class EventController extends Controller {
             return redirect('/admin');
         }
     }
-
-    /**
-     * 
-     * @param StoreEvent $request
-     * @return type
-     */
-//    public function storeAjax(StoreEvent $request){
-//        $response = response();
-//        $jsonResponse = array('success' => 0);
-//        
-//        $promotion = $this->store($request);
-//        if(checkModel($promotion)){
-//            $jsonResponse['success'] = 1;
-//        }
-//        $responsePrepared = $response->json($jsonResponse);
-//        return $responsePrepared;
-//    }
     
      /**
      * Show the form for editing the specified resource.
@@ -162,12 +156,12 @@ class EventController extends Controller {
             switch ($action) {
                 case 'feed-establishment-list':
                     $query = $request->get('q');
-                    $establishmentsData = \App\Models\Establishment::select([
-                                \Illuminate\Support\Facades\DB::raw(\App\Utilities\DbQueryTools::genRawSqlForGettingUuid('id', \App\Models\Establishment::TABLENAME)),
-                                \App\Models\Establishment::TABLENAME . '.name', \App\Models\Address::TABLENAME . '.city'])
-                            ->join(\App\Models\Address::TABLENAME, \App\Models\Address::TABLENAME . '.id', '=', \App\Models\Establishment::TABLENAME . '.id_address')
-                            ->where(\App\Models\Establishment::TABLENAME . '.name', 'LIKE', '%' . $query . '%')
-                            ->orWhere(\App\Models\Address::TABLENAME . '.city', 'LIKE', '%' . $query . '%')
+                    $establishmentsData = Establishment::select([
+                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Establishment::TABLENAME)),
+                                Establishment::TABLENAME . '.name', Address::TABLENAME . '.city'])
+                            ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
+                            ->where(Establishment::TABLENAME . '.name', 'LIKE', '%' . $query . '%')
+                            ->orWhere(Address::TABLENAME . '.city', 'LIKE', '%' . $query . '%')
                             ->get()
                     ;
                     foreach ($establishmentsData as $establishmentData) {
@@ -183,4 +177,201 @@ class EventController extends Controller {
         return $responsePrepared;
     }
 
+    public static function getPromotionsDropdownFeed(){
+        $defaultGeoloc = false;
+        $searchDistance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+        $userLat = SessionController::getInstance()->getUserLat();
+        $userLng = SessionController::getInstance()->getUserLng();
+        $typeEts = SessionController::getInstance()->getUserTypeEts();
+        $userLatLng = new LatLng($userLat, $userLng);
+        if (!$userLatLng->isValid()) {
+            $userLatLng = GeolocationController::getRawInitialGeolocation();
+        }
+        
+        $attempt = 1;
+        $nbResults = 0;
+        $promosAroundData = array();
+        do{
+            $ignoreStep = false;
+            switch($attempt){
+                case 2:
+                    $searchDistance = 20;
+                    break;
+                case 3:
+                    $searchDistance = 50;
+                    break;
+                case 4:
+                    if($defaultGeoloc || $nbResults === 0){
+                        $searchDistance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+                        $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        $defaultGeoloc = true;
+                    } else {
+                        $ignoreStep = true;
+                    }
+                    break;
+                case 5:
+                    if($defaultGeoloc || $nbResults === 0){
+                        $searchDistance = 20;
+                        $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        $defaultGeoloc = true;
+                    } else {
+                        $ignoreStep = true;
+                    }
+                    break;
+            }
+
+            $promoAroundQuery = Promotion::select([
+                        Promotion::TABLENAME.'.name AS promo_name',
+                        Establishment::TABLENAME.'.*',
+                        Establishment::TABLENAME.'.name AS ets_name',
+                        Address::TABLENAME.'.city',
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Promotion::TABLENAME, 'uuid_promo')),
+                        DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
+                    ])
+                    ->join(Establishment::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
+                    ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
+                    ->where('id_business_type', '=', $typeEts)
+                    ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                    ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                    ->whereRaw(Promotion::TABLENAME . '.end_date > NOW()')
+            ;
+            $geolocLimitSuccess = DbQueryTools::setGeolocLimits($promoAroundQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
+            $nbResults = $promoAroundQuery->count();
+            if ($ignoreStep || ($geolocLimitSuccess && $nbResults >= 10)) {
+                $promosAroundData = $promoAroundQuery->get();
+            }
+            if($ignoreStep){
+                break;
+            }
+            $attempt++;
+        } while($nbResults < 10 && $attempt < 5);
+        
+        $promosAround = array();
+        foreach($promosAroundData as $promoData){
+            $promoDistance = $promoData->rawDistance;
+            $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($promoDistance));
+            $bgColor = StyleTools::genColorHexaForVisualGradient('0090ff', '00b33b', ($promoDistance/($searchDistance*1000)));
+            
+            $promoUuid = $promoData->uuid_promo;
+            $promosAround[$promoUuid]['distance'] = $distanceDisplay;
+            $promosAround[$promoUuid]['bg_color'] = $bgColor;
+            $promosAround[$promoUuid]['item_name'] = $promoData->promo_name;
+            $promosAround[$promoUuid]['ets_name'] = $promoData->ets_name;
+            $promosAround[$promoUuid]['ets_url'] =
+                    url(Establishment::getUrlStatic($promoData->id_business_type, $promoData->city, $promoData->slug, $promoData->url_id)."#ets-show-events");
+        }
+        return $promosAround;
+    }
+
+    public static function getEventsDropdownFeed(){
+        $defaultGeoloc = false;
+        $searchDistance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+        $userLat = SessionController::getInstance()->getUserLat();
+        $userLng = SessionController::getInstance()->getUserLng();
+        $typeEts = SessionController::getInstance()->getUserTypeEts();
+        $userLatLng = new LatLng($userLat, $userLng);
+        if (!$userLatLng->isValid()) {
+            $userLatLng = GeolocationController::getRawInitialGeolocation();
+        }
+        
+        $attempt = 1;
+        $nbResults = 0;
+        $eventsAroundData = array();
+        do{
+            $ignoreStep = false;
+            switch($attempt){
+                case 2:
+                    $searchDistance = 20;
+                    break;
+                case 3:
+                    $searchDistance = 50;
+                    break;
+                case 4:
+                    if($defaultGeoloc || $nbResults === 0){
+                        $searchDistance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
+                        $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        $defaultGeoloc = true;
+                    } else {
+                        $ignoreStep = true;
+                    }
+                    break;
+                case 5:
+                    if($defaultGeoloc || $nbResults === 0){
+                        $searchDistance = 20;
+                        $userLatLng = GeolocationController::getRawInitialGeolocation();
+                        $defaultGeoloc = true;
+                    } else {
+                        $ignoreStep = true;
+                    }
+                    break;
+            }
+
+            $eventAroundQuery = Event::select([
+                        Event::TABLENAME.'.name AS event_name',
+                        Establishment::TABLENAME.'.*',
+                        Establishment::TABLENAME.'.name AS ets_name',
+                        Address::TABLENAME.'.city',
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Event::TABLENAME, 'uuid_event')),
+                        DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
+                    ])
+                    ->join(Establishment::TABLENAME, Establishment::TABLENAME . '.id', '=', Event::TABLENAME . '.id_establishment')
+                    ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
+                    ->where('id_business_type', '=', $typeEts)
+                    ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                    ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                    ->whereRaw(Event::TABLENAME . '.end_date > NOW()')
+            ;
+            $geolocLimitSuccess = DbQueryTools::setGeolocLimits($eventAroundQuery, $userLatLng, $searchDistance, Establishment::TABLENAME);
+            $nbResults = $eventAroundQuery->count();
+            if ($ignoreStep || ($geolocLimitSuccess && $nbResults >= 10)) {
+                $eventsAroundData = $eventAroundQuery->get();
+            }
+            if($ignoreStep){
+                break;
+            }
+            $attempt++;
+        } while($nbResults < 10 && $attempt < 5);
+        
+        $eventsAround = array();
+        foreach($eventsAroundData as $eventData){
+            $eventDistance = $eventData->rawDistance;
+            $distanceDisplay = str_replace(' ', '<br/>', StringTools::displayCleanDistance($eventDistance));
+            $bgColor = StyleTools::genColorHexaForVisualGradient('0090ff', '00b33b', ($eventDistance/($searchDistance*1000)));
+            
+            $eventUuid = $eventData->uuid_event;
+            $eventsAround[$eventUuid]['distance'] = $distanceDisplay;
+            $eventsAround[$eventUuid]['bg_color'] = $bgColor;
+            $eventsAround[$eventUuid]['item_name'] = $eventData->event_name;
+            $eventsAround[$eventUuid]['ets_name'] = $eventData->ets_name;
+            $eventsAround[$eventUuid]['ets_url'] =
+                    url(Establishment::getUrlStatic($eventData->id_business_type, $eventData->city, $eventData->slug, $eventData->url_id)."#ets-show-events");
+        }
+        return $eventsAround;
+    }
+    
+    public function displayPromoFeed(){
+        $promosAround = $this->getPromotionsDropdownFeed();
+        $view = View::make('components.navbar-dropdown')
+                ->with('containerId', 'promotionButton')
+                ->with('buttonImageSrc', asset("/img/icons/ICONS-MAP-PROMOTIONS.svg"))
+                ->with('buttonImageAlt', 'Promos')
+                ->with('dropdownTitle', 'Promotions')
+                ->with('eventsList', $promosAround)
+                ->with('reloaded', true)
+                ;
+        return $view;
+    }
+    
+    public function displayEventFeed(){
+        $eventsAround = $this->getEventsDropdownFeed();
+        $view = View::make('components.navbar-dropdown')
+                ->with('containerId', 'eventButton')
+                ->with('buttonImageSrc', asset("/img/icons/ICONS-CALENDAR-EVENTS.svg"))
+                ->with('buttonImageAlt', 'Evénements')
+                ->with('dropdownTitle', 'Evénements')
+                ->with('eventsList', $eventsAround)
+                ->with('reloaded', true)
+                ;
+        return $view;
+    }
 }

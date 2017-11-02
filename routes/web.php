@@ -91,6 +91,9 @@ Route::match(['get', 'post'], '/transaction/failure', 'WalleeController@transact
 Route::match(['get', 'post'], '/establishment/register/success', 'WalleeController@subscriptionSucceed');
 Route::match(['get', 'post'], '/establishment/register/failure', 'WalleeController@subscriptionFailed');
 
+// Refresh navbar widgets
+Route::get('/refresh-promos', 'EventController@displayPromoFeed');
+Route::get('/refresh-events', 'EventController@displayEventFeed');
 
 /* * ****************************TEST ROUTE************************************* */
 if(envDev()){
