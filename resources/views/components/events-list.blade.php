@@ -1,5 +1,6 @@
 <div class="events-list">
     <h2>{{ $title }}</h2>
+    @if(!empty($items))
     <ul>
     @foreach($items as $item)
         <li>
@@ -16,4 +17,9 @@
         </li>
     @endforeach
     </ul>
+    @else
+    <div class="events-no-result">
+        Aucun résultat autour de vous
+    </div>
+    @endif
 </div>

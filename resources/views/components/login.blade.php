@@ -73,7 +73,7 @@
                 <span class="section-item">Espace personnel</span>
             </a>
         </li>
-        <li>
+        <li class="hidden">
             <a href="#">
                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                 <span class="section-item">Editer profil</span>

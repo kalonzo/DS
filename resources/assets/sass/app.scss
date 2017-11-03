@@ -489,6 +489,11 @@ a.link-disabled{
                         .events-ets-name{
                             font-weight: bold;
                         }
+                        .events-ets-name, .events-item-name{
+                            height: 1.1em;
+                            overflow: hidden;
+                            display: inline-block;
+                        }
                     }
                 }
             }
