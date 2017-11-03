@@ -120,100 +120,6 @@ select:not(.select2){
     }
 }
 
-
-#navbar {
-    height: $navbarHeight;
-    > .container-fluid{
-        height: 100%;
-        padding: 0px;
-        .navbar-collapse{
-            height: 100% !important;
-            .navbar-form{
-                margin-left: $navbarInnerPadding;
-                padding-left: 0px;
-                padding-right: 0px;
-                width: $searchFormSmWidth;
-                float: right;
-                @include bp-md{
-                    width: $searchFormMdWidth;
-                }
-                .locationInputGroup{
-                    @include borderRadius(0px);
-                    &:nth-of-type(1){
-                        width: 59%;
-                    }
-                    &:nth-of-type(2){
-                        width: 40%;
-                        float: right;
-                    }
-                    .input-group-addon{
-                        padding: 5px 9px;
-                        @include borderRadius(0px);
-                        background: white;
-                        color: #ccc;
-                        border-color: white;
-                        .geolocMeIcon{
-                            font-size: 1.5em;
-                        }
-                    }
-                    input[type=text]{
-                        border: 0px;
-                        @include borderRadius(0px);
-                        box-shadow: none !important;
-                    }
-                }
-            }
-            .navbar-brand{
-                padding: 8px;
-                width: 150px;
-                @media (min-width: 992px){
-                    position: absolute;
-                    left: 50%;
-                    margin-left: -75px;
-                }
-            }
-            .navbar-right{
-                height: 100%;
-                padding-right: $navbarInnerPadding;
-                > li{
-                    height: 100%;
-                    > a{
-                        padding-top: 10px;
-                        padding-bottom: 10px;
-                    }
-                }
-                .glyphicon{
-                    color: white;
-                    font-size: 1.4em;
-                }
-                img{
-                    width: 30px;
-                    vertical-align: initial;
-                }
-                .badge{
-                    color: white;
-                    padding: 3px 5px 3px 4px;
-                    font-size: 0.8em;
-                    @include borderRadius(100%);
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                }
-                #eventButton{
-                    .badge{
-                        background: orchid;
-                    }
-                }
-                #promotionButton{
-                    .badge{
-                        background: #fca600;
-                    }
-                }
-            }
-        }
-    }
-}
-
 .main {
     padding: 20px;
 }
@@ -254,7 +160,7 @@ select:not(.select2){
 }
 
 .pre-footer{
-    border-top: 1px dotted #aaa;
+    border-top: 4px solid #aaa;
     padding-bottom: 2em;
     @include bp-sm{
         position: absolute;
@@ -1401,11 +1307,23 @@ $popoverRadius: 5px;
     border-color: #fff;
     font-weight: bold;
     color: black;
+    &.alert-info .glyphicon{
+        color: $info-color;
+    }
+    
     &.alert-success .glyphicon{
         color: $success-color;
     }
 
     &.alert-danger .glyphicon{
         color: $danger-color;
+    }
+    .glyphicon{
+        vertical-align: middle;
+        font-size: 1.3em;
+    }
+    .alert-message{
+        vertical-align: middle;
+        margin-left: 5px;
     }
 }

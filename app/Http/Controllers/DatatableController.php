@@ -24,6 +24,10 @@ class DatatableController {
                 $dtFeeder = new \App\Datatables\DtEstablishmentAdmin();
                 $dtFeeder->run();
                 break;
+            case \App\Datatables\DtBookingAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtBookingAdmin();
+                $dtFeeder->run();
+                break;
             case \App\Datatables\DtBookingPro::DT_ID:
                 $dtFeeder = new \App\Datatables\DtBookingPro();
                 $dtFeeder->run();

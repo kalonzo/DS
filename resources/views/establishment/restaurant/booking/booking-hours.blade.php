@@ -30,7 +30,7 @@
                     $minValue = $i%100;
                     $hourValue = $i/100%24;
                     ?>
-                    <div class="timeslot-item">
+                    <div class="timeslot-item" data-value='{{ $i }}'>
                         <?php
                         $hours = sprintf('%02d', $hourValue);
                         $minutes = sprintf('%02d', $minValue);
@@ -48,6 +48,11 @@
 </div>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) { 
+        
+        @if($form_data['today'])
+            cleanTimeslots();
+        @endif
+    
         $('body').on('click', '.timeslot-item', function(){
             var $timeslotList = $(this).parentsInclude('.timeslots-list');
             $timeslotList.find('.timeslot-item.selected').find('input[name=time_reservation]').removeAttr('checked');
@@ -57,4 +62,10 @@
             $(this).addClass('selected');
         });
     });
+    
+    @if($form_data['today'])
+        if(typeof $ != 'undefined'){
+            cleanTimeslots();
+        }
+    @endif
 </script>

@@ -497,6 +497,126 @@ a.link-disabled{
 }
 
 
+#navbar {
+    height: $navbarHeight;
+    > .container-fluid{
+        height: 100%;
+        padding: 0px;
+        .navbar-collapse{
+            height: 100% !important;
+            @include bp-sm{
+                display: flex !important;
+            }
+            @include bp-md{
+                display: block !important;
+            }
+            .navbar-brand{
+                padding: 0px;
+                margin-left: 0px;
+                margin-top: 2px;
+                > img{
+                    width: 190px;
+                }
+                @media (min-width: 992px){
+                    position: absolute;
+                    left: 50%;
+                    margin-left: -75px;
+                }
+            }
+            .navbar-form{
+                margin-left: $navbarInnerPadding;
+                padding-left: 0px;
+                padding-right: 0px;
+                width: $searchFormSmWidth;
+                float: right;
+                @include bp-sm{
+                    flex: 1;
+                }
+                @include bp-md{
+                    width: $searchFormMdWidth;
+                    flex: none;
+                }
+                .locationInputGroup{
+                    @include borderRadius(0px);
+                    &:nth-of-type(1){
+                        width: 59%;
+                    }
+                    &:nth-of-type(2){
+                        width: 40%;
+                        float: right;
+                    }
+                    &.group-quick-search{
+                        .input-group-addon{
+                            padding: 5px 6.5px;
+                        }
+                    }
+                    &.group-location-search{
+                        .input-group-addon{
+                            padding: 5px 9px;
+                        }
+                    }
+                    .input-group-addon{
+                        @include borderRadius(0px);
+                        background: #ccc;
+                        color: #000;
+                        border: 0;
+                        border-right: 1px solid #bebebe;
+                        .glyphicon-screenshot{
+                            font-size: 1.2em;
+                        }
+                        .glyphicon-search{
+                            font-size: 1em;
+                        }
+                    }
+                    input[type=text]{
+                        border: 0px;
+                        @include borderRadius(0px);
+                        box-shadow: none !important;
+                    }
+                }
+            }
+            .navbar-right{
+                height: 100%;
+                padding-right: $navbarInnerPadding;
+                > li{
+                    height: 100%;
+                    > a{
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                    }
+                }
+                .glyphicon{
+                    color: white;
+                    font-size: 1.4em;
+                }
+                img{
+                    width: 30px;
+                    vertical-align: initial;
+                }
+                .badge{
+                    color: white;
+                    padding: 3px 5px 3px 4px;
+                    font-size: 0.8em;
+                    @include borderRadius(100%);
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                }
+                #eventButton{
+                    .badge{
+                        background: orchid;
+                    }
+                }
+                #promotionButton{
+                    .badge{
+                        background: #fca600;
+                    }
+                }
+            }
+        }
+    }
+}
+
 /***************** Glyphicon spinner *****************************************/
 .glyphicon.fast-right-spinner {
     -webkit-animation: glyphicon-spin-r 1s infinite linear;

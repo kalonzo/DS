@@ -16,13 +16,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Description of DtBookingPro
+ * Description of DtBookingAdmin
  *
  * @author Nico
  */
-class DtBookingPro extends DatatableFeeder {
+class DtBookingAdmin extends DatatableFeeder {
     
-    const DT_ID = 'dt_booking_pro';
+    const DT_ID = 'dt_booking_admin';
     
     const HIDE_VALID = 'hide_valid';
     const HIDE_DENY = 'hide_deny';
@@ -40,7 +40,7 @@ class DtBookingPro extends DatatableFeeder {
     }
 
     public function buildColumns() {
-        $columns = array('nb_adults' => 'Personnes', 'datetime_reservation' => 'Date / Heure', 'comment' => 'Commentaire', 
+        $columns = array('ets' => 'Etablissement', 'nb_adults' => 'Personnes', 'datetime_reservation' => 'Date / Heure',  
                                             'contact' => 'Contact', 'status' => 'Etat', 'updated_at' => 'Modifié le');
         return $columns;
     }
@@ -60,7 +60,11 @@ class DtBookingPro extends DatatableFeeder {
         $user = Auth::user();
         $selectedBookingId = Request::get('id_booking');
                         
-        $bookingsQuery = Booking::select([Booking::TABLENAME.'.*'])
+        $bookingsQuery = Booking::select([
+                                        Booking::TABLENAME.'.*',
+                                        \App\Models\Establishment::TABLENAME.'.name AS ets_name'
+                        ])
+                        ->join(\App\Models\Establishment::TABLENAME, Booking::TABLENAME . '.id_establishment', '=', \App\Models\Establishment::TABLENAME . '.id')
                         ->orderBy(Booking::TABLENAME . '.datetime_reservation', 'asc');
         
         if(checkModelId($selectedBookingId)){
@@ -80,14 +84,6 @@ class DtBookingPro extends DatatableFeeder {
             $bookingsQuery->whereRaw('datetime_reservation BETWEEN "'.$startDate.'" AND "'.$endDate.'"');
         }
         
-        $establishmentsData = $user->establishmentsOwned()->select([DB::raw(DbQueryTools::genRawSqlForGettingUuid())])
-                                ->get();
-        $establishmentUuids = $establishmentsData->pluck('uuid')->all();
-        $bookingsQuery
-            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $establishmentUuids));
-
-        $bookingsQuery->whereIn('status', array(Booking::STATUS_PENDING, Booking::STATUS_CONFIRMED, Booking::STATUS_DENIED, Booking::STATUS_CANCELED));
-        
         return $bookingsQuery;
     }
 
@@ -99,6 +95,7 @@ class DtBookingPro extends DatatableFeeder {
 
             $phoneNumber = formatPhone($queryResult->prefix, $queryResult->phone_number, \App\Http\Controllers\GeolocationController::getLocaleCountry());
             $results[$uuid]['id'] = $uuid;
+            $results[$uuid]['ets'] = $queryResult->ets_name;
             $results[$uuid]['nb_adults'] = $queryResult->nb_adults;
             $results[$uuid]['datetime_reservation'] = $queryResult->datetime_reservation;
             $results[$uuid]['comment'] = $queryResult->comment;

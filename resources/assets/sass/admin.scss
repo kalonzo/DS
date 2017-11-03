@@ -18,7 +18,7 @@ html{
     background-color: $sidebar-left-bg-admin;
     color: white;
 }
-
+/*
 #navbar {
     height: 50px;
     > .container-fluid{
@@ -26,15 +26,6 @@ html{
         padding: 0px;
         .navbar-collapse{
             height: 100% !important;
-            .navbar-brand{
-                padding: 8px;
-                width: 150px;
-                @media (min-width: 992px){
-                    position: absolute;
-                    left: 50%;
-                    margin-left: -75px;
-                }
-            }
             .navbar-right{
                 height: 100%;
                 padding-right: $navbarInnerPadding;
@@ -76,6 +67,7 @@ html{
         }
     }
 }
+*/
 
 .booking-tile-calendar{
     .booking-calendar{

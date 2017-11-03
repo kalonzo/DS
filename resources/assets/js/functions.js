@@ -166,7 +166,8 @@ redirectToUrl = function(url){
 }
 
 confirmChoice = function(text, ifTrue, ifFalse){
-    if(confirm(text)){
+    var confirmed = confirm(text);
+    if(confirmed){
         eval(ifTrue);
     } else {
         eval(ifFalse);
@@ -191,6 +192,25 @@ alertFileInputError = function(event, data, msg){
     alertMsg += '';
     alert(alertMsg);
 };
+    
+cleanTimeslots = function(){
+    var currentDate = new Date();
+    var currentTimeValue = (currentDate.getHours() + '' + currentDate.getMinutes()) * 1;
+    $('.timeslot-item').each(function(){
+        var itemValue = $(this).attr('data-value')*1;
+        if(itemValue <= currentTimeValue){
+            $(this).remove();
+        }
+    });
+
+    $('.timeslots-sublist').each(function(){
+        if($(this).find('.timeslot-item').length === 0){
+            $(this).prev('label').remove();
+            $(this).remove();
+        }
+    });
+
+}
     
 /*
     var searchRadius = 500;

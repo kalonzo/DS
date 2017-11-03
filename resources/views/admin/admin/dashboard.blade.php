@@ -23,7 +23,7 @@
 
     @endcomponent
     
-    @component('components.booking-tile-calendar', ['title' => 'Réservations', 'tabledata' => $dt_booking_pro])
+    @component('components.booking-tile-calendar', ['title' => 'Réservations', 'tabledata' => $dt_booking_admin])
 
     @endcomponent
 

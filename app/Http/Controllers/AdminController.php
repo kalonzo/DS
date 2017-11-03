@@ -221,7 +221,7 @@ class AdminController extends Controller {
     private function indexAdmin(){
         $etsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentAdmin::DT_ID);
         
-        $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingPro::DT_ID);
+        $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingAdmin::DT_ID);
 
         $businessCategoriesDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBusinessCategoryAdmin::DT_ID);
         

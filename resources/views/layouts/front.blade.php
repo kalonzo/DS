@@ -26,13 +26,13 @@
                     @if(!isset($disableQuickSearch) || !$disableQuickSearch)
                     {!! Form::open(['id'=>'quick-search-form', 'url'=>'/search', 'method' => 'post', 'class' => 'navbar-form navbar-left']) !!}
                         {!! Form::hidden('reset', '1'); !!}
-                        <div class="input-group locationInputGroup">
+                        <div class="input-group locationInputGroup group-quick-search">
                             <span class="input-group-addon clickable" onclick="$(this).parentsInclude('form').submit();" title="Cliquez ici pour rechercher autour de vous">
                                 <span class="geolocMeIcon glyphicon glyphicon-search" aria-hidden="true"></span>
                             </span>
                             <input type="text" name="term" class="form-control" placeholder="Nom, type de cuisine" id="search_keywords">
                         </div>
-                        <div class="input-group locationInputGroup">
+                        <div class="input-group locationInputGroup group-location-search">
                             <span class="input-group-addon clickable" onclick="geolocateMe();" title="Cliquer ici pour me géolocaliser">
                                 <span class="geolocMeIcon glyphicon glyphicon-screenshot" aria-hidden="true"></span>
                             </span>
@@ -144,6 +144,20 @@
         
         @component('components.ajax-modal')
         @endcomponent
+        
+        @if(!envDev())
+        <!-- Google Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-108506955-1', 'auto');
+        ga('send', 'pageview');
+        </script>
+        <!-- End Google Analytics -->
+        @endif
         
         <script src="/js/app.js"></script>
         <script src="/js/extendMethods.js"></script>

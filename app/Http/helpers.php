@@ -259,3 +259,25 @@ function formatPhone($prefix, $number, $numberCountryIso, $displayCountryIso = n
     }
     return $label;
 }
+
+/**
+ * 
+ * @param type $msg
+ * @param type $codeTrue - code if confirm = true
+ * @param type $codeFalse - code if confirm = false
+ * @param type $print
+ * @param type $jsHead
+ * @return boolean|string
+ */
+function getConfirmJS($msg, $codeTrue, $codeFalse = '', $print = true, $jsHead = 'javascript:') {
+    $confirm = 'if(confirm(\''.addslashes($msg).'\')){ '.$codeTrue.' } ';
+    if(!empty($codeFalse)){
+        $confirm .= 'else{ '.$codeFalse.' }';
+    }
+    if ($print){
+        echo $jsHead.''.$confirm ;
+        return true ;
+    }else{
+        return $jsHead.''.$confirm ;
+    }
+}

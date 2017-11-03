@@ -132,3 +132,5 @@ function alertGeolocationError(error, element){
     }).popover("show")
     ;
 }
+
+$('#search_keywords').focus();

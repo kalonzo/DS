@@ -738,8 +738,10 @@ class EstablishmentController extends Controller {
                     $date = $request->get('date');
                     if(!empty($date)){
                         $today = new \DateTime();
+                        $today->setTime(12, 0, 0);
                         
                         $selectedDay = new \DateTime(str_replace('/', '-', $date));
+                        $selectedDay->setTime(12, 0, 0);
                         $dayIndex = $selectedDay->format('N');
 
                         $timeslots = array();
@@ -760,7 +762,7 @@ class EstablishmentController extends Controller {
                                 }
                             }
                         }
-                        $formData = ['time_slots' => $timeslots];
+                        $formData = ['time_slots' => $timeslots, 'today' => $diff->days === 0];
                         $view = View::make('establishment.restaurant.booking.booking-hours')->with('form_data', $formData);
                         $jsonResponse['content'] = $view->render();
                         $jsonResponse['success'] = 1;
@@ -1115,6 +1117,7 @@ class EstablishmentController extends Controller {
         StorageHelper::getInstance()->add('show_establishment.form_data.id_country', $idCountry);
         StorageHelper::getInstance()->add('show_establishment.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('show_establishment.form_data.time_slots', $timeslots);
+        StorageHelper::getInstance()->add('show_establishment.form_data.today', true);
         StorageHelper::getInstance()->add('show_establishment.form_data.datetime_reservation', $datetimeReservation);
     }
     /**

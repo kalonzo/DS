@@ -111,6 +111,7 @@ class HomeController extends Controller {
             
             /********** Promotions build **************************************/
             $promotionsData = array();
+            $distance = SearchController::DEFAULT_DISTANCE_KM_SEARCH;
             $attempt = 1;
             $nbResults = 0;
             do{
@@ -148,6 +149,7 @@ class HomeController extends Controller {
                                     ;
                 $geolocLimitSuccess = DbQueryTools::setGeolocLimits($promotionsQuery, $userLatLng, $distance, Establishment::TABLENAME);
                 $nbResults = $promotionsQuery->limit(24)->count();
+
                 if ($ignoreStep || ($geolocLimitSuccess && $nbResults >= 6)) {
                     $promotionsData = $promotionsQuery->get();
                 }
