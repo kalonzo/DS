@@ -225,6 +225,7 @@ $(function () {
     
     function reloadSearch(filterName, value){
         var ajaxParams = {};
+        ajaxParams['reset'] = 0;
         ajaxParams['reload'] = true;
         ajaxParams[filterName] = value;
         

@@ -8,7 +8,6 @@ namespace App\Models;
 class PromotionType extends Model {
 
     protected $table = 'promotion_types';
-
     const TABLENAME = 'promotion_types';
     
     const TYPE_DISCOUNT_PERCENT = 1;
@@ -19,6 +18,7 @@ class PromotionType extends Model {
     public static $hasUuid = false;
     
     protected $fillable = [
+        'id',
         'name'
     ];
     protected $guarded = [];

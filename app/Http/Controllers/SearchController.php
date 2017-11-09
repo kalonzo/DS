@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use App\Models\Utilities\LatLng;
 use App\Utilities\DbQueryTools;
 use App\Utilities\GeolocTools;
+use \App\Models\PromotionType;
 use App\Utilities\StorageHelper;
 use App\Utilities\StringTools;
 use App\Utilities\UuidTools;
@@ -170,7 +171,7 @@ class SearchController {
                 // Search by business category (cooking type, ...)
                 $businessCategoriesQuery = BusinessCategory::select([
                                 DB::raw('count(' . EstablishmentBusinessCategory::TABLENAME . '.id_establishment' . ') as nb_establishment')
-                                , BusinessCategory::TABLENAME . '.id as id_business_category'
+                                ,BusinessCategory::TABLENAME . '.id as id_business_category'
                                 , BusinessCategory::TABLENAME . '.name'
                         ])
                         ->join(EstablishmentBusinessCategory::TABLENAME, EstablishmentBusinessCategory::TABLENAME . '.id_business_category', '=', BusinessCategory::TABLENAME . '.id')
@@ -180,6 +181,7 @@ class SearchController {
                         ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                         ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
                         ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                        ->whereRaw(DB::raw(DbQueryTools::genRawSqlForWhereDistance($userLatLng, Establishment::TABLENAME, ($searchDistance * 1000))))
                         ->groupBy(BusinessCategory::TABLENAME . '.id')
                         ->orderBy(BusinessCategory::TABLENAME . '.name')
                         ->limit(self::NB_QUICK_RESULTS_PER_TYPE)
@@ -214,11 +216,15 @@ class SearchController {
     }
 
     public function search(\Illuminate\Http\Request $request) {
+        $filterValues = SessionController::getInstance()->getSearchFilterValues();
         $view = null;
         $reset = $request->get('reset');
         if($reset){
             SessionController::getInstance()->resetSearchFilterValues();
-            self::getFilterValues('distance', 50);
+            SessionController::getInstance()->addSearchFilterValue('distance', 50);
+            SessionController::getInstance()->addSearchFilterValue('term', Request::get('term'));
+            SessionController::getInstance()->saveSearchFilterValues();
+            return redirect('/search');
         }
         self::buildFilterLabels();
         $establishmentsQuery = self::buildSearchQuery();
@@ -256,7 +262,6 @@ class SearchController {
             $userLatLng = GeolocationController::getRawInitialGeolocation();
         }
 
-//        $terms = Request::get('term');
         $terms = self::getFilterValues('term', Request::get('term'));
         $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
         $price = self::getFilterValues('price');
@@ -267,26 +272,15 @@ class SearchController {
         $ids_promos = self::getFilterValues('promo_type');
 
         if ($userLatLng->isValid()) {
-            // Business categories matching **********************************/
-            $businessCategoryType1 = null;
-            $businessCategoryType2 = null;
-            switch ($typeEts) {
-                case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
-                    $businessCategoryType1 = BusinessCategory::TYPE_COOKING_TYPE;
-                    $businessCategoryType2 = BusinessCategory::TYPE_RESTAURANT_AMBIENCE;
-                    break;
-            }
 
             $establishmentsQuery = DB::table(Establishment::TABLENAME)
                     ->select([Establishment::TABLENAME . '.*', Address::TABLENAME . '.*'
-                            , DB::raw("biz_category1.id as id_biz_category_1"), DB::raw("biz_category1.name as name_biz_category_1")
+                            , Establishment::TABLENAME . '.id as id_ets'
+                            , DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Establishment::TABLENAME, 'uuid_ets'))
                             , DB::raw(DbQueryTools::genRawSqlForDistanceCalculation($userLatLng, Establishment::TABLENAME))
                             , 'logo.local_path as logo_path', 'thumbnail.local_path as thumbnail_path'
                             ])
                     ->join(Address::TABLENAME, Address::TABLENAME . '.id', '=', Establishment::TABLENAME . '.id_address')
-                    ->join(EstablishmentBusinessCategory::TABLENAME, Establishment::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_establishment')
-                    ->join(BusinessCategory::TABLENAME . ' AS biz_category1', 'biz_category1.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
-                    ->leftJoin(Promotion::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
                     ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME.' AS logo', function ($join) {
                         $join->on('logo.id', '=', Establishment::TABLENAME . '.id_logo')
                              ->where('logo.status', '=', \App\Models\EstablishmentMedia::STATUS_VALIDATED);
@@ -299,57 +293,91 @@ class SearchController {
                     ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                     ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
                     ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
-//                            ->having('rawDistance', '<=', ($distance*1000))
             ;
             $geolocLimitSuccess = DbQueryTools::setGeolocLimits($establishmentsQuery, $userLatLng, $distance, Establishment::TABLENAME);
 
             if($geolocLimitSuccess){
-                // Link to main business category
-                if (!empty($businessCategoryType1)) {
-                    $establishmentsQuery->where('biz_category1.type', '=', $businessCategoryType1);
-                }
-                // Prebuild extra business categories filters
-                $idsExtraBusinessCategories = array();
-                if (!empty($businessCategoryType2)) {
-                    $businessCategory2Query = DB::table(BusinessCategory::TABLENAME)
-                            ->select('id', 'name')
-                            ->where('type', '=', $businessCategoryType2);
-                    if (!empty($ids_biz_category_2)) {
-                        // Filter by extra business category
-                        $businessCategory2Query->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $ids_biz_category_2));
-                        $idsExtraBusinessCategories = array_merge($idsExtraBusinessCategories, $ids_biz_category_2);
+                if(!empty($ids_biz_category_1)){
+                    // Filter establishments by business category 1
+                    switch($typeEts){
+                        case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
+                            $etsCategories1Query = BusinessCategory::select([
+                                    DB::raw('count(' . BusinessCategory::TABLENAME . '.id' . ') as nb_categories'),
+                                    DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', EstablishmentBusinessCategory::TABLENAME, 'uuid_ets')),
+                                ])
+                                ->join(EstablishmentBusinessCategory::TABLENAME, BusinessCategory::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
+                                ->join(Establishment::TABLENAME, EstablishmentBusinessCategory::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
+                                ->where(BusinessCategory::TABLENAME . '.type', '=', BusinessCategory::TYPE_COOKING_TYPE)
+                                ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
+                                ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
+                                ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                                ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                                ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $ids_biz_category_1, BusinessCategory::TABLENAME))
+                                ->groupBy(Establishment::TABLENAME . '.id')
+                                ->having('nb_categories', '=', count($ids_biz_category_1))
+                                ;
+                            DbQueryTools::setGeolocLimits($etsCategories1Query, $userLatLng, $distance, Establishment::TABLENAME);
+                            $etsCategories1Data = $etsCategories1Query->get();
+                            
+                            $etsUuidRelatedToCat1 = $etsCategories1Data->pluck('uuid_ets')->all();
+                            $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $etsUuidRelatedToCat1, Establishment::TABLENAME));
+                            break;
                     }
-                    $businessCategories2 = array();
-                    $businessCategories2Data = $businessCategory2Query->get();
-                    foreach ($businessCategories2Data as $businessCategory2Data) {
-                        $uuidBusinessCategory2 = UuidTools::getUuid($businessCategory2Data->id);
-                        if (!isset($businessCategories2[$uuidBusinessCategory2])) {
-                            $businessCategories2[$uuidBusinessCategory2] = array('type' => $businessCategory2Data->name, 'count' => 0);
-                        } else {
-                            $businessCategories2[$uuidBusinessCategory2]['count'] ++;
-                        }
+                }
+                if(!empty($ids_biz_category_2)){
+                    // Filter establishments by business category 2
+                    switch($typeEts){
+                        case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
+                            $etsCategories2Query = BusinessCategory::select([
+                                    DB::raw('count(' . BusinessCategory::TABLENAME . '.id' . ') as nb_categories'),
+                                    DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Establishment::TABLENAME, 'uuid_ets')),
+                                ])
+                                ->join(EstablishmentBusinessCategory::TABLENAME, BusinessCategory::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
+                                ->join(Establishment::TABLENAME, EstablishmentBusinessCategory::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
+                                ->where(BusinessCategory::TABLENAME . '.type', '=', BusinessCategory::TYPE_RESTAURANT_AMBIENCE)
+                                ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
+                                ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
+                                ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                                ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                                ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $ids_biz_category_2, BusinessCategory::TABLENAME))
+                                ->groupBy(Establishment::TABLENAME . '.id')
+                                ->having('nb_categories', '=', count($ids_biz_category_2))
+                                ;
+                            DbQueryTools::setGeolocLimits($etsCategories2Query, $userLatLng, $distance, Establishment::TABLENAME);
+                            $etsCategories2Data = $etsCategories2Query->get();
+                            
+                            $etsUuidRelatedToCat2 = $etsCategories2Data->pluck('uuid_ets')->all();
+                            $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $etsUuidRelatedToCat2, Establishment::TABLENAME));
+                            break;
                     }
-                    StorageHelper::getInstance()->add('search.filter_data.biz_category_2', $businessCategories2);
                 }
+                
+                // Filter establishments by promo type
+                if (!empty($ids_promos)) {
+                    $etsPromoTypesQuery = Promotion::select([
+                        DB::raw('count(' . Promotion::TABLENAME . '.id' . ') as nb_promo_types'),
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Establishment::TABLENAME, 'uuid_ets')),
+                    ])
+                    ->join(PromotionType::TABLENAME, PromotionType::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_promotion_type')
+                    ->join(Establishment::TABLENAME, Promotion::TABLENAME . '.id_establishment', '=', Establishment::TABLENAME . '.id')
+                    ->where(Establishment::TABLENAME . '.name', 'LIKE', "%$terms%")
+                    ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
+                    ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
+                    ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                    ->whereIn('id_promotion_type', $ids_promos)
+                    ->groupBy(Establishment::TABLENAME . '.id')
+                    ->having('nb_promo_types', '=', count($ids_promos))
+                    ;
+                    DbQueryTools::setGeolocLimits($etsPromoTypesQuery, $userLatLng, $distance, Establishment::TABLENAME);
+                    $etsPromoTypeData = $etsPromoTypesQuery->get();
 
-                // Search by extra business categories
-                if (!empty($idsExtraBusinessCategories)) {
-                    $establishmentsQuery->join(EstablishmentBusinessCategory::TABLENAME . ' AS ets_biz_categ', Establishment::TABLENAME . '.id', '=', 'ets_biz_categ.id_establishment');
-                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_business_category', $idsExtraBusinessCategories, 'ets_biz_categ'));
-                    $establishmentsQuery->addSelect('ets_biz_categ.id_business_category AS extra_business_category');
+                    $etsUuidRelatedToPromoType = $etsPromoTypeData->pluck('uuid_ets')->all();
+                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $etsUuidRelatedToPromoType, Establishment::TABLENAME));
                 }
-
+                
                 // Search by locations
                 if (!empty($ids_location_index)) {
                     $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_location_index', $ids_location_index, Address::TABLENAME));
-                }
-                // Search by cooking type
-                if (!empty($ids_biz_category_1)) {
-                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $ids_biz_category_1, 'biz_category1'));
-                }
-                // Search by promo type
-                if (!empty($ids_promos)) {
-                    $establishmentsQuery->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_promotion_type', $ids_promos, Promotion::TABLENAME));
                 }
                 // Search by price
                 if (!empty($price)) {
@@ -375,6 +403,7 @@ class SearchController {
      * @return LengthAwarePaginator
      */
     public static function buildSearchResults($searchQuery) {
+        $typeEts = SessionController::getInstance()->getUserTypeEts();
         $establishments = array();
         $resultsPagination = null;
         if (!empty($searchQuery)) {
@@ -389,11 +418,86 @@ class SearchController {
             $maxPrice = 0;
             $locationIndexes = array();
             $businessCategory1 = array();
-            $businessCategory2 = StorageHelper::getInstance()->get('search.filter_data.biz_category_2');
+            $businessCategory2 = array();
+            $bizCategory1ByEts = array();
             $promoTypes = array();
 
             $distance = self::getFilterValues('distance', self::DEFAULT_DISTANCE_KM_SEARCH);
             $establishmentFiltersData = $searchQuery->get();
+            
+            $etsUuids = $establishmentFiltersData->pluck('uuid_ets')->all();
+            if(!empty($etsUuids)){
+                switch($typeEts){
+                    case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
+                        $etsCategories1Query = BusinessCategory::select([
+                                BusinessCategory::TABLENAME . '.*', 
+                                EstablishmentBusinessCategory::TABLENAME . '.id_establishment',
+                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', EstablishmentBusinessCategory::TABLENAME, 'uuid_ets')),
+                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', BusinessCategory::TABLENAME, 'uuid_category'))
+                            ])
+                            ->join(EstablishmentBusinessCategory::TABLENAME, BusinessCategory::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuids, EstablishmentBusinessCategory::TABLENAME))
+                            ->where(BusinessCategory::TABLENAME . '.type', '=', BusinessCategory::TYPE_COOKING_TYPE)
+                            ->orderBy(BusinessCategory::TABLENAME.'.name');
+                        $etsCategories1Data = $etsCategories1Query->get();
+                        
+                        foreach($etsCategories1Data as $etsCategory1Data){
+                            // Filter label for business category 1 (cooking type, ...)
+                            $uuidBusinessCat1 = $etsCategory1Data->uuid_category;
+                            if (!isset($businessCategory1[$uuidBusinessCat1])) {
+                                $businessCategory1[$uuidBusinessCat1] = array('type' => $etsCategory1Data->name, 'count' => 1);
+                            } else {
+                                $businessCategory1[$uuidBusinessCat1]['count'] ++;
+                            }
+                            // Append cooking types to establishment data
+                            $bizCategory1ByEts[$etsCategory1Data->uuid_ets][$uuidBusinessCat1] = $etsCategory1Data->name;
+                        }
+                        
+                        $etsCategories2Query = BusinessCategory::select([
+                                BusinessCategory::TABLENAME . '.*', 
+                                EstablishmentBusinessCategory::TABLENAME . '.id_establishment',
+                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', EstablishmentBusinessCategory::TABLENAME, 'uuid_ets')),
+                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', BusinessCategory::TABLENAME, 'uuid_category'))
+                            ])
+                            ->join(EstablishmentBusinessCategory::TABLENAME, BusinessCategory::TABLENAME . '.id', '=', EstablishmentBusinessCategory::TABLENAME . '.id_business_category')
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuids, EstablishmentBusinessCategory::TABLENAME))
+                            ->where(BusinessCategory::TABLENAME . '.type', '=', BusinessCategory::TYPE_RESTAURANT_AMBIENCE)
+                            ->orderBy(BusinessCategory::TABLENAME.'.name');
+                        $etsCategories2Data = $etsCategories2Query->get();
+                        
+                        foreach($etsCategories2Data as $etsCategory2Data){
+                            // Filter label for business category 2 (ambiences, ...)
+                            $uuidBusinessCat2 = $etsCategory2Data->uuid_category;
+                            if (!isset($businessCategory2[$uuidBusinessCat2])) {
+                                $businessCategory2[$uuidBusinessCat2] = array('type' => $etsCategory2Data->name, 'count' => 1);
+                            } else {
+                                $businessCategory2[$uuidBusinessCat2]['count'] ++;
+                            }
+                        }
+                        break;
+                }
+                
+                $etsPromoTypesQuery = PromotionType::select([
+                        PromotionType::TABLENAME . '.*', 
+                        Promotion::TABLENAME . '.id_establishment',
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', Promotion::TABLENAME, 'uuid_ets'))
+                    ])
+                    ->join(Promotion::TABLENAME, Promotion::TABLENAME . '.id_promotion_type', '=', PromotionType::TABLENAME . '.id')
+                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuids, Promotion::TABLENAME))
+                    ->orderBy(PromotionType::TABLENAME.'.name');
+                $etsPromoTypesData = $etsPromoTypesQuery->get();
+
+                foreach($etsPromoTypesData as $etsPromoTypeData){
+                    // Filter label for promo types
+                    $idPromoType = $etsPromoTypeData->id;
+                    if (!isset($promoTypes[$idPromoType])) {
+                        $promoTypes[$idPromoType] = array('type' => $etsPromoTypeData->name, 'count' => 1);
+                    } else {
+                        $promoTypes[$idPromoType]['count'] ++;
+                    }
+                }
+            }
+            
             foreach ($establishmentFiltersData as $establishmentFilterData) {
                 if ($establishmentFilterData->rawDistance <= ($distance * 1000)) {
                     // Filter label for price
@@ -416,59 +520,16 @@ class SearchController {
                     } else {
                         $locationIndexes[$uuidLocationIndex]['count'] ++;
                     }
-                    // Filter label for business category 1 (cooking type, ...)
-                    $uuidBusinessCat1 = UuidTools::getUuid($establishmentFilterData->id_biz_category_1);
-                    if (!isset($businessCategory1[$uuidBusinessCat1])) {
-                        $businessCategory1[$uuidBusinessCat1] = array('type' => $establishmentFilterData->name_biz_category_1, 'count' => 1);
-                    } else {
-                        $businessCategory1[$uuidBusinessCat1]['count'] ++;
-                    }
-                    // Filter label for extra business category
-                    if (isset($establishmentFilterData->extra_business_category)) {
-                        $uuidBusinessCategory2 = UuidTools::getUuid($establishmentFilterData->extra_business_category);
-                        if (isset($businessCategory2[$uuidBusinessCategory2])) {
-                            $businessCategory2[$uuidBusinessCategory2]['count'] ++;
-                        }
-                    }
-                    // Filter label for promotion type
-                    if (isset($establishmentFilterData->id_promotion_type)) {
-                        $uuidPromotionType = UuidTools::getUuid($establishmentFilterData->id_promotion_type);
-                        if (!isset($promoTypes[$uuidPromotionType])) {
-                            $promoTypes[$uuidPromotionType] = array('type' => '', 'count' => 1);
-                        } else {
-                            $promoTypes[$uuidPromotionType]['count'] ++;
-                        }
-                    }
                 }
             }
 
             // Filter labels save
             StorageHelper::getInstance()->add('search.filter_data.location_index', $locationIndexes);
             StorageHelper::getInstance()->add('search.filter_data.biz_category_1', $businessCategory1);
+            StorageHelper::getInstance()->add('search.filter_data.biz_category_2', $businessCategory2);
+            StorageHelper::getInstance()->add('search.filter_data.promo_type', $promoTypes);
             StorageHelper::getInstance()->add('search.filter_data.min_price', $minPrice);
             StorageHelper::getInstance()->add('search.filter_data.max_price', $maxPrice);
-            if (!empty($businessCategory2)) {
-                foreach ($businessCategory2 as $uuid => $bizCat2info) {
-                    if ($bizCat2info['count'] == 0) {
-                        unset($businessCategory2[$uuid]);
-                    }
-                }
-                StorageHelper::getInstance()->add('search.filter_data.biz_category_2', $businessCategory2);
-            }
-            if (!empty($promoTypes)) {
-                $promoTypeIds = array_keys($promoTypes);
-                $promoTypesData = DB::table(\App\Models\PromotionType::TABLENAME)
-                        ->select('id', 'name')
-                        ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $promoTypeIds, PromotionType::TABLENAME))
-                        ->get();
-                foreach ($promoTypesData as $promoTypeData) {
-                    $uuidPromoType = UuidTools::getUuid($promoTypeData->id);
-                    if (isset($promoTypes[$uuidPromoType])) {
-                        $promoTypes[$uuidPromoType]['type'] = $promoTypeData->name;
-                    }
-                }
-            }
-            StorageHelper::getInstance()->add('search.filter_data.promo_type', $promoTypes);
 
             $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
             $establishmentsData = $searchQuery->get();
@@ -485,18 +546,14 @@ class SearchController {
                     $isosByIdCountry[$etsCountryData->id] = $etsCountryData->iso;
                 }
             }
+            
             foreach ($establishmentsData as $establishmentData) {
                 if ($establishmentData->rawDistance <= ($distance * 1000)) {
-                    $uuid = UuidTools::getUuid($establishmentData->id);
+                    $uuid = $establishmentData->uuid_ets;
                     // Search results list
                     $establishments[$uuid]['id'] = $uuid;
                     $establishments[$uuid]['name'] = $establishmentData->name;
                     $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
-//                    if(empty($establishmentData->logo_path)){
-//                        $establishments[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
-//                    } else {
-//                        $establishments[$uuid]['logo_img'] = $establishmentData->logo_path;
-//                    }
                     if(isset($establishmentData->thumbnail_path) && !empty($establishmentData->thumbnail_path)){
                         $establishments[$uuid]['thumbnail_img'] = $establishmentData->thumbnail_path;
                     }
@@ -506,13 +563,17 @@ class SearchController {
                     if(isset($isosByIdCountry[$establishmentData->id_country])){
                         $establishments[$uuid]['country_iso'] = $isosByIdCountry[$establishmentData->id_country];
                     }
-                    $establishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
+                    if(isset($bizCategory1ByEts[$uuid]) && !empty($bizCategory1ByEts[$uuid])){
+                        $establishments[$uuid]['biz_category_1'] = current($bizCategory1ByEts[$uuid]);
+                    } else {
+                        $establishments[$uuid]['biz_category_1'] = ""; // Unexpected case, corrupted establishment data!
+                    }
                     $establishments[$uuid]['raw_distance'] = StringTools::displayCleanDistance($establishmentData->rawDistance);
                     $establishments[$uuid]['latitude'] = $establishmentData->latitude;
                     $establishments[$uuid]['longitude'] = $establishmentData->longitude;
                     if($establishmentData->status == Establishment::STATUS_ACTIVE){
                         $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
-                                $establishmentData->slug, $establishmentData->url_id);
+                                                                                        $establishmentData->slug, $establishmentData->url_id);
                     }
                 }
             }

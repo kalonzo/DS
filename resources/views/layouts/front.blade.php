@@ -25,7 +25,7 @@
                 <div class="navbar-collapse collapse">
                     @if(!isset($disableQuickSearch) || !$disableQuickSearch)
                     {!! Form::open(['id'=>'quick-search-form', 'url'=>'/search', 'method' => 'post', 'class' => 'navbar-form navbar-left']) !!}
-                        {!! Form::hidden('reset', '1'); !!}
+                        {!! Form::hidden('reset', 1) !!}
                         <div class="input-group locationInputGroup group-quick-search">
                             <span class="input-group-addon clickable" onclick="$(this).parentsInclude('form').submit();" title="Cliquez ici pour rechercher autour de vous">
                                 <span class="geolocMeIcon glyphicon glyphicon-search" aria-hidden="true"></span>

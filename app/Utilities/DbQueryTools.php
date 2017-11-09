@@ -37,6 +37,33 @@ class DbQueryTools {
         }
         return $rawSql;
     }
+    /**
+     * 
+     * @param LatLng $fromLatLng
+     * @param type $tableName
+     * @param type $latitudeFieldName
+     * @param type $longitudeFieldName
+     * @param type $returnValue
+     * @return string
+     */
+    public static function genRawSqlForWhereDistance(LatLng $fromLatLng, $tableName, $distance, $operator = '<=', 
+                                                                                $latitudeFieldName = 'latitude', $longitudeFieldName = 'longitude'){
+        $rawSql = "";
+        if ($fromLatLng->isValid()){
+            $rlo1 = ' radians('.$fromLatLng->getLng().') ';
+            $rla1 = ' radians('.$fromLatLng->getLat().') ';
+            $rlo2 = ' radians('.$tableName.'.'.$longitudeFieldName.') ';
+            $rla2 = ' radians('.$tableName.'.'.$latitudeFieldName.') ';
+            $dlo = '('.$rlo2.' - '.$rlo1.') / 2 ';
+            $dla = '('.$rla2.' - '.$rla1.') / 2 ';
+            $a = '(sin('.$dla.') * sin('.$dla.')) + cos('.$rla1.') * cos('.$rla2.') * (sin('.$dlo.') * sin('.$dlo.'))';
+            $d = '2 * atan2(sqrt('.$a.'), sqrt(1 - '.$a.')) ';
+            $distanceSql = GeolocTools::EARTH_RADIUS.' * '.$d;
+            
+            $rawSql = ' ('.$distanceSql.') '.$operator.' '.$distance;
+        }
+        return $rawSql;
+    }
     
     /**
      * Generate raw SQL to put in whereRaw() query builder function to make some restriction on a single UUID or an array of UUIDs
@@ -170,7 +197,8 @@ class DbQueryTools {
 //            print_r(['$minLat'=>$minLat, '$minLng'=>$minLng, '$maxLat'=>$maxLat, '$maxLng'=>$maxLng]);
             if(!empty($minLat) && !empty($maxLat) && !empty($minLng) && !empty($maxLng)){
                 $query->whereBetween($tableName.'.'.$latFieldName, array($minLat, $maxLat))
-                    ->whereBetween($tableName.'.'.$lngFieldName, array($minLng, $maxLng));
+                    ->whereBetween($tableName.'.'.$lngFieldName, array($minLng, $maxLng))
+                    ;
                 $success = true;
             } else {
                 $query->whereRaw(' 1=0 ');
