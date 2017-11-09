@@ -297,6 +297,7 @@ class SearchController {
                     ->where(Establishment::TABLENAME . '.id_business_type', '=', $typeEts)
                     ->where(Establishment::TABLENAME . '.status', '=', Establishment::STATUS_ACTIVE)
                     ->where(Establishment::TABLENAME . '.business_status', '>=', 50)
+                    ->whereRaw(DB::raw(DbQueryTools::genRawSqlForWhereDistance($userLatLng, Establishment::TABLENAME, ($distance * 1000))))
             ;
             $geolocLimitSuccess = DbQueryTools::setGeolocLimits($establishmentsQuery, $userLatLng, $distance, Establishment::TABLENAME);
 
@@ -552,7 +553,7 @@ class SearchController {
             }
             
             foreach ($establishmentsData as $establishmentData) {
-                if ($establishmentData->rawDistance <= ($distance * 1000)) {
+//                if ($establishmentData->rawDistance <= ($distance * 1000)) {
                     $uuid = $establishmentData->uuid_ets;
                     // Search results list
                     $establishments[$uuid]['id'] = $uuid;
@@ -579,7 +580,7 @@ class SearchController {
                         $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
                                                                                         $establishmentData->slug, $establishmentData->url_id);
                     }
-                }
+//                }
             }
 
             // Paginate results
