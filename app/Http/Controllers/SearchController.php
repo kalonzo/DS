@@ -224,7 +224,9 @@ class SearchController {
             foreach(Request::all() as $postKey => $postValue){
                 SessionController::getInstance()->addSearchFilterValue($postKey, $postValue);
             }
-            SessionController::getInstance()->addSearchFilterValue('distance', 50);
+            if (!Request::exists('distance')) {
+                SessionController::getInstance()->addSearchFilterValue('distance', 50);
+            }
             SessionController::getInstance()->saveSearchFilterValues();
             return redirect('/search');
         }
