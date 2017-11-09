@@ -221,8 +221,10 @@ class SearchController {
         $reset = $request->get('reset');
         if($reset){
             SessionController::getInstance()->resetSearchFilterValues();
+            foreach(Request::all() as $postKey => $postValue){
+                SessionController::getInstance()->addSearchFilterValue($postKey, $postValue);
+            }
             SessionController::getInstance()->addSearchFilterValue('distance', 50);
-            SessionController::getInstance()->addSearchFilterValue('term', Request::get('term'));
             SessionController::getInstance()->saveSearchFilterValues();
             return redirect('/search');
         }
