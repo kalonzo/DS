@@ -401,7 +401,8 @@ select:not(.select2){
     }
     > a{
         color: inherit;
-        display: inline-block;
+        display: inline;
+        float: left;
         position: relative;
         width: 100%;
         &:hover, &:focus{
@@ -492,7 +493,8 @@ select:not(.select2){
             z-index: 2;
             width: 100%;
             background: white;    
-            display: inline-block;
+            display: inline;
+            float: left;
             @at-root .ets-thumbnail.with-logo.thumbnail-corner-revealed{
                 .thumbnail-top-layer{
                     -webkit-clip-path: polygon(0% 50px, 50px 0%, 100% 0%, 100% 100%, 0% 100%);
@@ -549,7 +551,41 @@ select:not(.select2){
                 }
             }
         }
-        
+        .thumbnail-under-layer{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: inline-block;
+            display: flex;
+            flex-direction: column;
+            .logo-picture{
+                background-color: #333;
+                text-align: center;
+                img{
+                    width: 100%;
+                    max-height: 100%;
+                }
+            }
+            .thumbnail-text{
+                display: flex;
+                flex-grow: 2;
+                flex-direction: column;
+                .thumbnail-label{
+                    flex-grow: 1;
+                    height: auto;
+                    display: flex;
+                    align-items: flex-end;
+                }
+                .thumbnail-text-extra{
+                    align-self: flex-end;
+                    width: 100%;
+                }
+            }
+        }
         .thumbnail-text{
             padding-top: 0.4em;
             padding-bottom: 0.4em;
@@ -574,21 +610,24 @@ select:not(.select2){
                 overflow: hidden;
                 color: $promo-color;
             }
-        }
-        .thumbnail-under-layer{
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            z-index: 1;
-            width: 100%;
-            background: white;
-            display: inline-block;
-            .logo-picture{
-                background-color: #333;
-                text-align: center;
-                img{
-                    width: 100%;
-                    max-height: 100%;
+            .thumbnail-full-address{
+                font-size: 0.9em;
+                height: 2*$line-height-base-px*0.9;
+                overflow: hidden;
+            }
+            .thumbnail-opening{
+                font-size: 0.9em;
+                height: 2*$line-height-base-px*0.9;
+                overflow: hidden;
+                .ets-label-open{
+                    color: #3c763d;
+                    font-weight: bold;
+                }
+                .ets-label-open-soon{
+                    color: #f8b020;
+                }
+                .ets-label-open-later{
+                    color: #f8203a
                 }
             }
         }

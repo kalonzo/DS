@@ -1774,18 +1774,14 @@ class EstablishmentController extends Controller {
                 $thumbnailData[$uuid]['id'] = $uuid;
                 $thumbnailData[$uuid]['name'] = $queryResult->name;
                 $thumbnailData[$uuid]['logo_img'] = $queryResult->logo_path;
-//                if(empty($queryResult->logo_path)){
-//                    $thumbnailData[$uuid]['logo_img'] = \App\Utilities\MediaTools::getRandomDsThumbnailPath();
-//                } else {
-//                    $thumbnailData[$uuid]['logo_img'] = $queryResult->logo_path;
-//                }
                 if(isset($queryResult->thumbnail_path) && !empty($queryResult->thumbnail_path)){
                     $thumbnailData[$uuid]['thumbnail_img'] = $queryResult->thumbnail_path;
                 }
                 $thumbnailData[$uuid]['background_color'] = $queryResult->background_color;
                 $thumbnailData[$uuid]['city'] = $queryResult->city;
                 $thumbnailData[$uuid]['country'] = \App\Models\Country::getCountryLabel($queryResult->id_country);
-//                    $dsSelectionEstablishments[$uuid]['biz_category_1'] = $establishmentData->name_biz_category_1;
+                $thumbnailData[$uuid]['full_address'] = Address::getDisplayableStatic($queryResult->street_number, $queryResult->street, 
+                                                        $queryResult->address_additional, $queryResult->postal_code, $queryResult->city, '<br/>');
                 $thumbnailData[$uuid]['raw_distance'] = \App\Utilities\StringTools::displayCleanDistance($queryResult->rawDistance);
                 $thumbnailData[$uuid]['latitude'] = $queryResult->latitude;
                 $thumbnailData[$uuid]['longitude'] = $queryResult->longitude;
@@ -1801,4 +1797,220 @@ class EstablishmentController extends Controller {
         }
         return $thumbnailData;
     } 
+    
+    /**
+     * 
+     * @param type $thumbnailDataList
+     * @param type $etsUuidList
+     * @return type
+     */
+    public static function buildExtraThumbnailData($thumbnailDataList, $etsUuidList){
+        if(!empty($thumbnailDataList)){
+            $timezoneByCountryIso = array();
+            $countryIsoByEtsUuid = array();
+            $etsCountriesData = \App\Models\Country::select([
+                                                            \App\Models\Country::TABLENAME . '.iso', 
+                                                            \App\Models\Country::TABLENAME . '.label', 
+                                                            Address::TABLENAME . '.city', 
+                                                            Address::TABLENAME . '.region', 
+                                                            Establishment::TABLENAME . '.id',
+                                                            DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Establishment::TABLENAME))
+                        ])
+                        ->join(Address::TABLENAME, \App\Models\Country::TABLENAME . '.id', '=', Address::TABLENAME . '.id_country')
+                        ->join(Establishment::TABLENAME, Establishment::TABLENAME . '.id_address', '=', Address::TABLENAME . '.id')
+                        ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $etsUuidList, Establishment::TABLENAME))
+                        ->get();
+            foreach($etsCountriesData as $etsCountryData){
+                $uuidEstablishment = $etsCountryData->uuid;
+
+                $countryIsoByEtsUuid[$uuidEstablishment] = $etsCountryData->iso;
+                if(!isset($timezoneByCountryIso[$etsCountryData->iso])){
+                    $timezoneByCountryIso[$etsCountryData->iso] = \App\Utilities\GeolocTools::getTimezoneFromCountryIso($etsCountryData->iso);
+                }
+
+                foreach($thumbnailDataList as $key => $thumbnailData){
+                    if(isset($thumbnailData[$uuidEstablishment]) && !isset($thumbnailData[$uuidEstablishment]['country_iso'])){
+                        $thumbnailDataList[$key][$uuidEstablishment]['country_iso'] = $etsCountryData->iso;
+                    }
+                }
+            }
+
+            // Opening hours
+            $closePeriods = \App\Models\ClosePeriod::select([
+                                \App\Models\ClosePeriod::TABLENAME.'.*',
+                                DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', \App\Models\ClosePeriod::TABLENAME, 'uuid_ets'))
+                            ])
+                            ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuidList, \App\Models\ClosePeriod::TABLENAME))
+                            ->whereRaw('start_date <= NOW()')
+                            ->whereRaw('end_date >= NOW()')
+                            ->get();
+
+            // Collect close periods indexed by establishment
+            $closedPeriodsByEts = array();
+            foreach($closePeriods as $closePeriod){
+                $closedPeriodsByEts[$closePeriod->uuid_ets] = $closePeriod;
+            }
+
+            $openingHours = \App\Models\OpeningHour::select([
+                        \App\Models\OpeningHour::TABLENAME.'.*',
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment'))
+                    ])
+                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuidList, \App\Models\OpeningHour::TABLENAME))
+                    ->whereNull('start_date')->orWhereRaw('start_date <= NOW()')
+                    ->whereNull('end_date')->orWhereRaw('end_date >= NOW()')
+                    ->orderBy('id_establishment')->orderBy('day')->orderBy('day_order')->orderBy('start_time')
+                    ->get();
+
+            // Collect opening hours indexed by establishment
+            $openingByEts = array();
+            foreach($openingHours as $openingHour){
+                $uuidEts = $openingHour->uuid;
+                $openDayIndex = $openingHour->day;
+                $openingByEts[$uuidEts][$openDayIndex][] = $openingHour;
+            }
+
+            $today = new \DateTime();
+            $dayIndex = $today->format('N');
+            $previousDayIndex = $dayIndex -1;
+            if($previousDayIndex === 0){
+                $previousDayIndex = 7;
+            }
+            $etsOpeningInfo = array();
+            foreach($openingByEts as $uuidEts => $openingHoursByDays){
+                $checkPreviousDayOvernight = false;
+                $deferedOpening = false;
+                $deferedDayIndex = 0;
+                $deferedDate = 0;
+
+                // Current day in close period
+                if(isset($closedPeriodsByEts[$uuidEts])){
+                    $closePeriod = $closedPeriodsByEts[$uuidEts];
+                    $endClosing = new \DateTime($closePeriod->getEndDate());
+                    // Alter current day index to search from the reopening day index
+                    $dayIndex = $endClosing->format('N');
+                    $deferedDayIndex = $endClosing->format('N');
+                    $deferedDate = $endClosing;
+                    $deferedOpening = true;
+                } else {
+                    // Reset current day index
+                    $dayIndex = $today->format('N');
+                }
+
+                // Get the right time from the establishment timezone
+                $timeNow = $today->format('Hi');
+                if(isset($countryIsoByEtsUuid[$uuidEts])){
+                    $iso = $countryIsoByEtsUuid[$uuidEts];
+                    if(isset($timezoneByCountryIso[$iso])){
+                        $timezone = $timezoneByCountryIso[$iso];
+                        $dtz = new \DateTimeZone($timezone);
+                        $today->setTimezone($dtz);
+                        $timeNow = $today->format('Hi');
+                    }
+                }
+
+                $dayLoop = 0;
+                $opened = false;
+                $findOpenSlot = false;
+                $openDayIndex = 0;
+                $timeslots = array();
+                // Browse establishment opening hours to find the closest opening from the 7 coming days
+                while($dayLoop < 7 && !$findOpenSlot){
+                    $cursorDayIndex = $dayIndex + $dayLoop;
+                    // Manage day index overflow
+                    if($cursorDayIndex > 7){
+                        $cursorDayIndex = 1;
+                    }
+
+                    if(!$deferedOpening && !$checkPreviousDayOvernight && isset($openingHoursByDays[$previousDayIndex])){
+                        // Check for previous day overnight opening
+                        $checkPreviousDayOvernight = true;
+                        $openingHours = $openingHoursByDays[$previousDayIndex];
+                        foreach($openingHours as $openingHour){
+                            if(!$openingHour->getClosed() && $openingHour->getOvernight()){
+                                $start = str_replace(':', '', $openingHour->start_time) / 100;
+                                $end = str_replace(':', '', $openingHour->end_time) / 100;
+                                if($timeNow < 1200 && $end > $timeNow){
+                                    // Found opening now
+                                    $opened = true;
+                                    $findOpenSlot = true;
+                                    $openDayIndex = $dayIndex;
+                                    $timeslots[] = $openingHour;
+                                }
+                            }
+                        }
+                    } else {
+                        if(isset($openingHoursByDays[$cursorDayIndex])){
+                            $openingHours = $openingHoursByDays[$cursorDayIndex];
+                            if(!$deferedOpening && $cursorDayIndex == $dayIndex){
+                                // Opening hours found on the current day index 
+                                foreach($openingHours as $openingHour){
+                                    if(!$openingHour->getClosed()){
+                                        $start = str_replace(':', '', $openingHour->start_time) / 100;
+                                        $end = str_replace(':', '', $openingHour->end_time) / 100;
+                                        $overnight = $openingHour->getOvernight();
+                                        $overnightEnd = $end + 2400;
+                                        if($end > $timeNow || ($overnight && $overnightEnd > $timeNow)){
+                                            // Found opening today
+                                            if($timeNow >= $start){
+                                                // Found opening now
+                                                $opened = true;
+                                                $findOpenSlot = true;
+                                                $openDayIndex = $cursorDayIndex;
+                                                $timeslots[] = $openingHour;
+                                            } else {
+                                                // Found opening later in the day
+                                                $findOpenSlot = true;
+                                                $openDayIndex = $cursorDayIndex;
+                                                $timeslots[] = $openingHour;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Opening hours found on the following days
+                                foreach($openingHours as $openingHour){
+                                    if(!$openingHour->getClosed()){
+                                        // Found opening later in the week
+                                        $findOpenSlot = true;
+                                        $openDayIndex = $cursorDayIndex;
+                                        $timeslots[] = $openingHour;
+                                    }
+                                }
+                            }
+                        }
+                        $dayLoop++;
+                    }
+                }
+                if($deferedOpening){
+                    // Close period for now
+                    $daysFromReopening = 0;
+                    if($openDayIndex < $deferedDayIndex){
+                        $daysFromReopening = 7 + ($openDayIndex - $deferedDayIndex);
+                    } else {
+                        $daysFromReopening = $openDayIndex - $deferedDayIndex;
+                    }
+                    $reopeningDate = date_add($deferedDate, new \DateInterval('P'.$daysFromReopening.'D'));
+                    $etsOpeningInfo[$uuidEts]['defered_date'] = formatDate($reopeningDate, \IntlDateFormatter::MEDIUM);
+                }
+                $etsOpeningInfo[$uuidEts]['day_index'] = $openDayIndex;
+                $etsOpeningInfo[$uuidEts]['opened'] = $opened;
+                if(!empty($timeslots)){
+                    // Collect next opening timeslots
+                    foreach($timeslots as $timeslot){
+                        $time = date('H:i', strtotime($timeslot->getStartTime())) . ' - ' . date('H:i', strtotime($timeslot->getEndTime()));
+                        $etsOpeningInfo[$uuidEts]['timeslots'][] = $time;
+                    }
+                }
+            }
+
+            foreach($etsOpeningInfo as $uuidEstablishment => $openingInfo){
+                foreach($thumbnailDataList as $key => $thumbnailData){
+                    if(isset($thumbnailData[$uuidEstablishment]) && !isset($thumbnailData[$uuidEstablishment]['opening_info'])){
+                        $thumbnailDataList[$key][$uuidEstablishment]['opening_info'] = $openingInfo;
+                    }
+                }
+            }
+        }
+        return $thumbnailDataList;
+    }
 }

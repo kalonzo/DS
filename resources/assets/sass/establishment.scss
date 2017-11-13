@@ -204,8 +204,13 @@ $timetableRowHeight: 76px;
         }
     }
     #ets-close-periods{
-        .form-group > *:not(button){
+        .form-group > *:not(button):not(.tooltip){
             line-height: 34px;
+        }
+        .icon-info{
+            margin-left: 10px;
+            font-size: 1.4em;
+            line-height: 1.8em;
         }
         .close-periods-list{
             padding-left: 3em;

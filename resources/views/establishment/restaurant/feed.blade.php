@@ -481,6 +481,8 @@ if(checkModel($establishment)){
                     }
                 }
             });
+            
+            $('[data-toggle="tooltip"]').tooltip()
             <?php
         }
          ?>   

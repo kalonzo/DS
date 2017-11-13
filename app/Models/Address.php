@@ -45,15 +45,19 @@ class Address extends Model {
     }
     
     public function getDisplayable(){
-        $label = $this->getStreet().' ';
-        if(!empty($this->getStreetNumber())){
-            $label .= $this->getStreetNumber().' ';
+        return self::getDisplayableStatic($this->getStreetNumber(), $this->getStreet(), $this->getAddressAdditional(), $this->getPostalCode(), $this->getCity());
+    }
+    
+    public static function getDisplayableStatic($streetNumber, $street, $addressAdditional, $postalCode, $city, $separator = ' - '){
+        $label = $street.' ';
+        if(!empty($streetNumber)){
+            $label .= $streetNumber.' ';
         }
-        if(!empty($this->getAddressAdditional())){
-            $label .= ', '.$this->getAddressAdditional().' ';
+        if(!empty($addressAdditional)){
+            $label .= ', '.$addressAdditional.' ';
         }
-        $label .= '- '.$this->getPostalCode().' ';
-        $label .= $this->getCity().' ';
+        $label .= $separator.$postalCode.' ';
+        $label .= $city.' ';
         $label = str_replace('  ', ' ', $label);
         return $label;
     }

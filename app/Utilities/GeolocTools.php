@@ -91,4 +91,9 @@ class GeolocTools {
         return $ipaddress;
     }
 
+    public static function getTimezoneFromCountryIso($iso){
+        $timezoneArray = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $iso);
+        $timezone = $timezoneArray[0];
+        return $timezone;
+    }
 }

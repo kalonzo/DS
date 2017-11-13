@@ -609,12 +609,12 @@ a.link-disabled{
                 }
                 #eventButton{
                     .badge{
-                        background: orchid;
+                        background: $event-color;
                     }
                 }
                 #promotionButton{
                     .badge{
-                        background: #fca600;
+                        background: $promo-color;
                     }
                 }
             }

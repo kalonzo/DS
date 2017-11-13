@@ -176,37 +176,9 @@ class HomeController extends Controller {
             }
         }
         
-        $etsCountriesData = \App\Models\Country::select([\App\Models\Country::TABLENAME . '.iso', Establishment::TABLENAME . '.id',
-                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id', Establishment::TABLENAME))
-                    ])
-                    ->join(Address::TABLENAME, \App\Models\Country::TABLENAME . '.id', '=', Address::TABLENAME . '.id_country')
-                    ->join(Establishment::TABLENAME, Establishment::TABLENAME . '.id_address', '=', Address::TABLENAME . '.id')
-                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id', $etsUuids, Establishment::TABLENAME))
-                    ->get();
-        foreach($etsCountriesData as $etsCountryData){
-            $idEstablishment = $etsCountryData->id_establishment;
-            $uuidEstablishment = $etsCountryData->uuid;
-
-            if(!empty($dsSelectionEstablishments)){
-                if(isset($dsSelectionEstablishments[$uuidEstablishment]) && !isset($dsSelectionEstablishments[$uuidEstablishment]['country_iso'])){
-                    $dsSelectionEstablishments[$uuidEstablishment]['country_iso'] = $etsCountryData->iso;
-                }
-            }
-            if(!empty($promotionEstablishments)){
-                if(isset($promotionEstablishments[$uuidEstablishment]) && !isset($promotionEstablishments[$uuidEstablishment]['country_iso'])){
-                    $promotionEstablishments[$uuidEstablishment]['country_iso'] = $etsCountryData->iso;
-                }
-            }
-            if(!empty($mostVisitedEstablishments)){
-                if(isset($mostVisitedEstablishments[$uuidEstablishment]) && !isset($mostVisitedEstablishments[$uuidEstablishment]['country_iso'])){
-                    $mostVisitedEstablishments[$uuidEstablishment]['country_iso'] = $etsCountryData->iso;
-                }
-            }
-        }
-        
         switch($typeEts){
             case \App\Models\BusinessType::TYPE_BUSINESS_RESTAURANT:
-                // Link cooking type to establishment list in slider
+                // Link cooking type to establishment thumbnails
                 $businessCategories = BusinessCategory::select([
                         BusinessCategory::TABLENAME . '.name', EstablishmentBusinessCategory::TABLENAME . '.id_establishment',
                         DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', EstablishmentBusinessCategory::TABLENAME))
@@ -215,7 +187,7 @@ class HomeController extends Controller {
                     ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuids, EstablishmentBusinessCategory::TABLENAME))
                     ->orderBy(EstablishmentBusinessCategory::TABLENAME.'.created_at')
                     ->get();
-                    
+                
                 foreach($businessCategories as $etsCategoryData){
                     $idEstablishment = $etsCategoryData->id_establishment;
                     $uuidEstablishment = $etsCategoryData->uuid;
@@ -244,6 +216,8 @@ class HomeController extends Controller {
                 }
                 break;
         }
+        list($dsSelectionEstablishments, $promotionEstablishments, $mostVisitedEstablishments) = EstablishmentController::buildExtraThumbnailData(
+                array($dsSelectionEstablishments, $promotionEstablishments, $mostVisitedEstablishments), $etsUuids);
         
         $view = View::make('front.home')
                     ->with('slider_ets', $sliderEts)

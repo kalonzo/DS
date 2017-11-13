@@ -15,6 +15,23 @@ $(document).on('ajaxSuccess', function(){
 });
 resizeEtsThumbnailCornerLogos();
 
+flexEtsThumbnailUnderLayer = function(etsThumbnail){
+    var $underLayer = $(etsThumbnail).find('.thumbnail-under-layer');
+    var $etsLabel = $underLayer.find('.thumbnail-label');
+    var $etsExtraText = $underLayer.find('.thumbnail-text-extra');
+
+    var memShrink = $etsLabel.css('flex-shrink');
+    $etsLabel.css('flexShrink', 0);
+    var etsLabelRefHeight = $etsLabel.height();
+    $etsLabel.css('flexShrink', memShrink);
+        
+    if(etsLabelRefHeight > $etsLabel.height()){
+        $etsExtraText.find('.thumbnail-full-address').hide();
+    } else {
+        $etsExtraText.find('.thumbnail-full-address').show();
+    }
+}
+
 $('body').on('mouseover', '.ets-thumbnail:not(.thumbnail-anim-reveal):not(.thumbnail-anim-back):not(.thumbnail-revealed)', function(e){
     var $thumbnail = $(this);
     var $cornerContainer = $thumbnail.find('.thumbnail-logo-corner');
@@ -73,7 +90,9 @@ $('body').on('click', '.thumbnail-logo-corner', function(e){
         var cornerWidth = $cornerContainer.width();
 
         if(!$thumbnail.hasClass('thumbnail-revealed')){
-
+            $('body').find('.ets-thumbnail.thumbnail-revealed').find('.thumbnail-logo-corner').click();
+            flexEtsThumbnailUnderLayer($thumbnail);
+            
             setTimeout(function(){
                 // Hide corner logo so that bottom layer take the lead
                 $cornerLogo.hide();

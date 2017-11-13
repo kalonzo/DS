@@ -539,21 +539,7 @@ class SearchController {
             $searchQuery->offset($sliceStart)->limit($nbElementPerPage);
             $establishmentsData = $searchQuery->get();
             
-            // Collect additional data without joining initial query
-            $isosByIdCountry = array();
-            $countryIds = $establishmentsData->pluck('id_country')->all();
-            if(!empty($countryIds)){
-                $etsCountriesData = DB::table(\App\Models\Country::TABLENAME)
-                    ->select([\App\Models\Country::TABLENAME . '.iso', \App\Models\Country::TABLENAME . '.id'])
-                    ->whereIn('id', $countryIds)
-                    ->get();
-                foreach($etsCountriesData as $etsCountryData){
-                    $isosByIdCountry[$etsCountryData->id] = $etsCountryData->iso;
-                }
-            }
-            
             foreach ($establishmentsData as $establishmentData) {
-//                if ($establishmentData->rawDistance <= ($distance * 1000)) {
                     $uuid = $establishmentData->uuid_ets;
                     // Search results list
                     $establishments[$uuid]['id'] = $uuid;
@@ -565,9 +551,11 @@ class SearchController {
                     $establishments[$uuid]['background_color'] = $establishmentData->background_color;
                     $establishments[$uuid]['city'] = $establishmentData->city;
                     $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
-                    if(isset($isosByIdCountry[$establishmentData->id_country])){
-                        $establishments[$uuid]['country_iso'] = $isosByIdCountry[$establishmentData->id_country];
-                    }
+                    $establishments[$uuid]['full_address'] = Address::getDisplayableStatic($establishmentData->street_number, $establishmentData->street, 
+                                                        $establishmentData->address_additional, $establishmentData->postal_code, $establishmentData->city, '<br/>');
+//                    if(isset($isosByIdCountry[$establishmentData->id_country])){
+//                        $establishments[$uuid]['country_iso'] = $isosByIdCountry[$establishmentData->id_country];
+//                    }
                     if(isset($bizCategory1ByEts[$uuid]) && !empty($bizCategory1ByEts[$uuid])){
                         $establishments[$uuid]['biz_category_1'] = current($bizCategory1ByEts[$uuid]);
                     } else {
@@ -580,9 +568,12 @@ class SearchController {
                         $establishments[$uuid]['url'] = Establishment::getUrlStatic($establishmentData->id_business_type, $establishmentData->city, 
                                                                                         $establishmentData->slug, $establishmentData->url_id);
                     }
-//                }
             }
-
+            
+            // Collect additional data for paginated results, without joining initial query
+            $paginatedEtsUuids = $establishmentsData->pluck('uuid_ets')->all();
+            $establishments = current(EstablishmentController::buildExtraThumbnailData(array($establishments), $paginatedEtsUuids));
+            
             // Paginate results
             $resultsPagination = new LengthAwarePaginator($establishments, $nbTotalResults, $nbElementPerPage, $currentPage);
             $resultsPagination->setPath(Request::url());

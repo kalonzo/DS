@@ -45,6 +45,7 @@
                     {{$establishment['promo_name']}}
                 </div>
                 @endif
+                <div class="cleaner"></div>
             </div>
         </div>
        <div class="thumbnail-under-layer">
@@ -55,18 +56,71 @@
                 <div class="thumbnail-label col-xs-12 no-gutter" title="{{ $establishment['name'] }}">
                     {{ $establishment['name'] }}
                 </div>
-                <div class="thumbnail-info col-xs-12 no-gutter">
-                    {{$establishment['biz_category_1']}}
+                <div class="thumbnail-text-extra">
+                    @if(isset($establishment['full_address']))
+                        <div class="thumbnail-full-address col-xs-12 no-gutter">
+                        {!! $establishment['full_address'] !!}
+                        </div>
+                    @endif
+                    @if(!isset($establishment['opening_info']))
+                        <div class="thumbnail-info col-xs-12 no-gutter">
+                            {{$establishment['biz_category_1']}}
+                        </div>
+                        <div class="thumbnail-location col-xs-12 no-gutter">
+                            {{$establishment['city']}} - 
+                            @if(isset($establishment['country_iso'])) {{$establishment['country_iso']}} @else {{$establishment['country']}} @endif
+                        </div>
+                    @else
+                    <div class="thumbnail-opening col-xs-12 no-gutter">
+                        <?php
+                        $opened = $establishment['opening_info']['opened'];
+                        $openDayIndex = $establishment['opening_info']['day_index'];
+                        $relOpenDayIndex = $openDayIndex;
+                        $timeslots = null;
+                        if(isset($establishment['opening_info']['timeslots'])){
+                            $timeslots = $establishment['opening_info']['timeslots'];
+                        }
+                        $deferedDate = null;
+                        if(isset($establishment['opening_info']['defered_date'])){
+                            $deferedDate = $establishment['opening_info']['defered_date'];
+                        }
+                        $today = new \DateTime();
+                        $dayIndex = $today->format('N');
+                        if($openDayIndex < $dayIndex){
+                            $relOpenDayIndex = $openDayIndex + $dayIndex;
+                        }
+                        ?>
+                        @if($opened)
+                        <div class="ets-label-open">Ouvert</div>
+                        @else
+                            @if($openDayIndex == $dayIndex)
+                            <div class="ets-label-open-soon">Ouvert aujourd'hui</div>
+                            @else
+                                <div class="ets-label-open-later">
+                                    Fermé jusqu'
+                                    @if(!empty($deferedDate))
+                                    au {{ $deferedDate }}
+                                    @else
+                                        @if($openDayIndex == $dayIndex+1)
+                                        à demain
+                                        @else
+                                            @if($relOpenDayIndex > $dayIndex+1 && $relOpenDayIndex < $dayIndex+7)
+                                            à <?php echo \App\Utilities\DateTools::getDayLabelFromIndex($openDayIndex);?>
+                                            @endif
+                                        @endif
+                                    @endif
+                                </div>
+                            @endif
+                        @endif
+                        @if(!empty($timeslots))
+                            @foreach($timeslots as $timeslot)
+                            <span>{{ $timeslot }}</span>
+                            @if(!$loop->last) | @endif
+                            @endforeach
+                        @endif
+                    </div>
+                    @endif
                 </div>
-                <div class="thumbnail-location col-xs-12 no-gutter">
-                    {{$establishment['city']}} - 
-                    @if(isset($establishment['country_iso'])) {{$establishment['country_iso']}} @else {{$establishment['country']}} @endif
-                </div>
-                @if(isset($establishment['promo_name']))
-                <div class="thumbnail-promo col-xs-12 no-gutter">
-                    {{$establishment['promo_name']}}
-                </div>
-                @endif
             </div>
         </div>
     </a>

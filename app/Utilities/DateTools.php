@@ -20,6 +20,15 @@ class DateTools {
         return $days;
     }
     
+    public static function getDayLabelFromIndex($index){
+        $dayLabel = null;
+        $days = self::getDaysArray();
+        if(isset($days[$index])){
+            $dayLabel = $days[$index];
+        }
+        return $dayLabel;
+    }
+    
     public static function getDaysFirstLetterArray($startIndex = 1){
         $days = self::getDaysArray();
         
