@@ -553,9 +553,6 @@ class SearchController {
                     $establishments[$uuid]['country'] = \App\Models\Country::getCountryLabel($establishmentData->id_country);
                     $establishments[$uuid]['full_address'] = Address::getDisplayableStatic($establishmentData->street_number, $establishmentData->street, 
                                                         $establishmentData->address_additional, $establishmentData->postal_code, $establishmentData->city, '<br/>');
-//                    if(isset($isosByIdCountry[$establishmentData->id_country])){
-//                        $establishments[$uuid]['country_iso'] = $isosByIdCountry[$establishmentData->id_country];
-//                    }
                     if(isset($bizCategory1ByEts[$uuid]) && !empty($bizCategory1ByEts[$uuid])){
                         $establishments[$uuid]['biz_category_1'] = current($bizCategory1ByEts[$uuid]);
                     } else {

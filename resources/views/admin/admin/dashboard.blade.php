@@ -18,6 +18,11 @@
                                     'tabledata' => $dt_establishment_admin])
 
     @endcomponent
+    
+    @component('components.tile', ['title' => 'Clients', 'add_href' => '/admin/user_pro/register', 
+                                    'tabledata' => $dt_user_pro_admin])
+
+    @endcomponent
 
     @component('components.tile', ['title' => 'Modération des médias (établissements)', 'tabledata' => $dt_establishment_media_moderation])
 

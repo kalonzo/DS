@@ -8,9 +8,9 @@
 
 <div id="map"> </div>
 @if(checkModel($user))
-{!! Form::model($user, ['id'=>'feed-establishment', 'url' => '/establishment/register/'.$user->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
+{!! Form::model($user, ['id'=>'feed-pro-user', 'url' => '/establishment/register/'.$user->getUuid(), 'method' => 'PUT', 'files' => true]) !!}
 @else
-{!! Form::open(['id'=>'feed-establishment', 'url'=>'/establishment/register/', 'method' => 'put', 'files' => true]) !!}
+{!! Form::open(['id'=>'feed-pro-user', 'url'=>'/establishment/register/', 'method' => 'put', 'files' => true]) !!}
 @endif
 {!! Form::hidden('id_user', old('id_user')) !!}
 <?php
@@ -119,11 +119,11 @@ if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN) && !empty(Illuminate\Su
             $('#payment-form').empty();
         });
         
-        $('body').on('ajaxFormFailed', 'form#feed-establishment', function(e, data){
+        $('body').on('ajaxFormFailed', 'form#feed-pro-user', function(e, data){
             $('#checkoutModal').modal('hide');
         });
         
-        $('body').on('ajaxFormSubmitted', 'form#feed-establishment', function(e, data){
+        $('body').on('ajaxFormSubmitted', 'form#feed-pro-user', function(e, data){
             $('#checkoutModal').modal('show');
             var $form = $(this);
 
@@ -202,11 +202,14 @@ if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN) && !empty(Illuminate\Su
                     });
 
                     $('body').append("<script type=\"text\/javascript\" src=\""+iframeScriptUrl+"\"><\/script>");
+                } else if(data.payment_page){
+                    redirectToUrl(data.payment_page);
                 }
             } else if(data.error){
                 $('#checkoutModal .form-error').html(data).show();
             }
         });
+        
     });
     
 </script>

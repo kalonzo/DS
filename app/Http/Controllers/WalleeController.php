@@ -67,8 +67,17 @@ class WalleeController extends Controller {
                     }
 
                     $transactionPending = new TransactionPending();
+                    
+//                    $paymentMethodConfiguration = new \Wallee\Sdk\Model\PaymentMethodConfiguration();
+//                    $paymentMethodConfiguration->setId(888);
+//                    $paymentConnectorConfiguration = new \Wallee\Sdk\Model\PaymentConnectorConfiguration();
+//                    $paymentConnectorConfiguration->setPaymentMethodConfiguration($paymentMethodConfiguration);
+//                    
+//                    $transactionPending->setPaymentConnectorConfiguration($paymentConnectorConfiguration);
+
                     $transactionPending->setCurrency($cart->getCurrencyLabel());
                     $transactionPending->setCustomerEmailAddress($user->getEmail());
+                    $transactionPending->setCustomerId($user->getUuid());
                     $transactionPending->setLineItems($lineItems);
                     
                     $failedUrl = url('/transaction/error').'?id_cart='.$cart->getUuid();
@@ -87,13 +96,28 @@ class WalleeController extends Controller {
 
                 if(!empty($transaction) && $transaction->isValid() && !empty($transaction->getId())){
                     $payment->setIdTransaction($transaction->getId())->save();
-                    $url = $service->buildJavaScriptUrl(self::MAIN_SPACE_ID, $transaction->getId());
-                    if(!empty($url)){
-                        SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
-                        $jsonResponse['url'] = $url;
-                        $jsonResponse['success'] = 1;
-                    } else {
-                        $jsonResponse['error'] = "Le formulaire de paiement n'a pas pu être affiché";
+                    
+                    switch($payment->getMethodConfig()){
+                        case \App\Models\PaymentMethod::METHOD_CONFIG_OFFSITE:
+                            $payment_page = $service->buildPaymentPageUrl(self::MAIN_SPACE_ID, $transaction->getId());
+                            if(!empty($payment_page)){
+                               SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
+                               $jsonResponse['payment_page'] = $payment_page;
+                               $jsonResponse['success'] = 1;
+                            } else {
+                                 $jsonResponse['error'] = "La page de paiement n'a pas pu être affichée";
+                            }
+                            break;
+                        default :
+                            $url = $service->buildJavaScriptUrl(self::MAIN_SPACE_ID, $transaction->getId());
+                            if(!empty($url)){
+                                SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
+                                $jsonResponse['url'] = $url;
+                                $jsonResponse['success'] = 1;
+                            } else {
+                                $jsonResponse['error'] = "Le formulaire de paiement n'a pas pu être affiché";
+                            }
+                            break;
                     }
                 } else {
                     $jsonResponse['error'] = "La transaction n'a pu être générée correctement";
@@ -229,6 +253,7 @@ class WalleeController extends Controller {
                     "L'utilisateur a bien été créé. Un email de confirmation lui a été envoyé avec un lien d'activation qui "
                     . " ouvrira son espace client."
                 );
+                \Illuminate\Support\Facades\Request::session()->flash('error', implode('; ', $errors));
                 return redirect(url("/edit/establishment/".$establishment->getId()));
             } else {
                 \Illuminate\Support\Facades\Request::session()->flash('status', 

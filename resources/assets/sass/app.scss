@@ -622,6 +622,10 @@ a.link-disabled{
     }
 }
 
+.payment-methods-config{
+    display: none;
+}
+
 /***************** Glyphicon spinner *****************************************/
 .glyphicon.fast-right-spinner {
     -webkit-animation: glyphicon-spin-r 1s infinite linear;

@@ -25,6 +25,7 @@ class Payment extends Model {
         'id_currency',
         'id_user',
         'id_payment_method',
+        'method_config',
         'id_bill',
         'id_cart',
         'id_transaction'
@@ -146,6 +147,13 @@ class Payment extends Model {
         return $this;
     }
 
+    function getMethodConfig() {
+        return $this->method_config;
+    }
 
+    function setMethodConfig($method_config) {
+        $this->method_config = $method_config;
+        return $this;
+    }
 
 }

@@ -19,6 +19,7 @@ flexEtsThumbnailUnderLayer = function(etsThumbnail){
     var $underLayer = $(etsThumbnail).find('.thumbnail-under-layer');
     var $etsLabel = $underLayer.find('.thumbnail-label');
     var $etsExtraText = $underLayer.find('.thumbnail-text-extra');
+    $etsExtraText.find('.thumbnail-full-address').show();
 
     var memShrink = $etsLabel.css('flex-shrink');
     $etsLabel.css('flexShrink', 0);

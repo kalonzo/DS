@@ -11,7 +11,7 @@ class DatatableRowAction {
     const ACTION_EDIT = 1;
     const ACTION_REMOVE = 2;
     const ACTION_VALID = 3;
-    const ACTION_DENY = 4;
+    const ACTION_DENY = 4;    
     
     protected $type;
     protected $icon;
@@ -65,18 +65,22 @@ class DatatableRowAction {
 
     function setIcon($icon) {
         $this->icon = $icon;
+        return $this;
     }
 
     function setTitle($title) {
         $this->title = $title;
+        return $this;
     }
 
     function setHref($href) {
         $this->href = $href;
+        return $this;
     }
 
     function setOnclick($onclick) {
         $this->onclick = $onclick;
+        return $this;
     }
     
     function getType() {
@@ -85,6 +89,7 @@ class DatatableRowAction {
 
     function setType($type) {
         $this->type = $type;
+        return $this;
     }
 
     function getHiddenCond() {
@@ -93,6 +98,7 @@ class DatatableRowAction {
 
     function setHiddenCond($hiddenCond) {
         $this->hiddenCond = $hiddenCond;
+        return $this;
     }
 
 

@@ -221,6 +221,8 @@ class AdminController extends Controller {
     private function indexAdmin(){
         $etsDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentAdmin::DT_ID);
         
+        $customerDatatable = DatatableController::buildDatatable(\App\Datatables\DtUserProAdmin::DT_ID);
+        
         $bookingDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBookingAdmin::DT_ID);
 
         $businessCategoriesDatatableFeeder = DatatableController::buildDatatable(\App\Datatables\DtBusinessCategoryAdmin::DT_ID);
@@ -237,6 +239,7 @@ class AdminController extends Controller {
 
         $view = View::make('admin.admin.dashboard')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
+                ->with($customerDatatable->getId(), $customerDatatable->getViewParamsArray())
                 ->with($bookingDatatableFeeder->getId(), $bookingDatatableFeeder->getViewParamsArray())
                 ->with($businessCategoriesDatatableFeeder->getId(), $businessCategoriesDatatableFeeder->getViewParamsArray())
                 ->with($promotionsDatatableFeeder->getId(), $promotionsDatatableFeeder->getViewParamsArray())

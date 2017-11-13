@@ -180,8 +180,9 @@ class UserProController extends Controller {
                         if(checkModel($payment)){
                             $createdObjects[] = $payment;
                             $idPaymentMethod = $request->get('payment_method');
-                            $payment->setIdPaymentMethod($idPaymentMethod)->save();
-                            
+                            $payment->setIdPaymentMethod($idPaymentMethod);
+                            $payment->setMethodConfig($request->get('method_config'));
+                            $payment->save();
                             $cart->setStatus(\App\Models\Cart::STATUS_CHECKEDOUT)->save();
                             
                             if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN)){
@@ -334,7 +335,7 @@ class UserProController extends Controller {
                                             "L'utilisateur a bien été créé. Un email de confirmation lui a été envoyé avec un lien d'activation qui "
                                             . " ouvrira son espace client."
                                         );
-                                        $jsonResponse['location'] = "/edit/establishment/".$establishment->getId();
+                                        $jsonResponse['location'] = "/edit/establishment/".$establishment->getUuid();
                                     } else {
                                         $jsonResponse['location'] = '/establishment/register/success?id_user='.$user->getUuid();
                                     }
@@ -426,20 +427,27 @@ class UserProController extends Controller {
         }
 
         // Payment methods
-        $availableMethods = array(PaymentMethod::METHOD_CB, PaymentMethod::METHOD_30_DAYS_BILL);
+        $availableMethods = array(PaymentMethod::METHOD_CB, PaymentMethod::METHOD_30_DAYS_BILL,
+                                PaymentMethod::METHOD_CB_MASTERCARD, PaymentMethod::METHOD_CB_VISA, PaymentMethod::METHOD_CB_AMEX
+                                , PaymentMethod::METHOD_CB_POSTFINANCE
+                            );
         if(checkRight(\App\Models\Action::CREATE_USER_PRO_ADMIN)){
             $availableMethods[] = PaymentMethod::METHOD_PACKAGE_INCLUDED;
             $availableMethods[] = PaymentMethod::METHOD_FREE_PASS;
             $availableMethods[] = PaymentMethod::METHOD_DELAYED_PAYMENT;
         }
         $paymentMethods = array();
-        $paymentMethodsData = DB::table(PaymentMethod::TABLENAME)
-                ->select('id', 'name')
-                ->whereIn('id', $availableMethods)
+        $methodsConfig = array();
+        $paymentMethodsData = PaymentMethod::
+                whereIn('id', $availableMethods)
                 ->orderBy('name')
                 ->get();
         foreach ($paymentMethodsData as $paymentMethod) {
-            $paymentMethods[$paymentMethod->id] = $paymentMethod->name;
+            if(empty($paymentMethod->getMethodConfig())){
+                $paymentMethods[$paymentMethod->id] = $paymentMethod;
+            } else {
+                $methodsConfig[$paymentMethod->getMethodConfig()][] = $paymentMethod;
+            }
         }
 
         // Call number prefixes
@@ -479,6 +487,7 @@ class UserProController extends Controller {
         
         StorageHelper::getInstance()->add('feed_user.form_data.business_types', $businessTypes);
         StorageHelper::getInstance()->add('feed_user.form_data.payment_methods', $paymentMethods);
+        StorageHelper::getInstance()->add('feed_user.form_data.methods_config', $methodsConfig);
         StorageHelper::getInstance()->add('feed_user.form_data.country_prefixes', $countryPrefixes);
         StorageHelper::getInstance()->add('feed_user.form_data.country_ids', $countryNames);
         StorageHelper::getInstance()->add('feed_user.form_data.subscriptions', $subscriptions);

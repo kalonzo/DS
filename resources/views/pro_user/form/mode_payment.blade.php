@@ -11,12 +11,37 @@
         <div class="panel-body container">
             <div class="row">
                 <div class="col-xs-12 form-group text-center">
-                    @foreach($form_data['payment_methods'] as $paymentMethod => $label)  
+                    <?php
+                    foreach($form_data['payment_methods'] as $id => $paymentMethod){
+                        ?>
                         <label class="radio-inline">
-                            {!! Form::radio('payment_method', $paymentMethod) !!}
-                            {{ $label }}
-                        </label>        
-                    @endforeach
+                            <?php
+                            echo Form::radio('payment_method', $id, false, ['onclick' => "if($(this).val() == ".App\Models\PaymentMethod::METHOD_CB.")"
+                                . "{ $('.payment-methods-config').show(); } else { $('.payment-methods-config').hide(); }"]);
+                            echo $paymentMethod->getName();
+                            ?>
+                        </label>   
+                        <?php
+                    }
+                    ?>
+                </div>
+                <div class="col-xs-12 form-group text-center payment-methods-config">
+                    <?php
+                    foreach($form_data['methods_config'] as $methodConfig => $paymentMethods){
+                        ?>
+                        <label class="radio-inline">
+                            <?php
+                            $methodsList = array();
+                            echo Form::radio('method_config', $methodConfig);
+                            foreach($paymentMethods as $paymentMethod){
+                                $methodsList[] = $paymentMethod->getName();
+                            }
+                            echo implode(', ', $methodsList);
+                            ?>
+                        </label>   
+                        <?php
+                    }
+                    ?>
                 </div>
             </div>
             <div class="row" id="payment-warning">

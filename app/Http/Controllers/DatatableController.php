@@ -56,6 +56,10 @@ class DatatableController {
                 $dtFeeder = new \App\Datatables\DtUserAdmin();
                 $dtFeeder->run();
                 break;
+            case \App\Datatables\DtUserProAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtUserProAdmin();
+                $dtFeeder->run();
+                break;
         }
         return $dtFeeder;
     }

@@ -14,11 +14,16 @@ class PaymentMethod extends Model {
     const METHOD_CB_MASTERCARD = 101;
     const METHOD_CB_VISA = 102;
     const METHOD_CB_POSTFINANCE = 103;
+    const METHOD_CB_AMEX = 104;
+    const METHOD_CB_PAYPAL = 105;
     
     const METHOD_30_DAYS_BILL = 2;
     const METHOD_PACKAGE_INCLUDED = 3;
     const METHOD_FREE_PASS = 4;
     const METHOD_DELAYED_PAYMENT = 5;
+    
+    const METHOD_CONFIG_OFFSITE = 1;
+    const METHOD_CONFIG_IFRAME = 2;
     
     const STATUS_ACTIVE = 1;
     const STATUS_DISABLED = 2;
@@ -31,7 +36,8 @@ class PaymentMethod extends Model {
         'id',
         'name',
         'status',
-        'id_logo'
+        'id_logo',
+        'method_config'
     ];
     protected $guarded = [];
 
@@ -82,5 +88,15 @@ class PaymentMethod extends Model {
         $this->id_logo = $value;
         return $this;
     }
+
+    function getMethodConfig() {
+        return $this->method_config;
+    }
+
+    function setMethodConfig($method_config) {
+        $this->method_config = $method_config;
+        return $this;
+    }
+
 
 }

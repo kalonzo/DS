@@ -2,7 +2,13 @@
 
 namespace App\Http\Requests;
 
-class StoreUserPro extends \App\Http\FormRequest {
+use App\Http\FormRequest;
+use App\Models\CallNumber;
+use App\Models\Country;
+use App\Models\PaymentMethod;
+use Illuminate\Validation\Validator;
+
+class StoreUserPro extends FormRequest {
 
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +31,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'user.firstname' => 'required|min:3|max:255',
             'user.lastname' => 'required|min:3|max:255',
             'user.email' => 'required|string|email|max:255',//|unique:'.\App\Models\User::TABLENAME.',email',
-            'user.call_number.'.\App\Models\CallNumber::TYPE_PHONE_CONTACT => 'required|regex:/^[0-9 ]+$/',
+            'user.call_number.'.CallNumber::TYPE_PHONE_CONTACT => 'required|regex:/^[0-9 ]+$/',
             'user.password' => 'required|min:6|string|confirmed:password_confirmation',
             'user.password_confirmation' => 'required',
             
@@ -34,6 +40,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'id_subscription' => 'required',
             
             'payment_method' => 'required',
+            'method_config' => 'required_if:payment_method,'.PaymentMethod::METHOD_CB,
             
             'bill.title' => 'required',
             'bill.company_name' => 'nullable|min:2|max:255',
@@ -54,18 +61,19 @@ class StoreUserPro extends \App\Http\FormRequest {
             
             'accept_cgv' => 'required',
         ];
-//        switch($idPaymentMethod){
-//            case PaymentMethod::METHOD_30_DAYS_BILL:
-//                if($idCountry == Country::CHE){
-//                    $jsonResponse['relocateMode'] = 1;
-//                    $jsonResponse['location'] = '/admin';
-//                    unset($jsonResponse['triggerMode']);
-//                    $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
-//                    $billStatus = \App\Models\Bill::STATUS_CREATED;
-//                } else {
-//                    $jsonResponse['error'] = "Le paiement en facture à 30 jours est disponible uniquement pour les résidents suisses.";
-//                }
         return $rules;
+    }
+    
+    public function withValidator(Validator $validator){
+        $validator->after(function ($validator) {
+            switch($this->get('payment_method')){
+                case PaymentMethod::METHOD_30_DAYS_BILL:
+                    if($this->get('address.id_country') != Country::CHE){
+                        $validator->errors()->add('payment_method', "Le paiement en facture à 30 jours est disponible uniquement pour les résidents suisses.");
+                    }
+                break;
+            }
+        });
     }
 
     public function messages() {
@@ -82,8 +90,8 @@ class StoreUserPro extends \App\Http\FormRequest {
             'user.email.required' => 'Veuillez saisir une adresse email.',
             'user.email.email' => 'Veuillez saisir une adresse email valide.',
             'user.email.unique' => 'Cette adresse email est déja dans notre base, merci de conntacter un administrateur.',
-            'user.call_number.'.\App\Models\CallNumber::TYPE_PHONE_CONTACT.'.required' => 'Veuillez saisir un numéro de téléphone de contact.',
-            'user.call_number.'.\App\Models\CallNumber::TYPE_PHONE_CONTACT.'.regex' => 'Veuillez contrôler le format de votre numéro.',
+            'user.call_number.'.CallNumber::TYPE_PHONE_CONTACT.'.required' => 'Veuillez saisir un numéro de téléphone de contact.',
+            'user.call_number.'.CallNumber::TYPE_PHONE_CONTACT.'.regex' => 'Veuillez contrôler le format de votre numéro.',
             'user.password.required' => 'Veuillez renseigner un mot de passe pour vous connecter à votre espace privé',
             'user.password.min' => 'Votre mot de passe est trop faible',
             'user.password.confirmed' => 'Votre mot de passe n\'est pas identique',
@@ -96,6 +104,7 @@ class StoreUserPro extends \App\Http\FormRequest {
             'duration.required' => "Veuillez sélectionner une durée d'engagement",
             
             'payment_method.required' => 'Veuillez sélectionner une méthode de paiement',
+            'method_config.required_if' => 'Veuillez sélectionner le type de carte de crédit que vous souhaitez utiliser',
             
             'bill.title.required' => 'Veuillez sélectionner la civilité de vos informations de facturation',
             'bill.company_name.required' => 'Veuillez saisir le nom de votre société.',
@@ -122,11 +131,11 @@ class StoreUserPro extends \App\Http\FormRequest {
             'bill.email.required' => 'Veuillez saisir une adresse e mail.',
             'bill.email.email' => 'Veuillez saisir une adresse e mail valide.',
             
-            'bill.call_number.'.\App\Models\CallNumber::TYPE_PHONE_PRO.'.required' => 'Veuillez saisir un numéro de téléphone de contact.',
-            'bill.call_number.'.\App\Models\CallNumber::TYPE_PHONE_PRO.'.regex' => 'Veuillez contrôler le format de votre numéro',
-            'bill.call_number.'.\App\Models\CallNumber::TYPE_PHONE_CONTACT.'.regex' => 'Veuillez contrôler le format de votre numéro.',
-            'bill.call_number.'.\App\Models\CallNumber::TYPE_MOBILE.'.regex' => 'Veuillez contrôler le format de votre numéro',
-            'bill.call_number.'.\App\Models\CallNumber::TYPE_FAX.'.regex' => 'Veuillez contrôler le format de votre numéro',
+            'bill.call_number.'.CallNumber::TYPE_PHONE_PRO.'.required' => 'Veuillez saisir un numéro de téléphone de contact.',
+            'bill.call_number.'.CallNumber::TYPE_PHONE_PRO.'.regex' => 'Veuillez contrôler le format de votre numéro',
+            'bill.call_number.'.CallNumber::TYPE_PHONE_CONTACT.'.regex' => 'Veuillez contrôler le format de votre numéro.',
+            'bill.call_number.'.CallNumber::TYPE_MOBILE.'.regex' => 'Veuillez contrôler le format de votre numéro',
+            'bill.call_number.'.CallNumber::TYPE_FAX.'.regex' => 'Veuillez contrôler le format de votre numéro',
             
             'accept_cgv.required' => 'Veuillez acceptez les conditions générales d\'utilisation et la politique de confidentialité.',
         ];
