@@ -37,10 +37,6 @@
 
     @endcomponent
 
-    @component('components.tile', ['title' => 'Types de business', 'tabledata' => $dt_business_type_admin])
-
-    @endcomponent
-
     @component('components.tile', ['title' => 'Promotions', 'add_href' => 'javascript:getOnClickModal("Créer une promotion", "/admin/create/promotions")', 
                                     'tabledata' => $dt_promotion_admin])
 
@@ -51,6 +47,14 @@
 
     @endcomponent
     
+    @component('components.tile', ['title' => 'Types de business', 'tabledata' => $dt_business_type_admin])
+
+    @endcomponent
+    
+    @component('components.tile', ['title' => 'Méthodes de paiement', 'tabledata' => $dt_payment_method_admin])
+
+    @endcomponent
+
     @component('components.tile', ['title' => 'Utilisateurs', 'add_href' => 'javascript:getOnClickModal("Créer un administrateur", "/admin/create/users")', 
                                     'tabledata' => $dt_user_admin])
 

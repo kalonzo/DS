@@ -100,6 +100,9 @@ class AdminController extends Controller {
                 case \App\Models\BusinessType::TABLENAME:
                     $controllerClass = App::make(BusinessTypeController::class);
                     break;
+                case \App\Models\PaymentMethod::TABLENAME:
+                    $controllerClass = App::make(PaymentMethodController::class);
+                    break;
             }
             if ($controllerClass instanceof Controller) {
                 return $controllerClass->callAction('edit', array('id' => $id));
@@ -107,6 +110,7 @@ class AdminController extends Controller {
         })->middleware('auth');
 
         Route::match(['put', 'post'], '/admin/update/'.\App\Models\BusinessType::TABLENAME.'/{businessType}', 'BusinessTypeController@update');
+        Route::match(['put', 'post'], '/admin/update/'.\App\Models\PaymentMethod::TABLENAME.'/{paymentMethod}', 'PaymentMethodController@update');
 //        Route::match(['put', 'post'], '/admin/update/{table_name}/{id}', function($table_name, $id) {
 //            $controllerClass = null;
 //            $params = ['id' => $id];
@@ -236,6 +240,8 @@ class AdminController extends Controller {
         $mediaModerationDatatable = DatatableController::buildDatatable(\App\Datatables\DtEstablishmentMediaModeration::DT_ID);
         
         $userDatatable = DatatableController::buildDatatable(\App\Datatables\DtUserAdmin::DT_ID);
+        
+        $paymentMethodDatatable = DatatableController::buildDatatable(\App\Datatables\DtPaymentMethodAdmin::DT_ID);
 
         $view = View::make('admin.admin.dashboard')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
@@ -247,6 +253,7 @@ class AdminController extends Controller {
                 ->with($businessTypesDatatableFeeder->getId(), $businessTypesDatatableFeeder->getViewParamsArray())
                 ->with($mediaModerationDatatable->getId(), $mediaModerationDatatable->getViewParamsArray())
                 ->with($userDatatable->getId(), $userDatatable->getViewParamsArray())
+                ->with($paymentMethodDatatable->getId(), $paymentMethodDatatable->getViewParamsArray())
         ;
         return $view;
     }

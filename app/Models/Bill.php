@@ -63,7 +63,14 @@ class Bill extends Model implements GlobalObjectManageable{
      * @return \App\Database\Eloquent\Builder
      */
     public function contract(){
-        return $this->hasOne(Cart::class, 'id', 'id_contract');
+        return $this->hasOne(Contract::class, 'id', 'id_contract');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function subscriptions(){
+        return $this->hasMany(Subscription::class, 'id_bill', 'id');
     }
     
     /**

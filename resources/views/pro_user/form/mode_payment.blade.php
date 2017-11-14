@@ -34,9 +34,15 @@
                             $methodsList = array();
                             echo Form::radio('method_config', $methodConfig);
                             foreach($paymentMethods as $paymentMethod){
-                                $methodsList[] = $paymentMethod->getName();
+                                $methodLabel = null;
+                                if(!empty($paymentMethod->local_path)){
+                                    $methodLabel = "<img style='height: 30px;' src='".asset($paymentMethod->local_path)."'/>";
+                                } else {
+                                    $methodLabel = $paymentMethod->getName();
+                                }
+                                $methodsList[] = $methodLabel;
                             }
-                            echo implode(', ', $methodsList);
+                            echo implode(' ', $methodsList);
                             ?>
                         </label>   
                         <?php

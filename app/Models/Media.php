@@ -28,6 +28,7 @@ class Media extends Model {
     const TYPE_USE_ETS_EVENT = 10;
     const TYPE_USE_BUSINESS_TYPE = 11;
     const TYPE_USE_ETS_THUMBNAIL = 12;
+    const TYPE_USE_PAYMENT_METHOD = 13;
     
     const STATUS_PENDING = 1;
     const STATUS_VALIDATED = 2;
@@ -181,6 +182,14 @@ class Media extends Model {
             $story = $this->hasOne(EstablishmentHistory::class, 'id', 'id_object_related');
         }
         return $story;
+    }
+    
+    public function paymentMethod(){
+        $paymentMethod = null;
+        if($this->getTypeUse() == self::TYPE_USE_PAYMENT_METHOD){
+            $paymentMethod = $this->hasOne(PaymentMethod::class, 'id', 'id_object_related');
+        }
+        return $paymentMethod;
     }
     
     public function establishment(){

@@ -41,6 +41,32 @@ class PaymentMethod extends Model {
     ];
     protected $guarded = [];
 
+    
+    public static function getLabelByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_ACTIVE] = 'Activé';
+        $labelByStatus[self::STATUS_DISABLED] = 'Désactivé';
+        $labelByStatus[self::STATUS_ONLY_DISPLAY] = 'Affichage seulement';
+        return $labelByStatus;
+    }
+    
+    public static function getLabelFromStatus($status){
+        $statusLabel = 'Statut non défini';
+        $methodStatusLabels = self::getLabelByStatus();
+        if(isset($methodStatusLabels[$status])){
+            $statusLabel = $methodStatusLabels[$status];
+        }
+        return $statusLabel;
+    }
+    
+    /**
+     * 
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function logo(){
+        return $this->hasOne(EstablishmentMedia::class, 'id', 'id_logo');
+    }
+    
     /**
      * @return mixed
      */

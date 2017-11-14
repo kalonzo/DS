@@ -264,6 +264,12 @@ class FileController {
                     $resolved = true;
                 }
                 break;
+            case \App\Models\Media::TYPE_USE_PAYMENT_METHOD:
+                if($relatedObject instanceof \App\Models\PaymentMethod){
+                    $path .= 'payment_methods/'.$relatedObject->getId().'/';
+                    $resolved = true;
+                }
+                break;
         }
         if(!$resolved){
             $path = null;
@@ -305,6 +311,7 @@ class FileController {
                 }
             break;
             case \App\Models\Media::TYPE_USE_BUSINESS_TYPE:
+            case \App\Models\Media::TYPE_USE_PAYMENT_METHOD:
                 $instance = new \App\Models\EstablishmentMedia();
                 $instance->setId(\App\Utilities\UuidTools::generateUuid());
                 $instance->setPublic(TRUE);

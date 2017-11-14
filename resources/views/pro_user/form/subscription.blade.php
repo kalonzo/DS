@@ -105,10 +105,10 @@
                     $('body').on('click', '.extra-tiles button.btn-select-buyable', function(){
                         var tile = $(this).parentsInclude('.buyable-tile');
                         if(!$(tile).hasClass('selected')){
-                            $(this).next('input[name=id_extra]').attr('checked', 'checked');
+                            $(this).next('input[name="id_extra[]"]').attr('checked', 'checked');
                             $(tile).removeClass('not-selected').addClass('selected');
                         } else {
-                            $(this).next('input[name=id_extra]').removeAttr('checked');
+                            $(this).next('input[name="id_extra[]"]').removeAttr('checked');
                             $(tile).addClass('not-selected').removeClass('selected');
                         }
                     });

@@ -2,15 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Request;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Models\Bill;
 use App\Models\Cart;
+use App\Models\CartLine;
+use App\Models\Contract;
+use App\Models\Establishment;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
+use App\Models\Subscription;
 use App\Models\User;
+use App\Utilities\DbQueryTools;
+use App\Utilities\UuidTools;
 use Exception;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 use Wallee\Sdk\ApiClient;
 use Wallee\Sdk\Model\LineItemCreate;
 use Wallee\Sdk\Model\LineItemType;
+use Wallee\Sdk\Model\TaxCreate;
 use Wallee\Sdk\Model\TransactionPending;
 use Wallee\Sdk\Model\TransactionState;
 use Wallee\Sdk\Service\TransactionService;
@@ -49,8 +59,8 @@ class WalleeController extends Controller {
                     $lineItems = array();
 
                     foreach($cart->cartLines()->get() as $cartLine){
-                        if($cartLine instanceof \App\Models\CartLine){
-                            $tax = new \Wallee\Sdk\Model\TaxCreate();
+                        if($cartLine instanceof CartLine){
+                            $tax = new TaxCreate();
                             $tax->setRate($cartLine->getVatRate());
                             $tax->setTitle("Standard");
                             
@@ -98,7 +108,7 @@ class WalleeController extends Controller {
                     $payment->setIdTransaction($transaction->getId())->save();
                     
                     switch($payment->getMethodConfig()){
-                        case \App\Models\PaymentMethod::METHOD_CONFIG_OFFSITE:
+                        case PaymentMethod::METHOD_CONFIG_OFFSITE:
                             $payment_page = $service->buildPaymentPageUrl(self::MAIN_SPACE_ID, $transaction->getId());
                             if(!empty($payment_page)){
                                SessionController::getInstance()->setIdTransactionProUser($transaction->getId());
@@ -191,35 +201,37 @@ class WalleeController extends Controller {
     }
     
     public function subscriptionSucceed(\Illuminate\Http\Request $request){
-        $idUserUrl = $request->get('id_user');
+        $uuidUserUrl = $request->get('id_user');
+        $idUserUrl = UuidTools::getId($request->get('id_user'));
         $idUserSession = SessionController::getInstance()->getIdPendingUser();
         $idTransactionSession = SessionController::getInstance()->getIdTransactionProUser();
         
         $errors = array();
         
         if(!empty($idTransactionSession) && !empty($idUserSession) && $idUserSession == $idUserUrl){
-            $user = User::findUuid($idUserSession);
+            $user = User::findUuid($uuidUserUrl);
             if(checkModel($user)){
                 $cart = $user->cart()->orderBy('updated_at', 'DESC')->first();
-                if(checkModel($cart) && $cart instanceof App\Models\Cart){
+                if(checkModel($cart) && $cart instanceof Cart){
                     $payment = $cart->payments()->orderBy('updated_at', 'DESC')->first();
                     if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUserSession && $payment->getIdTransaction() === $idTransactionSession){
                         $payment->setStatus(Payment::STATUS_AUTHORIZED)->save();
                         $bill = $cart->bills()->first();
-                        if(checkModel($bill) && $bill instanceof \App\Models\Bill){
-                            $bill->setStatus(\App\Models\Bill::STATUS_PAID)->save();
+                        if(checkModel($bill) && $bill instanceof Bill){
+                            $bill->setStatus(Bill::STATUS_PAID)->save();
                             $contract = $bill->contract()->first();
-                            if(checkModel($contract) && $contract instanceof \App\Models\Contract){
-                                $contract->setStatus(\App\Models\Contract::STATUS_ACTIVE)->save();
-                                $subscription = \App\Models\Subscription::whereRaw(\App\Utilities\DbQueryTools::genSqlForWhereRawUuidConstraint('id_bill', $bill->getUuid()))->first();
-                                if(checkModel($subscription) && $subscription instanceof \App\Models\Subscription){
-                                    $subscription->setStatus(\App\Models\Subscription::STATUS_ACTIVE)->save();
+                            if(checkModel($contract) && $contract instanceof Contract){
+                                $contract->setStatus(Contract::STATUS_ACTIVE)->save();
+//                                $subscription = Subscription::whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_bill', $bill->getUuid()))->first();
+                                $subscription = $bill->subscriptions()->first();
+                                if(checkModel($subscription) && $subscription instanceof Subscription){
+                                    $subscription->setStatus(Subscription::STATUS_ACTIVE)->save();
                                     $establishment = $subscription->establishment()->first();
-                                    if(checkModel($establishment) && $establishment instanceof \App\Models\Establishment){
+                                    if(checkModel($establishment) && $establishment instanceof Establishment){
                                         $establishment->setBusinessStatus(25)->save();
                                         
-                                        $registerController = \Illuminate\Support\Facades\App::make(\App\Http\Controllers\Auth\RegisterController::class);
-                                        if($registerController instanceof Auth\RegisterController){
+                                        $registerController = App::make(RegisterController::class);
+                                        if($registerController instanceof RegisterController){
                                             $registerController->registerUserPro($user);
                                         }
                                     } else {
@@ -253,13 +265,13 @@ class WalleeController extends Controller {
                     "L'utilisateur a bien été créé. Un email de confirmation lui a été envoyé avec un lien d'activation qui "
                     . " ouvrira son espace client."
                 );
-                \Illuminate\Support\Facades\Request::session()->flash('error', implode('; ', $errors));
-                return redirect(url("/edit/establishment/".$establishment->getId()));
+                return redirect(url("/edit/establishment/".$establishment->getUuid()));
             } else {
                 \Illuminate\Support\Facades\Request::session()->flash('status', 
                     "L'utilisateur a bien été créé et son paiement a été enregistré. Toutefois des erreurs ont été rencontrées et l'email d'activation n'a"
                     . " pu lui être envoyé. Veuillez contrôler l'état de l'inscription."
                 );
+                \Illuminate\Support\Facades\Request::session()->flash('error', implode('; ', $errors));
                 return redirect(url("/admin"));
             }
         } else {
@@ -283,7 +295,7 @@ class WalleeController extends Controller {
             $user = User::findUuid($idUserSession);
             if(checkModel($user)){
                 $cart = $user->cart()->orderBy('updated_at', 'DESC')->first();
-                if(checkModel($cart) && $cart instanceof App\Models\Cart){
+                if(checkModel($cart) && $cart instanceof Cart){
                     $payment = $cart->payments()->orderBy('updated_at', 'DESC')->first();
                     if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUserSession && $payment->getIdTransaction() === $idTransactionSession){
                         $payment->setStatus(Payment::STATUS_DENIED)->save();

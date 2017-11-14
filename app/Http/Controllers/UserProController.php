@@ -175,7 +175,7 @@ class UserProController extends Controller {
                         }
                         
                         $cart->updateAmounts();
-
+                        
                         $payment = $cart->getOrCreatePayment();
                         if(checkModel($payment)){
                             $createdObjects[] = $payment;
@@ -292,20 +292,6 @@ class UserProController extends Controller {
                                 ]);
                                 $createdObjects[] = $address;
                                 
-                                $subscription = \App\Models\Subscription::create([
-                                    'id' => UuidTools::generateUuid(),
-                                    'status' => $subscriptionStatus,
-                                    'priceTTC' => $subscriptionItem->getPriceTTC(),
-                                    'start_date' => $startDateFormatted,
-                                    'end_date' => $endDateFormatted,
-                                    'id_establishment' => 0,
-                                    'id_user' => $user->getId(),
-                                    'id_bill' => $bill->getId(),
-                                    'id_buyable_item' => $subscriptionItem->getId(),
-                                    'duration' => $duration
-                                ]);
-                                $createdObjects[] = $subscription;
-                                
                                 if(!checkModelId($uuidEstablishment)){
                                     $establishment = Establishment::create([
                                         'id' => UuidTools::generateUuid(),
@@ -319,6 +305,20 @@ class UserProController extends Controller {
                                     ]);
                                     $createdObjects[] = $establishment;
                                 }
+                                
+                                $subscription = \App\Models\Subscription::create([
+                                    'id' => UuidTools::generateUuid(),
+                                    'status' => $subscriptionStatus,
+                                    'priceTTC' => $subscriptionItem->getPriceTTC(),
+                                    'start_date' => $startDateFormatted,
+                                    'end_date' => $endDateFormatted,
+                                    'id_establishment' => $establishment->getId(),
+                                    'id_user' => $user->getId(),
+                                    'id_bill' => $bill->getId(),
+                                    'id_buyable_item' => $subscriptionItem->getId(),
+                                    'duration' => $duration
+                                ]);
+                                $createdObjects[] = $subscription;
                                 
                                 $user->setStatus(User::STATUS_CREATED)->save();
                                 
@@ -439,8 +439,10 @@ class UserProController extends Controller {
         $paymentMethods = array();
         $methodsConfig = array();
         $paymentMethodsData = PaymentMethod::
-                whereIn('id', $availableMethods)
-                ->orderBy('name')
+                select([PaymentMethod::TABLENAME.'.*', \App\Models\EstablishmentMedia::TABLENAME.'.local_path'])
+                ->leftJoin(\App\Models\EstablishmentMedia::TABLENAME, PaymentMethod::TABLENAME.'.id_logo', '=', \App\Models\EstablishmentMedia::TABLENAME.'.id')
+                ->whereIn(PaymentMethod::TABLENAME.'.id', $availableMethods)
+                ->orderBy(PaymentMethod::TABLENAME.'.name')
                 ->get();
         foreach ($paymentMethodsData as $paymentMethod) {
             if(empty($paymentMethod->getMethodConfig())){

@@ -76,7 +76,7 @@ class DtUserProAdmin extends DatatableFeeder {
                 ->leftJoin(\App\Models\Establishment::TABLENAME, \App\Models\Establishment::TABLENAME.'.id_user_owner', '=', User::TABLENAME . '.id')
                 ->where('type', '=', User::TYPE_USER_PRO)
         ;
-        $userQuery->orderBy('designation', 'asc');
+        $userQuery->orderBy(User::TABLENAME . '.updated_at', 'desc');
         return $userQuery;
     }
 
