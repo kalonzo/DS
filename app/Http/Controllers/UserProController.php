@@ -299,6 +299,7 @@ class UserProController extends Controller {
                                     'id_cart' => $cart->getId(),
                                     'id_contract' => $contract->getId()
                                 ]);
+                                $bill->generateNumber();
                                 $createdObjects[] = $bill;
                                 $payment->setIdBill($bill->getId())->setStatus($paymentStatus)->save();
                                 $cart->setStatus(\App\Models\Cart::STATUS_BILL)->save();
