@@ -626,6 +626,30 @@ a.link-disabled{
     display: none;
 }
 
+.status-ok, .status-warning, .status-danger, .status-disabled, .status-info{
+    font-weight: bold;
+}
+
+.status-ok{
+    color: $success-color;
+}
+
+.status-warning{
+    color: $warning-color;
+}
+
+.status-info{
+    color: $info-color;
+}
+
+.status-danger{
+    color: $danger-color;
+}
+
+.status-disabled{
+    color: $disabled-color;
+}
+
 /***************** Glyphicon spinner *****************************************/
 .glyphicon.fast-right-spinner {
     -webkit-animation: glyphicon-spin-r 1s infinite linear;

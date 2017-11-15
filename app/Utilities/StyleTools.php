@@ -72,4 +72,10 @@ class StyleTools {
         }
         return '#'.$resultColorRedHexa.$resultColorGreenHexa.$resultColorBlueHexa;
     }
+    
+    public static function buildColoredSpan($content, $class){
+        return "<span class='".$class."'>"
+                    .$content
+                ."</span>";
+    }
 }

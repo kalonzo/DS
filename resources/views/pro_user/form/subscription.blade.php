@@ -39,7 +39,7 @@
                                 </div>
                                 <div class="buyable-body" style="border-color: {{ $subscription->getColor() }};">
                                     <div class="col-xs-12">
-                                        <h3>{{ formatPrice($subscription->getNetPrice(), 'CHF') }}</h3>
+                                        <h3>{{ formatPrice($subscription->getNetPrice(), \App\Models\Currency::getCurrencyLabel($subscription->getIdCurrency())) }}</h3>
                                     </div>
                                      <div class="tile-footer">
                                         <button type="button" class="btn btn-primary btn-select-buyable"

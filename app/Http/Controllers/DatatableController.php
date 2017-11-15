@@ -64,6 +64,10 @@ class DatatableController {
                 $dtFeeder = new \App\Datatables\DtPaymentMethodAdmin();
                 $dtFeeder->run();
                 break;
+            case \App\Datatables\DtSubscriptionAdmin::DT_ID:
+                $dtFeeder = new \App\Datatables\DtSubscriptionAdmin();
+                $dtFeeder->run();
+                break;
         }
         return $dtFeeder;
     }

@@ -197,28 +197,46 @@ class UserProController extends Controller {
                             $billStatus = null;
                             $contractStatus = \App\Models\Contract::STATUS_PROCESSING;
                             $businessStatus = 0;
+                            $paymentStatus = \App\Models\Payment::STATUS_START_CHECKOUT;
                             switch($idPaymentMethod){
                                 case PaymentMethod::METHOD_30_DAYS_BILL:
                                     $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
                                     $billStatus = \App\Models\Bill::STATUS_CREATED;
                                     $contractStatus = \App\Models\Contract::STATUS_ACTIVE;
                                     $businessStatus = 25;
+                                    $paymentStatus = \App\Models\Payment::STATUS_TO_COLLECT;
                                     break;
-                                case PaymentMethod::METHOD_PACKAGE_INCLUDED:
-                                case PaymentMethod::METHOD_FREE_PASS:
                                 case PaymentMethod::METHOD_DELAYED_PAYMENT:
                                     $jsonResponse['relocateMode'] = 1;
                                     $jsonResponse['location'] = '/admin';
                                     unset($jsonResponse['triggerMode']);
                                     $businessStatus = 25;
-                                    if($idPaymentMethod === PaymentMethod::METHOD_FREE_PASS){
-                                        $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
-                                        $billStatus = \App\Models\Bill::STATUS_PAID;
-                                        $contractStatus = \App\Models\Contract::STATUS_ACTIVE;
-                                    } else {
-                                        $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
-                                        $billStatus = \App\Models\Bill::STATUS_CREATED;
-                                    }
+                                    
+                                    $subscriptionStatus = \App\Models\Subscription::STATUS_WAITING_4_PAYMENT;
+                                    $billStatus = \App\Models\Bill::STATUS_CREATED;
+                                    $paymentStatus = \App\Models\Payment::STATUS_TO_COLLECT;
+                                    break;
+                                case PaymentMethod::METHOD_PACKAGE_INCLUDED:
+                                    $jsonResponse['relocateMode'] = 1;
+                                    $jsonResponse['location'] = '/admin';
+                                    unset($jsonResponse['triggerMode']);
+                                    
+                                    $businessStatus = 25;
+                                    $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
+                                    $billStatus = \App\Models\Bill::STATUS_PAID;
+                                    $contractStatus = \App\Models\Contract::STATUS_ACTIVE;
+                                    $paymentStatus = \App\Models\Payment::STATUS_COMPLETED;
+                                    break;
+                                case PaymentMethod::METHOD_FREE_PASS:
+                                    $jsonResponse['relocateMode'] = 1;
+                                    $jsonResponse['location'] = '/admin';
+                                    unset($jsonResponse['triggerMode']);
+                                    
+                                    $businessStatus = 25;
+                                    $subscriptionStatus = \App\Models\Subscription::STATUS_ACTIVE;
+                                    $billStatus = \App\Models\Bill::STATUS_PAID;
+                                    $contractStatus = \App\Models\Contract::STATUS_ACTIVE;
+                                    $paymentStatus = \App\Models\Payment::STATUS_COMPLETED;
                                     break;
                                 default :
                                     $walleeController = App::make(WalleeController::class);
@@ -238,8 +256,23 @@ class UserProController extends Controller {
                                 $startDate = new DateTime();
                                 $startDateFormatted = $startDate->format('Y-m-d H:i:s');
                                 
-                                $endDate = date_add($startDate, new DateInterval('P'.$duration.'M'));
+                                $endDate = date_add($startDate, new DateInterval('P'.$duration.'Y'));
+                                $endDate = date_sub($endDate, new DateInterval('P1D'));
                                 $endDateFormatted = $endDate->format('Y-m-d H:i:s');
+                                
+                                if(!checkModelId($uuidEstablishment)){
+                                    $establishment = Establishment::create([
+                                        'id' => UuidTools::generateUuid(),
+                                        'status' => Establishment::STATUS_INCOMPLETE,
+                                        'id_user_owner' => $user->getId(),
+                                        'id_address' => 0,
+                                        'id_business_type' => $businessType,
+                                        'business_status' => $businessStatus,
+                                        'slug' => '',
+                                        'url_id' => 0,
+                                    ]);
+                                    $createdObjects[] = $establishment;
+                                }
                                 
                                 $contract = \App\Models\Contract::create([
                                     'id' => UuidTools::generateUuid(),
@@ -247,7 +280,7 @@ class UserProController extends Controller {
                                     'start_date' => $startDateFormatted,
                                     'end_date' => $endDateFormatted,
                                     'id_user_in_charge' => 0,
-                                    'id_establishment_customer' => 0,
+                                    'id_establishment_customer' => $establishment->getId(),
                                     'id_user_customer' => $user->getId(),
                                     'type_business' => $businessType
                                 ]);
@@ -267,7 +300,7 @@ class UserProController extends Controller {
                                     'id_contract' => $contract->getId()
                                 ]);
                                 $createdObjects[] = $bill;
-                                $payment->setIdBill($bill->getId())->save();
+                                $payment->setIdBill($bill->getId())->setStatus($paymentStatus)->save();
                                 $cart->setStatus(\App\Models\Cart::STATUS_BILL)->save();
                                 
                                 $callNumbers = $this->feedCallNumbers($request, $bill, 'bill');
@@ -291,20 +324,6 @@ class UserProController extends Controller {
                                     'id_location_index' => 0,
                                 ]);
                                 $createdObjects[] = $address;
-                                
-                                if(!checkModelId($uuidEstablishment)){
-                                    $establishment = Establishment::create([
-                                        'id' => UuidTools::generateUuid(),
-                                        'status' => Establishment::STATUS_INCOMPLETE,
-                                        'id_user_owner' => $user->getId(),
-                                        'id_address' => 0,
-                                        'id_business_type' => $businessType,
-                                        'business_status' => $businessStatus,
-                                        'slug' => '',
-                                        'url_id' => 0,
-                                    ]);
-                                    $createdObjects[] = $establishment;
-                                }
                                 
                                 $subscription = \App\Models\Subscription::create([
                                     'id' => UuidTools::generateUuid(),

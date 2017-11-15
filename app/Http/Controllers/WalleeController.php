@@ -215,7 +215,7 @@ class WalleeController extends Controller {
                 if(checkModel($cart) && $cart instanceof Cart){
                     $payment = $cart->payments()->orderBy('updated_at', 'DESC')->first();
                     if(checkModel($payment) && $payment instanceof Payment && $payment->getIdUser() === $idUserSession && $payment->getIdTransaction() === $idTransactionSession){
-                        $payment->setStatus(Payment::STATUS_AUTHORIZED)->save();
+                        $payment->setStatus(Payment::STATUS_COMPLETED)->save();
                         $bill = $cart->bills()->first();
                         if(checkModel($bill) && $bill instanceof Bill){
                             $bill->setStatus(Bill::STATUS_PAID)->save();

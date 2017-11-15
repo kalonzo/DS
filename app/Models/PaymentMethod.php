@@ -42,6 +42,30 @@ class PaymentMethod extends Model {
     protected $guarded = [];
 
     
+    public static function getLabelByMethod(){
+        $labelByMethod = array();
+        $labelByMethod[self::METHOD_CB] = 'Carte bancaire';
+        $labelByMethod[self::METHOD_CB_MASTERCARD] = 'Mastercard';
+        $labelByMethod[self::METHOD_CB_VISA] = 'Visa';
+        $labelByMethod[self::METHOD_CB_POSTFINANCE] = 'PostFinance Card';
+        $labelByMethod[self::METHOD_CB_AMEX] = 'American Express';
+        $labelByMethod[self::METHOD_CB_PAYPAL] = 'Paypal';
+        $labelByMethod[self::METHOD_30_DAYS_BILL] = 'Facture à 30 jours';
+        $labelByMethod[self::METHOD_PACKAGE_INCLUDED] = 'Inclus dans une offre commercial';
+        $labelByMethod[self::METHOD_FREE_PASS] = 'Gratuit';
+        $labelByMethod[self::METHOD_DELAYED_PAYMENT] = 'Paiement à venir';
+        return $labelByMethod;
+    }
+    
+    public static function getLabelFromMethod($method){
+        $label = 'Méthode non définie';
+        $businessTypeLabels = self::getLabelByMethod();
+        if(isset($businessTypeLabels[$method])){
+            $label = $businessTypeLabels[$method];
+        }
+        return $label;
+    }
+    
     public static function getLabelByStatus(){
         $labelByStatus = array();
         $labelByStatus[self::STATUS_ACTIVE] = 'Activé';

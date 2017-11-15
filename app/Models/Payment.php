@@ -17,6 +17,7 @@ class Payment extends Model {
     const STATUS_AUTHORIZED = 5; // Transaction authorized
     const STATUS_DENIED = 6; // Transaction denied
     const STATUS_COMPLETED = 7; // Transaction completed
+    const STATUS_TO_COLLECT = 8; // Transaction completed
     
     public $timestamps = true;
     protected $fillable = [
@@ -39,6 +40,60 @@ class Payment extends Model {
         ];
         return $statuses;
     }
+    
+    
+    public static function getLabelByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_START_CHECKOUT] = 'Transaction initiée';
+        $labelByStatus[self::STATUS_ERROR_CHECKOUT] = 'Erreur en cours de transaction';
+        $labelByStatus[self::STATUS_VALID_CHECKOUT] = "Transaction valide";
+        $labelByStatus[self::STATUS_PROCESSING] = "Transaction en attente d'autorisation";
+        $labelByStatus[self::STATUS_AUTHORIZED] = 'Transaction autorisée';
+        $labelByStatus[self::STATUS_DENIED] = 'Transaction annulée';
+        $labelByStatus[self::STATUS_COMPLETED] = 'Paiement reçu';
+        $labelByStatus[self::STATUS_TO_COLLECT] = 'Paiement à percevoir';
+        return $labelByStatus;
+    }
+    
+    public static function getColorClassByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_START_CHECKOUT] = 'status-info';
+        $labelByStatus[self::STATUS_ERROR_CHECKOUT] = 'status-danger';
+        $labelByStatus[self::STATUS_VALID_CHECKOUT] = 'status-info';
+        $labelByStatus[self::STATUS_PROCESSING] = 'status-warning';
+        $labelByStatus[self::STATUS_AUTHORIZED] = 'status-warning';
+        $labelByStatus[self::STATUS_DENIED] = 'status-danger';
+        $labelByStatus[self::STATUS_COMPLETED] = 'status-ok';
+        $labelByStatus[self::STATUS_TO_COLLECT] = 'status-info';
+        return $labelByStatus;
+    }
+    
+    public static function getLabelFromStatus($status){
+        $statusLabel = 'Statut non défini';
+        $statusLabelList = self::getLabelByStatus();
+        if(isset($statusLabelList[$status])){
+            $statusLabel = $statusLabelList[$status];
+        }
+        return $statusLabel;
+    }
+    
+    public static function getColorClassFromStatus($status){
+        $colorClass = '';
+        $colorClassList = self::getColorClassByStatus();
+        if(isset($colorClassList[$status])){
+            $colorClass = $colorClassList[$status];
+        }
+        return $colorClass;
+    }
+    
+    public function getStatusLabel(){
+        return self::getLabelFromStatus($this->getStatus());
+    }
+    
+    public function getStatusColorClass(){
+        return self::getColorClassFromStatus($this->getStatus());
+    }
+    
     /**
      * @return mixed
      */

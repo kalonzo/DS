@@ -12,6 +12,9 @@ class Subscription extends Model {
     
     const STATUS_ACTIVE = 1;
     const STATUS_WAITING_4_PAYMENT = 2;
+    const STATUS_UNACTIVE = 3;
+    const STATUS_CANCELED = 4;
+    const STATUS_EXPIRED = 5;
     
     public $timestamps = true;
     protected $fillable = [
@@ -27,6 +30,53 @@ class Subscription extends Model {
         'duration'
     ];
     protected $guarded = [];
+    
+    
+    public static function getLabelByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_ACTIVE] = 'Activé';
+        $labelByStatus[self::STATUS_WAITING_4_PAYMENT] = 'Actif, en attente de paiement';
+        $labelByStatus[self::STATUS_UNACTIVE] = 'Désactivé';
+        $labelByStatus[self::STATUS_CANCELED] = 'Annulé';
+        $labelByStatus[self::STATUS_EXPIRED] = 'Expiré';
+        return $labelByStatus;
+    }
+    
+    public static function getColorClassByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_ACTIVE] = 'status-ok';
+        $labelByStatus[self::STATUS_WAITING_4_PAYMENT] = 'status-warning';
+        $labelByStatus[self::STATUS_UNACTIVE] = 'status-disabled';
+        $labelByStatus[self::STATUS_CANCELED] = 'status-danger';
+        $labelByStatus[self::STATUS_EXPIRED] = 'status-info';
+        return $labelByStatus;
+    }
+    
+    public static function getLabelFromStatus($status){
+        $statusLabel = 'Statut non défini';
+        $subscriptionStatusLabels = self::getLabelByStatus();
+        if(isset($subscriptionStatusLabels[$status])){
+            $statusLabel = $subscriptionStatusLabels[$status];
+        }
+        return $statusLabel;
+    }
+    
+    public static function getColorClassFromStatus($status){
+        $colorClass = '';
+        $colorClassList = self::getColorClassByStatus();
+        if(isset($colorClassList[$status])){
+            $colorClass = $colorClassList[$status];
+        }
+        return $colorClass;
+    }
+    
+    public function getStatusLabel(){
+        return self::getLabelFromStatus($this->getStatus());
+    }
+    
+    public function getStatusColorClass(){
+        return self::getColorClassFromStatus($this->getStatus());
+    }
     
     /**
      * 

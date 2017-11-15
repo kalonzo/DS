@@ -6,9 +6,14 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="Author" content="Dinerscope">
+        <meta name="robots" content="index,follow">
 
-        <title>Dinerscope</title>
+        <meta name="Description" content="@if(isset($meta['description'])) {{ $meta['description'] }} @endif">
+        <meta name="Keywords" content="@if(isset($meta['keywords'])) {{ $meta['keywords'] }} @endif">
 
+        <title>@if(!isset($meta['title'])) Dinerscope @else {{ $meta['title'] }} @endif</title>
+        
         <!-- Fonts -->
         <link href="/css/app.css" rel="stylesheet">
         <link href="/css/sticky-footer.css" rel="stylesheet">

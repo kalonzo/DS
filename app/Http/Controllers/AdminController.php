@@ -20,10 +20,16 @@ class AdminController extends Controller {
 
     public static function routes() {
         // BusinessCategory
-        Route::get('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@edit')
+        Route::get('/admin/'.BusinessCategory::TABLENAME.'/{businessCategory}', 'BusinessCategoryController@edit')
                 ->middleware('auth');
-        Route::put('/admin/business_categories/{businessCategory}', 'BusinessCategoryController@update')
+        Route::put('/admin/'.BusinessCategory::TABLENAME.'/{businessCategory}', 'BusinessCategoryController@update')
                 ->middleware('auth');
+        // Subscription
+        Route::get('/admin/'. \App\Models\Subscription::TABLENAME.'/{subscription}', 'SubscriptionController@edit')
+                ->middleware('auth');
+        Route::put('/admin/'.\App\Models\Subscription::TABLENAME.'/{subscription}', 'SubscriptionController@update')
+                ->middleware('auth');
+        
         //destroy        
         Route::get('/admin/delete/{table_name}/{id}', function($table_name, $id) {
             $controllerClass = null;
@@ -242,6 +248,8 @@ class AdminController extends Controller {
         $userDatatable = DatatableController::buildDatatable(\App\Datatables\DtUserAdmin::DT_ID);
         
         $paymentMethodDatatable = DatatableController::buildDatatable(\App\Datatables\DtPaymentMethodAdmin::DT_ID);
+        
+        $subscriptionDatatable = DatatableController::buildDatatable(\App\Datatables\DtSubscriptionAdmin::DT_ID);
 
         $view = View::make('admin.admin.dashboard')
                 ->with($etsDatatableFeeder->getId(), $etsDatatableFeeder->getViewParamsArray())
@@ -254,6 +262,7 @@ class AdminController extends Controller {
                 ->with($mediaModerationDatatable->getId(), $mediaModerationDatatable->getViewParamsArray())
                 ->with($userDatatable->getId(), $userDatatable->getViewParamsArray())
                 ->with($paymentMethodDatatable->getId(), $paymentMethodDatatable->getViewParamsArray())
+                ->with($subscriptionDatatable->getId(), $subscriptionDatatable->getViewParamsArray())
         ;
         return $view;
     }

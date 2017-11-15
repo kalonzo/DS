@@ -95,6 +95,9 @@ class EstablishmentController extends Controller {
             $data['phone_number'] = $callNumber->getDisplayable();
         }
         $data['website'] = $establishment->getSiteUrl();
+        
+        $meta = array();
+        $meta['title'] = "Dinerscope - ".$establishment->getName();
 
         switch ($page) {
             case 'menu':
@@ -364,7 +367,7 @@ class EstablishmentController extends Controller {
         $formData = StorageHelper::getInstance()->get('show_establishment.form_data');
         
         $view = View::make('establishment.restaurant.show')->with('establishment', $establishment)->with('data', $data)->with('page', $page)->with('form_data', $formData)
-                ->with('footerHidden', true);;
+                ->with('footerHidden', true)->with('meta', $meta);
 
         return $view;
     }

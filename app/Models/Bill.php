@@ -21,6 +21,7 @@ class Bill extends Model implements GlobalObjectManageable{
     protected $fillable = [
         'status',
         'title',
+        'number',
         'lastname',
         'firstname',
         'company_name',
@@ -35,6 +36,14 @@ class Bill extends Model implements GlobalObjectManageable{
     ];
     protected $guarded = [];
 
+    public function generateNumber($save = true){
+        $date = new \DateTime();
+        $number = $date->format('YmdHis').rand(10, 99);
+        $this->setNumber($number);
+        if($save){
+            $this->save();
+        }
+    }
     
     /**
      * 
@@ -71,6 +80,13 @@ class Bill extends Model implements GlobalObjectManageable{
      */
     public function subscriptions(){
         return $this->hasMany(Subscription::class, 'id_bill', 'id');
+    }
+    /**
+     * 
+     * @return \App\Database\Eloquent\Builder
+     */
+    public function payments(){
+        return $this->hasMany(Payment::class, 'id_bill', 'id');
     }
     
     /**
@@ -274,5 +290,19 @@ class Bill extends Model implements GlobalObjectManageable{
         return $this;
     }
 
-
+    /**
+     * @return mixed
+     */
+    public function getNumber() {
+        return $this->number;
+    }
+    
+    /**
+     * @param $value
+     * @return $this
+     */
+    public function setNumber($value) {
+        $this->number = $value;
+        return $this;
+    }
 }

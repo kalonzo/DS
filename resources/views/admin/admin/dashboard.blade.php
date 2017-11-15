@@ -23,6 +23,10 @@
                                     'tabledata' => $dt_user_pro_admin])
 
     @endcomponent
+    
+    @component('components.tile', ['title' => 'Abonnements', 'tabledata' => $dt_subscription_admin])
+
+    @endcomponent
 
     @component('components.tile', ['title' => 'Modération des médias (établissements)', 'tabledata' => $dt_establishment_media_moderation])
 

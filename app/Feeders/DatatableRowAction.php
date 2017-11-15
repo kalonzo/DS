@@ -12,6 +12,7 @@ class DatatableRowAction {
     const ACTION_REMOVE = 2;
     const ACTION_VALID = 3;
     const ACTION_DENY = 4;    
+    const ACTION_SEE = 5;    
     
     protected $type;
     protected $icon;
@@ -42,6 +43,11 @@ class DatatableRowAction {
                 $action->setType($actionType);
                 $action->setIcon('glyphicon-remove-circle');
                 $action->setTitle('Refuser');
+                break;
+            case self::ACTION_SEE:
+                $action->setType($actionType);
+                $action->setIcon('glyphicon-eye-open');
+                $action->setTitle('Voir en détail');
                 break;
         }
         return $action;

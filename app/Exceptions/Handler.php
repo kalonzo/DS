@@ -75,7 +75,7 @@ class Handler extends ExceptionHandler
     {   
         if($exception instanceof \Illuminate\Session\TokenMismatchException){
             if($request->ajax()){
-                return response()->json(['success' => 0, 'error' => "La durée maximale d'inactivité de cette page a éré dépassée. "
+                return response()->json(['success' => 0, 'error' => "La durée maximale d'inactivité de cette page a été dépassée. "
                     . "Merci d'actualiser la page pour poursuivre votre navigation."], 500);
             } else {
                 return response()->redirectToIntended();

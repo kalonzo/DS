@@ -75,6 +75,29 @@ class Establishment extends Model implements GlobalObjectManageable{
         return $statusLabel;
     }
     
+    
+    public static function getColorClassByStatus(){
+        $labelByStatus = array();
+        $labelByStatus[self::STATUS_ACTIVE] = 'status-ok';
+        $labelByStatus[self::STATUS_INCOMPLETE] = 'status-danger';
+        $labelByStatus[self::STATUS_TO_LOCALIZE] = 'status-danger';
+        $labelByStatus[self::STATUS_TO_VALID] = 'status-warning';
+        return $labelByStatus;
+    }
+        
+    public static function getColorClassFromStatus($status){
+        $colorClass = '';
+        $colorClassList = self::getColorClassByStatus();
+        if(isset($colorClassList[$status])){
+            $colorClass = $colorClassList[$status];
+        }
+        return $colorClass;
+    }
+        
+    public function getStatusColorClass(){
+        return self::getColorClassFromStatus($this->getStatus());
+    }
+    
     public function getBusinessTypeLabel(){
         $businessLabel = 'Type non défini';
         $businessTypeLabels = BusinessType::getLabelByType();
@@ -82,6 +105,10 @@ class Establishment extends Model implements GlobalObjectManageable{
             $businessLabel = $businessTypeLabels[$this->getIdBusinessType()];
         }
         return $businessLabel;
+    }
+    
+    public function getStatusLabel(){
+        return self::getLabelFromStatus($this->getStatus());
     }
     
     public function getDefaultPicture($validated = true){
