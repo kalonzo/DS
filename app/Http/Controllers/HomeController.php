@@ -145,7 +145,7 @@ class HomeController extends Controller {
                 $promotionsQuery =  with(clone $establishmentsQueryWithoutDistance)
                                     ->addSelect(Promotion::TABLENAME.'.name as promo_name')
                                     ->join(Promotion::TABLENAME, Establishment::TABLENAME . '.id', '=', Promotion::TABLENAME . '.id_establishment')
-                                    ->whereRaw(Promotion::TABLENAME . '.end_date > NOW()')
+                                    ->whereRaw(Promotion::TABLENAME.'.end_date >= NOW()')->whereRaw(Promotion::TABLENAME.'.start_date <= NOW()')
                                     ;
                 $geolocLimitSuccess = DbQueryTools::setGeolocLimits($promotionsQuery, $userLatLng, $distance, Establishment::TABLENAME);
                 $nbResults = $promotionsQuery->limit(24)->count();

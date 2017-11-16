@@ -2027,7 +2027,7 @@ class EstablishmentController extends Controller {
             foreach($promotions as $promotion){
                 if(!isset($etsPromotions[$promotion->ets_uuid])){
                     $etsPromotions[$promotion->ets_uuid]['count'] = 1;
-                    $etsPromotions[$promotion->ets_uuid]['label'] = $promotion->name.' '.$promotion->name;
+                    $etsPromotions[$promotion->ets_uuid]['label'] = $promotion->name;
                 } else {
                     $etsPromotions[$promotion->ets_uuid]['count']++;
                 }

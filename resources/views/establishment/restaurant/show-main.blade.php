@@ -223,9 +223,12 @@ if($videoQuery->exists()){
                                         <h4 class="panel-title">{{ $promo['name'] }}</h4>
                                         <div class="event-date">
                                             <?php
+                                            if(!empty($promo['end_date'])){
+                                                echo "du ";
+                                            }
                                             echo formatDate($promo['start_date'], IntlDateFormatter::LONG);
                                             if(!empty($promo['end_date'])){
-                                                echo ' - '.formatDate($promo['end_date'], IntlDateFormatter::LONG);
+                                                echo ' au '.formatDate($promo['end_date'], IntlDateFormatter::LONG);
                                             }
                                             ?>
                                         </div>
