@@ -43,7 +43,6 @@
                     <ul class="nav navbar-nav navbar-right">
                         <!-- Authentication Links -->
                         
-                        @if (envDev())
                         @if (Auth::guest())
                             <li><a href="{{ route('login') }}">Login</a></li>
                             <li><a href="{{ route('register') }}">Register</a></li>
@@ -67,7 +66,6 @@
                                     </li>
                                 </ul>
                             </li>
-                        @endif
                         @endif
                     </ul>
                 </div>

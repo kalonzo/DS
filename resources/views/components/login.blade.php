@@ -34,7 +34,6 @@
             </div>
         </form>
     </div>
-    @if(envDev())
     <div class="row login-register-section">
         <div class="col-xs-12 text-center">
             <h3>Pas encore inscrit ?</h3>
@@ -64,7 +63,6 @@
         </div>
         <br class="cleaner"/>
     </div>
-    @endif
     @else
     <ul class="logout-section">
         <li>
