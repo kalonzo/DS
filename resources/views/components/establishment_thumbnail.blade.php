@@ -1,13 +1,14 @@
-<?php
-
-?>
-<div class="no-gutter ets-thumbnail @if(isset($establishment['promo_name'])) with-promo @endif @if(isset($establishment['logo_img'])) with-logo @endif" 
+<div class="no-gutter ets-thumbnail @if(isset($establishment['logo_img'])) with-logo @endif" 
      data-lat='{{ $establishment['latitude'] }}' data-lng='{{ $establishment['longitude'] }}' data-name="{{ $establishment['name'] }}">
     <a href="@if(isset($establishment['url'])) {{ $establishment['url'] }} @else javascript:void(0); @endif" @if(!isset($establishment['url'])) class="link-disabled" @endif>
         @if(isset($establishment['logo_img']))
         <div class="thumbnail-logo-corner" title="Cliquer ici pour afficher plus d'informations" data-title-toggle="Cliquer ici pour retourner à la vignette"> 
-            <div class="thumbnail-logo" style="@if(isset($establishment['background_color'])) background-color: {{ $establishment['background_color'] }}; @endif
-                 background-image: url('{{ asset($establishment['logo_img']) }}');">
+            <div class="thumbnail-logo">
+                <div class="logo-picture" style="@if(isset($establishment['background_color'])) background-color: {{ $establishment['background_color'] }}; @endif">
+                    <div class="logo-picture-cell">
+                        <img src="{{ asset($establishment['logo_img']) }}" alt="Logo" class=""/>
+                    </div>
+                </div>
             </div>
             <div class="thumbnail-corner"></div>
         </div>
@@ -24,6 +25,12 @@
                             <img src="{{ asset("/img/DS-LOGO-BLANC.svg") }}" class="default-bg-ds" alt="Thumbnail"/>   
                         @endif
                     </div>
+                    @if(isset($establishment['promo']))
+                    <div class="thumbnail-promo-indicator" title='{{ $establishment['promo']['count'] }} promotions en cours'>
+                        <img class="img-icon" src="/img/icons/discount-icon.png" alt="%"/>
+                        <span>{{ $establishment['promo']['count'] }}</span>
+                    </div>
+                    @endif
                     <div class="thumbnail-distance @if(!isset($establishment['thumbnail_img']) || empty($establishment['thumbnail_img'])) bordered @endif">
                         {{ $establishment['raw_distance'] }}
                     </div>
@@ -40,17 +47,26 @@
                     {{$establishment['city']}} - 
                     @if(isset($establishment['country_iso'])) {{$establishment['country_iso']}} @else {{$establishment['country']}} @endif
                 </div>
-                @if(isset($establishment['promo_name']))
-                <div class="thumbnail-promo col-xs-12 no-gutter">
-                    {{$establishment['promo_name']}}
-                </div>
-                @endif
                 <div class="cleaner"></div>
             </div>
         </div>
        <div class="thumbnail-under-layer">
             <div class="logo-picture" style="@if(isset($establishment['background_color'])) background-color: {{ $establishment['background_color'] }}; @endif">
-                <img src="{{ asset($establishment['logo_img']) }}" alt="Logo" class=""/>
+                <div class="logo-picture-cell">
+                    <img src="{{ asset($establishment['logo_img']) }}" alt="Logo" class=""/>
+                </div>
+                @if(isset($establishment['promo']))
+                <div class="thumbnail-promo-container">
+                    <div class="thumbnail-promo">
+                        {{ $establishment['promo']['label'] }}
+                    </div>
+                    @if($establishment['promo']['count'] > 1)
+                    <div class="thumbnail-promo-count" title="{{ $establishment['promo']['count']-1 }} autres promotion(s) en cours">
+                        +{{ $establishment['promo']['count']-1 }}
+                    </div>
+                    @endif
+                </div>
+                @endif
             </div>
             <div class="thumbnail-text col-xs-12">
                 <div class="thumbnail-label col-xs-12 no-gutter" title="{{ $establishment['name'] }}">

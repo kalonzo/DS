@@ -549,6 +549,41 @@ select:not(.select2){
                         right: 1px;
                     }
                 }
+                .thumbnail-promo-indicator{
+                    position: absolute; 
+                    bottom: 0px; 
+                    left: 0px;
+                    background-color: rgba(252, 166, 0, 0.8);
+                    color: white;
+                    width: auto;
+                    padding: 0px 5px;
+                    line-height: $line-height-base-px*0.9; //20px;
+                    &.bordered{
+                        left: 1px;
+                    }
+                    .img-icon{
+                        margin-right: 2px;
+                        width: 15px;
+                    }
+                    > *{
+                        vertical-align: middle;
+                    }
+                }
+            }
+        }
+        .logo-picture{
+            min-height: 80px;
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            .logo-picture-cell{
+                display: table-cell;
+                vertical-align: middle;
+                width: 100%;
+                img{
+                    width: 100%;
+                    max-height: 100%;
+                }
             }
         }
         .thumbnail-under-layer{
@@ -565,10 +600,7 @@ select:not(.select2){
             .logo-picture{
                 background-color: #333;
                 text-align: center;
-                img{
-                    width: 100%;
-                    max-height: 100%;
-                }
+                position: relative;
             }
             .thumbnail-text{
                 display: flex;
@@ -583,6 +615,30 @@ select:not(.select2){
                 .thumbnail-text-extra{
                     align-self: flex-end;
                     width: 100%;
+                }
+            }
+            .thumbnail-promo-container{
+                position: absolute;
+                width: 100%;
+                bottom: 0px;
+                left: 0px;
+                height: $line-height-base-px;
+                overflow: hidden;
+                display: flex;
+                justify-content: space-between;
+                .thumbnail-promo{
+                    width: auto;
+                    background-color: rgba(0, 0, 0, 0.6);
+                    color: $promo-color;
+                    text-align: left;
+                    padding: 0px 3px;
+                    overflow: hidden;
+                }
+                .thumbnail-promo-count{
+                    height: $line-height-base-px;
+                    background-color: rgba(252, 166, 0, 0.8);
+                    color: white;
+                    padding: 0px 3px;
                 }
             }
         }
@@ -630,11 +686,6 @@ select:not(.select2){
                     color: #f8203a
                 }
             }
-        }
-    }
-    &.with-promo{
-        .thumbnail-info{
-            display: none;
         }
     }
 }

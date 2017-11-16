@@ -317,10 +317,10 @@ if($videoQuery->exists()){
                 &nbsp;
             </div> 
             <div class="col-xs-5_5 col-sm-4_5 col-sm-offset-0_5 col-label">
-                Déjeuner
+                Midi
             </div>    
             <div class="hidden-xs col-xs-5_5 col-sm-4_5 col-sm-offset-0 col-label">
-                Diner
+                Soir
             </div>    
         </div>
         <div class="row timetable-show wow fadeInLeft" data-wow-delay="{{$loadDelay}}ss">
@@ -364,7 +364,7 @@ if($videoQuery->exists()){
                     {!! $closePeriod->getLabel() !!} :
                 </div>
                 <div class="col-xs-6 col-sm-8">
-                    {!! formatDate($closePeriod->getStartDate(), IntlDateFormatter::SHORT) !!} - {!! formatDate($closePeriod->getEndDate(), IntlDateFormatter::SHORT) !!}
+                    du {!! formatDate($closePeriod->getStartDate(), IntlDateFormatter::SHORT) !!} au {!! formatDate($closePeriod->getEndDate(), IntlDateFormatter::SHORT) !!}
                 </div>
                 @endforeach
             </div>   

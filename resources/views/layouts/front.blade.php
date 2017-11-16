@@ -57,7 +57,7 @@
                         ?>
                         @component('components.navbar-dropdown', [
                                                                     'containerId' => 'promotionButton',
-                                                                    'buttonImageSrc' => asset("/img/icons/ICONS-MAP-PROMOTIONS.svg"),
+                                                                    'buttonImageSrc' => asset("/img/icons/discount-icon.png"),
                                                                     'buttonImageAlt' => 'Promos',
                                                                     'dropdownTitle' => 'Promotions',
                                                                     'eventsList' => $promosList

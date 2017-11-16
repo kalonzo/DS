@@ -2013,6 +2013,32 @@ class EstablishmentController extends Controller {
                     }
                 }
             }
+            
+            // Collect promo information
+            $etsPromotions = array();
+            $promotions = \App\Models\Promotion::select([
+                        \App\Models\Promotion::TABLENAME.'.*',
+                        DB::raw(DbQueryTools::genRawSqlForGettingUuid('id_establishment', \App\Models\Promotion::TABLENAME, 'ets_uuid'))
+                    ])
+                    ->whereRaw(DbQueryTools::genSqlForWhereRawUuidConstraint('id_establishment', $etsUuidList, \App\Models\Promotion::TABLENAME))
+                    ->whereRaw('end_date >= NOW()')->whereRaw('start_date <= NOW()')
+                    ->orderBy('id_establishment')->orderBy('start_date')->orderBy('end_date')
+                    ->get();
+            foreach($promotions as $promotion){
+                if(!isset($etsPromotions[$promotion->ets_uuid])){
+                    $etsPromotions[$promotion->ets_uuid]['count'] = 1;
+                    $etsPromotions[$promotion->ets_uuid]['label'] = $promotion->name.' '.$promotion->name;
+                } else {
+                    $etsPromotions[$promotion->ets_uuid]['count']++;
+                }
+            }
+            foreach($etsPromotions as $uuidEstablishment => $promoInfo){
+                foreach($thumbnailDataList as $key => $thumbnailData){
+                    if(isset($thumbnailData[$uuidEstablishment]) && !isset($thumbnailData[$uuidEstablishment]['promo'])){
+                        $thumbnailDataList[$key][$uuidEstablishment]['promo'] = $promoInfo;
+                    }
+                }
+            }
         }
         return $thumbnailDataList;
     }
