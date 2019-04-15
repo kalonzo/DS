@@ -2,7 +2,7 @@
 $ajaxUrl = null;
 if(checkModel($event)){
 //    $ajaxUrl = '/admin/create/event/ajax';
-    echo Form::model($event, ['url' => '/admin/events/'.$event->getUuid(), 'method' => 'PUT', 'files' => true]);
+    echo Form::model($event, ['url' => '/admin/update/events/'.$event->getUuid(), 'method' => 'PUT', 'files' => true]);
 }else{
     $ajaxUrl = '/admin/create/events/ajax';
     echo Form::open(['url'=>'/admin/create/events', 'method' => 'PUT', 'files' => true]);

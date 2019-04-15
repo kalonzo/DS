@@ -22,7 +22,8 @@ class DtEventAdmin extends DatatableFeeder {
 
     public function buildActions() {
         $this->enableAction(DatatableRowAction::ACTION_EDIT);
-        $this->customizeAction(DatatableRowAction::ACTION_EDIT)->setHref('/admin/events/{{id}}');
+        $this->customizeAction(DatatableRowAction::ACTION_EDIT)->setOnclick('getOnClickModal("Edition de l\'événement", '
+                . '"/admin/edit/' . Event::TABLENAME . '/{{id}}");');
     }
 
     public function buildColumns() {

@@ -109,6 +109,9 @@ class AdminController extends Controller {
                 case \App\Models\PaymentMethod::TABLENAME:
                     $controllerClass = App::make(PaymentMethodController::class);
                     break;
+                case \App\Models\Event::TABLENAME:
+                    $controllerClass = App::make(EventController::class);
+                    break;
             }
             if ($controllerClass instanceof Controller) {
                 return $controllerClass->callAction('edit', array('id' => $id));
