@@ -38,7 +38,7 @@ class UpdatePaymentMethodsConfig extends Migration
         foreach($iframeMethods as $iframeMethod){
             $iframeMethod->setMethodConfig(PaymentMethod::METHOD_CONFIG_IFRAME)->save();
         }
-        PaymentMethod::where('id', '=', PaymentMethod::METHOD_CB_POSTFINANCE)->first()->setMethodConfig(PaymentMethod::METHOD_CONFIG_OFFSITE)->save();
+        //PaymentMethod::where('id', '=', PaymentMethod::METHOD_CB_POSTFINANCE)->first()->setMethodConfig(PaymentMethod::METHOD_CONFIG_OFFSITE)->save();
     }
 
     /**

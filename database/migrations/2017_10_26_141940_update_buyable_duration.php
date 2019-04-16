@@ -15,7 +15,7 @@ class UpdateBuyableDuration extends Migration
     {
         Schema::table(\App\Models\BuyableItem::TABLENAME, function(Blueprint $table)
         {
-            $table->integer('duration');
+            $table->integer('duration')->nullable();
         });
     }
 
