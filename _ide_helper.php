@@ -1,7 +1,7 @@
 <?php
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.4.36 on 2019-04-17 18:18:08.
+ * Generated for Laravel 5.4.36 on 2019-04-17 22:28:59.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -11416,6 +11416,86 @@ namespace Illuminate\Support\Facades {
  
 }
 
+namespace Yajra\Datatables\Facades { 
+
+    class Datatables {
+        
+        /**
+         * Gets query and returns instance of class.
+         *
+         * @param mixed $source
+         * @return mixed 
+         * @throws \Exception
+         * @static 
+         */ 
+        public static function of($source)
+        {
+            return \Yajra\Datatables\Datatables::of($source);
+        }
+        
+        /**
+         * Get request object.
+         *
+         * @return \Yajra\Datatables\Request 
+         * @static 
+         */ 
+        public static function getRequest()
+        {
+            return \Yajra\Datatables\Datatables::getRequest();
+        }
+        
+        /**
+         * Datatables using Query Builder.
+         *
+         * @param \Illuminate\Database\Query\Builder|mixed $builder
+         * @return \Yajra\Datatables\Engines\QueryBuilderEngine 
+         * @static 
+         */ 
+        public static function queryBuilder($builder)
+        {
+            return \Yajra\Datatables\Datatables::queryBuilder($builder);
+        }
+        
+        /**
+         * Datatables using Eloquent Builder.
+         *
+         * @param \Illuminate\Database\Eloquent\Builder|mixed $builder
+         * @return \Yajra\Datatables\Engines\EloquentEngine 
+         * @static 
+         */ 
+        public static function eloquent($builder)
+        {
+            return \Yajra\Datatables\Datatables::eloquent($builder);
+        }
+        
+        /**
+         * Datatables using Collection.
+         *
+         * @param \Illuminate\Support\Collection|mixed $collection
+         * @return \Yajra\Datatables\Engines\CollectionEngine 
+         * @static 
+         */ 
+        public static function collection($collection)
+        {
+            return \Yajra\Datatables\Datatables::collection($collection);
+        }
+        
+        /**
+         * Get html builder instance.
+         *
+         * @return \Yajra\Datatables\Html\Builder 
+         * @throws \Exception
+         * @static 
+         */ 
+        public static function getHtmlBuilder()
+        {
+            return \Yajra\Datatables\Datatables::getHtmlBuilder();
+        }
+         
+    }
+ 
+}
+
 namespace SchemaExtended { 
 
     class Schema {
@@ -13393,6 +13473,8 @@ namespace  {
     class Cookie extends \Illuminate\Support\Facades\Cookie {}
 
     class Crypt extends \Illuminate\Support\Facades\Crypt {}
+
+    class Datatables extends \Yajra\Datatables\Facades\Datatables {}
 
     class DB extends \Illuminate\Support\Facades\DB {}
 

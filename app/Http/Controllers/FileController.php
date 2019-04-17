@@ -131,7 +131,7 @@ class FileController {
                             $options = 'public';
                         }
 
-                        // Store file physically
+                        //TODO correct Store file physically
                         $relPath = $file->storePublicly($path, $options);
 
                         if($relPath !== false){

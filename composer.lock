@@ -3463,16 +3463,16 @@
         },
         {
             "name": "wallee/sdk",
-            "version": "1.1.14",
+            "version": "1.1.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wallee-payment/php-sdk.git",
-                "reference": "cf28212c242677994694636c18c545077072a4ef"
+                "reference": "e1d18453855382af3144e845f2d9704efb93e9cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wallee-payment/php-sdk/zipball/cf28212c242677994694636c18c545077072a4ef",
-                "reference": "cf28212c242677994694636c18c545077072a4ef",
+                "url": "https://api.github.com/repos/wallee-payment/php-sdk/zipball/e1d18453855382af3144e845f2d9704efb93e9cb",
+                "reference": "e1d18453855382af3144e845f2d9704efb93e9cb",
                 "shasum": ""
             },
             "require": {
@@ -3508,7 +3508,7 @@
                 "sdk",
                 "wallee"
             ],
-            "time": "2019-01-15T08:26:25+00:00"
+            "time": "2019-04-17T20:27:25+00:00"
         },
         {
             "name": "yajra/laravel-datatables-oracle",
