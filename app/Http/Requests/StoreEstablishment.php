@@ -122,7 +122,7 @@ class StoreEstablishment extends \App\Http\FormRequest {
                     }
                 }
 
-                $nbr = count($this->input('home_pictures')) - 1;
+                $nbr = is_array($this->input('home_pictures')) && count($this->input('home_pictures')) - 1;
                 foreach (range(0, $nbr) as $index) {
                     $rules['home_pictures.' . $index] = 'required|max:4000';
                 }
