@@ -56,13 +56,13 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'admin@dinerscope.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'kenalonjaq@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'Dinerscope'),
     ],
     'to' => [
 //        'address' => 'support@dinerscope.com',
-        'address' => 'nico.trendonline@gmail.com',
-        'name' => 'Nico'
+        'address' => 'kenalonjaq@gmail.com',
+        'name' => 'Administrateur'
     ],
 
     /*
