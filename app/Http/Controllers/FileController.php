@@ -51,11 +51,12 @@ class FileController {
 
                             if($relPath !== false){
                                 if($media->getPublic()){
-                                    $relPath = 'public/'.$relPath;
+                                    $relPath = $relPath;
                                 }
                                 // Get definitive file paths
                                 $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
-                                $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
+                                //$absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
+                                $absolutePath = public_path(). '/storage/' . $relPath;
 
                                 // Set media info
                                 $media->setType($resolvedMimeType);
@@ -131,16 +132,17 @@ class FileController {
                             $options = 'public';
                         }
 
-                        //TODO correct Store file physically
                         $relPath = $file->storePublicly($path, $options);
 
                         if($relPath !== false){
                             if($media->getPublic()){
-                                $relPath = 'public/'.$relPath;
+                                $relPath = $relPath;
                             }
                             // Get definitive file paths
                             $appRelPath = \Illuminate\Support\Facades\Storage::url($relPath);
-                            $absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
+                            //DEprecated
+                            //$absolutePath = \Illuminate\Support\Facades\Storage::path($relPath);
+                            $absolutePath = public_path(). '/storage/' . $relPath;
                             if(checkModel($media)){
                                 // Delete previous uploaded file
                                 \Illuminate\Support\Facades\Storage::delete($media->getLocalPath());
